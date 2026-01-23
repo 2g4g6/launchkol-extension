@@ -110,6 +110,28 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
     console.log('Hide user:', post.author.handle)
   }
 
+  // Render content with @mentions highlighted in blue
+  const renderContent = (text: string) => {
+    const parts = text.split(/(@\w+)/g)
+    return parts.map((part, i) => {
+      if (part.startsWith('@')) {
+        const handle = part.slice(1)
+        return (
+          <a
+            key={i}
+            href={`https://x.com/${handle}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-kol-blue hover:underline"
+          >
+            {part}
+          </a>
+        )
+      }
+      return part
+    })
+  }
+
   return (
     <motion.article
       className="group relative mx-3 my-2"
@@ -199,7 +221,7 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
                   href={`https://x.com/${post.author.handle}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-kol-blue hover:text-kol-blue-hover hover:underline truncate transition-colors"
+                  className="text-gray-400 hover:text-kol-blue hover:underline truncate transition-colors"
                 >
                   @{post.author.handle}
                 </a>
@@ -234,7 +256,7 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
           {/* Tweet Text - only show if there's content */}
           {post.content && (
             <p className="font-body text-sm text-gray-300 leading-relaxed mb-2.5">
-              {post.content}
+              {renderContent(post.content)}
             </p>
           )}
 
@@ -301,7 +323,7 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
                     href={`https://x.com/${post.quotedTweet.author.handle}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-kol-blue hover:underline text-xs"
+                    className="text-gray-400 hover:text-kol-blue hover:underline text-xs"
                   >
                     @{post.quotedTweet.author.handle}
                   </a>
@@ -356,7 +378,7 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
                       href={`https://x.com/${post.replyTo.author.handle}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-kol-blue hover:underline text-xs"
+                      className="text-gray-400 hover:text-kol-blue hover:underline text-xs"
                     >
                       @{post.replyTo.author.handle}
                     </a>
