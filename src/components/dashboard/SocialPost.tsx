@@ -150,18 +150,18 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
                 >
                   {post.author.name}
                 </button>
-                <span className="text-xs text-gray-300">{formatTime(post.timestamp)}</span>
+                <span className="text-xs text-gray-400">{formatTime(post.timestamp)}</span>
                 {/* Reply indicator */}
                 {post.replyTo && (
                   <div className="flex items-center gap-1">
                     <i className="ri-reply-line text-xs text-amber-400" />
-                    <span className="text-xs text-gray-300">Reply</span>
+                    <span className="text-xs text-gray-400">Reply</span>
                   </div>
                 )}
               </div>
 
               {/* Handle & Followers Row */}
-              <div className="flex items-center gap-1.5 text-xs text-gray-300">
+              <div className="flex items-center gap-1.5 text-xs text-gray-400">
                 <a
                   href={`https://x.com/${post.author.handle}`}
                   target="_blank"
@@ -171,7 +171,7 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
                   @{post.author.handle}
                 </a>
                 {post.author.followers && (
-                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-kol-surface border border-kol-border/50 text-[11px] text-gray-300">
+                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-kol-surface border border-kol-border/50 text-[11px] text-gray-400">
                     <i className="ri-group-line text-[10px]" />
                     {formatFollowers(post.author.followers)}
                   </span>
@@ -185,7 +185,7 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
             {/* Hide button */}
             <button
               onClick={handleHide}
-              className="flex items-center justify-center w-11 py-4 border-l border-kol-border/40 text-gray-300 hover:text-white hover:bg-kol-surface/60 transition-all duration-200"
+              className="flex items-center justify-center w-11 py-4 border-l border-kol-border/40 text-gray-400 hover:text-white hover:bg-kol-surface/60 transition-all duration-200"
               title="Hide user"
             >
               <i className="ri-eye-off-line text-sm" />
@@ -211,7 +211,7 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
         {/* Content Section */}
         <div className="px-3.5 py-3">
           {/* Tweet Text */}
-          <p className="font-body text-sm text-gray-200 leading-relaxed mb-2.5">
+          <p className="font-body text-sm text-gray-300 leading-relaxed mb-2.5">
             {post.content}
           </p>
 
@@ -262,18 +262,18 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
                     <span className="font-body font-medium text-kol-text-secondary text-xs truncate">
                       {post.replyTo.author.name}
                     </span>
-                    <span className="text-gray-300 text-xs">@{post.replyTo.author.handle}</span>
+                    <span className="text-gray-400 text-xs">@{post.replyTo.author.handle}</span>
                     {post.replyTo.author.followers && (
                       <>
                         <span className="text-gray-500 text-xs">·</span>
-                        <span className="text-gray-300 text-xs flex items-center gap-0.5">
+                        <span className="text-gray-400 text-xs flex items-center gap-0.5">
                           <i className="ri-group-line text-[9px]" />
                           {formatFollowers(post.replyTo.author.followers)}
                         </span>
                       </>
                     )}
                   </div>
-                  <p className="text-gray-300 text-xs leading-relaxed">
+                  <p className="text-gray-400 text-xs leading-relaxed">
                     {post.replyTo.content}
                   </p>
 
@@ -298,14 +298,14 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
           {/* Translate section */}
           <div className="flex items-center h-full py-1 ml-2">
             <button
-              className="text-[11px] flex items-center gap-1 text-gray-300 hover:text-white hover:bg-kol-surface/60 px-2 h-full transition-all duration-200 rounded-md"
+              className="text-[11px] flex items-center gap-1 text-gray-400 hover:text-white hover:bg-kol-surface/60 px-2 h-full transition-all duration-200 rounded-md"
               title="Translate"
             >
               <i className="ri-translate-2 text-xs" />
               <span className="font-medium">Translate</span>
             </button>
             <button
-              className="flex items-center text-[11px] hover:text-white transition-colors duration-200 text-gray-300 px-1"
+              className="flex items-center text-[11px] hover:text-white transition-colors duration-200 text-gray-400 px-1"
               title="Select language"
             >
               <span className="font-semibold text-[10px] uppercase tracking-wide">en</span>
@@ -317,7 +317,7 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
           <div className="flex-1" />
 
           {/* Time */}
-          <div className="flex items-center text-[11px] text-gray-300 px-2.5 h-full font-mono">
+          <div className="flex items-center text-[11px] text-gray-400 px-2.5 h-full font-mono">
             <span>{formatTimeShort(post.timestamp)}</span>
           </div>
 
@@ -326,7 +326,7 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
             href={post.tweetUrl || `https://x.com/${post.author.handle}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-gray-300 hover:text-white text-[11px] flex items-center gap-1 px-2.5 h-full hover:bg-kol-surface/60 transition-all duration-200 font-medium border-l border-kol-border/30"
+            className="text-gray-400 hover:text-white text-[11px] flex items-center gap-1 px-2.5 h-full hover:bg-kol-surface/60 transition-all duration-200 font-medium border-l border-kol-border/30"
           >
             <span>View</span>
             <i className="ri-external-link-line text-xs" />
