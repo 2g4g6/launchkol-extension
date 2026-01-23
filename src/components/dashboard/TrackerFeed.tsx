@@ -279,7 +279,7 @@ export function TrackerFeed({ onDeploy }: TrackerFeedProps) {
             onChange={(e) => setSearchQuery(e.target.value)}
             onFocus={() => setIsSearchFocused(true)}
             onBlur={() => setIsSearchFocused(false)}
-            className="w-full h-9 pl-9 pr-4 bg-kol-surface/40 backdrop-blur-sm border border-kol-border/30 rounded-xl text-sm text-white placeholder:text-kol-text-muted font-body focus:border-kol-blue/50 focus:bg-kol-surface/60 transition-all duration-300"
+            className="w-full h-9 pl-9 pr-4 bg-kol-surface/50 backdrop-blur-sm border border-kol-border/50 rounded-xl text-sm text-white placeholder:text-kol-text-muted font-body focus:border-kol-blue/50 focus:bg-kol-surface/60 transition-all duration-300"
           />
           {searchQuery && (
             <motion.button
