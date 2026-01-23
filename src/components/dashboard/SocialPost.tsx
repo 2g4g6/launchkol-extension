@@ -245,11 +245,11 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
                 {post.media.map((item, idx) => (
                   <div key={idx} className="relative bg-kol-surface flex items-center justify-center">
                     {item.type === 'video' ? (
-                      <div className="relative w-full">
+                      <div className="relative w-full flex justify-center">
                         <img
                           src={item.thumbnailUrl || item.url}
                           alt=""
-                          className={`w-full ${post.media!.length === 1 ? 'object-contain max-h-[220px]' : 'object-cover h-[110px]'}`}
+                          className="object-contain max-h-[200px] max-w-full"
                         />
                         <div className="absolute inset-0 flex items-center justify-center bg-black/30">
                           <div className="w-12 h-12 rounded-full bg-white/90 flex items-center justify-center">
@@ -261,7 +261,7 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
                       <img
                         src={item.url}
                         alt=""
-                        className={`${post.media!.length === 1 ? 'object-contain max-h-[220px] max-w-full' : 'object-cover h-[110px] w-full'}`}
+                        className="object-contain max-h-[200px] max-w-full"
                       />
                     )}
                   </div>
@@ -308,11 +308,11 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
                 </div>
                 <p className="text-gray-300 text-xs leading-relaxed">{post.quotedTweet.content}</p>
                 {post.quotedTweet.media && post.quotedTweet.media.length > 0 && (
-                  <div className="mt-2 rounded overflow-hidden">
+                  <div className="mt-2 rounded overflow-hidden bg-kol-surface flex justify-center">
                     <img
                       src={post.quotedTweet.media[0].url}
                       alt=""
-                      className="w-full h-[80px] object-cover"
+                      className="object-contain max-h-[120px] max-w-full"
                     />
                   </div>
                 )}
