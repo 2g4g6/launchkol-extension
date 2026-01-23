@@ -71,18 +71,54 @@ function formatFollowers(count: number): string {
 }
 
 export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
-  const [lightboxImage, setLightboxImage] = useState<string | null>(null)
+  const [lightboxImages, setLightboxImages] = useState<string[]>([])
+  const [lightboxIndex, setLightboxIndex] = useState(0)
+  const [isZoomed, setIsZoomed] = useState(false)
 
-  // Close lightbox on Escape key
+  const isLightboxOpen = lightboxImages.length > 0
+
+  const openLightbox = (images: string[], startIndex: number = 0) => {
+    setLightboxImages(images)
+    setLightboxIndex(startIndex)
+    setIsZoomed(false)
+  }
+
+  const closeLightbox = () => {
+    setLightboxImages([])
+    setLightboxIndex(0)
+    setIsZoomed(false)
+  }
+
+  const goToPrevious = () => {
+    setLightboxIndex((prev) => (prev > 0 ? prev - 1 : lightboxImages.length - 1))
+    setIsZoomed(false)
+  }
+
+  const goToNext = () => {
+    setLightboxIndex((prev) => (prev < lightboxImages.length - 1 ? prev + 1 : 0))
+    setIsZoomed(false)
+  }
+
+  // Handle keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && lightboxImage) {
-        setLightboxImage(null)
+      if (!isLightboxOpen) return
+
+      switch (e.key) {
+        case 'Escape':
+          closeLightbox()
+          break
+        case 'ArrowLeft':
+          goToPrevious()
+          break
+        case 'ArrowRight':
+          goToNext()
+          break
       }
     }
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [lightboxImage])
+  }, [isLightboxOpen, lightboxImages.length])
 
   const formatTime = (date: Date) => {
     const now = new Date()
@@ -277,13 +313,15 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
           {/* Media preview - multiple images or video */}
           {(post.media && post.media.length > 0) && (
             <div className={`mb-2.5 w-full ${post.media.length > 1 ? 'grid grid-cols-2 gap-2' : ''}`}>
-              {post.media.map((item, idx) => (
+              {post.media.map((item, idx) => {
+                const allImageUrls = post.media!.map(m => m.type === 'video' ? (m.thumbnailUrl || m.url) : m.url)
+                return (
                 <div
                   key={idx}
                   className={`relative bg-kol-surface flex items-center justify-center rounded-lg overflow-hidden border border-kol-border/30 cursor-pointer hover:border-kol-blue/50 transition-colors ${
                     post.media!.length === 1 ? 'h-[240px]' : 'h-[140px]'
                   }`}
-                  onClick={() => setLightboxImage(item.type === 'video' ? (item.thumbnailUrl || item.url) : item.url)}
+                  onClick={() => openLightbox(allImageUrls, idx)}
                 >
                   {item.type === 'video' ? (
                     <div className="relative w-full h-full flex justify-center items-center">
@@ -306,7 +344,7 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
                     />
                   )}
                 </div>
-              ))}
+              )})}
             </div>
           )}
 
@@ -314,7 +352,7 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
           {!post.media && post.mediaUrl && (
             <div
               className="relative mb-2.5 rounded-lg overflow-hidden border border-kol-border/30 max-w-[280px] cursor-pointer hover:border-kol-blue/50 transition-colors"
-              onClick={() => setLightboxImage(post.mediaUrl!)}
+              onClick={() => openLightbox([post.mediaUrl!])}
             >
               <img
                 src={post.mediaUrl}
@@ -353,7 +391,7 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
                 {post.quotedTweet.media && post.quotedTweet.media.length > 0 && (
                   <div
                     className="mt-2 rounded-lg overflow-hidden bg-kol-surface border border-kol-border/30 flex justify-center items-center h-[200px] cursor-pointer hover:border-kol-blue/50 transition-colors"
-                    onClick={() => setLightboxImage(post.quotedTweet!.media![0].url)}
+                    onClick={() => openLightbox(post.quotedTweet!.media!.map(m => m.url))}
                   >
                     <img
                       src={post.quotedTweet.media[0].url}
@@ -430,7 +468,7 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
                   {post.replyTo.mediaUrl && (
                     <div
                       className="mt-2 rounded-lg overflow-hidden border border-kol-border/30 max-w-[200px] cursor-pointer hover:border-kol-blue/50 transition-colors"
-                      onClick={() => setLightboxImage(post.replyTo!.mediaUrl!)}
+                      onClick={() => openLightbox([post.replyTo!.mediaUrl!])}
                     >
                       <img
                         src={post.replyTo.mediaUrl}
@@ -507,41 +545,123 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
 
       {/* Image Lightbox Modal */}
       <AnimatePresence>
-        {lightboxImage && (
+        {isLightboxOpen && (
           <motion.div
-            className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/90 backdrop-blur-sm"
+            className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/95"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            onClick={() => setLightboxImage(null)}
+            onClick={closeLightbox}
           >
-            {/* Close button */}
+            {/* Close button - styled to match the app */}
             <button
-              className="absolute top-4 right-4 w-10 h-10 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors z-10"
+              className="absolute top-5 right-5 w-11 h-11 flex items-center justify-center rounded-xl bg-kol-surface-elevated/80 border border-kol-border/50 hover:bg-kol-surface-elevated hover:border-kol-border text-gray-400 hover:text-white transition-all duration-200 z-20"
               onClick={(e) => {
                 e.stopPropagation()
-                setLightboxImage(null)
+                closeLightbox()
               }}
             >
-              <i className="ri-close-line text-2xl" />
+              <i className="ri-close-line text-xl" />
             </button>
 
-            {/* Image container */}
+            {/* Image counter */}
+            {lightboxImages.length > 1 && (
+              <div className="absolute top-5 left-1/2 -translate-x-1/2 px-4 py-2 rounded-lg bg-kol-surface-elevated/80 border border-kol-border/50 text-sm text-gray-300 font-mono z-20">
+                {lightboxIndex + 1} / {lightboxImages.length}
+              </div>
+            )}
+
+            {/* Navigation arrows */}
+            {lightboxImages.length > 1 && (
+              <>
+                {/* Previous button */}
+                <button
+                  className="absolute left-5 top-1/2 -translate-y-1/2 w-12 h-12 flex items-center justify-center rounded-xl bg-kol-surface-elevated/80 border border-kol-border/50 hover:bg-kol-surface-elevated hover:border-kol-border text-gray-400 hover:text-white transition-all duration-200 z-20"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    goToPrevious()
+                  }}
+                >
+                  <i className="ri-arrow-left-s-line text-2xl" />
+                </button>
+
+                {/* Next button */}
+                <button
+                  className="absolute right-5 top-1/2 -translate-y-1/2 w-12 h-12 flex items-center justify-center rounded-xl bg-kol-surface-elevated/80 border border-kol-border/50 hover:bg-kol-surface-elevated hover:border-kol-border text-gray-400 hover:text-white transition-all duration-200 z-20"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    goToNext()
+                  }}
+                >
+                  <i className="ri-arrow-right-s-line text-2xl" />
+                </button>
+              </>
+            )}
+
+            {/* Zoom hint */}
+            <div className="absolute bottom-5 left-1/2 -translate-x-1/2 px-3 py-1.5 rounded-lg bg-kol-surface-elevated/60 border border-kol-border/30 text-xs text-gray-500 z-20">
+              {isZoomed ? 'Click to zoom out' : 'Click image to zoom'}
+            </div>
+
+            {/* Image container with zoom */}
             <motion.div
-              className="relative max-w-[90vw] max-h-[90vh] flex items-center justify-center"
+              className={`relative flex items-center justify-center ${isZoomed ? 'cursor-zoom-out overflow-auto max-w-full max-h-full' : 'cursor-zoom-in max-w-[90vw] max-h-[85vh]'}`}
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
               transition={{ duration: 0.2 }}
               onClick={(e) => e.stopPropagation()}
             >
-              <img
-                src={lightboxImage}
-                alt=""
-                className="max-w-full max-h-[90vh] object-contain rounded-lg"
-              />
+              <AnimatePresence mode="wait">
+                <motion.img
+                  key={lightboxImages[lightboxIndex]}
+                  src={lightboxImages[lightboxIndex]}
+                  alt=""
+                  className={`rounded-lg transition-all duration-300 ${
+                    isZoomed
+                      ? 'max-w-none max-h-none w-auto h-auto'
+                      : 'max-w-full max-h-[85vh] object-contain'
+                  }`}
+                  style={isZoomed ? { transform: 'scale(2)', transformOrigin: 'center center' } : {}}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.15 }}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setIsZoomed(!isZoomed)
+                  }}
+                />
+              </AnimatePresence>
             </motion.div>
+
+            {/* Thumbnail strip for multiple images */}
+            {lightboxImages.length > 1 && (
+              <div className="absolute bottom-16 left-1/2 -translate-x-1/2 flex gap-2 p-2 rounded-xl bg-kol-surface-elevated/80 border border-kol-border/50 z-20">
+                {lightboxImages.map((img, idx) => (
+                  <button
+                    key={idx}
+                    className={`w-12 h-12 rounded-lg overflow-hidden border-2 transition-all duration-200 ${
+                      idx === lightboxIndex
+                        ? 'border-kol-blue ring-2 ring-kol-blue/30'
+                        : 'border-kol-border/50 hover:border-kol-border opacity-60 hover:opacity-100'
+                    }`}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      setLightboxIndex(idx)
+                      setIsZoomed(false)
+                    }}
+                  >
+                    <img
+                      src={img}
+                      alt=""
+                      className="w-full h-full object-cover"
+                    />
+                  </button>
+                ))}
+              </div>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
