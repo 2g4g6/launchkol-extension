@@ -21,89 +21,62 @@ interface HeaderProps {
   onSignOut: () => void
   balance: number
   userEmail: string
-  notificationCount?: number
 }
 
-// Compact search input (visual placeholder)
+// Search input (visual placeholder)
 function SearchInput() {
   return (
-    <div className="relative flex items-center gap-1.5 px-2 py-1 rounded-lg bg-kol-surface/50 border border-kol-border/30 hover:border-kol-border/50 transition-colors cursor-pointer group">
-      <i className="ri-search-line text-[10px] text-kol-text-muted group-hover:text-kol-text-secondary transition-colors" />
-      <span className="text-[10px] text-kol-text-muted group-hover:text-kol-text-secondary transition-colors font-body">
+    <div className="relative flex items-center gap-2 px-3 py-1.5 rounded-lg bg-kol-surface/50 border border-kol-border/30 hover:border-kol-border/50 transition-colors cursor-pointer group">
+      <i className="ri-search-line text-sm text-kol-text-muted group-hover:text-kol-text-secondary transition-colors" />
+      <span className="text-xs text-kol-text-muted group-hover:text-kol-text-secondary transition-colors font-body">
         Search
       </span>
       {/* Keyboard shortcut badge */}
-      <span className="ml-1 px-1 py-0.5 rounded text-[8px] font-mono bg-kol-border/40 text-kol-text-muted border border-kol-border/30">
+      <span className="ml-1 px-1.5 py-0.5 rounded text-[9px] font-mono bg-kol-border/40 text-kol-text-muted border border-kol-border/30">
         /
       </span>
     </div>
   )
 }
 
-// SOL Balance indicator
-function BalanceIndicator({ balance }: { balance: number }) {
+// Wallet Balance indicator with Solana icon
+function WalletIndicator({ balance }: { balance: number }) {
   return (
     <motion.div
-      className="relative flex items-center gap-1.5 px-2 py-1 rounded-lg bg-kol-surface/50 border border-kol-border/30 hover:border-kol-blue/30 transition-all cursor-pointer group"
+      className="relative flex items-center gap-2 px-3 py-1.5 rounded-lg bg-kol-surface/50 border border-kol-border/30 hover:border-kol-blue/30 transition-all cursor-pointer group"
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
     >
-      {/* Subtle blue glow on hover */}
+      {/* Subtle glow on hover */}
       <div className="absolute inset-0 rounded-lg bg-kol-blue/0 group-hover:bg-kol-blue/5 transition-colors" />
 
-      {/* SOL Diamond icon */}
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" className="relative z-10">
-        <path
-          d="M12 2L22 12L12 22L2 12L12 2Z"
-          fill="url(#solGrad)"
-          stroke="url(#solStroke)"
-          strokeWidth="1"
-        />
+      {/* Solana Logo */}
+      <svg width="14" height="14" viewBox="0 0 128 128" fill="none" className="relative z-10">
         <defs>
-          <linearGradient id="solGrad" x1="2" y1="2" x2="22" y2="22">
-            <stop stopColor="#9945FF" />
-            <stop offset="0.5" stopColor="#14F195" />
-            <stop offset="1" stopColor="#00C2FF" />
-          </linearGradient>
-          <linearGradient id="solStroke" x1="2" y1="2" x2="22" y2="22">
-            <stop stopColor="#9945FF" stopOpacity="0.5" />
-            <stop offset="1" stopColor="#14F195" stopOpacity="0.5" />
+          <linearGradient id="solanaGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#9945FF" />
+            <stop offset="50%" stopColor="#14F195" />
+            <stop offset="100%" stopColor="#00C2FF" />
           </linearGradient>
         </defs>
+        <path
+          d="M25.3 96.5C26.1 95.7 27.2 95.2 28.4 95.2H119.2C121.2 95.2 122.2 97.6 120.8 99L102.7 117.1C101.9 117.9 100.8 118.4 99.6 118.4H8.8C6.8 118.4 5.8 116 7.2 114.6L25.3 96.5Z"
+          fill="url(#solanaGrad)"
+        />
+        <path
+          d="M25.3 10.9C26.1 10.1 27.2 9.6 28.4 9.6H119.2C121.2 9.6 122.2 12 120.8 13.4L102.7 31.5C101.9 32.3 100.8 32.8 99.6 32.8H8.8C6.8 32.8 5.8 30.4 7.2 29L25.3 10.9Z"
+          fill="url(#solanaGrad)"
+        />
+        <path
+          d="M102.7 53.5C101.9 52.7 100.8 52.2 99.6 52.2H8.8C6.8 52.2 5.8 54.6 7.2 56L25.3 74.1C26.1 74.9 27.2 75.4 28.4 75.4H119.2C121.2 75.4 122.2 73 120.8 71.6L102.7 53.5Z"
+          fill="url(#solanaGrad)"
+        />
       </svg>
 
-      <span className="relative z-10 text-[11px] font-mono text-white font-medium">
+      <span className="relative z-10 text-sm font-mono text-white font-medium">
         {balance.toFixed(2)}
       </span>
     </motion.div>
-  )
-}
-
-// Notification bell with badge
-function NotificationBell({ count = 0 }: { count?: number }) {
-  return (
-    <motion.button
-      className="relative w-7 h-7 rounded-lg bg-kol-surface/50 border border-kol-border/30 hover:border-kol-border/50 flex items-center justify-center transition-all group"
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
-    >
-      <div className="absolute inset-0 rounded-lg bg-kol-blue/0 group-hover:bg-kol-blue/5 transition-colors" />
-      <i className="ri-notification-3-line text-[13px] text-kol-text-muted group-hover:text-white transition-colors relative z-10" />
-
-      {/* Badge */}
-      {count > 0 && (
-        <motion.span
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          className="absolute -top-1 -right-1 min-w-[14px] h-[14px] px-1 rounded-full bg-kol-red text-[8px] font-bold text-white flex items-center justify-center z-20"
-          style={{
-            boxShadow: '0 0 8px rgba(255, 77, 79, 0.5)',
-          }}
-        >
-          {count > 9 ? '9+' : count}
-        </motion.span>
-      )}
-    </motion.button>
   )
 }
 
@@ -137,7 +110,7 @@ function UserDropdown({
       {/* Avatar trigger */}
       <motion.button
         onClick={() => setIsOpen(!isOpen)}
-        className="relative w-7 h-7 rounded-full bg-gradient-to-br from-kol-blue/30 to-kol-blue/10 border border-kol-border/40 hover:border-kol-blue/40 flex items-center justify-center transition-all overflow-hidden group"
+        className="relative w-8 h-8 rounded-full bg-gradient-to-br from-kol-blue/30 to-kol-blue/10 border border-kol-border/40 hover:border-kol-blue/40 flex items-center justify-center transition-all overflow-hidden group"
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
       >
@@ -145,11 +118,11 @@ function UserDropdown({
         <div className="absolute inset-0 bg-kol-blue/0 group-hover:bg-kol-blue/10 transition-colors" />
 
         {/* Initials */}
-        <span className="text-[9px] font-bold text-white relative z-10">{initials}</span>
+        <span className="text-[10px] font-bold text-white relative z-10">{initials}</span>
 
         {/* Online status dot */}
         <span
-          className="absolute bottom-0 right-0 w-2 h-2 rounded-full bg-kol-green border-2 border-kol-bg z-20"
+          className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-kol-green border-2 border-kol-bg z-20"
           style={{ boxShadow: '0 0 6px rgba(0, 196, 107, 0.6)' }}
         />
       </motion.button>
@@ -234,11 +207,10 @@ export function Header({
   onSignOut,
   balance,
   userEmail,
-  notificationCount = 0
 }: HeaderProps) {
   return (
     <motion.header
-      className="relative flex items-center justify-between px-3 py-2 bg-transparent z-20"
+      className="relative flex items-center justify-between px-4 py-3 bg-transparent z-20"
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
@@ -255,48 +227,58 @@ export function Header({
       />
 
       {/* Left side: Logo + Tabs */}
-      <div className="relative z-10 flex items-center gap-2">
-        {/* Compact Logo */}
+      <div className="relative z-10 flex items-center gap-4">
+        {/* Logo */}
         <Logo size="sm" showText={true} animated={false} />
 
-        {/* Tab Navigation - inline */}
-        <div className="flex items-center gap-0.5 p-0.5 rounded-lg bg-kol-surface/30 border border-kol-border/20">
+        {/* Tab Navigation - clean text style */}
+        <nav className="flex items-center gap-1">
           {TABS.map((tab) => (
             <motion.button
               key={tab.id}
               onClick={() => onTabChange(tab.id)}
-              className={`relative flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-semibold transition-colors duration-200 ${
+              className="relative flex items-center gap-1.5 px-3 py-1.5"
+              whileTap={{ scale: 0.97 }}
+            >
+              {/* Active underline indicator */}
+              {activeTab === tab.id && (
+                <motion.div
+                  layoutId="activeTabUnderline"
+                  className="absolute bottom-0 left-1 right-1 h-[2px] rounded-full bg-kol-blue"
+                  style={{
+                    boxShadow: '0 0 8px rgba(0, 123, 255, 0.5)',
+                  }}
+                  transition={{ type: 'spring', bounce: 0.2, duration: 0.4 }}
+                />
+              )}
+
+              <i className={`${tab.icon} text-sm transition-colors duration-200 ${
+                activeTab === tab.id
+                  ? 'text-white'
+                  : 'text-kol-text-muted'
+              }`} />
+
+              <span className={`text-sm font-semibold transition-colors duration-200 ${
                 activeTab === tab.id
                   ? 'text-white'
                   : 'text-kol-text-muted hover:text-kol-text-secondary'
-              }`}
-              whileTap={{ scale: 0.97 }}
-            >
-              {activeTab === tab.id && (
-                <motion.div
-                  layoutId="activeHeaderTab"
-                  className="absolute inset-0 bg-kol-surface-elevated/70 border border-kol-border/30 rounded-md"
-                  style={{
-                    boxShadow: '0 0 10px rgba(0, 123, 255, 0.12)',
-                  }}
-                  transition={{ type: 'spring', bounce: 0.15, duration: 0.4 }}
-                />
-              )}
-              <i className={`${tab.icon} text-[10px] relative z-10`} />
-              <span className="relative z-10">{tab.label}</span>
+              }`}>
+                {tab.label}
+              </span>
+
+              {/* Live indicator for Feed */}
               {tab.id === 'feed' && (
-                <span className="relative z-10 w-1.5 h-1.5 rounded-full bg-kol-red shadow-sm shadow-kol-red/50 animate-pulse" />
+                <span className="w-2 h-2 rounded-full bg-kol-red shadow-sm shadow-kol-red/50 animate-pulse" />
               )}
             </motion.button>
           ))}
-        </div>
+        </nav>
       </div>
 
-      {/* Right side: Search, Balance, Notifications, User */}
-      <div className="relative z-10 flex items-center gap-1.5">
+      {/* Right side: Search, Wallet, User */}
+      <div className="relative z-10 flex items-center gap-2">
         <SearchInput />
-        <BalanceIndicator balance={balance} />
-        <NotificationBell count={notificationCount} />
+        <WalletIndicator balance={balance} />
         <UserDropdown email={userEmail} onSignOut={onSignOut} />
       </div>
     </motion.header>

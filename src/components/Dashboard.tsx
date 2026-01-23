@@ -170,7 +170,6 @@ export function Dashboard({ user, onSignOut }: DashboardProps) {
         onSignOut={onSignOut}
         balance={balance}
         userEmail={user.email}
-        notificationCount={3}
       />
 
       {/* Tab Content */}
