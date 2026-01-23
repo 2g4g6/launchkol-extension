@@ -1,0 +1,6 @@
+/* Popup-specific dimensions (380x540px) */
+html, body, #root {
+  width: 380px;
+  height: 540px;
+  overflow: hidden;
+}

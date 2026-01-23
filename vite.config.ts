@@ -8,13 +8,25 @@ export default defineConfig({
     outDir: 'dist',
     rollupOptions: {
       input: {
-        main: resolve(__dirname, 'index.html'),
+        popup: resolve(__dirname, 'index.html'),
+        sidepanel: resolve(__dirname, 'sidepanel.html'),
+        background: resolve(__dirname, 'src/background/index.ts'),
+      },
+      output: {
+        entryFileNames: (chunkInfo) => {
+          if (chunkInfo.name === 'background') {
+            return 'background.js'
+          }
+          return 'assets/[name]-[hash].js'
+        },
       },
     },
   },
   resolve: {
     alias: {
       '@': resolve(__dirname, './src'),
+      '@shared': resolve(__dirname, './src/shared'),
+      '@components': resolve(__dirname, './src/components'),
     },
   },
 })
