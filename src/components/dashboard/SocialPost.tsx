@@ -180,32 +180,20 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
             </div>
           </div>
 
-          {/* Right Section - Actions & Deploy */}
-          <div className="flex items-stretch flex-shrink-0">
-            {/* Hide button */}
-            <button
-              onClick={handleHide}
-              className="flex items-center justify-center w-11 py-4 border-l border-kol-border/40 text-gray-400 hover:text-white hover:bg-kol-surface/60 transition-all duration-200"
-              title="Hide user"
+          {/* Right Section - Deploy */}
+          {onDeploy && (
+            <motion.button
+              onClick={(e) => {
+                e.stopPropagation()
+                onDeploy(post)
+              }}
+              className="flex items-center justify-center gap-2 px-6 py-4 border-l border-kol-border/40 bg-kol-blue/25 hover:bg-kol-blue/40 text-white text-sm font-semibold transition-all duration-300"
+              whileTap={{ scale: 0.98 }}
             >
-              <i className="ri-eye-off-line text-sm" />
-            </button>
-
-            {/* Deploy Button */}
-            {onDeploy && (
-              <motion.button
-                onClick={(e) => {
-                  e.stopPropagation()
-                  onDeploy(post)
-                }}
-                className="flex items-center justify-center gap-1.5 px-5 py-4 border-l border-kol-border/40 bg-kol-blue/25 hover:bg-kol-blue/40 text-white text-xs font-semibold transition-all duration-300"
-                whileTap={{ scale: 0.98 }}
-              >
-                <span>Deploy</span>
-                <i className="ri-arrow-right-up-line text-sm" />
-              </motion.button>
-            )}
-          </div>
+              <span>Deploy</span>
+              <i className="ri-arrow-right-up-line text-base" />
+            </motion.button>
+          )}
         </div>
 
         {/* Content Section */}
@@ -295,8 +283,27 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
 
         {/* Footer Toolbar */}
         <div className="flex items-center border-t border-kol-border/40 h-9">
+          {/* Left actions - Hide & Notify */}
+          <div className="flex items-center h-full">
+            <button
+              onClick={handleHide}
+              className="flex items-center justify-center w-9 h-full text-gray-400 hover:text-white hover:bg-kol-surface/60 transition-all duration-200"
+              title="Hide"
+            >
+              <i className="ri-close-line text-sm" />
+            </button>
+            <div className="w-px h-4 bg-kol-border/40" />
+            <button
+              className="flex items-center justify-center w-9 h-full text-gray-400 hover:text-white hover:bg-kol-surface/60 transition-all duration-200"
+              title="Notify"
+            >
+              <i className="ri-notification-line text-sm" />
+            </button>
+            <div className="w-px h-4 bg-kol-border/40" />
+          </div>
+
           {/* Translate section */}
-          <div className="flex items-center h-full py-1 ml-2">
+          <div className="flex items-center h-full py-1 ml-1">
             <button
               className="text-[11px] flex items-center gap-1 text-gray-400 hover:text-white hover:bg-kol-surface/60 px-2 h-full transition-all duration-200 rounded-md"
               title="Translate"
