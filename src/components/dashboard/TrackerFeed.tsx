@@ -2,96 +2,147 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { SocialPost, SocialPostData } from './SocialPost'
 
-// Mock data - tweets with follower counts and enhanced data
+// Mock data - tweets with different types (normal, reply, repost, quote) and media
 const MOCK_POSTS: SocialPostData[] = [
+  // Normal post with single image
   {
     id: '1',
     type: 'alert',
+    tweetType: 'post',
     author: {
       name: 'CryptoAlerts',
       handle: 'crypto_alerts',
-      verified: true,
       followers: 8500000,
       avatar: 'https://pbs.twimg.com/profile_images/1800000000000000000/placeholder_normal.jpg',
     },
-    content: 'New token detected with unusual wallet activity. Multiple fresh wallets accumulating.',
+    content: 'New token detected with unusual wallet activity. Multiple fresh wallets accumulating. Check out this chart 📊',
     timestamp: new Date(Date.now() - 13000),
-    token: { symbol: 'PEPE2', address: 'ABC1...', marketCap: 156000 },
+    media: [
+      { type: 'image', url: 'https://picsum.photos/seed/chart1/400/300' }
+    ],
     tweetUrl: 'https://x.com/crypto_alerts/status/123',
   },
+  // Reply tweet
   {
     id: '2',
     type: 'mention',
+    tweetType: 'reply',
     author: {
       name: 'SolanaWhales',
       handle: 'sol_whales',
       followers: 45900,
     },
-    content: '@AlphaTrader 🫡',
+    content: '@AlphaTrader 🫡 This is huge! Been watching this wallet for weeks.',
     timestamp: new Date(Date.now() - 120000),
     tweetUrl: 'https://x.com/sol_whales/status/124',
     replyTo: {
       author: {
         name: 'Alpha Trader',
         handle: 'AlphaTrader',
-        verified: true,
         followers: 125000,
       },
       content: 'Just spotted a massive whale wallet moving 2,500 SOL. Something big brewing? 👀',
       tweetUrl: 'https://x.com/AlphaTrader/status/123',
     },
   },
+  // Post with 2 images
   {
     id: '3',
     type: 'alert',
+    tweetType: 'post',
     author: {
       name: 'BundleScanner',
       handle: 'bundle_scan',
-      verified: true,
       followers: 2100000,
     },
-    content: 'Bundle detected on recent pump.fun launch. 15 wallets, 40% supply. Proceed with caution.',
+    content: 'Bundle detected on recent pump.fun launch. 15 wallets, 40% supply. Here are the receipts 🧾',
     timestamp: new Date(Date.now() - 600000),
-    token: { symbol: 'FAKE', address: 'FAK...', marketCap: 89000 },
+    media: [
+      { type: 'image', url: 'https://picsum.photos/seed/bundle1/400/300' },
+      { type: 'image', url: 'https://picsum.photos/seed/bundle2/400/300' }
+    ],
     tweetUrl: 'https://x.com/bundle_scan/status/125',
   },
+  // Quote tweet
   {
     id: '4',
     type: 'mention',
+    tweetType: 'quote',
     author: {
       name: 'DeFiWatcher',
       handle: 'defi_watcher',
-      verified: true,
       followers: 471000,
     },
-    content: 'What a campaign - probably the biggest I\'ve ever seen.\n\nGood job 👏',
+    content: 'What a campaign - probably the biggest I\'ve ever seen. Good job 👏',
     timestamp: new Date(Date.now() - 1500000),
     tweetUrl: 'https://x.com/defi_watcher/status/126',
-    replyTo: {
+    quotedTweet: {
       author: {
         name: 'SolDev',
         handle: 'solana_dev',
-        verified: true,
         followers: 890000,
       },
       content: 'Just launched our new token with LaunchKOL. The fees are insanely low compared to competitors. 🚀',
-      mediaUrl: 'https://pbs.twimg.com/media/placeholder.jpg',
+      media: [
+        { type: 'image', url: 'https://picsum.photos/seed/launch/400/200' }
+      ],
       tweetUrl: 'https://x.com/solana_dev/status/125',
     },
   },
+  // Post with video
   {
     id: '5',
     type: 'alert',
+    tweetType: 'post',
     author: {
       name: 'TokenScanner',
       handle: 'token_scanner',
-      verified: true,
       followers: 890000,
     },
-    content: 'Large holder detected accumulating. 3 wallets, similar patterns. Could be insider activity.',
+    content: 'Large holder detected accumulating. Watch the full breakdown in this video 🎥',
     timestamp: new Date(Date.now() - 2000000),
-    token: { symbol: 'NEWCOIN', address: 'NEW...', marketCap: 445000 },
+    media: [
+      { type: 'video', url: 'https://example.com/video.mp4', thumbnailUrl: 'https://picsum.photos/seed/video/400/300' }
+    ],
     tweetUrl: 'https://x.com/token_scanner/status/127',
+  },
+  // Repost
+  {
+    id: '6',
+    type: 'mention',
+    tweetType: 'repost',
+    author: {
+      name: 'CryptoNews',
+      handle: 'crypto_news',
+      followers: 1200000,
+    },
+    content: '',
+    timestamp: new Date(Date.now() - 3000000),
+    tweetUrl: 'https://x.com/crypto_news/status/128',
+    quotedTweet: {
+      author: {
+        name: 'Solana',
+        handle: 'solana',
+        followers: 2800000,
+        avatar: 'https://pbs.twimg.com/profile_images/solana/avatar.jpg',
+      },
+      content: 'Solana just hit a new ATH in daily active addresses. The ecosystem is thriving! 🌟',
+      tweetUrl: 'https://x.com/solana/status/127',
+    },
+  },
+  // Normal post (no media)
+  {
+    id: '7',
+    type: 'alert',
+    tweetType: 'post',
+    author: {
+      name: 'WhaleAlert',
+      handle: 'whale_alert',
+      followers: 3400000,
+    },
+    content: '🚨 50,000 SOL ($8.2M) transferred from unknown wallet to Binance. Potential sell pressure incoming.',
+    timestamp: new Date(Date.now() - 4500000),
+    tweetUrl: 'https://x.com/whale_alert/status/129',
   },
 ]
 
@@ -125,8 +176,7 @@ export function TrackerFeed({ onDeploy }: TrackerFeedProps) {
   const filteredPosts = posts.filter(post =>
     post.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
     post.author.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    post.author.handle.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    post.token?.symbol.toLowerCase().includes(searchQuery.toLowerCase())
+    post.author.handle.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
   return (

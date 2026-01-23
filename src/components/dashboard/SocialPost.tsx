@@ -1,8 +1,15 @@
 import { motion } from 'framer-motion'
 
+export interface MediaItem {
+  type: 'image' | 'video'
+  url: string
+  thumbnailUrl?: string
+}
+
 export interface SocialPostData {
   id: string
   type: 'trade' | 'alert' | 'mention'
+  tweetType?: 'post' | 'reply' | 'repost' | 'quote'
   author: {
     name: string
     handle: string
@@ -16,7 +23,8 @@ export interface SocialPostData {
     amount: number
     price: number
   }
-  mediaUrl?: string
+  media?: MediaItem[]
+  mediaUrl?: string // legacy single image support
   tweetUrl?: string
   replyTo?: {
     author: {
@@ -26,7 +34,19 @@ export interface SocialPostData {
       followers?: number
     }
     content: string
+    media?: MediaItem[]
     mediaUrl?: string
+    tweetUrl?: string
+  }
+  quotedTweet?: {
+    author: {
+      name: string
+      handle: string
+      avatar?: string
+      followers?: number
+    }
+    content: string
+    media?: MediaItem[]
     tweetUrl?: string
   }
 }
@@ -151,11 +171,23 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
                   {post.author.name}
                 </button>
                 <span className="text-xs text-gray-400">{formatTime(post.timestamp)}</span>
-                {/* Reply indicator */}
-                {post.replyTo && (
+                {/* Tweet type indicator */}
+                {post.tweetType === 'reply' && (
                   <div className="flex items-center gap-1">
                     <i className="ri-reply-line text-xs text-amber-400" />
                     <span className="text-xs text-gray-400">Reply</span>
+                  </div>
+                )}
+                {post.tweetType === 'repost' && (
+                  <div className="flex items-center gap-1">
+                    <i className="ri-repeat-line text-xs text-kol-green" />
+                    <span className="text-xs text-gray-400">Repost</span>
+                  </div>
+                )}
+                {post.tweetType === 'quote' && (
+                  <div className="flex items-center gap-1">
+                    <i className="ri-chat-quote-line text-xs text-kol-blue" />
+                    <span className="text-xs text-gray-400">Quote</span>
                   </div>
                 )}
               </div>
@@ -198,13 +230,47 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
 
         {/* Content Section */}
         <div className="px-3.5 py-3">
-          {/* Tweet Text */}
-          <p className="font-body text-sm text-gray-300 leading-relaxed mb-2.5">
-            {post.content}
-          </p>
+          {/* Tweet Text - only show if there's content */}
+          {post.content && (
+            <p className="font-body text-sm text-gray-300 leading-relaxed mb-2.5">
+              {post.content}
+            </p>
+          )}
 
-          {/* Media preview */}
-          {post.mediaUrl && (
+          {/* Media preview - multiple images or video */}
+          {(post.media && post.media.length > 0) && (
+            <div className={`mb-2.5 rounded-lg overflow-hidden border border-kol-border/30 ${
+              post.media.length === 1 ? 'max-w-[280px]' : 'grid grid-cols-2 gap-0.5'
+            }`}>
+              {post.media.map((item, idx) => (
+                <div key={idx} className="relative bg-kol-surface">
+                  {item.type === 'video' ? (
+                    <div className="relative">
+                      <img
+                        src={item.thumbnailUrl || item.url}
+                        alt=""
+                        className={`w-full object-cover ${post.media!.length === 1 ? 'max-h-[200px]' : 'h-[100px]'}`}
+                      />
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                        <div className="w-10 h-10 rounded-full bg-white/90 flex items-center justify-center">
+                          <i className="ri-play-fill text-xl text-black ml-0.5" />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <img
+                      src={item.url}
+                      alt=""
+                      className={`w-full object-cover ${post.media!.length === 1 ? 'max-h-[200px]' : 'h-[100px]'}`}
+                    />
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Legacy single image support */}
+          {!post.media && post.mediaUrl && (
             <div className="relative mb-2.5 rounded-lg overflow-hidden border border-kol-border/30 max-w-[280px]">
               <img
                 src={post.mediaUrl}
@@ -212,6 +278,37 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
                 className="w-full h-auto max-h-[200px] object-contain bg-kol-surface"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent pointer-events-none" />
+            </div>
+          )}
+
+          {/* Quoted Tweet */}
+          {post.quotedTweet && (
+            <div className="mb-2.5 rounded-lg border border-kol-border/40 bg-kol-surface/30 overflow-hidden">
+              <div className="p-2.5">
+                <div className="flex items-center gap-2 mb-1.5">
+                  {post.quotedTweet.author.avatar ? (
+                    <img
+                      src={post.quotedTweet.author.avatar}
+                      alt=""
+                      className="w-5 h-5 rounded-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-5 h-5 rounded-full bg-kol-surface-elevated" />
+                  )}
+                  <span className="font-body font-medium text-xs text-white">{post.quotedTweet.author.name}</span>
+                  <span className="text-gray-400 text-xs">@{post.quotedTweet.author.handle}</span>
+                </div>
+                <p className="text-gray-300 text-xs leading-relaxed">{post.quotedTweet.content}</p>
+                {post.quotedTweet.media && post.quotedTweet.media.length > 0 && (
+                  <div className="mt-2 rounded overflow-hidden">
+                    <img
+                      src={post.quotedTweet.media[0].url}
+                      alt=""
+                      className="w-full h-[80px] object-cover"
+                    />
+                  </div>
+                )}
+              </div>
             </div>
           )}
 
