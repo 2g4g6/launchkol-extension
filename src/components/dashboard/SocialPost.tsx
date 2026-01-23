@@ -333,7 +333,7 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
                 </div>
                 <p className="text-gray-300 text-xs leading-relaxed">{post.quotedTweet.content}</p>
                 {post.quotedTweet.media && post.quotedTweet.media.length > 0 && (
-                  <div className="mt-2 rounded-lg overflow-hidden bg-kol-surface border border-kol-border/30 flex justify-center items-center h-[160px]">
+                  <div className="mt-2 rounded-lg overflow-hidden bg-kol-surface border border-kol-border/30 flex justify-center items-center h-[200px]">
                     <img
                       src={post.quotedTweet.media[0].url}
                       alt=""
