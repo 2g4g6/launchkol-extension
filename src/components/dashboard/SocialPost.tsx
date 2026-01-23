@@ -429,7 +429,7 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
       />
 
       {/* Glass card container */}
-      <div className="relative bg-kol-surface-elevated/60 backdrop-blur-md border border-kol-border/50 rounded-xl overflow-hidden group-hover:border-kol-border/70 group-hover:bg-kol-surface-elevated/70 transition-all duration-300">
+      <div className="relative bg-kol-surface/50 backdrop-blur-md border border-kol-border/50 rounded-xl overflow-hidden group-hover:border-kol-border/70 group-hover:bg-kol-surface/60 transition-all duration-300">
 
         {/* Header Row - Avatar, Author, Actions, Deploy */}
         <div className="flex items-stretch border-b border-kol-border/40 min-h-[60px]">
