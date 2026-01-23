@@ -79,9 +79,9 @@ export function OpenSidebarPrompt({ user }: OpenSidebarPromptProps) {
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="mb-6"
+            className="mb-6 flex justify-center"
           >
-            <Logo size="lg" />
+            <Logo size="md" showText={true} animated={false} />
           </motion.div>
 
           {/* Success icon */}
