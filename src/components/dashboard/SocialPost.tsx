@@ -118,10 +118,10 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
       />
 
       {/* Glass card container */}
-      <div className="relative bg-kol-surface-elevated/40 backdrop-blur-md border border-kol-border/40 rounded-xl overflow-hidden group-hover:border-kol-border/60 group-hover:bg-kol-surface-elevated/60 transition-all duration-300">
+      <div className="relative bg-kol-surface-elevated/60 backdrop-blur-md border border-kol-border/50 rounded-xl overflow-hidden group-hover:border-kol-border/70 group-hover:bg-kol-surface-elevated/70 transition-all duration-300">
 
         {/* Header Row - Avatar, Author, Actions, Deploy */}
-        <div className="flex items-center border-b border-kol-border/30">
+        <div className="flex items-stretch border-b border-kol-border/40 min-h-[60px]">
           {/* Left Section - Avatar & Author Info */}
           <div className="flex items-center gap-2.5 px-3 py-2.5 flex-1 min-w-0">
             {/* Avatar */}
@@ -133,11 +133,11 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
                 <img
                   src={post.author.avatar}
                   alt={post.author.name}
-                  className="w-10 h-10 rounded-full object-cover ring-2 ring-kol-border/30 hover:ring-kol-blue/50 transition-all"
+                  className="w-10 h-10 rounded-full object-cover ring-2 ring-kol-border/50 hover:ring-kol-blue/50 transition-all"
                 />
               ) : (
                 <div
-                  className="w-10 h-10 rounded-full flex items-center justify-center ring-2 ring-kol-border/30"
+                  className="w-10 h-10 rounded-full flex items-center justify-center ring-2 ring-kol-border/50"
                   style={{
                     background: `linear-gradient(135deg, ${typeColor}40 0%, ${typeColor}15 100%)`,
                   }}
@@ -199,11 +199,11 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
           </div>
 
           {/* Right Section - Actions & Deploy */}
-          <div className="flex items-center h-full flex-shrink-0">
+          <div className="flex items-stretch flex-shrink-0">
             {/* Hide button */}
             <button
               onClick={handleHide}
-              className="flex items-center justify-center w-10 h-full border-l border-kol-border/30 text-kol-text-muted hover:text-white hover:bg-kol-surface/60 transition-all duration-200"
+              className="flex items-center justify-center w-11 py-4 border-l border-kol-border/40 text-kol-text-muted hover:text-white hover:bg-kol-surface/60 transition-all duration-200"
               title="Hide user"
             >
               <i className="ri-eye-off-line text-sm" />
@@ -216,7 +216,7 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
                   e.stopPropagation()
                   onDeploy(post)
                 }}
-                className="flex items-center justify-center gap-1.5 h-full px-5 border-l border-kol-border/30 bg-kol-blue/15 hover:bg-kol-blue/30 text-kol-blue-hover text-xs font-semibold transition-all duration-300"
+                className="flex items-center justify-center gap-1.5 px-5 py-4 border-l border-kol-border/40 bg-kol-blue/25 hover:bg-kol-blue/40 text-white text-xs font-semibold transition-all duration-300"
                 whileTap={{ scale: 0.98 }}
               >
                 <span>Deploy</span>
@@ -227,7 +227,7 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
         </div>
 
         {/* Content Section */}
-        <div className="px-3 py-3">
+        <div className="px-3.5 py-3">
           {/* Tweet Text */}
           <p className="font-body text-sm text-kol-text-secondary leading-relaxed mb-2.5">
             {post.content}
@@ -345,7 +345,7 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
         </div>
 
         {/* Footer Toolbar */}
-        <div className="flex items-center border-t border-kol-border/30 h-8">
+        <div className="flex items-center border-t border-kol-border/40 h-9">
           {/* Translate section */}
           <div className="flex items-center h-full py-1 ml-2">
             <button
