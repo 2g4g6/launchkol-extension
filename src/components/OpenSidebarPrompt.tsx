@@ -81,7 +81,7 @@ export function OpenSidebarPrompt({ user }: OpenSidebarPromptProps) {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="mb-6"
           >
-            <Logo size="lg" showText={false} />
+            <Logo size="lg" />
           </motion.div>
 
           {/* Success icon */}
