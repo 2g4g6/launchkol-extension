@@ -250,10 +250,12 @@ export function TrackerFeed({ onDeploy }: TrackerFeedProps) {
   )
 
   return (
-    <div className="relative flex flex-col h-full overflow-hidden">
-      {/* Search Bar */}
-      <motion.div
-        className="relative mx-3 mt-2 mb-1"
+    <div className="relative flex flex-col h-full overflow-hidden p-3">
+      {/* Container for search and feed */}
+      <div className="flex flex-col h-full bg-kol-surface/50 backdrop-blur-sm border border-kol-border/50 rounded-xl overflow-hidden">
+        {/* Search Bar */}
+        <motion.div
+          className="relative px-3 pt-3 pb-2"
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
@@ -359,6 +361,7 @@ export function TrackerFeed({ onDeploy }: TrackerFeedProps) {
         {/* Bottom padding for scroll */}
         <div className="h-2" />
       </motion.div>
+      </div>
     </div>
   )
 }
