@@ -622,14 +622,25 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
             <motion.div
               className={`relative flex items-center justify-center ${
                 currentMedia?.type === 'image'
-                  ? (isZoomed ? 'cursor-zoom-out overflow-auto max-w-full max-h-full' : 'cursor-zoom-in max-w-[90vw] max-h-[85vh]')
-                  : 'max-w-[90vw] max-h-[85vh]'
+                  ? (isZoomed ? 'cursor-zoom-out' : 'cursor-zoom-in')
+                  : ''
               }`}
+              style={{
+                maxWidth: isZoomed ? '100vw' : '90vw',
+                maxHeight: isZoomed ? '100vh' : '85vh',
+                overflow: isZoomed ? 'auto' : 'visible',
+              }}
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
               transition={{ duration: 0.2 }}
-              onClick={(e) => e.stopPropagation()}
+              onClick={(e) => {
+                e.stopPropagation()
+                // Toggle zoom when clicking on the container (for images only)
+                if (currentMedia?.type === 'image') {
+                  setIsZoomed(!isZoomed)
+                }
+              }}
             >
               <AnimatePresence mode="wait">
                 {currentMedia?.type === 'video' ? (
@@ -651,20 +662,21 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
                     key={currentMedia?.url}
                     src={currentMedia?.url}
                     alt=""
-                    className={`rounded-lg transition-all duration-300 ${
+                    className={`rounded-lg select-none ${
                       isZoomed
-                        ? 'max-w-none max-h-none w-auto h-auto'
+                        ? ''
                         : 'max-w-full max-h-[85vh] object-contain'
                     }`}
-                    style={isZoomed ? { transform: 'scale(2)', transformOrigin: 'center center' } : {}}
+                    style={isZoomed ? {
+                      transform: 'scale(2)',
+                      transformOrigin: 'center center',
+                      pointerEvents: 'auto'
+                    } : {}}
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -20 }}
                     transition={{ duration: 0.15 }}
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      setIsZoomed(!isZoomed)
-                    }}
+                    draggable={false}
                   />
                 )}
               </AnimatePresence>
