@@ -270,7 +270,9 @@ export function TrackerFeed({ onDeploy }: TrackerFeedProps) {
           }}
         />
 
-        <div className="relative flex items-center">
+        <div className={`relative flex items-center bg-kol-surface/50 border rounded-xl transition-all duration-300 ${
+          isSearchFocused ? 'border-kol-blue/50' : 'border-kol-border/50'
+        }`}>
           <i className={`ri-search-line absolute left-3 text-sm transition-colors duration-200 ${
             isSearchFocused ? 'text-kol-blue' : 'text-kol-text-tertiary'
           }`} />
@@ -281,7 +283,7 @@ export function TrackerFeed({ onDeploy }: TrackerFeedProps) {
             onChange={(e) => setSearchQuery(e.target.value)}
             onFocus={() => setIsSearchFocused(true)}
             onBlur={() => setIsSearchFocused(false)}
-            className="w-full h-9 pl-9 pr-4 bg-transparent border-0 text-sm text-white placeholder:text-kol-text-tertiary font-body focus:outline-none transition-all duration-300"
+            className="w-full h-9 pl-9 pr-4 bg-transparent border-0 rounded-xl text-sm text-white placeholder:text-kol-text-tertiary font-body focus:outline-none transition-all duration-300"
           />
           {searchQuery && (
             <motion.button
