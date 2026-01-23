@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { SocialPost, SocialPostData, LinkPreview } from './SocialPost'
+import { SocialPost, SocialPostData } from './SocialPost'
 
 // Mock data - tweets with different types (normal, reply, repost, quote) and media
 const MOCK_POSTS: SocialPostData[] = [
