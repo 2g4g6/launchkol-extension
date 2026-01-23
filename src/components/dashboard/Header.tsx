@@ -26,13 +26,13 @@ interface HeaderProps {
 // Search input (visual placeholder)
 function SearchInput() {
   return (
-    <div className="relative flex items-center gap-2 px-3 py-1.5 rounded-lg bg-kol-surface/50 border border-kol-border/30 hover:border-kol-border/50 transition-colors cursor-pointer group">
+    <div className="relative flex items-center gap-2 px-3 py-1.5 rounded-lg bg-kol-surface/50 border border-kol-border/30 hover:border-kol-border/50 transition-colors cursor-pointer group min-w-[120px]">
       <i className="ri-search-line text-sm text-kol-text-muted group-hover:text-kol-text-secondary transition-colors" />
-      <span className="text-xs text-kol-text-muted group-hover:text-kol-text-secondary transition-colors font-body">
-        Search
+      <span className="text-xs text-kol-text-muted group-hover:text-kol-text-secondary transition-colors font-body flex-1">
+        Search...
       </span>
       {/* Keyboard shortcut badge */}
-      <span className="ml-1 px-1.5 py-0.5 rounded text-[9px] font-mono bg-kol-border/40 text-kol-text-muted border border-kol-border/30">
+      <span className="px-1.5 py-0.5 rounded text-[9px] font-mono bg-kol-border/40 text-kol-text-muted border border-kol-border/30">
         /
       </span>
     </div>
@@ -50,27 +50,28 @@ function WalletIndicator({ balance }: { balance: number }) {
       {/* Subtle glow on hover */}
       <div className="absolute inset-0 rounded-lg bg-kol-blue/0 group-hover:bg-kol-blue/5 transition-colors" />
 
-      {/* Solana Logo */}
-      <svg width="14" height="14" viewBox="0 0 128 128" fill="none" className="relative z-10">
+      {/* Wallet icon */}
+      <i className="ri-wallet-3-line text-sm text-kol-text-muted relative z-10" />
+
+      {/* Official Solana Logo */}
+      <svg width="14" height="11" viewBox="0 0 397 311" fill="none" className="relative z-10">
         <defs>
-          <linearGradient id="solanaGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#9945FF" />
-            <stop offset="50%" stopColor="#14F195" />
-            <stop offset="100%" stopColor="#00C2FF" />
+          <linearGradient id="solanaGradA" x1="360.879" y1="351.455" x2="141.213" y2="-69.2936" gradientUnits="userSpaceOnUse">
+            <stop stopColor="#00FFA3"/>
+            <stop offset="1" stopColor="#DC1FFF"/>
+          </linearGradient>
+          <linearGradient id="solanaGradB" x1="264.829" y1="401.601" x2="45.163" y2="-19.1475" gradientUnits="userSpaceOnUse">
+            <stop stopColor="#00FFA3"/>
+            <stop offset="1" stopColor="#DC1FFF"/>
+          </linearGradient>
+          <linearGradient id="solanaGradC" x1="312.548" y1="376.688" x2="92.8822" y2="-44.061" gradientUnits="userSpaceOnUse">
+            <stop stopColor="#00FFA3"/>
+            <stop offset="1" stopColor="#DC1FFF"/>
           </linearGradient>
         </defs>
-        <path
-          d="M25.3 96.5C26.1 95.7 27.2 95.2 28.4 95.2H119.2C121.2 95.2 122.2 97.6 120.8 99L102.7 117.1C101.9 117.9 100.8 118.4 99.6 118.4H8.8C6.8 118.4 5.8 116 7.2 114.6L25.3 96.5Z"
-          fill="url(#solanaGrad)"
-        />
-        <path
-          d="M25.3 10.9C26.1 10.1 27.2 9.6 28.4 9.6H119.2C121.2 9.6 122.2 12 120.8 13.4L102.7 31.5C101.9 32.3 100.8 32.8 99.6 32.8H8.8C6.8 32.8 5.8 30.4 7.2 29L25.3 10.9Z"
-          fill="url(#solanaGrad)"
-        />
-        <path
-          d="M102.7 53.5C101.9 52.7 100.8 52.2 99.6 52.2H8.8C6.8 52.2 5.8 54.6 7.2 56L25.3 74.1C26.1 74.9 27.2 75.4 28.4 75.4H119.2C121.2 75.4 122.2 73 120.8 71.6L102.7 53.5Z"
-          fill="url(#solanaGrad)"
-        />
+        <path d="M64.6 237.9C67.1 235.4 70.5 234 74.1 234H389.8C395.9 234 398.9 241.4 394.6 245.7L332.4 307.9C329.9 310.4 326.5 311.8 322.9 311.8H7.2C1.1 311.8 -1.9 304.4 2.4 300.1L64.6 237.9Z" fill="url(#solanaGradA)"/>
+        <path d="M64.6 3.9C67.2 1.4 70.6 0 74.1 0H389.8C395.9 0 398.9 7.4 394.6 11.7L332.4 73.9C329.9 76.4 326.5 77.8 322.9 77.8H7.2C1.1 77.8 -1.9 70.4 2.4 66.1L64.6 3.9Z" fill="url(#solanaGradB)"/>
+        <path d="M332.4 120.6C329.9 118.1 326.5 116.7 322.9 116.7H7.2C1.1 116.7 -1.9 124.1 2.4 128.4L64.6 190.6C67.1 193.1 70.5 194.5 74.1 194.5H389.8C395.9 194.5 398.9 187.1 394.6 182.8L332.4 120.6Z" fill="url(#solanaGradC)"/>
       </svg>
 
       <span className="relative z-10 text-sm font-mono text-white font-medium">
