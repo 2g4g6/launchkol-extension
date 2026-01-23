@@ -7,6 +7,15 @@ export interface MediaItem {
   thumbnailUrl?: string
 }
 
+export interface LinkPreview {
+  url: string
+  title: string
+  description?: string
+  image?: string
+  siteName?: string
+  favicon?: string
+}
+
 export interface SocialPostData {
   id: string
   type: 'trade' | 'alert' | 'mention'
@@ -65,6 +74,7 @@ export interface SocialPostData {
     media?: MediaItem[]
     tweetUrl?: string
   }
+  linkPreview?: LinkPreview
 }
 
 interface SocialPostProps {
@@ -317,10 +327,60 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
     })
   }
 
-  // Render link preview card
-  const renderLinkPreview = (urls: string[]) => {
+  // Render rich link preview card (Open Graph style)
+  const renderRichLinkPreview = (preview: LinkPreview) => {
+    const domain = getDomain(preview.url)
+
+    return (
+      <a
+        href={preview.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="block mt-2.5 rounded-lg border border-kol-border/40 bg-kol-surface/30 overflow-hidden hover:border-kol-border/60 transition-colors group/link"
+      >
+        {/* Preview Image */}
+        {preview.image && (
+          <div className="relative w-full h-[140px] bg-kol-surface overflow-hidden">
+            <img
+              src={preview.image}
+              alt=""
+              className="w-full h-full object-cover group-hover/link:scale-105 transition-transform duration-300"
+            />
+          </div>
+        )}
+
+        {/* Preview Content */}
+        <div className="p-3">
+          {/* Site info row */}
+          <div className="flex items-center gap-1.5 text-gray-500 text-[11px] mb-1.5">
+            {preview.favicon ? (
+              <img src={preview.favicon} alt="" className="w-3.5 h-3.5 rounded-sm" />
+            ) : (
+              <i className="ri-global-line text-xs" />
+            )}
+            <span>{preview.siteName || domain}</span>
+          </div>
+
+          {/* Title */}
+          <h4 className="font-body font-medium text-sm text-white leading-tight mb-1 line-clamp-2">
+            {preview.title}
+          </h4>
+
+          {/* Description */}
+          {preview.description && (
+            <p className="text-gray-400 text-xs leading-relaxed line-clamp-2">
+              {preview.description}
+            </p>
+          )}
+        </div>
+      </a>
+    )
+  }
+
+  // Render simple link preview (fallback when no rich preview data)
+  const renderSimpleLinkPreview = (urls: string[]) => {
     if (urls.length === 0) return null
-    const url = urls[0] // Show preview for first URL only
+    const url = urls[0]
     const domain = getDomain(url)
     const path = getTruncatedPath(url, 25)
 
@@ -333,7 +393,7 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
       >
         <div className="p-2.5">
           <div className="flex items-center gap-1.5 text-gray-400 text-xs mb-1">
-            <i className="ri-external-link-line text-[10px]" />
+            <i className="ri-global-line text-[10px]" />
             <span>{domain}</span>
           </div>
           <p className="text-gray-300 text-xs truncate">{domain}{path}</p>
@@ -470,8 +530,8 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
             </p>
           )}
 
-          {/* Link Preview - show for first URL in content */}
-          {post.content && renderLinkPreview(extractUrls(post.content))}
+          {/* Link Preview - rich preview if available, otherwise simple fallback */}
+          {post.linkPreview ? renderRichLinkPreview(post.linkPreview) : (post.content && renderSimpleLinkPreview(extractUrls(post.content)))}
 
           {/* Media preview - multiple images or video */}
           {(post.media && post.media.length > 0) && (

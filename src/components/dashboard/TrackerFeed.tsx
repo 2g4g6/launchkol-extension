@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { SocialPost, SocialPostData } from './SocialPost'
+import { SocialPost, SocialPostData, LinkPreview } from './SocialPost'
 
 // Mock data - tweets with different types (normal, reply, repost, quote) and media
 const MOCK_POSTS: SocialPostData[] = [
@@ -170,7 +170,7 @@ const MOCK_POSTS: SocialPostData[] = [
     timestamp: new Date(Date.now() - 4500000),
     tweetUrl: 'https://x.com/whale_alert/status/129',
   },
-  // Post with link
+  // Post with rich link preview
   {
     id: '8',
     type: 'alert',
@@ -181,9 +181,38 @@ const MOCK_POSTS: SocialPostData[] = [
       followers: 9700000,
       avatar: 'https://i.pravatar.cc/150?img=12',
     },
-    content: 'Trump wants to cap credit card interest at 10%. @sarahsholder and @cfb_18 discuss what his plan would mean for banks and borrowers. Listen to the Big Take podcast. https://www.bloomberg.com/news/articles/2026-01-15/trump-credit-card-interest-rate-cap?source=twitter',
+    content: 'Trump wants to cap credit card interest at 10%. @sarahsholder and @cfb_18 discuss what his plan would mean for banks and borrowers. Listen to the Big Take podcast. https://www.bloomberg.com/news/articles/2026-01-15/trump-credit-card-interest-rate-cap',
     timestamp: new Date(Date.now() - 180000),
     tweetUrl: 'https://x.com/business/status/130',
+    linkPreview: {
+      url: 'https://www.bloomberg.com/news/articles/2026-01-15/trump-credit-card-interest-rate-cap',
+      title: 'Trump\'s Credit Card Interest Rate Cap Plan: What It Would Mean for Banks',
+      description: 'President Trump\'s proposal to cap credit card interest rates at 10% could reshape the consumer lending industry. Here\'s what banks and borrowers need to know.',
+      image: 'https://picsum.photos/seed/bloomberg/600/400',
+      siteName: 'Bloomberg',
+      favicon: 'https://www.bloomberg.com/favicon.ico',
+    },
+  },
+  // Post with link (no image preview)
+  {
+    id: '9',
+    type: 'mention',
+    tweetType: 'post',
+    author: {
+      name: 'CoinDesk',
+      handle: 'CoinDesk',
+      followers: 2100000,
+      avatar: 'https://i.pravatar.cc/150?img=13',
+    },
+    content: 'Breaking: SEC approves new crypto ETF framework. Full details here: https://www.coindesk.com/policy/sec-crypto-etf-framework',
+    timestamp: new Date(Date.now() - 420000),
+    tweetUrl: 'https://x.com/CoinDesk/status/131',
+    linkPreview: {
+      url: 'https://www.coindesk.com/policy/sec-crypto-etf-framework',
+      title: 'SEC Approves New Crypto ETF Framework, Opening Door for More Products',
+      description: 'The Securities and Exchange Commission has approved a new regulatory framework that could pave the way for additional cryptocurrency exchange-traded funds.',
+      siteName: 'CoinDesk',
+    },
   },
 ]
 
