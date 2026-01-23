@@ -70,32 +70,40 @@ function formatFollowers(count: number): string {
   return count.toString()
 }
 
+// Lightbox media item with type info
+interface LightboxMedia {
+  type: 'image' | 'video'
+  url: string
+  thumbnailUrl?: string
+}
+
 export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
-  const [lightboxImages, setLightboxImages] = useState<string[]>([])
+  const [lightboxMedia, setLightboxMedia] = useState<LightboxMedia[]>([])
   const [lightboxIndex, setLightboxIndex] = useState(0)
   const [isZoomed, setIsZoomed] = useState(false)
 
-  const isLightboxOpen = lightboxImages.length > 0
+  const isLightboxOpen = lightboxMedia.length > 0
+  const currentMedia = lightboxMedia[lightboxIndex]
 
-  const openLightbox = (images: string[], startIndex: number = 0) => {
-    setLightboxImages(images)
+  const openLightbox = (media: LightboxMedia[], startIndex: number = 0) => {
+    setLightboxMedia(media)
     setLightboxIndex(startIndex)
     setIsZoomed(false)
   }
 
   const closeLightbox = () => {
-    setLightboxImages([])
+    setLightboxMedia([])
     setLightboxIndex(0)
     setIsZoomed(false)
   }
 
   const goToPrevious = () => {
-    setLightboxIndex((prev) => (prev > 0 ? prev - 1 : lightboxImages.length - 1))
+    setLightboxIndex((prev) => (prev > 0 ? prev - 1 : lightboxMedia.length - 1))
     setIsZoomed(false)
   }
 
   const goToNext = () => {
-    setLightboxIndex((prev) => (prev < lightboxImages.length - 1 ? prev + 1 : 0))
+    setLightboxIndex((prev) => (prev < lightboxMedia.length - 1 ? prev + 1 : 0))
     setIsZoomed(false)
   }
 
@@ -118,7 +126,7 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
     }
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [isLightboxOpen, lightboxImages.length])
+  }, [isLightboxOpen, lightboxMedia.length])
 
   const formatTime = (date: Date) => {
     const now = new Date()
@@ -314,14 +322,18 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
           {(post.media && post.media.length > 0) && (
             <div className={`mb-2.5 w-full ${post.media.length > 1 ? 'grid grid-cols-2 gap-2' : ''}`}>
               {post.media.map((item, idx) => {
-                const allImageUrls = post.media!.map(m => m.type === 'video' ? (m.thumbnailUrl || m.url) : m.url)
+                const allMedia: LightboxMedia[] = post.media!.map(m => ({
+                  type: m.type,
+                  url: m.url,
+                  thumbnailUrl: m.thumbnailUrl
+                }))
                 return (
                 <div
                   key={idx}
                   className={`relative bg-kol-surface flex items-center justify-center rounded-lg overflow-hidden border border-kol-border/30 cursor-pointer hover:border-kol-blue/50 transition-colors ${
                     post.media!.length === 1 ? 'h-[240px]' : 'h-[140px]'
                   }`}
-                  onClick={() => openLightbox(allImageUrls, idx)}
+                  onClick={() => openLightbox(allMedia, idx)}
                 >
                   {item.type === 'video' ? (
                     <div className="relative w-full h-full flex justify-center items-center">
@@ -352,7 +364,7 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
           {!post.media && post.mediaUrl && (
             <div
               className="relative mb-2.5 rounded-lg overflow-hidden border border-kol-border/30 max-w-[280px] cursor-pointer hover:border-kol-blue/50 transition-colors"
-              onClick={() => openLightbox([post.mediaUrl!])}
+              onClick={() => openLightbox([{ type: 'image', url: post.mediaUrl! }])}
             >
               <img
                 src={post.mediaUrl}
@@ -391,7 +403,7 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
                 {post.quotedTweet.media && post.quotedTweet.media.length > 0 && (
                   <div
                     className="mt-2 rounded-lg overflow-hidden bg-kol-surface border border-kol-border/30 flex justify-center items-center h-[200px] cursor-pointer hover:border-kol-blue/50 transition-colors"
-                    onClick={() => openLightbox(post.quotedTweet!.media!.map(m => m.url))}
+                    onClick={() => openLightbox(post.quotedTweet!.media!.map(m => ({ type: m.type, url: m.url, thumbnailUrl: m.thumbnailUrl })))}
                   >
                     <img
                       src={post.quotedTweet.media[0].url}
@@ -468,7 +480,7 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
                   {post.replyTo.mediaUrl && (
                     <div
                       className="mt-2 rounded-lg overflow-hidden border border-kol-border/30 max-w-[200px] cursor-pointer hover:border-kol-blue/50 transition-colors"
-                      onClick={() => openLightbox([post.replyTo!.mediaUrl!])}
+                      onClick={() => openLightbox([{ type: 'image', url: post.replyTo!.mediaUrl! }])}
                     >
                       <img
                         src={post.replyTo.mediaUrl}
@@ -566,14 +578,14 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
             </button>
 
             {/* Image counter */}
-            {lightboxImages.length > 1 && (
+            {lightboxMedia.length > 1 && (
               <div className="absolute top-5 left-1/2 -translate-x-1/2 px-4 py-2 rounded-lg bg-kol-surface-elevated/80 border border-kol-border/50 text-sm text-gray-300 font-mono z-20">
-                {lightboxIndex + 1} / {lightboxImages.length}
+                {lightboxIndex + 1} / {lightboxMedia.length}
               </div>
             )}
 
             {/* Navigation arrows */}
-            {lightboxImages.length > 1 && (
+            {lightboxMedia.length > 1 && (
               <>
                 {/* Previous button */}
                 <button
@@ -599,14 +611,20 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
               </>
             )}
 
-            {/* Zoom hint */}
-            <div className="absolute bottom-5 left-1/2 -translate-x-1/2 px-3 py-1.5 rounded-lg bg-kol-surface-elevated/60 border border-kol-border/30 text-xs text-gray-500 z-20">
-              {isZoomed ? 'Click to zoom out' : 'Click image to zoom'}
-            </div>
+            {/* Zoom hint - only for images */}
+            {currentMedia?.type === 'image' && (
+              <div className="absolute bottom-5 left-1/2 -translate-x-1/2 px-3 py-1.5 rounded-lg bg-kol-surface-elevated/60 border border-kol-border/30 text-xs text-gray-500 z-20">
+                {isZoomed ? 'Click to zoom out' : 'Click image to zoom'}
+              </div>
+            )}
 
-            {/* Image container with zoom */}
+            {/* Media container */}
             <motion.div
-              className={`relative flex items-center justify-center ${isZoomed ? 'cursor-zoom-out overflow-auto max-w-full max-h-full' : 'cursor-zoom-in max-w-[90vw] max-h-[85vh]'}`}
+              className={`relative flex items-center justify-center ${
+                currentMedia?.type === 'image'
+                  ? (isZoomed ? 'cursor-zoom-out overflow-auto max-w-full max-h-full' : 'cursor-zoom-in max-w-[90vw] max-h-[85vh]')
+                  : 'max-w-[90vw] max-h-[85vh]'
+              }`}
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
@@ -614,35 +632,51 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
               onClick={(e) => e.stopPropagation()}
             >
               <AnimatePresence mode="wait">
-                <motion.img
-                  key={lightboxImages[lightboxIndex]}
-                  src={lightboxImages[lightboxIndex]}
-                  alt=""
-                  className={`rounded-lg transition-all duration-300 ${
-                    isZoomed
-                      ? 'max-w-none max-h-none w-auto h-auto'
-                      : 'max-w-full max-h-[85vh] object-contain'
-                  }`}
-                  style={isZoomed ? { transform: 'scale(2)', transformOrigin: 'center center' } : {}}
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  transition={{ duration: 0.15 }}
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    setIsZoomed(!isZoomed)
-                  }}
-                />
+                {currentMedia?.type === 'video' ? (
+                  <motion.video
+                    key={currentMedia.url}
+                    src={currentMedia.url}
+                    poster={currentMedia.thumbnailUrl}
+                    controls
+                    autoPlay
+                    className="rounded-lg max-w-full max-h-[85vh]"
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    transition={{ duration: 0.15 }}
+                    onClick={(e) => e.stopPropagation()}
+                  />
+                ) : (
+                  <motion.img
+                    key={currentMedia?.url}
+                    src={currentMedia?.url}
+                    alt=""
+                    className={`rounded-lg transition-all duration-300 ${
+                      isZoomed
+                        ? 'max-w-none max-h-none w-auto h-auto'
+                        : 'max-w-full max-h-[85vh] object-contain'
+                    }`}
+                    style={isZoomed ? { transform: 'scale(2)', transformOrigin: 'center center' } : {}}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    transition={{ duration: 0.15 }}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      setIsZoomed(!isZoomed)
+                    }}
+                  />
+                )}
               </AnimatePresence>
             </motion.div>
 
-            {/* Thumbnail strip for multiple images */}
-            {lightboxImages.length > 1 && (
+            {/* Thumbnail strip for multiple media items */}
+            {lightboxMedia.length > 1 && (
               <div className="absolute bottom-16 left-1/2 -translate-x-1/2 flex gap-2 p-2 rounded-xl bg-kol-surface-elevated/80 border border-kol-border/50 z-20">
-                {lightboxImages.map((img, idx) => (
+                {lightboxMedia.map((media, idx) => (
                   <button
                     key={idx}
-                    className={`w-12 h-12 rounded-lg overflow-hidden border-2 transition-all duration-200 ${
+                    className={`relative w-12 h-12 rounded-lg overflow-hidden border-2 transition-all duration-200 ${
                       idx === lightboxIndex
                         ? 'border-kol-blue ring-2 ring-kol-blue/30'
                         : 'border-kol-border/50 hover:border-kol-border opacity-60 hover:opacity-100'
@@ -654,10 +688,15 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
                     }}
                   >
                     <img
-                      src={img}
+                      src={media.type === 'video' ? (media.thumbnailUrl || media.url) : media.url}
                       alt=""
                       className="w-full h-full object-cover"
                     />
+                    {media.type === 'video' && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/40">
+                        <i className="ri-play-fill text-white text-sm" />
+                      </div>
+                    )}
                   </button>
                 ))}
               </div>
