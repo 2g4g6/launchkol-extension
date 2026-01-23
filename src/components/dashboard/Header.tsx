@@ -53,26 +53,8 @@ function WalletIndicator({ balance }: { balance: number }) {
       {/* Wallet icon */}
       <i className="ri-wallet-3-line text-sm text-kol-text-muted relative z-10" />
 
-      {/* Official Solana Logo */}
-      <svg width="14" height="11" viewBox="0 0 397 311" fill="none" className="relative z-10">
-        <defs>
-          <linearGradient id="solanaGradA" x1="360.879" y1="351.455" x2="141.213" y2="-69.2936" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#00FFA3"/>
-            <stop offset="1" stopColor="#DC1FFF"/>
-          </linearGradient>
-          <linearGradient id="solanaGradB" x1="264.829" y1="401.601" x2="45.163" y2="-19.1475" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#00FFA3"/>
-            <stop offset="1" stopColor="#DC1FFF"/>
-          </linearGradient>
-          <linearGradient id="solanaGradC" x1="312.548" y1="376.688" x2="92.8822" y2="-44.061" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#00FFA3"/>
-            <stop offset="1" stopColor="#DC1FFF"/>
-          </linearGradient>
-        </defs>
-        <path d="M64.6 237.9C67.1 235.4 70.5 234 74.1 234H389.8C395.9 234 398.9 241.4 394.6 245.7L332.4 307.9C329.9 310.4 326.5 311.8 322.9 311.8H7.2C1.1 311.8 -1.9 304.4 2.4 300.1L64.6 237.9Z" fill="url(#solanaGradA)"/>
-        <path d="M64.6 3.9C67.2 1.4 70.6 0 74.1 0H389.8C395.9 0 398.9 7.4 394.6 11.7L332.4 73.9C329.9 76.4 326.5 77.8 322.9 77.8H7.2C1.1 77.8 -1.9 70.4 2.4 66.1L64.6 3.9Z" fill="url(#solanaGradB)"/>
-        <path d="M332.4 120.6C329.9 118.1 326.5 116.7 322.9 116.7H7.2C1.1 116.7 -1.9 124.1 2.4 128.4L64.6 190.6C67.1 193.1 70.5 194.5 74.1 194.5H389.8C395.9 194.5 398.9 187.1 394.6 182.8L332.4 120.6Z" fill="url(#solanaGradC)"/>
-      </svg>
+      {/* Solana Logo */}
+      <img src="/images/solanaLogoMark.svg" alt="SOL" width={14} height={11} className="relative z-10" />
 
       <span className="relative z-10 text-sm font-mono text-white font-medium">
         {balance.toFixed(2)}
