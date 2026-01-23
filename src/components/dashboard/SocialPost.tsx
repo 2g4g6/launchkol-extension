@@ -790,13 +790,6 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
               <i className="ri-close-line text-sm" />
             </button>
             <div className="w-px h-4 bg-kol-border/40" />
-            <button
-              className="flex items-center justify-center w-9 h-full text-gray-400 hover:text-white hover:bg-kol-surface/60 transition-all duration-200"
-              title="Notify"
-            >
-              <i className="ri-notification-line text-sm" />
-            </button>
-            <div className="w-px h-4 bg-kol-border/40" />
           </div>
 
           {/* Translate section */}
