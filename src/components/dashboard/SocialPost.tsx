@@ -335,11 +335,11 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
                 </div>
                 <p className="text-gray-300 text-xs leading-relaxed">{post.quotedTweet.content}</p>
                 {post.quotedTweet.media && post.quotedTweet.media.length > 0 && (
-                  <div className="mt-2 rounded overflow-hidden bg-kol-surface flex justify-center">
+                  <div className="mt-2 rounded overflow-hidden bg-kol-surface flex justify-center items-center h-[140px]">
                     <img
                       src={post.quotedTweet.media[0].url}
                       alt=""
-                      className="object-contain max-h-[120px] max-w-full"
+                      className="w-full h-full object-contain"
                     />
                   </div>
                 )}
