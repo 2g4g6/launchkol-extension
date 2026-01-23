@@ -82,29 +82,95 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
   const [lightboxIndex, setLightboxIndex] = useState(0)
   const [isZoomed, setIsZoomed] = useState(false)
 
+  // Pan-and-zoom state
+  const [panPosition, setPanPosition] = useState({ x: 0, y: 0 })
+  const [isDragging, setIsDragging] = useState(false)
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 })
+  const [dragMoved, setDragMoved] = useState(false)
+
   const isLightboxOpen = lightboxMedia.length > 0
   const currentMedia = lightboxMedia[lightboxIndex]
+
+  const resetZoomState = () => {
+    setIsZoomed(false)
+    setPanPosition({ x: 0, y: 0 })
+    setIsDragging(false)
+    setDragMoved(false)
+  }
 
   const openLightbox = (media: LightboxMedia[], startIndex: number = 0) => {
     setLightboxMedia(media)
     setLightboxIndex(startIndex)
-    setIsZoomed(false)
+    resetZoomState()
   }
 
   const closeLightbox = () => {
     setLightboxMedia([])
     setLightboxIndex(0)
-    setIsZoomed(false)
+    resetZoomState()
   }
 
   const goToPrevious = () => {
     setLightboxIndex((prev) => (prev > 0 ? prev - 1 : lightboxMedia.length - 1))
-    setIsZoomed(false)
+    resetZoomState()
   }
 
   const goToNext = () => {
     setLightboxIndex((prev) => (prev < lightboxMedia.length - 1 ? prev + 1 : 0))
-    setIsZoomed(false)
+    resetZoomState()
+  }
+
+  // Zoom click handler - toggles zoom, centers on click position when zooming in
+  const handleZoomClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.stopPropagation()
+
+    // If we dragged, don't toggle zoom
+    if (dragMoved) {
+      setDragMoved(false)
+      return
+    }
+
+    if (!isZoomed) {
+      // Zoom in - calculate pan position to center on click point
+      const rect = e.currentTarget.getBoundingClientRect()
+      const clickX = e.clientX - rect.left - rect.width / 2
+      const clickY = e.clientY - rect.top - rect.height / 2
+      // Pan in opposite direction of click offset, scaled for zoom
+      setPanPosition({ x: -clickX, y: -clickY })
+      setIsZoomed(true)
+    } else {
+      // Zoom out
+      resetZoomState()
+    }
+  }
+
+  // Mouse down - start potential drag
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (!isZoomed) return
+    e.preventDefault()
+    setIsDragging(true)
+    setDragMoved(false)
+    setDragStart({ x: e.clientX - panPosition.x, y: e.clientY - panPosition.y })
+  }
+
+  // Mouse move - pan if dragging
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging || !isZoomed) return
+    const newX = e.clientX - dragStart.x
+    const newY = e.clientY - dragStart.y
+
+    // Check if we've moved enough to count as a drag
+    const distance = Math.sqrt(Math.pow(newX - panPosition.x, 2) + Math.pow(newY - panPosition.y, 2))
+    if (distance > 5) {
+      setDragMoved(true)
+    }
+
+    setPanPosition({ x: newX, y: newY })
+  }
+
+  // Mouse up - stop dragging
+  const handleMouseUp = () => {
+    setIsDragging(false)
   }
 
   // Handle keyboard navigation
@@ -614,73 +680,79 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
             {/* Zoom hint - only for images */}
             {currentMedia?.type === 'image' && (
               <div className="absolute bottom-5 left-1/2 -translate-x-1/2 px-3 py-1.5 rounded-lg bg-kol-surface-elevated/60 border border-kol-border/30 text-xs text-gray-500 z-20">
-                {isZoomed ? 'Click to zoom out' : 'Click image to zoom'}
+                {isZoomed ? 'Drag to pan, click to zoom out' : 'Click image to zoom'}
               </div>
             )}
 
             {/* Media container */}
-            <motion.div
-              className={`relative flex items-center justify-center ${
-                currentMedia?.type === 'image'
-                  ? (isZoomed ? 'cursor-zoom-out' : 'cursor-zoom-in')
-                  : ''
-              }`}
-              style={{
-                maxWidth: isZoomed ? '100vw' : '90vw',
-                maxHeight: isZoomed ? '100vh' : '85vh',
-                overflow: isZoomed ? 'auto' : 'visible',
-              }}
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              onClick={(e) => {
-                e.stopPropagation()
-                // Toggle zoom when clicking on the container (for images only)
-                if (currentMedia?.type === 'image') {
-                  setIsZoomed(!isZoomed)
-                }
-              }}
-            >
-              <AnimatePresence mode="wait">
-                {currentMedia?.type === 'video' ? (
-                  <motion.video
-                    key={currentMedia.url}
-                    src={currentMedia.url}
-                    poster={currentMedia.thumbnailUrl}
-                    controls
-                    autoPlay
-                    className="rounded-lg max-w-full max-h-[85vh]"
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
-                    transition={{ duration: 0.15 }}
-                    onClick={(e) => e.stopPropagation()}
-                  />
-                ) : (
-                  <motion.img
+            {currentMedia?.type === 'video' ? (
+              <motion.div
+                className="relative flex items-center justify-center"
+                style={{ maxWidth: '90vw', maxHeight: '85vh' }}
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <video
+                  key={currentMedia.url}
+                  src={currentMedia.url}
+                  poster={currentMedia.thumbnailUrl}
+                  controls
+                  autoPlay
+                  className="rounded-lg max-w-full max-h-[85vh]"
+                />
+              </motion.div>
+            ) : (
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                {/* Image zoom container - plain div for reliable click handling */}
+                <div
+                  className={`relative overflow-hidden rounded-lg ${
+                    isZoomed
+                      ? (isDragging ? 'cursor-grabbing' : 'cursor-grab')
+                      : 'cursor-zoom-in'
+                  }`}
+                  style={{
+                    width: isZoomed ? '90vw' : 'auto',
+                    height: isZoomed ? '85vh' : 'auto',
+                    maxWidth: '90vw',
+                    maxHeight: '85vh',
+                  }}
+                  onClick={handleZoomClick}
+                  onMouseDown={handleMouseDown}
+                  onMouseMove={handleMouseMove}
+                  onMouseUp={handleMouseUp}
+                  onMouseLeave={handleMouseUp}
+                >
+                  <img
                     key={currentMedia?.url}
                     src={currentMedia?.url}
                     alt=""
-                    className={`rounded-lg select-none ${
-                      isZoomed
-                        ? ''
-                        : 'max-w-full max-h-[85vh] object-contain'
-                    }`}
-                    style={isZoomed ? {
-                      transform: 'scale(2)',
-                      transformOrigin: 'center center',
-                      pointerEvents: 'auto'
-                    } : {}}
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
-                    transition={{ duration: 0.15 }}
+                    className="select-none"
                     draggable={false}
+                    style={isZoomed ? {
+                      width: '180vw',
+                      height: 'auto',
+                      maxWidth: 'none',
+                      maxHeight: 'none',
+                      transform: `translate(calc(-50% + 45vw + ${panPosition.x}px), calc(-50% + 42.5vh + ${panPosition.y}px))`,
+                      transition: isDragging ? 'none' : 'transform 0.15s ease-out',
+                    } : {
+                      maxWidth: '90vw',
+                      maxHeight: '85vh',
+                      objectFit: 'contain' as const,
+                    }}
                   />
-                )}
-              </AnimatePresence>
-            </motion.div>
+                </div>
+              </motion.div>
+            )}
 
             {/* Thumbnail strip for multiple media items */}
             {lightboxMedia.length > 1 && (
@@ -696,7 +768,7 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
                     onClick={(e) => {
                       e.stopPropagation()
                       setLightboxIndex(idx)
-                      setIsZoomed(false)
+                      resetZoomState()
                     }}
                   >
                     <img
