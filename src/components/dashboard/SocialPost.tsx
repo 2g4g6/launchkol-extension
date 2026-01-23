@@ -7,18 +7,10 @@ export interface SocialPostData {
     name: string
     handle: string
     avatar?: string
-    verified?: boolean
     followers?: number
   }
   content: string
   timestamp: Date
-  token?: {
-    symbol: string
-    address: string
-    image?: string
-    age?: string
-    marketCap?: number
-  }
   tradeInfo?: {
     action: 'buy' | 'sell'
     amount: number
@@ -31,7 +23,6 @@ export interface SocialPostData {
       name: string
       handle: string
       avatar?: string
-      verified?: boolean
       followers?: number
     }
     content: string
@@ -159,12 +150,6 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
                 >
                   {post.author.name}
                 </button>
-                {post.author.verified && (
-                  <div className="relative">
-                    <i className="ri-verified-badge-fill text-xs text-kol-blue" />
-                    <div className="absolute inset-0 bg-kol-blue/30 blur-sm -z-10" />
-                  </div>
-                )}
                 <span className="text-xs text-kol-text-muted">{formatTime(post.timestamp)}</span>
                 {/* Reply indicator */}
                 {post.replyTo && (
@@ -233,36 +218,6 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
             {post.content}
           </p>
 
-          {/* Token Badge - if present */}
-          {post.token && (
-            <motion.div
-              className="inline-flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-kol-green/10 border border-kol-green/30 mb-2.5"
-              whileHover={{ scale: 1.02, borderColor: 'rgba(0, 196, 107, 0.5)' }}
-              transition={{ duration: 0.2 }}
-            >
-              <div className="relative">
-                {post.token.image ? (
-                  <img
-                    src={post.token.image}
-                    alt=""
-                    className="w-5 h-5 rounded object-cover"
-                  />
-                ) : (
-                  <div className="w-5 h-5 rounded bg-gradient-to-br from-kol-green/50 to-kol-blue/30" />
-                )}
-                <div className="absolute inset-0 rounded bg-kol-green/30 blur-sm -z-10" />
-              </div>
-              <span className="font-mono font-semibold text-[11px] text-kol-green">
-                ${post.token.symbol}
-              </span>
-              {post.token.marketCap && (
-                <span className="font-mono text-[10px] text-kol-text-muted">
-                  MC: ${(post.token.marketCap / 1000).toFixed(0)}K
-                </span>
-              )}
-            </motion.div>
-          )}
-
           {/* Media preview */}
           {post.mediaUrl && (
             <div className="relative mb-2.5 rounded-lg overflow-hidden border border-kol-border/30 max-w-[280px]">
@@ -310,9 +265,6 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
                     <span className="font-body font-medium text-kol-text-secondary text-xs truncate">
                       {post.replyTo.author.name}
                     </span>
-                    {post.replyTo.author.verified && (
-                      <i className="ri-verified-badge-fill text-[10px] text-kol-blue" />
-                    )}
                     <span className="text-kol-text-muted text-xs">@{post.replyTo.author.handle}</span>
                     {post.replyTo.author.followers && (
                       <>
