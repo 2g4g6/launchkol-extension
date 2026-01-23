@@ -34,6 +34,7 @@ export interface SocialPostData {
       followers?: number
     }
     content: string
+    timestamp?: Date
     media?: MediaItem[]
     mediaUrl?: string
     tweetUrl?: string
@@ -174,31 +175,31 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
                 {/* Tweet type indicator */}
                 {post.tweetType === 'reply' && (
                   <div className="flex items-center gap-1">
-                    <i className="ri-reply-line text-xs text-amber-400" />
-                    <span className="text-xs text-gray-400">Reply</span>
+                    <i className="ri-reply-line text-xs text-kol-blue" />
+                    <span className="text-xs text-kol-blue">Reply</span>
                   </div>
                 )}
                 {post.tweetType === 'repost' && (
                   <div className="flex items-center gap-1">
                     <i className="ri-repeat-line text-xs text-kol-green" />
-                    <span className="text-xs text-gray-400">Repost</span>
+                    <span className="text-xs text-kol-green">Repost</span>
                   </div>
                 )}
                 {post.tweetType === 'quote' && (
                   <div className="flex items-center gap-1">
-                    <i className="ri-chat-quote-line text-xs text-kol-blue" />
-                    <span className="text-xs text-gray-400">Quote</span>
+                    <i className="ri-chat-quote-line text-xs text-purple-400" />
+                    <span className="text-xs text-purple-400">Quote</span>
                   </div>
                 )}
               </div>
 
               {/* Handle & Followers Row */}
-              <div className="flex items-center gap-1.5 text-xs text-gray-400">
+              <div className="flex items-center gap-1.5 text-xs">
                 <a
                   href={`https://x.com/${post.author.handle}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-kol-blue hover:underline truncate transition-colors"
+                  className="text-kol-blue hover:text-kol-blue-hover hover:underline truncate transition-colors"
                 >
                   @{post.author.handle}
                 </a>
@@ -239,33 +240,33 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
 
           {/* Media preview - multiple images or video */}
           {(post.media && post.media.length > 0) && (
-            <div className={`mb-2.5 rounded-lg overflow-hidden border border-kol-border/30 ${
-              post.media.length === 1 ? 'max-w-[280px]' : 'grid grid-cols-2 gap-0.5'
-            }`}>
-              {post.media.map((item, idx) => (
-                <div key={idx} className="relative bg-kol-surface">
-                  {item.type === 'video' ? (
-                    <div className="relative">
-                      <img
-                        src={item.thumbnailUrl || item.url}
-                        alt=""
-                        className={`w-full object-cover ${post.media!.length === 1 ? 'max-h-[200px]' : 'h-[100px]'}`}
-                      />
-                      <div className="absolute inset-0 flex items-center justify-center bg-black/30">
-                        <div className="w-10 h-10 rounded-full bg-white/90 flex items-center justify-center">
-                          <i className="ri-play-fill text-xl text-black ml-0.5" />
+            <div className="mb-2.5 rounded-lg overflow-hidden border border-kol-border/30 bg-kol-surface/50 max-w-[300px]">
+              <div className={`${post.media.length > 1 ? 'grid grid-cols-2 gap-0.5' : ''}`}>
+                {post.media.map((item, idx) => (
+                  <div key={idx} className="relative bg-kol-surface flex items-center justify-center">
+                    {item.type === 'video' ? (
+                      <div className="relative w-full">
+                        <img
+                          src={item.thumbnailUrl || item.url}
+                          alt=""
+                          className={`w-full object-contain ${post.media!.length === 1 ? 'max-h-[180px]' : 'h-[90px] object-cover'}`}
+                        />
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                          <div className="w-10 h-10 rounded-full bg-white/90 flex items-center justify-center">
+                            <i className="ri-play-fill text-xl text-black ml-0.5" />
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ) : (
-                    <img
-                      src={item.url}
-                      alt=""
-                      className={`w-full object-cover ${post.media!.length === 1 ? 'max-h-[200px]' : 'h-[100px]'}`}
-                    />
-                  )}
-                </div>
-              ))}
+                    ) : (
+                      <img
+                        src={item.url}
+                        alt=""
+                        className={`w-full ${post.media!.length === 1 ? 'object-contain max-h-[180px]' : 'object-cover h-[90px]'}`}
+                      />
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
           )}
 
@@ -296,7 +297,14 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
                     <div className="w-5 h-5 rounded-full bg-kol-surface-elevated" />
                   )}
                   <span className="font-body font-medium text-xs text-white">{post.quotedTweet.author.name}</span>
-                  <span className="text-gray-400 text-xs">@{post.quotedTweet.author.handle}</span>
+                  <a
+                    href={`https://x.com/${post.quotedTweet.author.handle}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-kol-blue hover:underline text-xs"
+                  >
+                    @{post.quotedTweet.author.handle}
+                  </a>
                 </div>
                 <p className="text-gray-300 text-xs leading-relaxed">{post.quotedTweet.content}</p>
                 {post.quotedTweet.media && post.quotedTweet.media.length > 0 && (
@@ -314,10 +322,7 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
 
           {/* Reply Thread Quote */}
           {post.replyTo && (
-            <div
-              className="mt-2 pl-3 py-2.5 border-l-[3px] rounded-r-lg bg-kol-surface/30"
-              style={{ borderLeftColor: `${typeColor}50` }}
-            >
+            <div className="mt-2 pl-3 py-2.5 border-l-[3px] border-kol-blue/50 rounded-r-lg bg-kol-surface/30">
               {/* Replying to link */}
               <div className="flex items-center gap-2 mb-2">
                 <a
@@ -347,7 +352,20 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
                     <span className="font-body font-medium text-kol-text-secondary text-xs truncate">
                       {post.replyTo.author.name}
                     </span>
-                    <span className="text-gray-400 text-xs">@{post.replyTo.author.handle}</span>
+                    <a
+                      href={`https://x.com/${post.replyTo.author.handle}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-kol-blue hover:underline text-xs"
+                    >
+                      @{post.replyTo.author.handle}
+                    </a>
+                    {post.replyTo.timestamp && (
+                      <>
+                        <span className="text-gray-500 text-xs">·</span>
+                        <span className="text-gray-400 text-xs">{formatTime(post.replyTo.timestamp)}</span>
+                      </>
+                    )}
                     {post.replyTo.author.followers && (
                       <>
                         <span className="text-gray-500 text-xs">·</span>
