@@ -28,6 +28,9 @@ export default {
         'display': ['"Clash Display"', 'system-ui', 'sans-serif'],
         'body': ['"Satoshi"', 'system-ui', 'sans-serif'],
         'mono': ['"IBM Plex Mono"', 'monospace'],
+        // Auth screen fonts (original)
+        'auth-display': ['"Sora"', 'system-ui', 'sans-serif'],
+        'auth-body': ['"DM Sans"', 'system-ui', 'sans-serif'],
       },
       animation: {
         'float': 'float 6s ease-in-out infinite',

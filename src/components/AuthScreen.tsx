@@ -324,10 +324,10 @@ export function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
                   variants={itemVariants}
                   className="text-center mb-6"
                 >
-                  <h1 className="font-display text-2xl font-semibold text-white mb-1">
+                  <h1 className="font-auth-display text-2xl font-semibold text-white mb-1">
                     {mode === 'signup' ? 'Create Account' : 'Welcome Back'}
                   </h1>
-                  <p className="font-body text-sm text-kol-text-tertiary">
+                  <p className="font-auth-body text-sm text-kol-text-tertiary">
                     {mode === 'signup'
                       ? 'Join the most advanced Solana launchpad'
                       : 'Sign in to continue trading'}
@@ -346,7 +346,7 @@ export function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
                         placeholder="Email address"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="w-full h-12 pl-11 pr-4 bg-kol-surface-elevated/50 border border-kol-border rounded-xl text-white placeholder:text-kol-text-muted font-body text-sm focus:border-kol-blue focus:bg-kol-surface-elevated transition-all duration-300"
+                        className="w-full h-12 pl-11 pr-4 bg-kol-surface-elevated/50 border border-kol-border rounded-xl text-white placeholder:text-kol-text-muted font-auth-body text-sm focus:border-kol-blue focus:bg-kol-surface-elevated transition-all duration-300"
                       />
                     </div>
                   </div>
@@ -362,7 +362,7 @@ export function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
                           placeholder="Password"
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
-                          className="w-full h-12 pl-11 pr-12 bg-kol-surface-elevated/50 border border-kol-border rounded-xl text-white placeholder:text-kol-text-muted font-body text-sm focus:border-kol-blue focus:bg-kol-surface-elevated transition-all duration-300"
+                          className="w-full h-12 pl-11 pr-12 bg-kol-surface-elevated/50 border border-kol-border rounded-xl text-white placeholder:text-kol-text-muted font-auth-body text-sm focus:border-kol-blue focus:bg-kol-surface-elevated transition-all duration-300"
                         />
                         <button
                           type="button"
@@ -385,7 +385,7 @@ export function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
                           placeholder="Invite code (optional)"
                           value={inviteCode}
                           onChange={(e) => setInviteCode(e.target.value)}
-                          className="w-full h-12 pl-11 pr-4 bg-kol-surface-elevated/50 border border-kol-border rounded-xl text-white placeholder:text-kol-text-muted font-body text-sm focus:border-kol-blue focus:bg-kol-surface-elevated transition-all duration-300"
+                          className="w-full h-12 pl-11 pr-4 bg-kol-surface-elevated/50 border border-kol-border rounded-xl text-white placeholder:text-kol-text-muted font-auth-body text-sm focus:border-kol-blue focus:bg-kol-surface-elevated transition-all duration-300"
                         />
                       </div>
                     </div>
@@ -414,7 +414,7 @@ export function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
                   <button
                     onClick={handleCredentialsSubmit}
                     disabled={isLoading || !email.trim() || (mode === 'login' && !password.trim())}
-                    className="relative w-full h-12 rounded-xl font-display font-semibold text-sm overflow-hidden group disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="relative w-full h-12 rounded-xl font-auth-display font-semibold text-sm overflow-hidden group disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {/* Button gradient background */}
                     <div className="absolute inset-0 bg-gradient-to-r from-kol-blue to-kol-blue-hover transition-all duration-300 group-hover:scale-105" />
@@ -447,7 +447,7 @@ export function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
                     <div className="w-full border-t border-kol-border" />
                   </div>
                   <div className="relative flex justify-center">
-                    <span className="px-3 bg-kol-bg text-kol-text-muted text-xs font-body">
+                    <span className="px-3 bg-kol-bg text-kol-text-muted text-xs font-auth-body">
                       or continue with
                     </span>
                   </div>
@@ -465,7 +465,7 @@ export function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
                       <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
                       <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
                     </svg>
-                    <span className="text-sm font-body text-kol-text-secondary group-hover:text-white transition-colors">Google</span>
+                    <span className="text-sm font-auth-body text-kol-text-secondary group-hover:text-white transition-colors">Google</span>
                   </button>
 
                   <button
@@ -488,13 +488,13 @@ export function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
                         </linearGradient>
                       </defs>
                     </svg>
-                    <span className="text-sm font-body text-kol-text-secondary group-hover:text-white transition-colors">Phantom</span>
+                    <span className="text-sm font-auth-body text-kol-text-secondary group-hover:text-white transition-colors">Phantom</span>
                   </button>
                 </motion.div>
 
                 {/* Switch mode link */}
                 <motion.div variants={itemVariants} className="mt-auto pt-4 text-center">
-                  <span className="text-kol-text-muted text-sm font-body">
+                  <span className="text-kol-text-muted text-sm font-auth-body">
                     {mode === 'signup' ? 'Already have an account? ' : "Don't have an account? "}
                     <button
                       onClick={switchMode}
@@ -523,15 +523,15 @@ export function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
                   className="flex items-center gap-1 text-kol-text-muted hover:text-white transition-colors mb-4 w-fit"
                 >
                   <i className="ri-arrow-left-line" />
-                  <span className="text-sm font-body">Back</span>
+                  <span className="text-sm font-auth-body">Back</span>
                 </button>
 
                 {/* Title */}
                 <div className="text-center mb-6">
-                  <h1 className="font-display text-2xl font-semibold text-white mb-1">
+                  <h1 className="font-auth-display text-2xl font-semibold text-white mb-1">
                     Create Password
                   </h1>
-                  <p className="font-body text-sm text-kol-text-tertiary">
+                  <p className="font-auth-body text-sm text-kol-text-tertiary">
                     Secure your account with a strong password
                   </p>
                 </div>
@@ -546,7 +546,7 @@ export function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
                         placeholder="Create password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        className="w-full h-12 pl-11 pr-12 bg-kol-surface-elevated/50 border border-kol-border rounded-xl text-white placeholder:text-kol-text-muted font-body text-sm focus:border-kol-blue focus:bg-kol-surface-elevated transition-all duration-300"
+                        className="w-full h-12 pl-11 pr-12 bg-kol-surface-elevated/50 border border-kol-border rounded-xl text-white placeholder:text-kol-text-muted font-auth-body text-sm focus:border-kol-blue focus:bg-kol-surface-elevated transition-all duration-300"
                       />
                       <button
                         type="button"
@@ -566,7 +566,7 @@ export function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
                         placeholder="Confirm password"
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
-                        className="w-full h-12 pl-11 pr-4 bg-kol-surface-elevated/50 border border-kol-border rounded-xl text-white placeholder:text-kol-text-muted font-body text-sm focus:border-kol-blue focus:bg-kol-surface-elevated transition-all duration-300"
+                        className="w-full h-12 pl-11 pr-4 bg-kol-surface-elevated/50 border border-kol-border rounded-xl text-white placeholder:text-kol-text-muted font-auth-body text-sm focus:border-kol-blue focus:bg-kol-surface-elevated transition-all duration-300"
                       />
                     </div>
                   </div>
@@ -574,7 +574,7 @@ export function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
 
                 {/* Password requirements */}
                 <div className="mt-4 p-3 rounded-xl bg-kol-surface/50 border border-kol-border">
-                  <p className="text-xs text-kol-text-muted mb-2 font-body">Password requirements:</p>
+                  <p className="text-xs text-kol-text-muted mb-2 font-auth-body">Password requirements:</p>
                   <div className="grid grid-cols-2 gap-2">
                     {[
                       { key: 'length', label: '8+ characters' },
@@ -585,7 +585,7 @@ export function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
                     ].map(({ key, label }) => (
                       <div
                         key={key}
-                        className={`flex items-center gap-1.5 text-xs font-body transition-colors ${
+                        className={`flex items-center gap-1.5 text-xs font-auth-body transition-colors ${
                           passwordRequirements[key as keyof typeof passwordRequirements]
                             ? 'text-kol-green'
                             : 'text-kol-text-muted'
@@ -606,7 +606,7 @@ export function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
 
                 {/* Match indicator */}
                 {confirmPassword && (
-                  <div className={`mt-2 flex items-center gap-1.5 text-xs font-body ${doPasswordsMatch ? 'text-kol-green' : 'text-kol-red'}`}>
+                  <div className={`mt-2 flex items-center gap-1.5 text-xs font-auth-body ${doPasswordsMatch ? 'text-kol-green' : 'text-kol-red'}`}>
                     <i className={doPasswordsMatch ? 'ri-checkbox-circle-fill' : 'ri-close-circle-fill'} />
                     {doPasswordsMatch ? 'Passwords match' : 'Passwords do not match'}
                   </div>
@@ -617,7 +617,7 @@ export function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
                   <button
                     onClick={handlePasswordSubmit}
                     disabled={isLoading || !isPasswordValid || !doPasswordsMatch}
-                    className="relative w-full h-12 rounded-xl font-display font-semibold text-sm overflow-hidden group disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="relative w-full h-12 rounded-xl font-auth-display font-semibold text-sm overflow-hidden group disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <div className="absolute inset-0 bg-gradient-to-r from-kol-blue to-kol-blue-hover transition-all duration-300 group-hover:scale-105" />
                     <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -656,7 +656,7 @@ export function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
                   className="flex items-center gap-1 text-kol-text-muted hover:text-white transition-colors mb-4 w-fit"
                 >
                   <i className="ri-arrow-left-line" />
-                  <span className="text-sm font-body">Back</span>
+                  <span className="text-sm font-auth-body">Back</span>
                 </button>
 
                 {/* Title */}
@@ -664,10 +664,10 @@ export function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
                   <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-kol-blue/10 border border-kol-blue/20 mb-4">
                     <i className="ri-mail-check-line text-3xl text-kol-blue" />
                   </div>
-                  <h1 className="font-display text-2xl font-semibold text-white mb-1">
+                  <h1 className="font-auth-display text-2xl font-semibold text-white mb-1">
                     Check Your Email
                   </h1>
-                  <p className="font-body text-sm text-kol-text-tertiary">
+                  <p className="font-auth-body text-sm text-kol-text-tertiary">
                     We sent a code to <span className="text-white">{email}</span>
                   </p>
                 </div>
@@ -691,7 +691,7 @@ export function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
 
                 {/* Resend code */}
                 <div className="text-center mb-auto">
-                  <span className="text-kol-text-muted text-sm font-body">
+                  <span className="text-kol-text-muted text-sm font-auth-body">
                     Didn't receive the code?{' '}
                     <button className="text-kol-blue hover:text-kol-blue-hover font-medium transition-colors">
                       Resend
@@ -704,7 +704,7 @@ export function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
                   <button
                     onClick={handleOtpSubmit}
                     disabled={isLoading || otp.some(d => !d)}
-                    className="relative w-full h-12 rounded-xl font-display font-semibold text-sm overflow-hidden group disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="relative w-full h-12 rounded-xl font-auth-display font-semibold text-sm overflow-hidden group disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <div className="absolute inset-0 bg-gradient-to-r from-kol-blue to-kol-blue-hover transition-all duration-300 group-hover:scale-105" />
                     <span className="relative z-10 flex items-center justify-center gap-2 text-kol-bg">
@@ -739,10 +739,10 @@ export function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
                   <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-kol-green/10 border border-kol-green/20 mb-4">
                     <i className="ri-key-2-line text-3xl text-kol-green" />
                   </div>
-                  <h1 className="font-display text-2xl font-semibold text-white mb-1">
+                  <h1 className="font-auth-display text-2xl font-semibold text-white mb-1">
                     Recovery Key
                   </h1>
-                  <p className="font-body text-sm text-kol-text-tertiary">
+                  <p className="font-auth-body text-sm text-kol-text-tertiary">
                     Save this key somewhere safe. You'll need it to recover your wallet.
                   </p>
                 </div>
@@ -762,13 +762,13 @@ export function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
                 {/* Copy button */}
                 <button className="flex items-center justify-center gap-2 h-10 rounded-lg bg-kol-surface border border-kol-border hover:border-kol-border-hover transition-all duration-300 mb-4">
                   <i className="ri-file-copy-line text-kol-text-secondary" />
-                  <span className="text-sm font-body text-kol-text-secondary">Copy to clipboard</span>
+                  <span className="text-sm font-auth-body text-kol-text-secondary">Copy to clipboard</span>
                 </button>
 
                 {/* Warning */}
                 <div className="flex gap-3 p-3 rounded-xl bg-kol-red/5 border border-kol-red/20 mb-auto">
                   <i className="ri-error-warning-line text-kol-red text-lg flex-shrink-0 mt-0.5" />
-                  <p className="text-xs text-kol-text-secondary font-body leading-relaxed">
+                  <p className="text-xs text-kol-text-secondary font-auth-body leading-relaxed">
                     Never share your recovery key. Anyone with this key can access your wallet and funds.
                   </p>
                 </div>
@@ -777,7 +777,7 @@ export function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
                 <div className="mt-auto pt-4">
                   <button
                     onClick={() => onAuthSuccess?.({ email })}
-                    className="relative w-full h-12 rounded-xl font-display font-semibold text-sm overflow-hidden group"
+                    className="relative w-full h-12 rounded-xl font-auth-display font-semibold text-sm overflow-hidden group"
                   >
                     <div className="absolute inset-0 bg-gradient-to-r from-kol-green to-emerald-500 transition-all duration-300 group-hover:scale-105" />
                     <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity">
