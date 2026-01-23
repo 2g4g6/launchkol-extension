@@ -267,7 +267,7 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
                 <div
                   key={idx}
                   className={`relative bg-kol-surface flex items-center justify-center rounded-lg overflow-hidden border border-kol-border/30 ${
-                    post.media!.length === 1 ? 'h-[200px]' : 'h-[140px]'
+                    post.media!.length === 1 ? 'h-[240px]' : 'h-[140px]'
                   }`}
                 >
                   {item.type === 'video' ? (
