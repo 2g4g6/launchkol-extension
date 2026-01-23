@@ -263,15 +263,20 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
           {/* Media preview - multiple images or video */}
           {(post.media && post.media.length > 0) && (
             <div className="mb-2.5 rounded-lg overflow-hidden border border-kol-border/30 bg-kol-surface/50 w-full">
-              <div className={`${post.media.length > 1 ? 'grid grid-cols-2 gap-0.5' : 'flex justify-center'}`}>
+              <div className={`${post.media.length > 1 ? 'grid grid-cols-2 gap-0.5' : ''}`}>
                 {post.media.map((item, idx) => (
-                  <div key={idx} className="relative bg-kol-surface flex items-center justify-center">
+                  <div
+                    key={idx}
+                    className={`relative bg-kol-surface flex items-center justify-center ${
+                      post.media!.length === 1 ? 'h-[160px]' : 'h-[100px]'
+                    }`}
+                  >
                     {item.type === 'video' ? (
-                      <div className="relative w-full flex justify-center">
+                      <div className="relative w-full h-full flex justify-center items-center">
                         <img
                           src={item.thumbnailUrl || item.url}
                           alt=""
-                          className="object-contain max-h-[200px] max-w-full"
+                          className="w-full h-full object-contain"
                         />
                         <div className="absolute inset-0 flex items-center justify-center bg-black/30">
                           <div className="w-12 h-12 rounded-full bg-white/90 flex items-center justify-center">
@@ -283,7 +288,7 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
                       <img
                         src={item.url}
                         alt=""
-                        className="object-contain max-h-[200px] max-w-full"
+                        className="w-full h-full object-contain"
                       />
                     )}
                   </div>
