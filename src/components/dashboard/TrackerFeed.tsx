@@ -170,6 +170,21 @@ const MOCK_POSTS: SocialPostData[] = [
     timestamp: new Date(Date.now() - 4500000),
     tweetUrl: 'https://x.com/whale_alert/status/129',
   },
+  // Post with link
+  {
+    id: '8',
+    type: 'alert',
+    tweetType: 'post',
+    author: {
+      name: 'Bloomberg',
+      handle: 'business',
+      followers: 9700000,
+      avatar: 'https://i.pravatar.cc/150?img=12',
+    },
+    content: 'Trump wants to cap credit card interest at 10%. @sarahsholder and @cfb_18 discuss what his plan would mean for banks and borrowers. Listen to the Big Take podcast. https://www.bloomberg.com/news/articles/2026-01-15/trump-credit-card-interest-rate-cap?source=twitter',
+    timestamp: new Date(Date.now() - 180000),
+    tweetUrl: 'https://x.com/business/status/130',
+  },
 ]
 
 interface TrackerFeedProps {

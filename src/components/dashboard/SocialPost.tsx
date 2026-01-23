@@ -248,9 +248,41 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
     console.log('Hide user:', post.author.handle)
   }
 
-  // Render content with @mentions highlighted in blue
+  // Extract URLs from text
+  const extractUrls = (text: string): string[] => {
+    const urlRegex = /(https?:\/\/[^\s]+)/g
+    const matches = text.match(urlRegex)
+    return matches || []
+  }
+
+  // Get domain from URL
+  const getDomain = (url: string): string => {
+    try {
+      const urlObj = new URL(url)
+      return urlObj.hostname.replace('www.', '')
+    } catch {
+      return url
+    }
+  }
+
+  // Get truncated path from URL
+  const getTruncatedPath = (url: string, maxLength: number = 30): string => {
+    try {
+      const urlObj = new URL(url)
+      const path = urlObj.pathname + urlObj.search
+      if (path.length > maxLength) {
+        return path.slice(0, maxLength) + '...'
+      }
+      return path || '/'
+    } catch {
+      return ''
+    }
+  }
+
+  // Render content with @mentions and URLs highlighted in blue
   const renderContent = (text: string) => {
-    const parts = text.split(/(@\w+)/g)
+    // Split by @mentions and URLs
+    const parts = text.split(/(@\w+|https?:\/\/[^\s]+)/g)
     return parts.map((part, i) => {
       if (part.startsWith('@')) {
         const handle = part.slice(1)
@@ -266,8 +298,48 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
           </a>
         )
       }
+      if (part.startsWith('http://') || part.startsWith('https://')) {
+        // Truncate long URLs for display
+        const displayUrl = part.length > 50 ? part.slice(0, 47) + '...' : part
+        return (
+          <a
+            key={i}
+            href={part}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-kol-blue hover:underline break-all"
+          >
+            {displayUrl}
+          </a>
+        )
+      }
       return part
     })
+  }
+
+  // Render link preview card
+  const renderLinkPreview = (urls: string[]) => {
+    if (urls.length === 0) return null
+    const url = urls[0] // Show preview for first URL only
+    const domain = getDomain(url)
+    const path = getTruncatedPath(url, 25)
+
+    return (
+      <a
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="block mt-2.5 rounded-lg border border-kol-border/40 bg-kol-surface/30 overflow-hidden hover:border-kol-border/60 transition-colors"
+      >
+        <div className="p-2.5">
+          <div className="flex items-center gap-1.5 text-gray-400 text-xs mb-1">
+            <i className="ri-external-link-line text-[10px]" />
+            <span>{domain}</span>
+          </div>
+          <p className="text-gray-300 text-xs truncate">{domain}{path}</p>
+        </div>
+      </a>
+    )
   }
 
   return (
@@ -397,6 +469,9 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
               {renderContent(post.content)}
             </p>
           )}
+
+          {/* Link Preview - show for first URL in content */}
+          {post.content && renderLinkPreview(extractUrls(post.content))}
 
           {/* Media preview - multiple images or video */}
           {(post.media && post.media.length > 0) && (
