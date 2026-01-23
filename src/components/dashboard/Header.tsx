@@ -93,7 +93,7 @@ function UserDropdown({
       {/* Avatar trigger */}
       <motion.button
         onClick={() => setIsOpen(!isOpen)}
-        className="relative w-8 h-8 rounded-full bg-gradient-to-br from-kol-blue/30 to-kol-blue/10 border border-kol-border/40 hover:border-kol-blue/40 flex items-center justify-center transition-all overflow-hidden group"
+        className="relative w-8 h-8 rounded-full bg-gradient-to-br from-kol-blue/30 to-kol-blue/10 border border-kol-border/40 hover:border-kol-blue/40 flex items-center justify-center transition-all group"
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
       >
