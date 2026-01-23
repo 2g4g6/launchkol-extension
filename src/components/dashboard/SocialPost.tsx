@@ -39,6 +39,19 @@ export interface SocialPostData {
     media?: MediaItem[]
     mediaUrl?: string
     tweetUrl?: string
+    replyTo?: {
+      author: {
+        name: string
+        handle: string
+        avatar?: string
+        followers?: number
+      }
+      content: string
+      timestamp?: Date
+      media?: MediaItem[]
+      mediaUrl?: string
+      tweetUrl?: string
+    }
   }
   quotedTweet?: {
     author: {
@@ -48,6 +61,7 @@ export interface SocialPostData {
       followers?: number
     }
     content: string
+    timestamp?: Date
     media?: MediaItem[]
     tweetUrl?: string
   }
@@ -321,8 +335,8 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
                 {/* Tweet type indicator */}
                 {post.tweetType === 'reply' && (
                   <div className="flex items-center gap-1">
-                    <i className="ri-reply-line text-xs text-kol-blue" />
-                    <span className="text-xs text-kol-blue">Reply</span>
+                    <i className="ri-reply-line text-xs text-kol-green" />
+                    <span className="text-xs text-kol-green">Reply</span>
                   </div>
                 )}
                 {post.tweetType === 'repost' && (
@@ -445,7 +459,7 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
           {post.quotedTweet && (
             <div className="mb-2.5 rounded-lg border border-kol-border/40 bg-kol-surface/30 overflow-hidden">
               <div className="p-2.5">
-                <div className="flex items-center gap-2 mb-1.5">
+                <div className="flex items-center gap-2 mb-1.5 flex-wrap">
                   {post.quotedTweet.author.avatar ? (
                     <img
                       src={post.quotedTweet.author.avatar}
@@ -464,8 +478,14 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
                   >
                     @{post.quotedTweet.author.handle}
                   </a>
+                  {post.quotedTweet.timestamp && (
+                    <>
+                      <span className="text-gray-500 text-xs">·</span>
+                      <span className="text-gray-400 text-xs">{formatTime(post.quotedTweet.timestamp)}</span>
+                    </>
+                  )}
                 </div>
-                <p className="text-gray-300 text-xs leading-relaxed">{post.quotedTweet.content}</p>
+                <p className="text-gray-300 text-xs leading-relaxed">{renderContent(post.quotedTweet.content)}</p>
                 {post.quotedTweet.media && post.quotedTweet.media.length > 0 && (
                   <div
                     className="mt-2 rounded-lg overflow-hidden bg-kol-surface border border-kol-border/30 flex justify-center items-center h-[200px] cursor-pointer hover:border-kol-blue/50 transition-colors"
@@ -484,14 +504,14 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
 
           {/* Reply Thread Quote */}
           {post.replyTo && (
-            <div className="mt-2 pl-3 py-2.5 border-l-[3px] border-kol-blue/50 rounded-r-lg bg-kol-surface/30">
+            <div className="mt-2 pl-3 py-2.5 border-l-[3px] border-kol-green/50 rounded-r-lg bg-kol-surface/30">
               {/* Replying to link */}
               <div className="flex items-center gap-2 mb-2">
                 <a
                   href={post.replyTo.tweetUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-kol-blue hover:text-kol-blue-hover transition-colors flex items-center gap-1"
+                  className="text-kol-green hover:text-kol-green/80 transition-colors flex items-center gap-1"
                 >
                   <span className="text-xs font-medium">Replying to</span>
                   <i className="ri-external-link-line text-[10px]" />
@@ -518,7 +538,7 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
                       href={`https://x.com/${post.replyTo.author.handle}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-gray-400 hover:text-kol-blue hover:underline text-xs"
+                      className="text-gray-400 hover:text-kol-green hover:underline text-xs"
                     >
                       @{post.replyTo.author.handle}
                     </a>
@@ -539,13 +559,13 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
                     )}
                   </div>
                   <p className="text-gray-400 text-xs leading-relaxed">
-                    {post.replyTo.content}
+                    {renderContent(post.replyTo.content)}
                   </p>
 
                   {/* Reply media */}
                   {post.replyTo.mediaUrl && (
                     <div
-                      className="mt-2 rounded-lg overflow-hidden border border-kol-border/30 max-w-[200px] cursor-pointer hover:border-kol-blue/50 transition-colors"
+                      className="mt-2 rounded-lg overflow-hidden border border-kol-border/30 max-w-[200px] cursor-pointer hover:border-kol-green/50 transition-colors"
                       onClick={() => openLightbox([{ type: 'image', url: post.replyTo!.mediaUrl! }])}
                     >
                       <img
@@ -553,6 +573,61 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
                         alt=""
                         className="w-full h-auto max-h-[120px] object-contain bg-kol-surface"
                       />
+                    </div>
+                  )}
+
+                  {/* Nested reply - reply within reply */}
+                  {post.replyTo.replyTo && (
+                    <div className="mt-2.5 pl-3 py-2 border-l-2 border-kol-green/30 rounded-r bg-kol-surface/20">
+                      <div className="flex items-start gap-2">
+                        {post.replyTo.replyTo.author.avatar ? (
+                          <img
+                            src={post.replyTo.replyTo.author.avatar}
+                            alt={post.replyTo.replyTo.author.name}
+                            className="w-4 h-4 rounded-full object-cover flex-shrink-0 ring-1 ring-kol-border/20"
+                          />
+                        ) : (
+                          <div className="w-4 h-4 rounded-full bg-kol-surface-elevated flex-shrink-0 ring-1 ring-kol-border/20" />
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
+                            <span className="font-body font-medium text-kol-text-secondary text-[11px] truncate">
+                              {post.replyTo.replyTo.author.name}
+                            </span>
+                            <a
+                              href={`https://x.com/${post.replyTo.replyTo.author.handle}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-gray-500 hover:text-kol-green hover:underline text-[11px]"
+                            >
+                              @{post.replyTo.replyTo.author.handle}
+                            </a>
+                            {post.replyTo.replyTo.timestamp && (
+                              <>
+                                <span className="text-gray-600 text-[11px]">·</span>
+                                <span className="text-gray-500 text-[11px]">{formatTime(post.replyTo.replyTo.timestamp)}</span>
+                              </>
+                            )}
+                          </div>
+                          <p className="text-gray-500 text-[11px] leading-relaxed">
+                            {renderContent(post.replyTo.replyTo.content)}
+                          </p>
+
+                          {/* Nested reply media */}
+                          {post.replyTo.replyTo.media && post.replyTo.replyTo.media.length > 0 && (
+                            <div
+                              className="mt-1.5 rounded overflow-hidden border border-kol-border/20 max-w-[160px] cursor-pointer hover:border-kol-green/40 transition-colors"
+                              onClick={() => openLightbox(post.replyTo!.replyTo!.media!.map(m => ({ type: m.type, url: m.url, thumbnailUrl: m.thumbnailUrl })))}
+                            >
+                              <img
+                                src={post.replyTo.replyTo.media[0].url}
+                                alt=""
+                                className="w-full h-auto max-h-[80px] object-contain bg-kol-surface"
+                              />
+                            </div>
+                          )}
+                        </div>
+                      </div>
                     </div>
                   )}
                 </div>

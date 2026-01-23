@@ -22,30 +22,45 @@ const MOCK_POSTS: SocialPostData[] = [
     ],
     tweetUrl: 'https://x.com/crypto_alerts/status/123',
   },
-  // Reply tweet
+  // Reply tweet with nested reply (reply to a reply)
   {
     id: '2',
     type: 'mention',
     tweetType: 'reply',
     author: {
-      name: 'SolanaWhales',
-      handle: 'sol_whales',
-      followers: 45900,
+      name: 'Alex Becker',
+      handle: 'ZssBecker',
+      followers: 1400000,
       avatar: 'https://i.pravatar.cc/150?img=2',
     },
-    content: '@AlphaTrader 🫡 This is huge! Been watching this wallet for weeks.',
-    timestamp: new Date(Date.now() - 120000),
-    tweetUrl: 'https://x.com/sol_whales/status/124',
+    content: 'also FYI I\'m down like 35 mil. I ate shit with everyone else (as I expected if ETH failed to bust its ATH). I didn\'t dump on my viewers/followers and ride off into the sunset. I spoke exactly what I believe and was absolutely upfront with the risk and stuck to what I said.\n\nIm sorry your going to have to find someone else to pin all your ridiculous behavior our.\n\ngo watch my videos where I spend 20% of each video explaining risk and screaming such things like\n\n-IF YOUR NEW STICK TO BIG CAPS\n-DO NOT INVEST A LOT YOU ARE GOING TO LOSE\n-THIS IS MEGA HIGH RISK, BE PREPARED FOR THE DOWNSIDE\n\nYou take responsibility you fucking child.',
+    timestamp: new Date(Date.now() - 240000),
+    tweetUrl: 'https://x.com/ZssBecker/status/124',
     replyTo: {
       author: {
-        name: 'Alpha Trader',
-        handle: 'AlphaTrader',
-        followers: 125000,
-        avatar: 'https://i.pravatar.cc/150?img=3',
+        name: 'iTush',
+        handle: 'iTusharTSS',
+        followers: 2500,
+        avatar: 'https://i.pravatar.cc/150?img=11',
       },
-      content: 'Just spotted a massive whale wallet moving 2,500 SOL. Something big brewing? 👀',
-      timestamp: new Date(Date.now() - 180000),
-      tweetUrl: 'https://x.com/AlphaTrader/status/123',
+      content: '@ZssBecker @intocryptoverse @NewsAsset Well that is. Well let me tell you something I been following you and some other so called crypto youtuber. Have you ever took the responsibility that what your words can do? You may have a best life but you have killed so many young lives. Just a little proof. I deleted mostly',
+      timestamp: new Date(Date.now() - 1500000),
+      tweetUrl: 'https://x.com/iTusharTSS/status/123',
+      media: [
+        { type: 'image', url: 'https://picsum.photos/seed/portfolio1/400/300' },
+        { type: 'image', url: 'https://picsum.photos/seed/portfolio2/400/300' }
+      ],
+      replyTo: {
+        author: {
+          name: 'Alex Becker',
+          handle: 'ZssBecker',
+          followers: 1400000,
+          avatar: 'https://i.pravatar.cc/150?img=2',
+        },
+        content: 'The market is brutal right now. Remember what I always say - only invest what you can afford to lose. This is not financial advice.',
+        timestamp: new Date(Date.now() - 3600000),
+        tweetUrl: 'https://x.com/ZssBecker/status/122',
+      },
     },
   },
   // Post with 2 images
@@ -89,6 +104,7 @@ const MOCK_POSTS: SocialPostData[] = [
         avatar: 'https://i.pravatar.cc/150?img=6',
       },
       content: 'Just launched our new token with LaunchKOL. The fees are insanely low compared to competitors. 🚀',
+      timestamp: new Date(Date.now() - 1800000),
       media: [
         { type: 'image', url: 'https://picsum.photos/seed/launch/400/200' }
       ],
@@ -135,6 +151,7 @@ const MOCK_POSTS: SocialPostData[] = [
         avatar: 'https://i.pravatar.cc/150?img=9',
       },
       content: 'Solana just hit a new ATH in daily active addresses. The ecosystem is thriving! 🌟',
+      timestamp: new Date(Date.now() - 3600000),
       tweetUrl: 'https://x.com/solana/status/127',
     },
   },
