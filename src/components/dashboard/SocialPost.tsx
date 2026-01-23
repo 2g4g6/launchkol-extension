@@ -240,8 +240,8 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
 
           {/* Media preview - multiple images or video */}
           {(post.media && post.media.length > 0) && (
-            <div className="mb-2.5 rounded-lg overflow-hidden border border-kol-border/30 bg-kol-surface/50 max-w-[300px]">
-              <div className={`${post.media.length > 1 ? 'grid grid-cols-2 gap-0.5' : ''}`}>
+            <div className="mb-2.5 rounded-lg overflow-hidden border border-kol-border/30 bg-kol-surface/50 w-full">
+              <div className={`${post.media.length > 1 ? 'grid grid-cols-2 gap-0.5' : 'flex justify-center'}`}>
                 {post.media.map((item, idx) => (
                   <div key={idx} className="relative bg-kol-surface flex items-center justify-center">
                     {item.type === 'video' ? (
@@ -249,11 +249,11 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
                         <img
                           src={item.thumbnailUrl || item.url}
                           alt=""
-                          className={`w-full object-contain ${post.media!.length === 1 ? 'max-h-[180px]' : 'h-[90px] object-cover'}`}
+                          className={`w-full ${post.media!.length === 1 ? 'object-contain max-h-[220px]' : 'object-cover h-[110px]'}`}
                         />
                         <div className="absolute inset-0 flex items-center justify-center bg-black/30">
-                          <div className="w-10 h-10 rounded-full bg-white/90 flex items-center justify-center">
-                            <i className="ri-play-fill text-xl text-black ml-0.5" />
+                          <div className="w-12 h-12 rounded-full bg-white/90 flex items-center justify-center">
+                            <i className="ri-play-fill text-2xl text-black ml-0.5" />
                           </div>
                         </div>
                       </div>
@@ -261,7 +261,7 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
                       <img
                         src={item.url}
                         alt=""
-                        className={`w-full ${post.media!.length === 1 ? 'object-contain max-h-[180px]' : 'object-cover h-[90px]'}`}
+                        className={`${post.media!.length === 1 ? 'object-contain max-h-[220px] max-w-full' : 'object-cover h-[110px] w-full'}`}
                       />
                     )}
                   </div>
