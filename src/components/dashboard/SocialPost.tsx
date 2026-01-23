@@ -1,4 +1,5 @@
-import { motion } from 'framer-motion'
+import { useState, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 
 export interface MediaItem {
   type: 'image' | 'video'
@@ -70,6 +71,19 @@ function formatFollowers(count: number): string {
 }
 
 export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
+  const [lightboxImage, setLightboxImage] = useState<string | null>(null)
+
+  // Close lightbox on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && lightboxImage) {
+        setLightboxImage(null)
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [lightboxImage])
+
   const formatTime = (date: Date) => {
     const now = new Date()
     const diff = Math.floor((now.getTime() - date.getTime()) / 1000)
@@ -266,9 +280,10 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
               {post.media.map((item, idx) => (
                 <div
                   key={idx}
-                  className={`relative bg-kol-surface flex items-center justify-center rounded-lg overflow-hidden border border-kol-border/30 ${
+                  className={`relative bg-kol-surface flex items-center justify-center rounded-lg overflow-hidden border border-kol-border/30 cursor-pointer hover:border-kol-blue/50 transition-colors ${
                     post.media!.length === 1 ? 'h-[240px]' : 'h-[140px]'
                   }`}
+                  onClick={() => setLightboxImage(item.type === 'video' ? (item.thumbnailUrl || item.url) : item.url)}
                 >
                   {item.type === 'video' ? (
                     <div className="relative w-full h-full flex justify-center items-center">
@@ -297,7 +312,10 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
 
           {/* Legacy single image support */}
           {!post.media && post.mediaUrl && (
-            <div className="relative mb-2.5 rounded-lg overflow-hidden border border-kol-border/30 max-w-[280px]">
+            <div
+              className="relative mb-2.5 rounded-lg overflow-hidden border border-kol-border/30 max-w-[280px] cursor-pointer hover:border-kol-blue/50 transition-colors"
+              onClick={() => setLightboxImage(post.mediaUrl!)}
+            >
               <img
                 src={post.mediaUrl}
                 alt=""
@@ -333,7 +351,10 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
                 </div>
                 <p className="text-gray-300 text-xs leading-relaxed">{post.quotedTweet.content}</p>
                 {post.quotedTweet.media && post.quotedTweet.media.length > 0 && (
-                  <div className="mt-2 rounded-lg overflow-hidden bg-kol-surface border border-kol-border/30 flex justify-center items-center h-[200px]">
+                  <div
+                    className="mt-2 rounded-lg overflow-hidden bg-kol-surface border border-kol-border/30 flex justify-center items-center h-[200px] cursor-pointer hover:border-kol-blue/50 transition-colors"
+                    onClick={() => setLightboxImage(post.quotedTweet!.media![0].url)}
+                  >
                     <img
                       src={post.quotedTweet.media[0].url}
                       alt=""
@@ -407,7 +428,10 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
 
                   {/* Reply media */}
                   {post.replyTo.mediaUrl && (
-                    <div className="mt-2 rounded-lg overflow-hidden border border-kol-border/30 max-w-[200px]">
+                    <div
+                      className="mt-2 rounded-lg overflow-hidden border border-kol-border/30 max-w-[200px] cursor-pointer hover:border-kol-blue/50 transition-colors"
+                      onClick={() => setLightboxImage(post.replyTo!.mediaUrl!)}
+                    >
                       <img
                         src={post.replyTo.mediaUrl}
                         alt=""
@@ -480,6 +504,47 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
           </a>
         </div>
       </div>
+
+      {/* Image Lightbox Modal */}
+      <AnimatePresence>
+        {lightboxImage && (
+          <motion.div
+            className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/90 backdrop-blur-sm"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            onClick={() => setLightboxImage(null)}
+          >
+            {/* Close button */}
+            <button
+              className="absolute top-4 right-4 w-10 h-10 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors z-10"
+              onClick={(e) => {
+                e.stopPropagation()
+                setLightboxImage(null)
+              }}
+            >
+              <i className="ri-close-line text-2xl" />
+            </button>
+
+            {/* Image container */}
+            <motion.div
+              className="relative max-w-[90vw] max-h-[90vh] flex items-center justify-center"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <img
+                src={lightboxImage}
+                alt=""
+                className="max-w-full max-h-[90vh] object-contain rounded-lg"
+              />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.article>
   )
 }
