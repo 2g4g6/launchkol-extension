@@ -16,7 +16,6 @@ interface DashboardProps {
 export function Dashboard({ user, onSignOut }: DashboardProps) {
   const [balance, setBalance] = useState(4.523)
   const [activeTab, setActiveTab] = useState<TabId>('feed')
-  const [showSettings, setShowSettings] = useState(false)
 
   // Simulated balance fetch
   useEffect(() => {
@@ -168,7 +167,10 @@ export function Dashboard({ user, onSignOut }: DashboardProps) {
       <Header
         activeTab={activeTab}
         onTabChange={setActiveTab}
-        onSettingsClick={() => setShowSettings(true)}
+        onSignOut={onSignOut}
+        balance={balance}
+        userEmail={user.email}
+        notificationCount={3}
       />
 
       {/* Tab Content */}
@@ -191,100 +193,6 @@ export function Dashboard({ user, onSignOut }: DashboardProps) {
           </motion.div>
         </AnimatePresence>
       </div>
-
-      {/* Settings Modal */}
-      <AnimatePresence>
-        {showSettings && (
-          <motion.div
-            className="absolute inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center z-50"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setShowSettings(false)}
-          >
-            <motion.div
-              className="relative w-[320px] bg-kol-surface-elevated/95 backdrop-blur-xl border border-kol-border/50 rounded-2xl p-5 shadow-2xl overflow-hidden"
-              initial={{ scale: 0.95, opacity: 0, y: 10 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.95, opacity: 0, y: 10 }}
-              transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              {/* Modal glow effect */}
-              <div className="absolute -top-20 -right-20 w-40 h-40 rounded-full bg-kol-blue/10 blur-3xl pointer-events-none" />
-
-              <div className="relative flex items-center justify-between mb-5">
-                <h3 className="font-body font-semibold text-base text-white">Settings</h3>
-                <motion.button
-                  onClick={() => setShowSettings(false)}
-                  className="w-7 h-7 rounded-full bg-kol-surface/80 border border-kol-border/50 hover:border-kol-border hover:bg-kol-surface-elevated flex items-center justify-center transition-all"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <i className="ri-close-line text-base text-kol-text-muted" />
-                </motion.button>
-              </div>
-
-              <div className="relative space-y-4">
-                {/* Account info */}
-                <div className="p-3.5 bg-kol-surface/60 backdrop-blur-sm rounded-xl border border-kol-border/30">
-                  <p className="text-[10px] text-kol-text-muted uppercase tracking-wider mb-1.5 font-medium">Account</p>
-                  <p className="text-sm text-white font-body truncate">{user.email}</p>
-                </div>
-
-                {/* Quick settings */}
-                <div className="space-y-1">
-                  <SettingToggle label="Push notifications" defaultOn={true} />
-                  <SettingToggle label="Auto-track launches" defaultOn={false} />
-                  <SettingToggle label="Sound alerts" defaultOn={true} />
-                </div>
-
-                {/* Sign out */}
-                <motion.button
-                  onClick={onSignOut}
-                  className="relative w-full py-2.5 rounded-xl border border-kol-red/30 text-kol-red text-xs font-body font-semibold overflow-hidden group mt-2"
-                  whileHover={{ scale: 1.01 }}
-                  whileTap={{ scale: 0.99 }}
-                >
-                  <div className="absolute inset-0 bg-kol-red/0 group-hover:bg-kol-red/10 transition-colors" />
-                  <span className="relative">
-                    <i className="ri-logout-box-line mr-2" />
-                    Sign Out
-                  </span>
-                </motion.button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </motion.div>
-  )
-}
-
-// Premium toggle component for settings
-function SettingToggle({ label, defaultOn }: { label: string; defaultOn: boolean }) {
-  const [isOn, setIsOn] = useState(defaultOn)
-
-  return (
-    <div className="flex items-center justify-between py-2.5 px-1">
-      <span className="text-xs text-kol-text-secondary font-body">{label}</span>
-      <motion.button
-        onClick={() => setIsOn(!isOn)}
-        className={`relative w-10 h-[22px] rounded-full transition-colors duration-300 ${
-          isOn ? 'bg-kol-blue' : 'bg-kol-border/60'
-        }`}
-        whileTap={{ scale: 0.95 }}
-      >
-        {/* Glow when active */}
-        {isOn && (
-          <div className="absolute inset-0 rounded-full bg-kol-blue/50 blur-md -z-10" />
-        )}
-        <motion.div
-          className="absolute top-[3px] w-4 h-4 rounded-full bg-white shadow-sm"
-          animate={{ left: isOn ? '22px' : '3px' }}
-          transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-        />
-      </motion.button>
-    </div>
   )
 }
