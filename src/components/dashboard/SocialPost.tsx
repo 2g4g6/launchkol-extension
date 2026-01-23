@@ -171,13 +171,10 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
                   @{post.author.handle}
                 </a>
                 {post.author.followers && (
-                  <>
-                    <span className="text-kol-text-muted/60">•</span>
-                    <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-kol-surface/60 text-[11px] text-kol-text-tertiary">
-                      <i className="ri-group-line text-[10px]" />
-                      {formatFollowers(post.author.followers)}
-                    </span>
-                  </>
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-kol-blue/15 border border-kol-blue/30 text-[11px] text-kol-blue font-medium">
+                    <i className="ri-user-follow-line text-[10px]" />
+                    {formatFollowers(post.author.followers)}
+                  </span>
                 )}
               </div>
             </div>
