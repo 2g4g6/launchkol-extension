@@ -104,7 +104,7 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
         />
 
         {/* Card background - glass-morphism */}
-        <div className="relative bg-kol-surface-elevated/40 backdrop-blur-md border border-kol-border/40 rounded-xl p-3 group-hover:border-kol-border/60 group-hover:bg-kol-surface-elevated/60 transition-all duration-300">
+        <div className="relative bg-kol-surface-elevated/40 backdrop-blur-md border border-kol-border/40 rounded-xl p-3.5 group-hover:border-kol-border/60 group-hover:bg-kol-surface-elevated/60 transition-all duration-300">
 
           {/* Header: Avatar + Author info + Actions */}
           <div className="flex items-start gap-2.5 mb-2">
@@ -123,7 +123,7 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
                     background: `linear-gradient(135deg, ${typeStyles.color}40 0%, ${typeStyles.color}15 100%)`,
                   }}
                 >
-                  <span className="font-display font-semibold text-sm text-white">
+                  <span className="font-body font-bold text-sm text-white">
                     {getInitials(post.author.name)}
                   </span>
                 </div>
@@ -143,7 +143,7 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
             {/* Author info */}
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1.5 mb-0.5">
-                <span className="font-display font-semibold text-[13px] text-white truncate">
+                <span className="font-body font-semibold text-sm text-white truncate">
                   {post.author.name}
                 </span>
                 {post.author.verified && (
@@ -153,20 +153,20 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
                   </div>
                 )}
               </div>
-              <div className="flex items-center gap-1.5 text-xs">
+              <div className="flex items-center gap-1.5 text-[13px]">
                 <span className="font-body text-kol-text-muted truncate">
                   @{post.author.handle}
                 </span>
                 {post.author.followers && (
                   <>
-                    <span className="text-kol-text-muted/40">·</span>
+                    <span className="text-kol-text-muted/60">·</span>
                     <span className="font-mono text-kol-text-tertiary flex items-center gap-0.5">
-                      <i className="ri-group-line text-[10px]" />
+                      <i className="ri-group-line text-[11px]" />
                       {formatFollowers(post.author.followers)}
                     </span>
                   </>
                 )}
-                <span className="text-kol-text-muted/40">·</span>
+                <span className="text-kol-text-muted/60">·</span>
                 <span className="font-mono text-kol-text-muted">
                   {formatTime(post.timestamp)}
                 </span>
@@ -189,7 +189,7 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
           </div>
 
           {/* Content */}
-          <p className="font-body text-[13px] text-kol-text-secondary leading-relaxed mb-2.5">
+          <p className="font-body text-sm text-kol-text-secondary leading-relaxed mb-2.5">
             {post.content}
           </p>
 
@@ -249,7 +249,7 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
                   e.stopPropagation()
                   onDeploy(post)
                 }}
-                className="relative h-8 px-4 rounded-lg font-display font-semibold text-[11px] overflow-hidden group/btn"
+                className="relative h-8 px-4 rounded-lg font-body font-semibold text-xs overflow-hidden group/btn"
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
               >

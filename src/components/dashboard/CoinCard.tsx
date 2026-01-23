@@ -80,7 +80,7 @@ export function CoinCard({ coin, index, onSell, onView }: CoinCardProps) {
               />
             ) : (
               <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-kol-blue/30 to-kol-green/20 flex items-center justify-center border border-kol-border/40">
-                <span className="text-sm font-display font-bold text-white">
+                <span className="text-sm font-body font-bold text-white">
                   {coin.symbol.charAt(0)}
                 </span>
               </div>
@@ -105,7 +105,7 @@ export function CoinCard({ coin, index, onSell, onView }: CoinCardProps) {
           {/* Token Info */}
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-1.5 mb-1">
-              <span className="text-[13px] font-display font-semibold text-white truncate">
+              <span className="text-sm font-body font-semibold text-white truncate">
                 {coin.name}
               </span>
               <span className="text-[10px] font-mono text-kol-text-muted bg-kol-surface/50 px-1.5 py-0.5 rounded">
@@ -145,11 +145,11 @@ export function CoinCard({ coin, index, onSell, onView }: CoinCardProps) {
                 <i className="ri-file-copy-line" />
                 {formatAddress(coin.address)}
               </button>
-              <span className="text-kol-text-muted/40">·</span>
+              <span className="text-kol-text-muted/60">·</span>
               <span>{formatTime(coin.launchedAt)}</span>
               {coin.marketCap && (
                 <>
-                  <span className="text-kol-text-muted/40">·</span>
+                  <span className="text-kol-text-muted/60">·</span>
                   <span className="text-kol-text-tertiary">MC: ${(coin.marketCap / 1000).toFixed(1)}K</span>
                 </>
               )}
@@ -166,7 +166,7 @@ export function CoinCard({ coin, index, onSell, onView }: CoinCardProps) {
                 e.stopPropagation()
                 onSell(coin, percent)
               }}
-              className="relative flex-1 py-1.5 rounded-lg text-[10px] font-display font-semibold overflow-hidden group/sell"
+              className="relative flex-1 py-1.5 rounded-lg text-[11px] font-body font-semibold overflow-hidden group/sell"
               style={{
                 border: '1px solid rgba(255, 77, 79, 0.25)',
                 color: '#ff4d4f',

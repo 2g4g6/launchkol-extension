@@ -256,7 +256,7 @@ export function MyCoinsTab({ onSell, balance }: MyCoinsTabProps) {
                   }}
                 />
               </motion.div>
-              <p className="text-sm font-display font-semibold text-white mb-1">No coins yet</p>
+              <p className="text-sm font-body font-semibold text-white mb-1">No coins yet</p>
               <p className="text-xs text-kol-text-muted">Launch your first token to see it here</p>
             </motion.div>
           )}

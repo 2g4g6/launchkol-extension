@@ -197,7 +197,7 @@ export function TrackerFeed({ onDeploy }: TrackerFeedProps) {
               </motion.div>
 
               <motion.h3
-                className="font-display font-semibold text-base text-white mb-1"
+                className="font-body font-semibold text-base text-white mb-1"
                 variants={itemVariants}
               >
                 {searchQuery ? 'No results found' : 'No activity yet'}

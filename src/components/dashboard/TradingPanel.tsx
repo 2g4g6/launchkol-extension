@@ -98,7 +98,7 @@ export function TradingPanel({
           animate={{ rotate: isOpen ? 180 : 0 }}
           transition={{ duration: 0.2 }}
         />
-        <span className="text-[10px] font-display font-medium text-kol-text-muted group-hover:text-kol-text-tertiary transition-colors">
+        <span className="text-[10px] font-body font-medium text-kol-text-muted group-hover:text-kol-text-tertiary transition-colors">
           {isOpen ? 'Close Panel' : 'Trading Panel'}
         </span>
         <motion.i
@@ -133,7 +133,7 @@ export function TradingPanel({
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-display font-medium transition-all ${
+                  className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-body font-medium transition-all ${
                     activeTab === tab.id
                       ? 'bg-kol-surface-elevated text-kol-text border border-kol-border/50'
                       : 'text-kol-text-muted hover:text-kol-text-tertiary hover:bg-kol-surface-elevated/30'

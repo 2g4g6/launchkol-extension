@@ -98,7 +98,7 @@ export function OpenSidebarPrompt({ user }: OpenSidebarPromptProps) {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.3 }}
-            className="font-display text-xl font-semibold text-white mb-2"
+            className="font-body text-xl font-semibold text-white mb-2"
           >
             Welcome!
           </motion.h1>
@@ -128,7 +128,7 @@ export function OpenSidebarPrompt({ user }: OpenSidebarPromptProps) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.6 }}
             onClick={handleOpenSidebar}
-            className="relative w-full h-12 rounded-xl font-display font-semibold text-sm overflow-hidden group"
+            className="relative w-full h-12 rounded-xl font-body font-semibold text-sm overflow-hidden group"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >

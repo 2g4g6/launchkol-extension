@@ -214,7 +214,7 @@ export function Dashboard({ user, onSignOut }: DashboardProps) {
               <div className="absolute -top-20 -right-20 w-40 h-40 rounded-full bg-kol-blue/10 blur-3xl pointer-events-none" />
 
               <div className="relative flex items-center justify-between mb-5">
-                <h3 className="font-display font-semibold text-base text-white">Settings</h3>
+                <h3 className="font-body font-semibold text-base text-white">Settings</h3>
                 <motion.button
                   onClick={() => setShowSettings(false)}
                   className="w-7 h-7 rounded-full bg-kol-surface/80 border border-kol-border/50 hover:border-kol-border hover:bg-kol-surface-elevated flex items-center justify-center transition-all"
@@ -242,7 +242,7 @@ export function Dashboard({ user, onSignOut }: DashboardProps) {
                 {/* Sign out */}
                 <motion.button
                   onClick={onSignOut}
-                  className="relative w-full py-2.5 rounded-xl border border-kol-red/30 text-kol-red text-xs font-display font-semibold overflow-hidden group mt-2"
+                  className="relative w-full py-2.5 rounded-xl border border-kol-red/30 text-kol-red text-xs font-body font-semibold overflow-hidden group mt-2"
                   whileHover={{ scale: 1.01 }}
                   whileTap={{ scale: 0.99 }}
                 >

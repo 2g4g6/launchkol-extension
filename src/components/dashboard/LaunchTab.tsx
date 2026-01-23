@@ -205,7 +205,7 @@ export function LaunchTab({ onLaunch, isLaunching = false }: LaunchTabProps) {
         <motion.button
           type="submit"
           disabled={!isValid || isLaunching}
-          className={`w-full h-9 rounded-full font-display font-semibold text-xs transition-all ${
+          className={`w-full h-9 rounded-full font-body font-semibold text-xs transition-all ${
             isValid && !isLaunching
               ? 'bg-gradient-to-r from-kol-blue to-kol-blue-hover text-white shadow-lg shadow-kol-blue/20'
               : 'bg-kol-surface-elevated text-kol-text-muted cursor-not-allowed'

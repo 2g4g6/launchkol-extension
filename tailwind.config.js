@@ -20,8 +20,8 @@ export default {
           'red': '#ff4d4f',
           'text': '#ffffff',
           'text-secondary': '#cfcfcf',
-          'text-tertiary': '#888888',
-          'text-muted': '#666666',
+          'text-tertiary': '#999999',
+          'text-muted': '#888888',
         },
       },
       fontFamily: {
