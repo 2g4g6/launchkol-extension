@@ -163,7 +163,7 @@ export function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
   }
 
   return (
-    <div className="relative w-full h-full overflow-hidden bg-[#050508]">
+    <div className="relative w-full h-full overflow-hidden bg-[#050508] font-auth-body">
 
       {/* Premium layered background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
