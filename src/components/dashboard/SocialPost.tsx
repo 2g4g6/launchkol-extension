@@ -262,38 +262,36 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
 
           {/* Media preview - multiple images or video */}
           {(post.media && post.media.length > 0) && (
-            <div className="mb-2.5 rounded-lg overflow-hidden border border-kol-border/30 bg-kol-surface/50 w-full">
-              <div className={`${post.media.length > 1 ? 'grid grid-cols-2 gap-0.5' : ''}`}>
-                {post.media.map((item, idx) => (
-                  <div
-                    key={idx}
-                    className={`relative bg-kol-surface flex items-center justify-center ${
-                      post.media!.length === 1 ? 'h-[180px]' : 'h-[120px]'
-                    }`}
-                  >
-                    {item.type === 'video' ? (
-                      <div className="relative w-full h-full flex justify-center items-center">
-                        <img
-                          src={item.thumbnailUrl || item.url}
-                          alt=""
-                          className="w-full h-full object-contain"
-                        />
-                        <div className="absolute inset-0 flex items-center justify-center bg-black/30">
-                          <div className="w-12 h-12 rounded-full bg-white/90 flex items-center justify-center">
-                            <i className="ri-play-fill text-2xl text-black ml-0.5" />
-                          </div>
-                        </div>
-                      </div>
-                    ) : (
+            <div className={`mb-2.5 w-full ${post.media.length > 1 ? 'grid grid-cols-2 gap-2' : ''}`}>
+              {post.media.map((item, idx) => (
+                <div
+                  key={idx}
+                  className={`relative bg-kol-surface flex items-center justify-center rounded-lg overflow-hidden border border-kol-border/30 ${
+                    post.media!.length === 1 ? 'h-[200px]' : 'h-[140px]'
+                  }`}
+                >
+                  {item.type === 'video' ? (
+                    <div className="relative w-full h-full flex justify-center items-center">
                       <img
-                        src={item.url}
+                        src={item.thumbnailUrl || item.url}
                         alt=""
                         className="w-full h-full object-contain"
                       />
-                    )}
-                  </div>
-                ))}
-              </div>
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                        <div className="w-12 h-12 rounded-full bg-white/90 flex items-center justify-center">
+                          <i className="ri-play-fill text-2xl text-black ml-0.5" />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <img
+                      src={item.url}
+                      alt=""
+                      className="w-full h-full object-contain"
+                    />
+                  )}
+                </div>
+              ))}
             </div>
           )}
 
@@ -335,7 +333,7 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
                 </div>
                 <p className="text-gray-300 text-xs leading-relaxed">{post.quotedTweet.content}</p>
                 {post.quotedTweet.media && post.quotedTweet.media.length > 0 && (
-                  <div className="mt-2 rounded overflow-hidden bg-kol-surface flex justify-center items-center h-[140px]">
+                  <div className="mt-2 rounded-lg overflow-hidden bg-kol-surface border border-kol-border/30 flex justify-center items-center h-[160px]">
                     <img
                       src={post.quotedTweet.media[0].url}
                       alt=""
