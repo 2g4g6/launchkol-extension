@@ -332,25 +332,32 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
     const domain = getDomain(preview.url)
 
     return (
-      <a
-        href={preview.url}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="block mt-2.5 rounded-lg border border-kol-border/40 bg-kol-surface/30 overflow-hidden hover:border-kol-border/60 transition-colors group/link"
-      >
-        {/* Preview Image */}
+      <div className="mt-2.5 rounded-lg border border-kol-border/40 bg-kol-surface/30 overflow-hidden hover:border-kol-border/60 transition-colors group/link">
+        {/* Preview Image - clickable to open lightbox */}
         {preview.image && (
-          <div className="relative w-full h-[140px] bg-kol-surface overflow-hidden">
+          <div
+            className="relative w-full h-[140px] bg-kol-surface overflow-hidden cursor-pointer"
+            onClick={() => openLightbox([{ type: 'image', url: preview.image! }])}
+          >
             <img
               src={preview.image}
               alt=""
               className="w-full h-full object-cover group-hover/link:scale-105 transition-transform duration-300"
             />
+            {/* Hover overlay hint */}
+            <div className="absolute inset-0 bg-black/0 hover:bg-black/20 transition-colors flex items-center justify-center opacity-0 hover:opacity-100">
+              <i className="ri-zoom-in-line text-white text-xl drop-shadow-lg" />
+            </div>
           </div>
         )}
 
-        {/* Preview Content */}
-        <div className="p-3">
+        {/* Preview Content - clickable to open link */}
+        <a
+          href={preview.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="block p-3 hover:bg-kol-surface/50 transition-colors"
+        >
           {/* Site info row */}
           <div className="flex items-center gap-1.5 text-gray-500 text-[11px] mb-1.5">
             {preview.favicon ? (
@@ -372,8 +379,8 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
               {preview.description}
             </p>
           )}
-        </div>
-      </a>
+        </a>
+      </div>
     )
   }
 
