@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { SocialPost, SocialPostData } from './SocialPost'
 import { FeedGroupsModal } from './FeedGroupsModal'
+import { Tooltip } from '../ui/Tooltip'
 
 // Mock data - tweets with different types (normal, reply, repost, quote) and media
 const MOCK_POSTS: SocialPostData[] = [
@@ -311,45 +312,48 @@ export function TrackerFeed({ onDeploy }: TrackerFeedProps) {
             <div className="w-px h-4 bg-kol-border/40 mx-1" />
 
             {/* Translate Toggle */}
-            <motion.button
-              onClick={() => setIsTranslateEnabled(!isTranslateEnabled)}
-              className={`w-7 h-7 rounded-lg flex items-center justify-center transition-colors ${
-                isTranslateEnabled
-                  ? 'text-kol-blue bg-kol-blue/10'
-                  : 'text-kol-text-tertiary hover:text-kol-text-secondary hover:bg-white/5'
-              }`}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              title={isTranslateEnabled ? 'Disable auto-translate' : 'Enable auto-translate'}
-            >
-              <i className="ri-translate-2 text-sm" />
-            </motion.button>
+            <Tooltip content={isTranslateEnabled ? 'Disable auto-translate' : 'Enable auto-translate'}>
+              <motion.button
+                onClick={() => setIsTranslateEnabled(!isTranslateEnabled)}
+                className={`w-7 h-7 rounded-lg flex items-center justify-center transition-colors ${
+                  isTranslateEnabled
+                    ? 'text-kol-blue bg-kol-blue/10'
+                    : 'text-kol-text-tertiary hover:text-kol-text-secondary hover:bg-white/5'
+                }`}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <i className="ri-translate-2 text-sm" />
+              </motion.button>
+            </Tooltip>
 
             {/* Pause on Hover Toggle */}
-            <motion.button
-              onClick={() => setIsPauseOnHover(!isPauseOnHover)}
-              className={`w-7 h-7 rounded-lg flex items-center justify-center transition-colors ${
-                isPauseOnHover
-                  ? 'text-kol-blue bg-kol-blue/10'
-                  : 'text-kol-text-tertiary hover:text-kol-text-secondary hover:bg-white/5'
-              }`}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              title={isPauseOnHover ? 'Disable pause on hover' : 'Enable pause on hover'}
-            >
-              <i className={`${isPauseOnHover ? 'ri-pause-line' : 'ri-play-line'} text-sm`} />
-            </motion.button>
+            <Tooltip content={isPauseOnHover ? 'Disable pause on hover' : 'Enable pause on hover'}>
+              <motion.button
+                onClick={() => setIsPauseOnHover(!isPauseOnHover)}
+                className={`w-7 h-7 rounded-lg flex items-center justify-center transition-colors ${
+                  isPauseOnHover
+                    ? 'text-kol-blue bg-kol-blue/10'
+                    : 'text-kol-text-tertiary hover:text-kol-text-secondary hover:bg-white/5'
+                }`}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <i className={`${isPauseOnHover ? 'ri-pause-line' : 'ri-play-line'} text-sm`} />
+              </motion.button>
+            </Tooltip>
 
             {/* Groups Button */}
-            <motion.button
-              onClick={() => setIsGroupsModalOpen(true)}
-              className="w-7 h-7 rounded-lg flex items-center justify-center text-kol-text-tertiary hover:text-kol-text-secondary hover:bg-white/5 transition-colors"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              title="Manage feed groups"
-            >
-              <i className="ri-group-line text-sm" />
-            </motion.button>
+            <Tooltip content="Manage feed groups">
+              <motion.button
+                onClick={() => setIsGroupsModalOpen(true)}
+                className="w-7 h-7 rounded-lg flex items-center justify-center text-kol-text-tertiary hover:text-kol-text-secondary hover:bg-white/5 transition-colors"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <i className="ri-group-line text-sm" />
+              </motion.button>
+            </Tooltip>
           </div>
         </div>
       </motion.div>

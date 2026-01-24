@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { Tooltip } from '../ui/Tooltip'
 
 // Types
 interface Account {
@@ -303,37 +304,40 @@ export function FeedGroupsModal({ isOpen, onClose }: FeedGroupsModalProps) {
 
                         {/* Hover actions */}
                         <div className="absolute right-1 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-0.5">
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              setEditingGroupId(group.id)
-                              setEditingName(group.name)
-                            }}
-                            className="w-5 h-5 rounded flex items-center justify-center text-kol-text-muted hover:text-white hover:bg-kol-surface/60 transition-colors"
-                            title="Rename"
-                          >
-                            <i className="ri-pencil-line text-[10px]" />
-                          </button>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              handleDuplicateGroup(group)
-                            }}
-                            className="w-5 h-5 rounded flex items-center justify-center text-kol-text-muted hover:text-white hover:bg-kol-surface/60 transition-colors"
-                            title="Duplicate"
-                          >
-                            <i className="ri-file-copy-line text-[10px]" />
-                          </button>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              handleDeleteGroup(group.id)
-                            }}
-                            className="w-5 h-5 rounded flex items-center justify-center text-kol-text-muted hover:text-kol-red hover:bg-kol-red/10 transition-colors"
-                            title="Delete"
-                          >
-                            <i className="ri-delete-bin-line text-[10px]" />
-                          </button>
+                          <Tooltip content="Rename" position="top">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                setEditingGroupId(group.id)
+                                setEditingName(group.name)
+                              }}
+                              className="w-5 h-5 rounded flex items-center justify-center text-kol-text-muted hover:text-white hover:bg-kol-surface/60 transition-colors"
+                            >
+                              <i className="ri-pencil-line text-[10px]" />
+                            </button>
+                          </Tooltip>
+                          <Tooltip content="Duplicate" position="top">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                handleDuplicateGroup(group)
+                              }}
+                              className="w-5 h-5 rounded flex items-center justify-center text-kol-text-muted hover:text-white hover:bg-kol-surface/60 transition-colors"
+                            >
+                              <i className="ri-file-copy-line text-[10px]" />
+                            </button>
+                          </Tooltip>
+                          <Tooltip content="Delete" position="top">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                handleDeleteGroup(group.id)
+                              }}
+                              className="w-5 h-5 rounded flex items-center justify-center text-kol-text-muted hover:text-kol-red hover:bg-kol-red/10 transition-colors"
+                            >
+                              <i className="ri-delete-bin-line text-[10px]" />
+                            </button>
+                          </Tooltip>
                         </div>
                       </motion.div>
                     ))}

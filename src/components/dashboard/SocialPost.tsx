@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { Tooltip } from '../ui/Tooltip'
 
 export interface MediaItem {
   type: 'image' | 'video'
@@ -782,32 +783,35 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
         <div className="flex items-center border-t border-kol-border/40 h-9">
           {/* Left actions - Hide & Notify */}
           <div className="flex items-center h-full">
-            <button
-              onClick={handleHide}
-              className="flex items-center justify-center w-9 h-full text-gray-400 hover:text-white hover:bg-kol-surface/60 transition-all duration-200"
-              title="Hide"
-            >
-              <i className="ri-close-line text-sm" />
-            </button>
+            <Tooltip content="Hide" position="top">
+              <button
+                onClick={handleHide}
+                className="flex items-center justify-center w-9 h-full text-gray-400 hover:text-white hover:bg-kol-surface/60 transition-all duration-200"
+              >
+                <i className="ri-close-line text-sm" />
+              </button>
+            </Tooltip>
             <div className="w-px h-4 bg-kol-border/40" />
           </div>
 
           {/* Translate section */}
           <div className="flex items-center h-full py-1 ml-1">
-            <button
-              className="text-[11px] flex items-center gap-1 text-gray-400 hover:text-white hover:bg-kol-surface/60 px-2 h-full transition-all duration-200 rounded-md"
-              title="Translate"
-            >
-              <i className="ri-translate-2 text-xs" />
-              <span className="font-medium">Translate</span>
-            </button>
-            <button
-              className="flex items-center text-[11px] hover:text-white transition-colors duration-200 text-gray-400 px-1"
-              title="Select language"
-            >
-              <span className="font-semibold text-[10px] uppercase tracking-wide">en</span>
-              <i className="ri-arrow-down-s-line text-xs opacity-60" />
-            </button>
+            <Tooltip content="Translate this post" position="top">
+              <button
+                className="text-[11px] flex items-center gap-1 text-gray-400 hover:text-white hover:bg-kol-surface/60 px-2 h-full transition-all duration-200 rounded-md"
+              >
+                <i className="ri-translate-2 text-xs" />
+                <span className="font-medium">Translate</span>
+              </button>
+            </Tooltip>
+            <Tooltip content="Select language" position="top">
+              <button
+                className="flex items-center text-[11px] hover:text-white transition-colors duration-200 text-gray-400 px-1"
+              >
+                <span className="font-semibold text-[10px] uppercase tracking-wide">en</span>
+                <i className="ri-arrow-down-s-line text-xs opacity-60" />
+              </button>
+            </Tooltip>
           </div>
 
           {/* Spacer */}
