@@ -8,14 +8,13 @@
   box-sizing: border-box;
 }
 
+/* Dimensions moved to popup.css and sidepanel.css */
 html, body, #root {
-  width: 380px;
-  height: 540px;
   overflow: hidden;
 }
 
 body {
-  font-family: 'DM Sans', system-ui, sans-serif;
+  font-family: 'Satoshi', system-ui, sans-serif;
   background: #0a0a0a;
   color: #ffffff;
   -webkit-font-smoothing: antialiased;

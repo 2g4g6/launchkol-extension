@@ -65,7 +65,7 @@ export function TradeTab({ onTrade, isTrading = false, balance = 0 }: TradeTabPr
               key={a}
               type="button"
               onClick={() => setAction(a)}
-              className={`flex-1 py-1.5 rounded-full text-xs font-display font-medium transition-all ${
+              className={`flex-1 py-1.5 rounded-full text-xs font-body font-medium transition-all ${
                 action === a
                   ? a === 'buy'
                     ? 'bg-kol-green text-white shadow-sm'
@@ -134,7 +134,7 @@ export function TradeTab({ onTrade, isTrading = false, balance = 0 }: TradeTabPr
             <motion.button
               type="button"
               onClick={() => setAmount(balance.toString())}
-              className="flex-1 py-1 rounded text-[10px] font-display border border-kol-border/30 text-kol-text-muted hover:border-kol-border/50 hover:text-kol-text-tertiary transition-colors"
+              className="flex-1 py-1 rounded text-[10px] font-body border border-kol-border/30 text-kol-text-muted hover:border-kol-border/50 hover:text-kol-text-tertiary transition-colors"
               whileTap={{ scale: 0.95 }}
             >
               MAX
@@ -196,7 +196,7 @@ export function TradeTab({ onTrade, isTrading = false, balance = 0 }: TradeTabPr
         <motion.button
           type="submit"
           disabled={!isValid || isTrading}
-          className={`w-full h-10 rounded-full font-display font-semibold text-sm transition-all ${
+          className={`w-full h-10 rounded-full font-body font-semibold text-sm transition-all ${
             isValid && !isTrading
               ? action === 'buy'
                 ? 'bg-gradient-to-r from-kol-green to-emerald-500 text-white shadow-lg shadow-kol-green/20'

@@ -20,14 +20,17 @@ export default {
           'red': '#ff4d4f',
           'text': '#ffffff',
           'text-secondary': '#cfcfcf',
-          'text-tertiary': '#888888',
-          'text-muted': '#666666',
+          'text-tertiary': '#999999',
+          'text-muted': '#888888',
         },
       },
       fontFamily: {
-        'display': ['"Sora"', 'system-ui', 'sans-serif'],
-        'body': ['"DM Sans"', 'system-ui', 'sans-serif'],
-        'mono': ['"JetBrains Mono"', 'monospace'],
+        'display': ['"Clash Display"', 'system-ui', 'sans-serif'],
+        'body': ['"Satoshi"', 'system-ui', 'sans-serif'],
+        'mono': ['"IBM Plex Mono"', 'monospace'],
+        // Auth screen fonts (original)
+        'auth-display': ['"Sora"', 'system-ui', 'sans-serif'],
+        'auth-body': ['"DM Sans"', 'system-ui', 'sans-serif'],
       },
       animation: {
         'float': 'float 6s ease-in-out infinite',

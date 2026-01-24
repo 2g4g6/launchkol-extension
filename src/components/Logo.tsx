@@ -8,9 +8,9 @@ interface LogoProps {
 
 export function Logo({ size = 'md', showText = true, animated = true }: LogoProps) {
   const sizes = {
-    sm: { icon: 28, fontSize: 12 },
-    md: { icon: 32, fontSize: 14 },
-    lg: { icon: 56, fontSize: 20 },
+    sm: { icon: 28, fontSize: 14 },
+    md: { icon: 32, fontSize: 18 },
+    lg: { icon: 56, fontSize: 26 },
   }
 
   const { icon, fontSize } = sizes[size]
