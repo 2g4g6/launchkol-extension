@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { SocialPost, SocialPostData } from './SocialPost'
+import { FeedGroupsModal } from './FeedGroupsModal'
 
 // Mock data - tweets with different types (normal, reply, repost, quote) and media
 const MOCK_POSTS: SocialPostData[] = [
@@ -242,6 +243,9 @@ export function TrackerFeed({ onDeploy }: TrackerFeedProps) {
   const [posts] = useState<SocialPostData[]>(MOCK_POSTS)
   const [searchQuery, setSearchQuery] = useState('')
   const [isSearchFocused, setIsSearchFocused] = useState(false)
+  const [isTranslateEnabled, setIsTranslateEnabled] = useState(false)
+  const [isPauseOnHover, setIsPauseOnHover] = useState(false)
+  const [isGroupsModalOpen, setIsGroupsModalOpen] = useState(false)
 
   const filteredPosts = posts.filter(post =>
     post.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -283,19 +287,70 @@ export function TrackerFeed({ onDeploy }: TrackerFeedProps) {
             onChange={(e) => setSearchQuery(e.target.value)}
             onFocus={() => setIsSearchFocused(true)}
             onBlur={() => setIsSearchFocused(false)}
-            className="w-full h-9 pl-9 pr-4 bg-transparent border-0 rounded-xl text-sm text-white placeholder:text-kol-text-tertiary font-body focus:outline-none transition-all duration-300"
+            className="flex-1 h-9 pl-9 pr-2 bg-transparent border-0 rounded-xl text-sm text-white placeholder:text-kol-text-tertiary font-body focus:outline-none transition-all duration-300"
           />
-          {searchQuery && (
+
+          {/* Action Buttons */}
+          <div className="flex items-center gap-0.5 pr-2">
+            {/* Clear search */}
+            <AnimatePresence>
+              {searchQuery && (
+                <motion.button
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  onClick={() => setSearchQuery('')}
+                  className="w-7 h-7 rounded-lg flex items-center justify-center text-kol-text-muted hover:text-white hover:bg-white/5 transition-colors"
+                >
+                  <i className="ri-close-line text-sm" />
+                </motion.button>
+              )}
+            </AnimatePresence>
+
+            {/* Divider */}
+            <div className="w-px h-4 bg-kol-border/40 mx-1" />
+
+            {/* Translate Toggle */}
             <motion.button
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.8 }}
-              onClick={() => setSearchQuery('')}
-              className="absolute right-3 w-5 h-5 rounded-full bg-kol-border/50 flex items-center justify-center hover:bg-kol-border transition-colors"
+              onClick={() => setIsTranslateEnabled(!isTranslateEnabled)}
+              className={`w-7 h-7 rounded-lg flex items-center justify-center transition-colors ${
+                isTranslateEnabled
+                  ? 'text-kol-blue bg-kol-blue/10'
+                  : 'text-kol-text-tertiary hover:text-kol-text-secondary hover:bg-white/5'
+              }`}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              title={isTranslateEnabled ? 'Disable auto-translate' : 'Enable auto-translate'}
             >
-              <i className="ri-close-line text-xs text-kol-text-muted" />
+              <i className="ri-translate-2 text-sm" />
             </motion.button>
-          )}
+
+            {/* Pause on Hover Toggle */}
+            <motion.button
+              onClick={() => setIsPauseOnHover(!isPauseOnHover)}
+              className={`w-7 h-7 rounded-lg flex items-center justify-center transition-colors ${
+                isPauseOnHover
+                  ? 'text-kol-blue bg-kol-blue/10'
+                  : 'text-kol-text-tertiary hover:text-kol-text-secondary hover:bg-white/5'
+              }`}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              title={isPauseOnHover ? 'Disable pause on hover' : 'Enable pause on hover'}
+            >
+              <i className={`${isPauseOnHover ? 'ri-pause-line' : 'ri-play-line'} text-sm`} />
+            </motion.button>
+
+            {/* Groups Button */}
+            <motion.button
+              onClick={() => setIsGroupsModalOpen(true)}
+              className="w-7 h-7 rounded-lg flex items-center justify-center text-kol-text-tertiary hover:text-kol-text-secondary hover:bg-white/5 transition-colors"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              title="Manage feed groups"
+            >
+              <i className="ri-group-line text-sm" />
+            </motion.button>
+          </div>
         </div>
       </motion.div>
 
@@ -364,6 +419,12 @@ export function TrackerFeed({ onDeploy }: TrackerFeedProps) {
         <div className="h-2" />
       </motion.div>
       </div>
+
+      {/* Feed Groups Modal */}
+      <FeedGroupsModal
+        isOpen={isGroupsModalOpen}
+        onClose={() => setIsGroupsModalOpen(false)}
+      />
     </div>
   )
 }
