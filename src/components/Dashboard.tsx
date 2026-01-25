@@ -5,6 +5,7 @@ import { TrackerFeed } from './dashboard/TrackerFeed'
 import { MyCoinsTab } from './dashboard/MyCoinsTab'
 import { SocialPostData } from './dashboard/SocialPost'
 import { CoinData } from './dashboard/CoinCard'
+import { DepositModal, NetworkConfig } from './ui/DepositModal'
 
 type TabId = 'feed' | 'coins'
 
@@ -13,9 +14,32 @@ interface DashboardProps {
   onSignOut: () => void
 }
 
+// Demo network configs - these would come from API/wallet in production
+const NETWORKS: NetworkConfig[] = [
+  {
+    id: 'sol',
+    name: 'Solana',
+    symbol: 'SOL',
+    icon: '/images/solanaLogoMark.svg',
+    balance: 0.00,
+    address: '43HPNeS2FroDxUGRQKV1iNDrYFD1wo5rPVj5Qc9igLZN',
+    networkLabel: 'Solana',
+  },
+  {
+    id: 'bnb',
+    name: 'BNB Chain',
+    symbol: 'BNB',
+    icon: '/images/bnbLogo.svg',
+    balance: 0.00,
+    address: '0xDd8982E42B636A21523366Fa6eC06627C766BFf',
+    networkLabel: 'BSC',
+  },
+]
+
 export function Dashboard({ user, onSignOut }: DashboardProps) {
   const [balance, setBalance] = useState(4.523)
   const [activeTab, setActiveTab] = useState<TabId>('feed')
+  const [isDepositModalOpen, setIsDepositModalOpen] = useState(false)
 
   // Simulated balance fetch
   useEffect(() => {
@@ -170,6 +194,15 @@ export function Dashboard({ user, onSignOut }: DashboardProps) {
         onSignOut={onSignOut}
         balance={balance}
         userEmail={user.email}
+        onWalletClick={() => setIsDepositModalOpen(true)}
+      />
+
+      {/* Deposit Modal */}
+      <DepositModal
+        isOpen={isDepositModalOpen}
+        onClose={() => setIsDepositModalOpen(false)}
+        networks={NETWORKS}
+        defaultNetwork="sol"
       />
 
       {/* Tab Content */}

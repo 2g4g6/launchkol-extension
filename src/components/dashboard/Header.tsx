@@ -21,6 +21,7 @@ interface HeaderProps {
   onSignOut: () => void;
   balance: number;
   userEmail: string;
+  onWalletClick?: () => void;
 }
 
 // Search input (visual placeholder)
@@ -40,9 +41,10 @@ function SearchInput() {
 }
 
 // Wallet Balance indicator with Solana icon
-function WalletIndicator({ balance }: { balance: number }) {
+function WalletIndicator({ balance, onClick }: { balance: number; onClick?: () => void }) {
   return (
-    <motion.div
+    <motion.button
+      onClick={onClick}
       className="relative flex items-center gap-2 px-3 py-1.5 rounded-lg bg-kol-surface/50 border border-kol-border/30 hover:border-kol-blue/30 transition-all cursor-pointer group"
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
@@ -65,7 +67,7 @@ function WalletIndicator({ balance }: { balance: number }) {
       <span className="relative z-10 text-sm font-mono text-white font-medium">
         {balance.toFixed(2)}
       </span>
-    </motion.div>
+    </motion.button>
   );
 }
 
@@ -216,6 +218,7 @@ export function Header({
   onSignOut,
   balance,
   userEmail,
+  onWalletClick,
 }: HeaderProps) {
   return (
     <motion.header
@@ -290,7 +293,7 @@ export function Header({
       {/* Right side: Search, Wallet, User */}
       <div className="relative z-10 flex items-center gap-2">
         <SearchInput />
-        <WalletIndicator balance={balance} />
+        <WalletIndicator balance={balance} onClick={onWalletClick} />
         <UserDropdown email={userEmail} onSignOut={onSignOut} />
       </div>
     </motion.header>
