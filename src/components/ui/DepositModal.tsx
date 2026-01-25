@@ -114,20 +114,21 @@ interface QRCodeWithLogoProps {
   networkSymbol: string
 }
 
-function QRCodeWithLogo({ value, size = 160, networkIcon, networkSymbol }: QRCodeWithLogoProps) {
+function QRCodeWithLogo({ value, size = 120, networkIcon, networkSymbol }: QRCodeWithLogoProps) {
   return (
-    <div className="relative bg-white p-3 rounded-xl">
+    <div className="relative bg-black p-1 rounded-xl min-w-[132px] min-h-[132px]">
       <QRCodeSVG
         value={value}
         size={size}
         level="H"
-        bgColor="#FFFFFF"
-        fgColor="#000000"
+        bgColor="#000000"
+        fgColor="#FFFFFF"
+        className="rounded-lg"
       />
       {/* Center network icon overlay */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <div className="w-10 h-10 rounded-full bg-black flex items-center justify-center shadow-lg">
-          <img src={networkIcon} alt={networkSymbol} className="w-6 h-6" />
+        <div className="w-9 h-9 rounded-full bg-black flex items-center justify-center">
+          <img src={networkIcon} alt={networkSymbol} className="w-5 h-5" />
         </div>
       </div>
     </div>
@@ -187,9 +188,6 @@ export function DepositModal({ isOpen, onClose, networks, defaultNetwork }: Depo
     }
   }, [currentNetwork.address])
 
-  // Truncate address for display
-  const truncatedAddress = `${currentNetwork.address.slice(0, 14)}...${currentNetwork.address.slice(-10)}`
-
   if (!mounted) return null
 
   const modalContent = (
@@ -235,34 +233,32 @@ export function DepositModal({ isOpen, onClose, networks, defaultNetwork }: Depo
                   />
                 </div>
 
-                {/* QR Code - Centered Hero */}
-                <div className="flex justify-center mb-6">
+                {/* QR Code + Address Container */}
+                <button
+                  className="relative flex w-full cursor-pointer flex-row items-start gap-4 rounded-lg border border-kol-border/50 p-[1px] pr-4 transition-all duration-150 hover:border-kol-border hover:bg-kol-surface-elevated/20"
+                  onClick={handleCopy}
+                >
+                  {/* QR Code */}
                   <QRCodeWithLogo
                     value={currentNetwork.address}
-                    size={150}
+                    size={120}
                     networkIcon={currentNetwork.icon}
                     networkSymbol={currentNetwork.symbol}
                   />
-                </div>
 
-                {/* Address Container */}
-                <div
-                  className="p-4 rounded-xl border border-kol-border/50 bg-kol-surface-elevated/30 cursor-pointer hover:bg-kol-surface-elevated/50 transition-colors"
-                  onClick={handleCopy}
-                >
-                  <div className="flex items-center justify-between mb-1.5">
-                    <span className="text-sm text-kol-text-muted">Deposit Address</span>
-                    <button className="flex items-center gap-1.5 text-kol-text-muted hover:text-white transition-colors">
-                      <span className={`text-xs ${copied ? 'text-kol-green' : ''}`}>
-                        {copied ? 'Copied!' : 'Copy'}
-                      </span>
-                      <i className={`${copied ? 'ri-check-line text-kol-green' : 'ri-file-copy-line'} text-sm`} />
-                    </button>
+                  {/* Address */}
+                  <div className="flex flex-col items-start gap-1 pt-3 flex-1 min-w-0">
+                    <span className="text-xs text-kol-text-muted">Deposit Address</span>
+                    <span className="w-full break-all text-left text-xs text-kol-text-muted/80 leading-4">
+                      {currentNetwork.address}
+                    </span>
                   </div>
-                  <code className="block text-sm font-mono text-white">
-                    {truncatedAddress}
-                  </code>
-                </div>
+
+                  {/* Copy Icon */}
+                  <div className="absolute bottom-2 right-2 flex h-6 w-6 items-center justify-center rounded">
+                    <i className={`${copied ? 'ri-check-line text-kol-green' : 'ri-file-copy-line text-kol-text-muted'} text-base`} />
+                  </div>
+                </button>
 
                 {/* Network hint */}
                 <p className="text-center text-sm text-kol-text-muted mt-5">
