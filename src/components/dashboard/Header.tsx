@@ -228,11 +228,7 @@ function WalletDropdown({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 4, scale: 0.95 }}
             transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
-            className="absolute right-0 top-full mt-2 w-64 bg-kol-surface-elevated/95 backdrop-blur-xl border border-kol-border/50 rounded-lg overflow-hidden z-50"
-            style={{
-              boxShadow:
-                "0 4px 24px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.03) inset",
-            }}
+            className="absolute right-0 top-full mt-2 w-64 bg-kol-bg border border-kol-border rounded-lg overflow-hidden z-50"
           >
             {/* Balance Header */}
             <div className="px-4 pt-4">
@@ -255,7 +251,7 @@ function WalletDropdown({
             </div>
 
             {/* Swap Row */}
-            <div className="mt-3 py-2.5 border-t border-b border-kol-border/30 flex items-center justify-between px-4 cursor-pointer hover:bg-kol-surface/40 transition-colors">
+            <div className="mt-3 py-2.5 border-t border-b border-kol-border flex items-center justify-between px-4 cursor-pointer hover:bg-kol-surface-elevated/30 transition-colors">
               {/* SOL Side */}
               <div className="flex items-center gap-2 w-1/3">
                 <SolanaLogo className="w-4 h-4" />
