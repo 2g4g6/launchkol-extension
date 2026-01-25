@@ -114,21 +114,20 @@ interface QRCodeWithLogoProps {
   networkSymbol: string
 }
 
-function QRCodeWithLogo({ value, size = 120, networkIcon, networkSymbol }: QRCodeWithLogoProps) {
+function QRCodeWithLogo({ value, size = 150, networkIcon, networkSymbol }: QRCodeWithLogoProps) {
   return (
-    <div className="relative bg-black p-1 rounded-xl min-w-[132px] min-h-[132px]">
+    <div className="relative bg-white p-1 rounded-lg flex-shrink-0">
       <QRCodeSVG
         value={value}
         size={size}
         level="H"
-        bgColor="#000000"
-        fgColor="#FFFFFF"
-        className="rounded-lg"
+        bgColor="#FFFFFF"
+        fgColor="#000000"
       />
       {/* Center network icon overlay */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <div className="w-9 h-9 rounded-full bg-black flex items-center justify-center">
-          <img src={networkIcon} alt={networkSymbol} className="w-5 h-5" />
+        <div className="w-10 h-10 rounded-full bg-black flex items-center justify-center shadow-md">
+          <img src={networkIcon} alt={networkSymbol} className="w-6 h-6" />
         </div>
       </div>
     </div>
@@ -225,7 +224,7 @@ export function DepositModal({ isOpen, onClose, networks, defaultNetwork }: Depo
               {/* Content */}
               <div className="p-6">
                 {/* Network Pill Dropdown - Centered */}
-                <div className="flex justify-center mb-6">
+                <div className="flex justify-center mb-4">
                   <NetworkDropdown
                     networks={networks}
                     activeNetwork={currentNetwork}
@@ -233,37 +232,37 @@ export function DepositModal({ isOpen, onClose, networks, defaultNetwork }: Depo
                   />
                 </div>
 
+                {/* Description */}
+                <p className="mb-4 text-sm text-kol-text-muted">
+                  Deposit {currentNetwork.symbol} through the {currentNetwork.networkLabel} network for this address.
+                </p>
+
                 {/* QR Code + Address Container */}
-                <button
-                  className="relative flex w-full cursor-pointer flex-row items-start gap-4 rounded-lg border border-kol-border/50 p-[1px] pr-4 transition-all duration-150 hover:border-kol-border hover:bg-kol-surface-elevated/20"
+                <div
+                  className="relative p-4 rounded-lg border border-kol-border/50 bg-kol-surface-elevated cursor-pointer hover:bg-kol-surface-elevated/70 transition-colors"
                   onClick={handleCopy}
                 >
-                  {/* QR Code */}
-                  <QRCodeWithLogo
-                    value={currentNetwork.address}
-                    size={120}
-                    networkIcon={currentNetwork.icon}
-                    networkSymbol={currentNetwork.symbol}
-                  />
+                  <div className="flex gap-4">
+                    {/* QR Code */}
+                    <QRCodeWithLogo
+                      value={currentNetwork.address}
+                      size={150}
+                      networkIcon={currentNetwork.icon}
+                      networkSymbol={currentNetwork.symbol}
+                    />
 
-                  {/* Address */}
-                  <div className="flex flex-col items-start gap-1 pt-3 flex-1 min-w-0">
-                    <span className="text-xs text-kol-text-muted">Deposit Address</span>
-                    <span className="w-full break-all text-left text-xs text-kol-text-muted/80 leading-4">
-                      {currentNetwork.address}
-                    </span>
+                    {/* Address */}
+                    <div className="flex-1">
+                      <div className="text-sm text-kol-text-muted mb-2">Deposit Address</div>
+                      <code className="block text-sm font-mono break-all text-white">
+                        {currentNetwork.address}
+                      </code>
+                    </div>
                   </div>
 
                   {/* Copy Icon */}
-                  <div className="absolute bottom-2 right-2 flex h-6 w-6 items-center justify-center rounded">
-                    <i className={`${copied ? 'ri-check-line text-kol-green' : 'ri-file-copy-line text-kol-text-muted'} text-base`} />
-                  </div>
-                </button>
-
-                {/* Network hint */}
-                <p className="text-center text-sm text-kol-text-muted mt-5">
-                  Send only <span className="text-kol-blue font-medium">{currentNetwork.symbol}</span> via <span className="text-kol-blue font-medium">{currentNetwork.networkLabel}</span> network
-                </p>
+                  <i className={`absolute bottom-3 right-3 text-sm opacity-40 ${copied ? 'ri-check-line text-kol-green opacity-100' : 'ri-file-copy-line'}`} />
+                </div>
               </div>
             </div>
           </motion.div>
