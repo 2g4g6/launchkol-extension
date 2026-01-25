@@ -35,21 +35,25 @@ interface HeaderProps {
   totalBalanceUsd: number;
   onDeposit: () => void;
   onWithdraw?: () => void;
+  onSearchClick?: () => void;
 }
 
 // Search input (visual placeholder)
-function SearchInput() {
+function SearchInput({ onClick }: { onClick?: () => void }) {
   return (
-    <div className="relative flex items-center gap-2 px-3 py-1.5 rounded-lg bg-kol-surface/50 border border-kol-border/30 hover:border-kol-border/50 transition-colors cursor-pointer group min-w-[120px]">
+    <button
+      onClick={onClick}
+      className="relative flex items-center gap-2 px-3 py-1.5 rounded-lg bg-kol-surface/50 border border-kol-border/30 hover:border-kol-blue/30 hover:bg-kol-surface/70 transition-colors cursor-pointer group min-w-[120px]"
+    >
       <i className="ri-search-line text-sm text-kol-text-muted group-hover:text-kol-text-secondary transition-colors" />
       <span className="text-xs text-kol-text-muted group-hover:text-kol-text-secondary transition-colors font-body flex-1">
-        Search...
+        Search tokens...
       </span>
       {/* Keyboard shortcut badge */}
       <span className="px-1.5 py-0.5 rounded text-[9px] font-mono bg-kol-border/40 text-kol-text-muted border border-kol-border/30">
         /
       </span>
-    </div>
+    </button>
   );
 }
 
@@ -448,6 +452,7 @@ export function Header({
   totalBalanceUsd,
   onDeposit,
   onWithdraw,
+  onSearchClick,
 }: HeaderProps) {
   return (
     <motion.header
@@ -521,7 +526,7 @@ export function Header({
 
       {/* Right side: Search, Wallet, User */}
       <div className="relative z-10 flex items-center gap-2">
-        <SearchInput />
+        <SearchInput onClick={onSearchClick} />
         <WalletDropdown
           balance={balance}
           networks={networks}

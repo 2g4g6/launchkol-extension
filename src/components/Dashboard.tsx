@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Header } from './dashboard/Header'
 import { TrackerFeed } from './dashboard/TrackerFeed'
@@ -7,6 +7,7 @@ import { SocialPostData } from './dashboard/SocialPost'
 import { CoinData } from './dashboard/CoinCard'
 import { DepositModal, NetworkConfig } from './ui/DepositModal'
 import { WithdrawModal } from './ui/WithdrawModal'
+import { SearchTokensModal, TokenResult } from './ui/SearchTokensModal'
 
 type TabId = 'feed' | 'coins'
 
@@ -42,6 +43,7 @@ export function Dashboard({ user, onSignOut }: DashboardProps) {
   const [activeTab, setActiveTab] = useState<TabId>('feed')
   const [isDepositModalOpen, setIsDepositModalOpen] = useState(false)
   const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false)
+  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false)
 
   // Simulated balance fetch
   useEffect(() => {
@@ -49,6 +51,28 @@ export function Dashboard({ user, onSignOut }: DashboardProps) {
       setBalance(prev => prev + (Math.random() - 0.5) * 0.01)
     }, 5000)
     return () => clearInterval(interval)
+  }, [])
+
+  // Keyboard shortcut for search (/)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Only trigger if not in an input/textarea and "/" is pressed
+      const target = e.target as HTMLElement
+      const isInputFocused = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable
+
+      if (e.key === '/' && !isInputFocused && !isSearchModalOpen) {
+        e.preventDefault()
+        setIsSearchModalOpen(true)
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [isSearchModalOpen])
+
+  const handleSelectToken = useCallback((token: TokenResult) => {
+    console.log('Selected token:', token)
+    // TODO: Navigate to token trading view or populate trade panel
   }, [])
 
   const handleDeploy = (post: SocialPostData) => {
@@ -200,6 +224,7 @@ export function Dashboard({ user, onSignOut }: DashboardProps) {
         totalBalanceUsd={balance * 150}
         onDeposit={() => setIsDepositModalOpen(true)}
         onWithdraw={() => setIsWithdrawModalOpen(true)}
+        onSearchClick={() => setIsSearchModalOpen(true)}
       />
 
       {/* Deposit Modal */}
@@ -217,6 +242,13 @@ export function Dashboard({ user, onSignOut }: DashboardProps) {
         networks={NETWORKS}
         defaultNetwork="sol"
         solPrice={150}
+      />
+
+      {/* Search Tokens Modal */}
+      <SearchTokensModal
+        isOpen={isSearchModalOpen}
+        onClose={() => setIsSearchModalOpen(false)}
+        onSelectToken={handleSelectToken}
       />
 
       {/* Tab Content */}
