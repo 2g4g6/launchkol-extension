@@ -6,6 +6,7 @@ import { MyCoinsTab } from './dashboard/MyCoinsTab'
 import { SocialPostData } from './dashboard/SocialPost'
 import { CoinData } from './dashboard/CoinCard'
 import { DepositModal, NetworkConfig } from './ui/DepositModal'
+import { WalletModal } from './ui/WalletModal'
 
 type TabId = 'feed' | 'coins'
 
@@ -40,6 +41,7 @@ export function Dashboard({ user, onSignOut }: DashboardProps) {
   const [balance, setBalance] = useState(4.523)
   const [activeTab, setActiveTab] = useState<TabId>('feed')
   const [isDepositModalOpen, setIsDepositModalOpen] = useState(false)
+  const [isWalletModalOpen, setIsWalletModalOpen] = useState(false)
 
   // Simulated balance fetch
   useEffect(() => {
@@ -194,7 +196,16 @@ export function Dashboard({ user, onSignOut }: DashboardProps) {
         onSignOut={onSignOut}
         balance={balance}
         userEmail={user.email}
-        onWalletClick={() => setIsDepositModalOpen(true)}
+        onWalletClick={() => setIsWalletModalOpen(true)}
+      />
+
+      {/* Wallet Modal */}
+      <WalletModal
+        isOpen={isWalletModalOpen}
+        onClose={() => setIsWalletModalOpen(false)}
+        onDeposit={() => setIsDepositModalOpen(true)}
+        networks={NETWORKS}
+        totalBalanceUsd={balance * 150} // Approximate USD value based on SOL price
       />
 
       {/* Deposit Modal */}
