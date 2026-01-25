@@ -55,7 +55,7 @@ function NetworkDropdown({ networks, activeNetwork, onSelect }: NetworkDropdownP
   }, [])
 
   return (
-    <div className="relative inline-block" ref={dropdownRef}>
+    <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-kol-surface-elevated border border-kol-border/50 hover:border-kol-border transition-colors"
@@ -73,7 +73,7 @@ function NetworkDropdown({ networks, activeNetwork, onSelect }: NetworkDropdownP
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -4 }}
             transition={{ duration: 0.15 }}
-            className="absolute top-full left-1/2 -translate-x-1/2 mt-2 rounded-xl overflow-hidden border border-kol-border/50 bg-kol-surface-elevated z-50 min-w-[180px]"
+            className="absolute top-full left-0 right-0 mt-2 rounded-xl overflow-hidden border border-kol-border/50 bg-kol-surface-elevated z-50"
           >
             {networks.map((network) => (
               <button
@@ -126,7 +126,7 @@ function QRCodeWithLogo({ value, size = 160, networkIcon, networkSymbol }: QRCod
       />
       {/* Center network icon overlay */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <div className="w-10 h-10 rounded-lg bg-black flex items-center justify-center shadow-lg">
+        <div className="w-10 h-10 rounded-full bg-black flex items-center justify-center shadow-lg">
           <img src={networkIcon} alt={networkSymbol} className="w-6 h-6" />
         </div>
       </div>
