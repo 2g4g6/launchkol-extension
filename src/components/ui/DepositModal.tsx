@@ -126,7 +126,7 @@ function QRCodeWithLogo({ value, size = 160, networkIcon, networkSymbol }: QRCod
       />
       {/* Center network icon overlay */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <div className="w-10 h-10 rounded-lg bg-kol-blue flex items-center justify-center shadow-lg">
+        <div className="w-10 h-10 rounded-lg bg-black flex items-center justify-center shadow-lg">
           <img src={networkIcon} alt={networkSymbol} className="w-6 h-6" />
         </div>
       </div>
