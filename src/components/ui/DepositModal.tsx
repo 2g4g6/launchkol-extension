@@ -212,7 +212,10 @@ export function DepositModal({ isOpen, onClose, networks, defaultNetwork }: Depo
             <div className="bg-kol-bg rounded-lg overflow-hidden border border-kol-border">
               {/* Header */}
               <div className="flex items-center justify-between px-4 py-3 border-b border-kol-border">
-                <h2 className="font-medium text-white text-sm">Deposit</h2>
+                <div className="flex items-center gap-2">
+                  <i className="ri-wallet-3-line text-sm text-kol-text-muted" />
+                  <h2 className="font-medium text-white text-sm">Deposit</h2>
+                </div>
                 <button
                   onClick={onClose}
                   className="rounded opacity-50 transition-opacity hover:opacity-100"
