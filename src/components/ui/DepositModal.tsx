@@ -190,24 +190,22 @@ export function DepositModal({ isOpen, onClose, networks, defaultNetwork }: Depo
   const modalContent = (
     <AnimatePresence>
       {isOpen && (
-        <>
-          {/* Backdrop */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[9998]"
-            onClick={onClose}
-          />
-
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
+          className="fixed inset-0 z-[9998] flex items-center justify-center bg-black/70 backdrop-blur-sm"
+          onClick={onClose}
+        >
           {/* Modal */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ duration: 0.25, ease: CUSTOM_EASE }}
-            className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-[9999] w-[420px] max-w-[95vw]"
+            className="w-[420px] max-w-[95vw]"
+            onClick={(e) => e.stopPropagation()}
           >
             <div
               className="relative bg-[#0d0d10] border border-kol-border/50 rounded-2xl overflow-hidden"
@@ -295,7 +293,7 @@ export function DepositModal({ isOpen, onClose, networks, defaultNetwork }: Depo
               </div>
             </div>
           </motion.div>
-        </>
+        </motion.div>
       )}
     </AnimatePresence>
   )
