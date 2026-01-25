@@ -31,40 +31,50 @@ export interface DepositModalProps {
 const CUSTOM_EASE = [0.16, 1, 0.3, 1] as const
 
 // ============================================================================
-// Network Tab Component
+// Segmented Control Component
 // ============================================================================
 
-interface NetworkTabProps {
-  network: NetworkConfig
-  isActive: boolean
-  onClick: () => void
+interface SegmentedControlProps {
+  networks: NetworkConfig[]
+  activeNetwork: string
+  onSelect: (id: string) => void
 }
 
-function NetworkTab({ network, isActive, onClick }: NetworkTabProps) {
+function SegmentedControl({ networks, activeNetwork, onSelect }: SegmentedControlProps) {
   return (
-    <button
-      onClick={onClick}
-      className={`
-        flex-1 flex items-center justify-between px-6 py-4 transition-colors
-        ${isActive
-          ? 'bg-kol-surface border-b-2 border-kol-blue'
-          : 'bg-kol-surface/30 hover:bg-kol-surface/50 border-b-2 border-transparent'
-        }
-      `}
-    >
-      <div className="flex items-center gap-3">
-        <img
-          src={network.icon}
-          alt={network.symbol}
-          className="w-6 h-6"
-        />
-        <span className="font-semibold text-white">{network.symbol}</span>
-      </div>
-      <div className="text-right">
-        <div className="text-xs text-kol-text-muted">Balance:</div>
-        <div className="font-semibold text-white">{network.balance.toFixed(2)} {network.symbol}</div>
-      </div>
-    </button>
+    <div className="inline-flex p-1 rounded-xl bg-kol-bg/50 border border-kol-border/30">
+      {networks.map((network) => {
+        const isActive = activeNetwork === network.id
+        return (
+          <motion.button
+            key={network.id}
+            onClick={() => onSelect(network.id)}
+            className={`
+              relative flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-colors
+              ${isActive ? 'text-white' : 'text-kol-text-muted hover:text-kol-text-secondary'}
+            `}
+            whileTap={{ scale: 0.97 }}
+          >
+            {isActive && (
+              <motion.div
+                layoutId="activeSegment"
+                className="absolute inset-0 bg-kol-surface-elevated border border-kol-border/50 rounded-lg"
+                style={{
+                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.03) inset',
+                }}
+                transition={{ type: 'spring', bounce: 0.15, duration: 0.4 }}
+              />
+            )}
+            <img
+              src={network.icon}
+              alt={network.symbol}
+              className="w-5 h-5 relative z-10"
+            />
+            <span className="relative z-10">{network.symbol}</span>
+          </motion.button>
+        )
+      })}
+    </div>
   )
 }
 
@@ -77,9 +87,14 @@ interface QRCodeWithLogoProps {
   size?: number
 }
 
-function QRCodeWithLogo({ value, size = 150 }: QRCodeWithLogoProps) {
+function QRCodeWithLogo({ value, size = 180 }: QRCodeWithLogoProps) {
   return (
-    <div className="relative bg-white p-1 rounded-lg flex-shrink-0">
+    <motion.div
+      className="relative bg-white p-3 rounded-2xl shadow-2xl"
+      initial={{ scale: 0.9, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      transition={{ delay: 0.1, duration: 0.3, ease: CUSTOM_EASE }}
+    >
       <QRCodeSVG
         value={value}
         size={size}
@@ -89,11 +104,54 @@ function QRCodeWithLogo({ value, size = 150 }: QRCodeWithLogoProps) {
       />
       {/* Center logo overlay */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <div className="w-8 h-8 rounded-md bg-kol-blue flex items-center justify-center shadow-lg">
-          <span className="text-white font-display font-bold text-xs">LK</span>
+        <div
+          className="w-10 h-10 rounded-xl bg-kol-blue flex items-center justify-center"
+          style={{
+            boxShadow: '0 4px 12px rgba(0, 123, 255, 0.4)',
+          }}
+        >
+          <span className="text-white font-display font-bold text-sm">LK</span>
         </div>
       </div>
-    </div>
+    </motion.div>
+  )
+}
+
+// ============================================================================
+// Address Pill Component
+// ============================================================================
+
+interface AddressPillProps {
+  address: string
+  onCopy: () => void
+  copied: boolean
+}
+
+function AddressPill({ address, onCopy, copied }: AddressPillProps) {
+  // Truncate address for display
+  const truncated = `${address.slice(0, 8)}...${address.slice(-8)}`
+
+  return (
+    <motion.button
+      onClick={onCopy}
+      className="group relative flex items-center gap-3 px-4 py-3 rounded-xl bg-kol-surface/50 border border-kol-border/30 hover:border-kol-blue/30 transition-all w-full max-w-[320px]"
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+    >
+      {/* Hover glow */}
+      <div className="absolute inset-0 rounded-xl bg-kol-blue/0 group-hover:bg-kol-blue/5 transition-colors" />
+
+      <code className="relative z-10 text-sm font-mono text-white flex-1 text-left">
+        {truncated}
+      </code>
+
+      <div className="relative z-10 flex items-center gap-2">
+        <span className="text-xs text-kol-text-muted group-hover:text-kol-text-secondary transition-colors">
+          {copied ? 'Copied!' : 'Copy'}
+        </span>
+        <i className={`${copied ? 'ri-check-line text-kol-green' : 'ri-file-copy-line text-kol-text-muted group-hover:text-kol-blue'} text-base transition-colors`} />
+      </div>
+    </motion.button>
   )
 }
 
@@ -164,7 +222,7 @@ export function DepositModal({ isOpen, onClose, networks, defaultNetwork }: Depo
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
-          className="fixed inset-0 z-[9998] flex items-center justify-center bg-black/70 backdrop-blur-sm"
+          className="fixed inset-0 z-[9998] flex items-center justify-center bg-black/60 backdrop-blur-sm"
           onClick={onClose}
         >
           {/* Modal */}
@@ -173,61 +231,89 @@ export function DepositModal({ isOpen, onClose, networks, defaultNetwork }: Depo
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ duration: 0.25, ease: CUSTOM_EASE }}
-            className="w-[420px] max-w-[95vw]"
+            className="w-[380px] max-w-[95vw]"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="bg-kol-surface rounded-lg overflow-hidden border border-kol-border/50">
-              {/* Header */}
-              <div className="flex items-center justify-between px-6 py-4 border-b border-kol-border/30">
-                <h2 className="font-semibold text-white leading-none">Deposit</h2>
-                <button
-                  onClick={onClose}
-                  className="rounded opacity-70 transition-opacity hover:opacity-100 flex-shrink-0"
-                >
-                  <i className="ri-close-line text-lg" />
-                </button>
-              </div>
+            <div
+              className="relative overflow-hidden rounded-2xl"
+              style={{
+                background: 'rgba(16, 16, 16, 0.95)',
+                backdropFilter: 'blur(24px)',
+                WebkitBackdropFilter: 'blur(24px)',
+                border: '1px solid rgba(255, 255, 255, 0.06)',
+                boxShadow: `
+                  0 25px 50px -12px rgba(0, 0, 0, 0.8),
+                  0 0 0 1px rgba(255, 255, 255, 0.03) inset,
+                  0 1px 0 rgba(255, 255, 255, 0.05) inset
+                `,
+              }}
+            >
+              {/* Top highlight line */}
+              <div
+                className="absolute top-0 left-6 right-6 h-px"
+                style={{
+                  background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent)',
+                }}
+              />
 
-              {/* Network Tabs */}
-              <div className="flex border-b border-kol-border/30">
-                {networks.map(network => (
-                  <NetworkTab
-                    key={network.id}
-                    network={network}
-                    isActive={activeNetwork === network.id}
-                    onClick={() => setActiveNetwork(network.id)}
-                  />
-                ))}
+              {/* Gradient orb accent */}
+              <div
+                className="absolute -top-20 left-1/2 -translate-x-1/2 w-[200px] h-[200px] rounded-full opacity-40 pointer-events-none"
+                style={{
+                  background: 'radial-gradient(circle, rgba(0, 123, 255, 0.3) 0%, transparent 70%)',
+                  filter: 'blur(40px)',
+                }}
+              />
+
+              {/* Header */}
+              <div className="relative flex items-center justify-between px-5 py-4">
+                <h2 className="text-lg font-display font-semibold text-white">Deposit</h2>
+                <motion.button
+                  onClick={onClose}
+                  className="p-1.5 rounded-lg hover:bg-kol-surface/50 transition-colors"
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                >
+                  <i className="ri-close-line text-xl text-kol-text-muted hover:text-white transition-colors" />
+                </motion.button>
               </div>
 
               {/* Content */}
-              <div className="p-6">
-                {/* Description */}
-                <p className="mb-4 text-sm text-kol-text-muted">
-                  Deposit {currentNetwork.symbol} through the {currentNetwork.networkLabel} network for this address.
-                </p>
-
-                {/* QR Code and Address Container */}
-                <div
-                  className="p-4 rounded-lg border border-kol-border/50 bg-kol-surface-elevated/50 cursor-pointer hover:bg-kol-surface-elevated transition-colors relative"
-                  onClick={handleCopy}
-                >
-                  <div className="flex gap-4">
-                    {/* QR Code */}
-                    <QRCodeWithLogo value={currentNetwork.address} size={150} />
-
-                    {/* Address Info */}
-                    <div className="flex-1">
-                      <div className="text-sm text-kol-text-muted mb-2">Deposit Address</div>
-                      <code className="block text-sm font-mono break-all text-white">
-                        {currentNetwork.address}
-                      </code>
-                    </div>
-                  </div>
-
-                  {/* Copy Icon */}
-                  <i className={`${copied ? 'ri-check-line text-kol-green' : 'ri-file-copy-line'} absolute bottom-3 right-3 text-sm opacity-40`} />
+              <div className="relative px-5 pb-6">
+                {/* Network Selector */}
+                <div className="flex justify-center mb-6">
+                  <SegmentedControl
+                    networks={networks}
+                    activeNetwork={activeNetwork}
+                    onSelect={setActiveNetwork}
+                  />
                 </div>
+
+                {/* QR Code - Hero */}
+                <div className="flex justify-center mb-5">
+                  <QRCodeWithLogo value={currentNetwork.address} size={180} />
+                </div>
+
+                {/* Balance */}
+                <div className="text-center mb-5">
+                  <span className="text-sm text-kol-text-muted">
+                    Available: <span className="text-white font-semibold">{currentNetwork.balance.toFixed(4)} {currentNetwork.symbol}</span>
+                  </span>
+                </div>
+
+                {/* Address Pill */}
+                <div className="flex justify-center">
+                  <AddressPill
+                    address={currentNetwork.address}
+                    onCopy={handleCopy}
+                    copied={copied}
+                  />
+                </div>
+
+                {/* Network hint */}
+                <p className="text-center text-xs text-kol-text-muted mt-4">
+                  Send only <span className="text-kol-blue font-medium">{currentNetwork.symbol}</span> via <span className="text-kol-blue font-medium">{currentNetwork.networkLabel}</span> network
+                </p>
               </div>
             </div>
           </motion.div>
