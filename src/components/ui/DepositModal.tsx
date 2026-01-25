@@ -116,7 +116,7 @@ interface QRCodeWithLogoProps {
 
 function QRCodeWithLogo({ value, size = 120, networkIcon, networkSymbol }: QRCodeWithLogoProps) {
   return (
-    <div className="relative bg-white p-1 rounded-md flex-shrink-0">
+    <div className="relative bg-white p-1.5 rounded-md flex-shrink-0">
       <QRCodeSVG
         value={value}
         size={size}
@@ -126,7 +126,7 @@ function QRCodeWithLogo({ value, size = 120, networkIcon, networkSymbol }: QRCod
       />
       {/* Center network icon overlay */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <div className="w-8 h-8 rounded-full bg-black flex items-center justify-center">
+        <div className="w-8 h-8 rounded-full bg-black flex items-center justify-center shadow-sm">
           <img src={networkIcon} alt={networkSymbol} className="w-5 h-5" />
         </div>
       </div>
@@ -234,10 +234,10 @@ export function DepositModal({ isOpen, onClose, networks, defaultNetwork }: Depo
 
                 {/* QR Code + Address Container */}
                 <div
-                  className="relative p-3 rounded-md border border-kol-border bg-kol-surface cursor-pointer hover:bg-kol-surface-elevated/50 transition-colors"
+                  className="group relative p-3 rounded-md border border-kol-border bg-kol-surface cursor-pointer hover:bg-kol-surface-elevated/30 transition-colors"
                   onClick={handleCopy}
                 >
-                  <div className="flex gap-3">
+                  <div className="flex gap-4">
                     {/* QR Code */}
                     <QRCodeWithLogo
                       value={currentNetwork.address}
@@ -247,17 +247,25 @@ export function DepositModal({ isOpen, onClose, networks, defaultNetwork }: Depo
                     />
 
                     {/* Address */}
-                    <div className="flex-1 pt-1">
-                      <div className="text-xs text-kol-text-muted mb-1.5">Deposit Address</div>
-                      <code className="block text-xs font-mono break-all text-kol-text-muted/70 leading-relaxed">
+                    <div className="flex-1 pt-1 pr-4">
+                      <div className="text-xs text-kol-text-muted mb-2">Deposit Address</div>
+                      <code className="block text-[11px] font-mono break-all text-kol-text-muted leading-relaxed">
                         {currentNetwork.address}
                       </code>
                     </div>
                   </div>
 
                   {/* Copy Icon */}
-                  <i className={`absolute bottom-2.5 right-2.5 text-xs opacity-40 ${copied ? 'ri-check-line text-kol-green opacity-100' : 'ri-file-copy-line'}`} />
+                  <div className="absolute bottom-2.5 right-2.5 flex items-center gap-1">
+                    {copied && <span className="text-[10px] text-kol-green">Copied!</span>}
+                    <i className={`text-xs transition-opacity ${copied ? 'ri-check-line text-kol-green' : 'ri-file-copy-line text-kol-text-muted opacity-40 group-hover:opacity-70'}`} />
+                  </div>
                 </div>
+
+                {/* Network hint */}
+                <p className="text-center text-[10px] text-kol-text-muted/50 mt-3">
+                  Send only {currentNetwork.symbol} via {currentNetwork.networkLabel} network
+                </p>
               </div>
             </div>
           </motion.div>
