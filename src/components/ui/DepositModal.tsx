@@ -160,7 +160,7 @@ export function DepositModal({ isOpen, onClose, networks, defaultNetwork }: Depo
       isOpen={isOpen}
       onClose={onClose}
       title="Deposit"
-      icon="ri-wallet-3-line"
+      icon="ri-arrow-down-line"
     >
       {/* Network Pill Dropdown - Centered */}
       <div className="flex justify-center mb-4">
