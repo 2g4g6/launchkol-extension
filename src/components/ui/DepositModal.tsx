@@ -224,18 +224,13 @@ export function DepositModal({ isOpen, onClose, networks, defaultNetwork }: Depo
               {/* Content */}
               <div className="p-6">
                 {/* Network Pill Dropdown - Centered */}
-                <div className="flex justify-center mb-4">
+                <div className="flex justify-center mb-6">
                   <NetworkDropdown
                     networks={networks}
                     activeNetwork={currentNetwork}
                     onSelect={setActiveNetwork}
                   />
                 </div>
-
-                {/* Description */}
-                <p className="mb-4 text-sm text-kol-text-muted">
-                  Deposit {currentNetwork.symbol} through the {currentNetwork.networkLabel} network for this address.
-                </p>
 
                 {/* QR Code + Address Container */}
                 <div
@@ -254,7 +249,7 @@ export function DepositModal({ isOpen, onClose, networks, defaultNetwork }: Depo
                     {/* Address */}
                     <div className="flex-1">
                       <div className="text-sm text-kol-text-muted mb-2">Deposit Address</div>
-                      <code className="block text-sm font-mono break-all text-white">
+                      <code className="block text-xs font-mono break-all text-kol-text-muted/80 leading-relaxed">
                         {currentNetwork.address}
                       </code>
                     </div>
