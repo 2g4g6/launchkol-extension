@@ -58,12 +58,12 @@ function NetworkDropdown({ networks, activeNetwork, onSelect }: NetworkDropdownP
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-kol-surface-elevated border border-kol-border/50 hover:border-kol-border transition-colors"
+        className="flex items-center gap-2 px-3 py-2 rounded-full bg-kol-surface border border-kol-border hover:border-kol-border/80 transition-colors"
       >
-        <img src={activeNetwork.icon} alt={activeNetwork.symbol} className="w-5 h-5" />
-        <span className="font-semibold text-white text-sm">{activeNetwork.symbol}</span>
-        <span className="text-sm text-kol-text-muted">{activeNetwork.balance.toFixed(2)}</span>
-        <i className={`ri-arrow-down-s-line text-kol-text-muted text-sm transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+        <img src={activeNetwork.icon} alt={activeNetwork.symbol} className="w-4 h-4" />
+        <span className="font-medium text-white text-xs">{activeNetwork.symbol}</span>
+        <span className="text-xs text-kol-text-muted">{activeNetwork.balance.toFixed(2)}</span>
+        <i className={`ri-arrow-down-s-line text-kol-text-muted text-xs transition-transform ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
       <AnimatePresence>
@@ -73,7 +73,7 @@ function NetworkDropdown({ networks, activeNetwork, onSelect }: NetworkDropdownP
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -4 }}
             transition={{ duration: 0.15 }}
-            className="absolute top-full left-0 right-0 mt-2 rounded-xl overflow-hidden border border-kol-border/50 bg-kol-surface-elevated z-50"
+            className="absolute top-full left-0 right-0 mt-1.5 rounded-lg overflow-hidden border border-kol-border bg-kol-surface z-50"
           >
             {networks.map((network) => (
               <button
@@ -82,17 +82,17 @@ function NetworkDropdown({ networks, activeNetwork, onSelect }: NetworkDropdownP
                   onSelect(network.id)
                   setIsOpen(false)
                 }}
-                className={`w-full flex items-center gap-2.5 px-4 py-2.5 transition-colors ${
+                className={`w-full flex items-center gap-2 px-3 py-2 transition-colors ${
                   network.id === activeNetwork.id
-                    ? 'bg-kol-blue/10'
-                    : 'hover:bg-kol-surface'
+                    ? 'bg-kol-surface-elevated'
+                    : 'hover:bg-kol-surface-elevated/50'
                 }`}
               >
-                <img src={network.icon} alt={network.symbol} className="w-5 h-5" />
-                <span className="font-medium text-white text-sm">{network.symbol}</span>
-                <span className="text-sm text-kol-text-muted ml-auto">{network.balance.toFixed(2)}</span>
+                <img src={network.icon} alt={network.symbol} className="w-4 h-4" />
+                <span className="font-medium text-white text-xs">{network.symbol}</span>
+                <span className="text-xs text-kol-text-muted ml-auto">{network.balance.toFixed(2)}</span>
                 {network.id === activeNetwork.id && (
-                  <i className="ri-check-line text-kol-blue text-sm" />
+                  <i className="ri-check-line text-kol-blue text-xs" />
                 )}
               </button>
             ))}
@@ -114,9 +114,9 @@ interface QRCodeWithLogoProps {
   networkSymbol: string
 }
 
-function QRCodeWithLogo({ value, size = 150, networkIcon, networkSymbol }: QRCodeWithLogoProps) {
+function QRCodeWithLogo({ value, size = 120, networkIcon, networkSymbol }: QRCodeWithLogoProps) {
   return (
-    <div className="relative bg-white p-1 rounded-lg flex-shrink-0">
+    <div className="relative bg-white p-1 rounded-md flex-shrink-0">
       <QRCodeSVG
         value={value}
         size={size}
@@ -126,8 +126,8 @@ function QRCodeWithLogo({ value, size = 150, networkIcon, networkSymbol }: QRCod
       />
       {/* Center network icon overlay */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <div className="w-10 h-10 rounded-full bg-black flex items-center justify-center shadow-md">
-          <img src={networkIcon} alt={networkSymbol} className="w-6 h-6" />
+        <div className="w-8 h-8 rounded-full bg-black flex items-center justify-center">
+          <img src={networkIcon} alt={networkSymbol} className="w-5 h-5" />
         </div>
       </div>
     </div>
@@ -206,25 +206,25 @@ export function DepositModal({ isOpen, onClose, networks, defaultNetwork }: Depo
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ duration: 0.25, ease: CUSTOM_EASE }}
-            className="w-[380px] max-w-[95vw]"
+            className="w-[420px] max-w-[95vw]"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="bg-kol-surface rounded-xl overflow-hidden border border-kol-border/50">
+            <div className="bg-kol-bg rounded-lg overflow-hidden border border-kol-border">
               {/* Header */}
-              <div className="flex items-center justify-between px-6 py-4 border-b border-kol-border/30">
-                <h2 className="font-semibold text-white text-lg">Deposit</h2>
+              <div className="flex items-center justify-between px-4 py-3 border-b border-kol-border">
+                <h2 className="font-medium text-white text-sm">Deposit</h2>
                 <button
                   onClick={onClose}
-                  className="rounded opacity-70 transition-opacity hover:opacity-100"
+                  className="rounded opacity-50 transition-opacity hover:opacity-100"
                 >
-                  <i className="ri-close-line text-xl" />
+                  <i className="ri-close-line text-base" />
                 </button>
               </div>
 
               {/* Content */}
-              <div className="p-6">
+              <div className="p-4">
                 {/* Network Pill Dropdown - Centered */}
-                <div className="flex justify-center mb-6">
+                <div className="flex justify-center mb-4">
                   <NetworkDropdown
                     networks={networks}
                     activeNetwork={currentNetwork}
@@ -234,29 +234,29 @@ export function DepositModal({ isOpen, onClose, networks, defaultNetwork }: Depo
 
                 {/* QR Code + Address Container */}
                 <div
-                  className="relative p-4 rounded-lg border border-kol-border/50 bg-kol-surface-elevated cursor-pointer hover:bg-kol-surface-elevated/70 transition-colors"
+                  className="relative p-3 rounded-md border border-kol-border bg-kol-surface cursor-pointer hover:bg-kol-surface-elevated/50 transition-colors"
                   onClick={handleCopy}
                 >
-                  <div className="flex gap-4">
+                  <div className="flex gap-3">
                     {/* QR Code */}
                     <QRCodeWithLogo
                       value={currentNetwork.address}
-                      size={150}
+                      size={120}
                       networkIcon={currentNetwork.icon}
                       networkSymbol={currentNetwork.symbol}
                     />
 
                     {/* Address */}
-                    <div className="flex-1">
-                      <div className="text-sm text-kol-text-muted mb-2">Deposit Address</div>
-                      <code className="block text-xs font-mono break-all text-kol-text-muted/80 leading-relaxed">
+                    <div className="flex-1 pt-1">
+                      <div className="text-xs text-kol-text-muted mb-1.5">Deposit Address</div>
+                      <code className="block text-xs font-mono break-all text-kol-text-muted/70 leading-relaxed">
                         {currentNetwork.address}
                       </code>
                     </div>
                   </div>
 
                   {/* Copy Icon */}
-                  <i className={`absolute bottom-3 right-3 text-sm opacity-40 ${copied ? 'ri-check-line text-kol-green opacity-100' : 'ri-file-copy-line'}`} />
+                  <i className={`absolute bottom-2.5 right-2.5 text-xs opacity-40 ${copied ? 'ri-check-line text-kol-green opacity-100' : 'ri-file-copy-line'}`} />
                 </div>
               </div>
             </div>
