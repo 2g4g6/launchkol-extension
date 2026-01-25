@@ -1,26 +1,26 @@
-import { useState, useRef, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Logo } from '../Logo'
+import { useState, useRef, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Logo } from "../Logo";
 
-type TabId = 'feed' | 'coins'
+type TabId = "feed" | "coins";
 
 interface Tab {
-  id: TabId
-  label: string
-  icon: string
+  id: TabId;
+  label: string;
+  icon: string;
 }
 
 const TABS: Tab[] = [
-  { id: 'feed', label: 'Feed', icon: 'ri-radar-line' },
-  { id: 'coins', label: 'Coins', icon: 'ri-coin-line' },
-]
+  { id: "feed", label: "Feed", icon: "ri-radar-line" },
+  { id: "coins", label: "Coins", icon: "ri-coin-line" },
+];
 
 interface HeaderProps {
-  activeTab: TabId
-  onTabChange: (tab: TabId) => void
-  onSignOut: () => void
-  balance: number
-  userEmail: string
+  activeTab: TabId;
+  onTabChange: (tab: TabId) => void;
+  onSignOut: () => void;
+  balance: number;
+  userEmail: string;
 }
 
 // Search input (visual placeholder)
@@ -36,7 +36,7 @@ function SearchInput() {
         /
       </span>
     </div>
-  )
+  );
 }
 
 // Wallet Balance indicator with Solana icon
@@ -54,13 +54,19 @@ function WalletIndicator({ balance }: { balance: number }) {
       <i className="ri-wallet-3-line text-sm text-kol-text-muted relative z-10" />
 
       {/* Solana Logo */}
-      <img src="/images/solanaLogoMark.svg" alt="SOL" width={14} height={11} className="relative z-10" />
+      <img
+        src="/images/solanaLogoMark.svg"
+        alt="SOL"
+        width={14}
+        height={11}
+        className="relative z-10"
+      />
 
       <span className="relative z-10 text-sm font-mono text-white font-medium">
         {balance.toFixed(2)}
       </span>
     </motion.div>
-  )
+  );
 }
 
 // User dropdown with avatar
@@ -68,25 +74,28 @@ function UserDropdown({
   email,
   onSignOut,
 }: {
-  email: string
-  onSignOut: () => void
+  email: string;
+  onSignOut: () => void;
 }) {
-  const [isOpen, setIsOpen] = useState(false)
-  const dropdownRef = useRef<HTMLDivElement>(null)
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Close on click outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsOpen(false)
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
       }
     }
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [])
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   // Get initials from email
-  const initials = email.slice(0, 2).toUpperCase()
+  const initials = email.slice(0, 2).toUpperCase();
 
   return (
     <div className="relative" ref={dropdownRef}>
@@ -101,12 +110,14 @@ function UserDropdown({
         <div className="absolute inset-0 bg-kol-blue/0 group-hover:bg-kol-blue/10 transition-colors" />
 
         {/* Initials */}
-        <span className="text-[10px] font-bold text-white relative z-10">{initials}</span>
+        <span className="text-[10px] font-bold text-white relative z-10">
+          {initials}
+        </span>
 
         {/* Online status dot */}
         <span
           className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-kol-green border-2 border-kol-bg z-20"
-          style={{ boxShadow: '0 0 6px rgba(0, 196, 107, 0.6)' }}
+          style={{ boxShadow: "0 0 6px rgba(0, 196, 107, 0.6)" }}
         />
       </motion.button>
 
@@ -120,7 +131,8 @@ function UserDropdown({
             transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
             className="absolute right-0 top-full mt-2 w-48 bg-kol-surface-elevated/95 backdrop-blur-xl border border-kol-border/50 rounded-xl overflow-hidden z-50"
             style={{
-              boxShadow: '0 4px 24px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.03) inset',
+              boxShadow:
+                "0 4px 24px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.03) inset",
             }}
           >
             {/* Subtle glow */}
@@ -128,14 +140,24 @@ function UserDropdown({
 
             {/* User info */}
             <div className="relative px-3 py-2.5 border-b border-kol-border/30">
-              <p className="text-[10px] text-kol-text-muted uppercase tracking-wider mb-0.5 font-medium">Signed in as</p>
+              <p className="text-[10px] text-kol-text-muted uppercase tracking-wider mb-0.5 font-medium">
+                Signed in as
+              </p>
               <p className="text-xs text-white font-body truncate">{email}</p>
             </div>
 
             {/* Menu items */}
             <div className="relative py-1">
-              <DropdownItem icon="ri-user-3-line" label="Profile" onClick={() => setIsOpen(false)} />
-              <DropdownItem icon="ri-settings-3-line" label="Settings" onClick={() => setIsOpen(false)} />
+              <DropdownItem
+                icon="ri-user-3-line"
+                label="Profile"
+                onClick={() => setIsOpen(false)}
+              />
+              <DropdownItem
+                icon="ri-settings-3-line"
+                label="Settings"
+                onClick={() => setIsOpen(false)}
+              />
             </div>
 
             {/* Divider */}
@@ -146,7 +168,10 @@ function UserDropdown({
               <DropdownItem
                 icon="ri-logout-box-line"
                 label="Sign Out"
-                onClick={() => { setIsOpen(false); onSignOut() }}
+                onClick={() => {
+                  setIsOpen(false);
+                  onSignOut();
+                }}
                 variant="danger"
               />
             </div>
@@ -154,7 +179,7 @@ function UserDropdown({
         )}
       </AnimatePresence>
     </div>
-  )
+  );
 }
 
 // Dropdown menu item
@@ -162,16 +187,17 @@ function DropdownItem({
   icon,
   label,
   onClick,
-  variant = 'default'
+  variant = "default",
 }: {
-  icon: string
-  label: string
-  onClick: () => void
-  variant?: 'default' | 'danger'
+  icon: string;
+  label: string;
+  onClick: () => void;
+  variant?: "default" | "danger";
 }) {
-  const colorClass = variant === 'danger'
-    ? 'text-kol-red hover:bg-kol-red/10'
-    : 'text-kol-text-secondary hover:text-white hover:bg-kol-surface/80'
+  const colorClass =
+    variant === "danger"
+      ? "text-kol-red hover:bg-kol-red/10"
+      : "text-kol-text-secondary hover:text-white hover:bg-kol-surface/80";
 
   return (
     <button
@@ -181,7 +207,7 @@ function DropdownItem({
       <i className={`${icon} text-sm`} />
       <span>{label}</span>
     </button>
-  )
+  );
 }
 
 export function Header({
@@ -205,7 +231,8 @@ export function Header({
       <div
         className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[50%] h-[1px]"
         style={{
-          background: 'linear-gradient(90deg, transparent 0%, rgba(0, 123, 255, 0.25) 50%, transparent 100%)',
+          background:
+            "linear-gradient(90deg, transparent 0%, rgba(0, 123, 255, 0.25) 50%, transparent 100%)",
         }}
       />
 
@@ -229,28 +256,30 @@ export function Header({
                   layoutId="activeTabUnderline"
                   className="absolute bottom-0 left-1 right-1 h-[2px] rounded-full bg-kol-blue"
                   style={{
-                    boxShadow: '0 0 8px rgba(0, 123, 255, 0.5)',
+                    boxShadow: "0 0 8px rgba(0, 123, 255, 0.5)",
                   }}
-                  transition={{ type: 'spring', bounce: 0.2, duration: 0.4 }}
+                  transition={{ type: "spring", bounce: 0.2, duration: 0.4 }}
                 />
               )}
 
-              <i className={`${tab.icon} text-sm transition-colors duration-200 ${
-                activeTab === tab.id
-                  ? 'text-white'
-                  : 'text-kol-text-muted'
-              }`} />
+              <i
+                className={`${tab.icon} text-sm transition-colors duration-200 ${
+                  activeTab === tab.id ? "text-white" : "text-kol-text-muted"
+                }`}
+              />
 
-              <span className={`text-sm font-semibold transition-colors duration-200 ${
-                activeTab === tab.id
-                  ? 'text-white'
-                  : 'text-kol-text-muted hover:text-kol-text-secondary'
-              }`}>
+              <span
+                className={`text-sm font-semibold transition-colors duration-200 ${
+                  activeTab === tab.id
+                    ? "text-white"
+                    : "text-kol-text-muted hover:text-kol-text-secondary"
+                }`}
+              >
                 {tab.label}
               </span>
 
               {/* Live indicator for Feed */}
-              {tab.id === 'feed' && (
+              {tab.id === "feed" && (
                 <span className="w-2 h-2 rounded-full bg-kol-red shadow-sm shadow-kol-red/50 animate-pulse" />
               )}
             </motion.button>
@@ -265,5 +294,5 @@ export function Header({
         <UserDropdown email={userEmail} onSignOut={onSignOut} />
       </div>
     </motion.header>
-  )
+  );
 }

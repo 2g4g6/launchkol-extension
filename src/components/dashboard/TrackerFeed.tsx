@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { SocialPost, SocialPostData } from './SocialPost'
-import { FeedGroupsModal } from './FeedGroupsModal'
 import { Tooltip } from '../ui/Tooltip'
 
 // Mock data - tweets with different types (normal, reply, repost, quote) and media
@@ -246,7 +245,6 @@ export function TrackerFeed({ onDeploy }: TrackerFeedProps) {
   const [isSearchFocused, setIsSearchFocused] = useState(false)
   const [isTranslateEnabled, setIsTranslateEnabled] = useState(false)
   const [isPauseOnHover, setIsPauseOnHover] = useState(false)
-  const [isGroupsModalOpen, setIsGroupsModalOpen] = useState(false)
 
   const filteredPosts = posts.filter(post =>
     post.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -342,18 +340,6 @@ export function TrackerFeed({ onDeploy }: TrackerFeedProps) {
                 <i className={`${isPauseOnHover ? 'ri-pause-line' : 'ri-play-line'} text-sm`} />
               </motion.button>
             </Tooltip>
-
-            {/* Groups Button */}
-            <Tooltip content="Manage feed groups">
-              <motion.button
-                onClick={() => setIsGroupsModalOpen(true)}
-                className="w-7 h-7 rounded-lg flex items-center justify-center text-kol-text-tertiary hover:text-kol-text-secondary hover:bg-white/5 transition-colors"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <i className="ri-group-line text-sm" />
-              </motion.button>
-            </Tooltip>
           </div>
         </div>
       </motion.div>
@@ -423,12 +409,6 @@ export function TrackerFeed({ onDeploy }: TrackerFeedProps) {
         <div className="h-2" />
       </motion.div>
       </div>
-
-      {/* Feed Groups Modal */}
-      <FeedGroupsModal
-        isOpen={isGroupsModalOpen}
-        onClose={() => setIsGroupsModalOpen(false)}
-      />
     </div>
   )
 }
