@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { createPortal } from 'react-dom'
 import { QRCodeSVG } from 'qrcode.react'
+import { BaseModal } from './BaseModal'
 
 // ============================================================================
 // Types
@@ -23,12 +23,6 @@ export interface DepositModalProps {
   networks: NetworkConfig[]
   defaultNetwork?: string
 }
-
-// ============================================================================
-// Constants
-// ============================================================================
-
-const CUSTOM_EASE = [0.16, 1, 0.3, 1] as const
 
 // ============================================================================
 // Network Pill Dropdown Component
@@ -140,12 +134,7 @@ function QRCodeWithLogo({ value, size = 110, networkIcon, networkSymbol }: QRCod
 
 export function DepositModal({ isOpen, onClose, networks, defaultNetwork }: DepositModalProps) {
   const [activeNetwork, setActiveNetwork] = useState(defaultNetwork || networks[0]?.id)
-  const [mounted, setMounted] = useState(false)
   const [copied, setCopied] = useState(false)
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
 
   useEffect(() => {
     if (isOpen) {
@@ -153,27 +142,6 @@ export function DepositModal({ isOpen, onClose, networks, defaultNetwork }: Depo
       setCopied(false)
     }
   }, [isOpen, defaultNetwork, networks])
-
-  useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) {
-        onClose()
-      }
-    }
-    document.addEventListener('keydown', handleEscape)
-    return () => document.removeEventListener('keydown', handleEscape)
-  }, [isOpen, onClose])
-
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden'
-    } else {
-      document.body.style.overflow = ''
-    }
-    return () => {
-      document.body.style.overflow = ''
-    }
-  }, [isOpen])
 
   const currentNetwork = networks.find(n => n.id === activeNetwork) || networks[0]
 
@@ -187,97 +155,58 @@ export function DepositModal({ isOpen, onClose, networks, defaultNetwork }: Depo
     }
   }, [currentNetwork.address])
 
-  if (!mounted) return null
+  return (
+    <BaseModal
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Deposit"
+      icon="ri-wallet-3-line"
+    >
+      {/* Network Pill Dropdown - Centered */}
+      <div className="flex justify-center mb-4">
+        <NetworkDropdown
+          networks={networks}
+          activeNetwork={currentNetwork}
+          onSelect={setActiveNetwork}
+        />
+      </div>
 
-  const modalContent = (
-    <AnimatePresence>
-      {isOpen && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.2 }}
-          className="fixed inset-0 z-[9998] flex items-center justify-center bg-black/70"
-          onClick={onClose}
-        >
-          {/* Modal */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            transition={{ duration: 0.25, ease: CUSTOM_EASE }}
-            className="w-[390px] max-w-[95vw]"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="bg-kol-bg rounded-lg overflow-hidden border border-kol-border">
-              {/* Header */}
-              <div className="flex items-center justify-between px-4 py-3 border-b border-kol-border">
-                <div className="flex items-center gap-2">
-                  <i className="ri-wallet-3-line text-sm text-kol-text-muted" />
-                  <h2 className="font-medium text-white text-sm">Deposit</h2>
-                </div>
-                <button
-                  onClick={onClose}
-                  className="rounded opacity-50 transition-opacity hover:opacity-100"
-                >
-                  <i className="ri-close-line text-base" />
-                </button>
-              </div>
+      {/* QR Code + Address Container */}
+      <div
+        className="group relative p-3 rounded-md border border-kol-border bg-kol-surface cursor-pointer hover:bg-kol-surface-elevated/30 transition-colors"
+        onClick={handleCopy}
+      >
+        <div className="flex gap-4">
+          {/* QR Code */}
+          <QRCodeWithLogo
+            value={currentNetwork.address}
+            size={110}
+            networkIcon={currentNetwork.icon}
+            networkSymbol={currentNetwork.symbol}
+          />
 
-              {/* Content */}
-              <div className="p-4">
-                {/* Network Pill Dropdown - Centered */}
-                <div className="flex justify-center mb-4">
-                  <NetworkDropdown
-                    networks={networks}
-                    activeNetwork={currentNetwork}
-                    onSelect={setActiveNetwork}
-                  />
-                </div>
+          {/* Address */}
+          <div className="flex-1 pt-1 pr-4">
+            <div className="text-xs text-kol-text-muted mb-2">Deposit Address</div>
+            <code className="block text-[11px] font-mono break-all text-white/90 leading-relaxed">
+              {currentNetwork.address}
+            </code>
+          </div>
+        </div>
 
-                {/* QR Code + Address Container */}
-                <div
-                  className="group relative p-3 rounded-md border border-kol-border bg-kol-surface cursor-pointer hover:bg-kol-surface-elevated/30 transition-colors"
-                  onClick={handleCopy}
-                >
-                  <div className="flex gap-4">
-                    {/* QR Code */}
-                    <QRCodeWithLogo
-                      value={currentNetwork.address}
-                      size={110}
-                      networkIcon={currentNetwork.icon}
-                      networkSymbol={currentNetwork.symbol}
-                    />
+        {/* Copy Icon */}
+        <div className="absolute bottom-2.5 right-2.5 flex items-center gap-1">
+          {copied && <span className="text-[10px] text-kol-green">Copied!</span>}
+          <i className={`text-xs transition-opacity ${copied ? 'ri-check-line text-kol-green' : 'ri-file-copy-line text-kol-text-muted opacity-40 group-hover:opacity-70'}`} />
+        </div>
+      </div>
 
-                    {/* Address */}
-                    <div className="flex-1 pt-1 pr-4">
-                      <div className="text-xs text-kol-text-muted mb-2">Deposit Address</div>
-                      <code className="block text-[11px] font-mono break-all text-white/90 leading-relaxed">
-                        {currentNetwork.address}
-                      </code>
-                    </div>
-                  </div>
-
-                  {/* Copy Icon */}
-                  <div className="absolute bottom-2.5 right-2.5 flex items-center gap-1">
-                    {copied && <span className="text-[10px] text-kol-green">Copied!</span>}
-                    <i className={`text-xs transition-opacity ${copied ? 'ri-check-line text-kol-green' : 'ri-file-copy-line text-kol-text-muted opacity-40 group-hover:opacity-70'}`} />
-                  </div>
-                </div>
-
-                {/* Network hint */}
-                <p className="text-center text-[10px] text-kol-text-muted/50 mt-3">
-                  Send only {currentNetwork.symbol} via {currentNetwork.networkLabel} network
-                </p>
-              </div>
-            </div>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+      {/* Network hint */}
+      <p className="text-center text-[10px] text-kol-text-muted/50 mt-3">
+        Send only {currentNetwork.symbol} via {currentNetwork.networkLabel} network
+      </p>
+    </BaseModal>
   )
-
-  return createPortal(modalContent, document.body)
 }
 
 export default DepositModal
