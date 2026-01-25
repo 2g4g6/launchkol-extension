@@ -42,37 +42,29 @@ interface NetworkTabProps {
 
 function NetworkTab({ network, isActive, onClick }: NetworkTabProps) {
   return (
-    <motion.button
+    <button
       onClick={onClick}
       className={`
-        relative flex items-center gap-2 px-4 py-3 rounded-lg transition-all
+        flex-1 flex items-center justify-between px-6 py-4 transition-colors
         ${isActive
-          ? 'bg-kol-surface-elevated border border-kol-border'
-          : 'bg-transparent border border-transparent hover:bg-kol-surface/50'
+          ? 'bg-kol-surface border-b-2 border-kol-blue'
+          : 'bg-kol-surface/30 hover:bg-kol-surface/50 border-b-2 border-transparent'
         }
       `}
-      whileTap={{ scale: 0.98 }}
     >
-      {/* Network icon */}
-      <img
-        src={network.icon}
-        alt={network.symbol}
-        className="w-5 h-5"
-      />
-
-      {/* Network symbol */}
-      <span className={`text-sm font-semibold ${isActive ? 'text-white' : 'text-kol-text-muted'}`}>
-        {network.symbol}
-      </span>
-
-      {/* Balance */}
-      <div className="flex flex-col items-end ml-auto">
-        <span className="text-[10px] text-kol-text-muted">Balance:</span>
-        <span className={`text-xs font-mono ${isActive ? 'text-white' : 'text-kol-text-muted'}`}>
-          {network.balance.toFixed(2)} {network.symbol}
-        </span>
+      <div className="flex items-center gap-3">
+        <img
+          src={network.icon}
+          alt={network.symbol}
+          className="w-6 h-6"
+        />
+        <span className="font-semibold text-white">{network.symbol}</span>
       </div>
-    </motion.button>
+      <div className="text-right">
+        <div className="text-xs text-kol-text-muted">Balance:</div>
+        <div className="font-semibold text-white">{network.balance.toFixed(2)} {network.symbol}</div>
+      </div>
+    </button>
   )
 }
 
@@ -87,7 +79,7 @@ interface QRCodeWithLogoProps {
 
 function QRCodeWithLogo({ value, size = 150 }: QRCodeWithLogoProps) {
   return (
-    <div className="relative bg-white p-3 rounded-xl">
+    <div className="relative bg-white p-1 rounded-lg flex-shrink-0">
       <QRCodeSVG
         value={value}
         size={size}
@@ -96,47 +88,12 @@ function QRCodeWithLogo({ value, size = 150 }: QRCodeWithLogoProps) {
         fgColor="#000000"
       />
       {/* Center logo overlay */}
-      <div
-        className="absolute inset-0 flex items-center justify-center pointer-events-none"
-      >
-        <div className="w-10 h-10 rounded-lg bg-kol-blue flex items-center justify-center shadow-lg">
-          <span className="text-white font-display font-bold text-sm">LK</span>
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+        <div className="w-8 h-8 rounded-md bg-kol-blue flex items-center justify-center shadow-lg">
+          <span className="text-white font-display font-bold text-xs">LK</span>
         </div>
       </div>
     </div>
-  )
-}
-
-// ============================================================================
-// Copy Button
-// ============================================================================
-
-interface CopyButtonProps {
-  text: string
-}
-
-function CopyButton({ text }: CopyButtonProps) {
-  const [copied, setCopied] = useState(false)
-
-  const handleCopy = useCallback(async () => {
-    try {
-      await navigator.clipboard.writeText(text)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
-    } catch (err) {
-      console.error('Failed to copy:', err)
-    }
-  }, [text])
-
-  return (
-    <motion.button
-      onClick={handleCopy}
-      className="p-2 rounded-lg bg-kol-surface hover:bg-kol-surface-elevated border border-kol-border/50 hover:border-kol-border transition-all"
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
-    >
-      <i className={`${copied ? 'ri-check-line text-kol-green' : 'ri-file-copy-line text-kol-text-muted'} text-base`} />
-    </motion.button>
   )
 }
 
@@ -147,6 +104,7 @@ function CopyButton({ text }: CopyButtonProps) {
 export function DepositModal({ isOpen, onClose, networks, defaultNetwork }: DepositModalProps) {
   const [activeNetwork, setActiveNetwork] = useState(defaultNetwork || networks[0]?.id)
   const [mounted, setMounted] = useState(false)
+  const [copied, setCopied] = useState(false)
 
   // Mount check for portal
   useEffect(() => {
@@ -157,6 +115,7 @@ export function DepositModal({ isOpen, onClose, networks, defaultNetwork }: Depo
   useEffect(() => {
     if (isOpen) {
       setActiveNetwork(defaultNetwork || networks[0]?.id)
+      setCopied(false)
     }
   }, [isOpen, defaultNetwork, networks])
 
@@ -185,6 +144,16 @@ export function DepositModal({ isOpen, onClose, networks, defaultNetwork }: Depo
 
   const currentNetwork = networks.find(n => n.id === activeNetwork) || networks[0]
 
+  const handleCopy = useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText(currentNetwork.address)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch (err) {
+      console.error('Failed to copy:', err)
+    }
+  }, [currentNetwork.address])
+
   if (!mounted) return null
 
   const modalContent = (
@@ -207,88 +176,57 @@ export function DepositModal({ isOpen, onClose, networks, defaultNetwork }: Depo
             className="w-[420px] max-w-[95vw]"
             onClick={(e) => e.stopPropagation()}
           >
-            <div
-              className="relative bg-[#0d0d10] border border-kol-border/50 rounded-2xl overflow-hidden"
-              style={{
-                boxShadow: `
-                  0 25px 50px -12px rgba(0, 0, 0, 0.8),
-                  0 0 0 1px rgba(255, 255, 255, 0.03) inset,
-                  0 1px 0 rgba(255, 255, 255, 0.05) inset
-                `,
-              }}
-            >
-              {/* Subtle glow effect */}
-              <div
-                className="absolute -top-20 -right-20 w-40 h-40 rounded-full opacity-30 pointer-events-none"
-                style={{
-                  background: 'radial-gradient(circle, rgba(0, 123, 255, 0.3) 0%, transparent 70%)',
-                  filter: 'blur(40px)',
-                }}
-              />
-
+            <div className="bg-kol-surface rounded-lg overflow-hidden border border-kol-border/50">
               {/* Header */}
-              <div className="relative flex items-center justify-between px-5 py-4 border-b border-kol-border/30">
-                <h2 className="text-lg font-display font-semibold text-white">
-                  Deposit
-                </h2>
-                <motion.button
+              <div className="flex items-center justify-between px-6 py-4 border-b border-kol-border/30">
+                <h2 className="font-semibold text-white leading-none">Deposit</h2>
+                <button
                   onClick={onClose}
-                  className="p-1.5 rounded-lg hover:bg-kol-surface transition-colors"
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
+                  className="rounded opacity-70 transition-opacity hover:opacity-100 flex-shrink-0"
                 >
-                  <i className="ri-close-line text-xl text-kol-text-muted hover:text-white transition-colors" />
-                </motion.button>
+                  <i className="ri-close-line text-lg" />
+                </button>
+              </div>
+
+              {/* Network Tabs */}
+              <div className="flex border-b border-kol-border/30">
+                {networks.map(network => (
+                  <NetworkTab
+                    key={network.id}
+                    network={network}
+                    isActive={activeNetwork === network.id}
+                    onClick={() => setActiveNetwork(network.id)}
+                  />
+                ))}
               </div>
 
               {/* Content */}
-              <div className="relative p-5">
-                {/* Network Tabs */}
-                <div className="grid grid-cols-2 gap-2 mb-5">
-                  {networks.map(network => (
-                    <NetworkTab
-                      key={network.id}
-                      network={network}
-                      isActive={activeNetwork === network.id}
-                      onClick={() => setActiveNetwork(network.id)}
-                    />
-                  ))}
-                </div>
-
+              <div className="p-6">
                 {/* Description */}
-                <p className="text-sm text-kol-text-muted mb-5">
+                <p className="mb-4 text-sm text-kol-text-muted">
                   Deposit {currentNetwork.symbol} through the {currentNetwork.networkLabel} network for this address.
                 </p>
 
-                {/* QR Code and Address Section */}
-                <div className="flex gap-5">
-                  {/* QR Code */}
-                  <div className="flex-shrink-0">
-                    <QRCodeWithLogo value={currentNetwork.address} size={140} />
-                  </div>
+                {/* QR Code and Address Container */}
+                <div
+                  className="p-4 rounded-lg border border-kol-border/50 bg-kol-surface-elevated/50 cursor-pointer hover:bg-kol-surface-elevated transition-colors relative"
+                  onClick={handleCopy}
+                >
+                  <div className="flex gap-4">
+                    {/* QR Code */}
+                    <QRCodeWithLogo value={currentNetwork.address} size={150} />
 
-                  {/* Address Info */}
-                  <div className="flex-1 flex flex-col justify-center">
-                    <p className="text-xs text-kol-text-muted mb-2 font-medium">
-                      Deposit Address
-                    </p>
-                    <div className="flex items-start gap-2">
-                      <p className="text-sm text-white font-mono break-all leading-relaxed flex-1">
+                    {/* Address Info */}
+                    <div className="flex-1">
+                      <div className="text-sm text-kol-text-muted mb-2">Deposit Address</div>
+                      <code className="block text-sm font-mono break-all text-white">
                         {currentNetwork.address}
-                      </p>
-                      <CopyButton text={currentNetwork.address} />
+                      </code>
                     </div>
                   </div>
-                </div>
 
-                {/* Warning */}
-                <div className="mt-5 p-3 rounded-lg bg-kol-surface/50 border border-kol-border/30">
-                  <div className="flex items-start gap-2">
-                    <i className="ri-error-warning-line text-yellow-500 text-sm mt-0.5" />
-                    <p className="text-xs text-kol-text-muted leading-relaxed">
-                      Only send {currentNetwork.symbol} to this address. Sending any other asset may result in permanent loss.
-                    </p>
-                  </div>
+                  {/* Copy Icon */}
+                  <i className={`${copied ? 'ri-check-line text-kol-green' : 'ri-file-copy-line'} absolute bottom-3 right-3 text-sm opacity-40`} />
                 </div>
               </div>
             </div>
