@@ -114,7 +114,7 @@ interface QRCodeWithLogoProps {
   networkSymbol: string
 }
 
-function QRCodeWithLogo({ value, size = 120, networkIcon, networkSymbol }: QRCodeWithLogoProps) {
+function QRCodeWithLogo({ value, size = 110, networkIcon, networkSymbol }: QRCodeWithLogoProps) {
   return (
     <div className="relative bg-white p-1.5 rounded-md flex-shrink-0">
       <QRCodeSVG
@@ -206,7 +206,7 @@ export function DepositModal({ isOpen, onClose, networks, defaultNetwork }: Depo
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ duration: 0.25, ease: CUSTOM_EASE }}
-            className="w-[420px] max-w-[95vw]"
+            className="w-[390px] max-w-[95vw]"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="bg-kol-bg rounded-lg overflow-hidden border border-kol-border">
@@ -241,7 +241,7 @@ export function DepositModal({ isOpen, onClose, networks, defaultNetwork }: Depo
                     {/* QR Code */}
                     <QRCodeWithLogo
                       value={currentNetwork.address}
-                      size={120}
+                      size={110}
                       networkIcon={currentNetwork.icon}
                       networkSymbol={currentNetwork.symbol}
                     />
