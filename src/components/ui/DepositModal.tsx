@@ -252,7 +252,7 @@ export function DepositModal({ isOpen, onClose, networks, defaultNetwork }: Depo
                     {/* Address */}
                     <div className="flex-1 pt-1 pr-4">
                       <div className="text-xs text-kol-text-muted mb-2">Deposit Address</div>
-                      <code className="block text-[11px] font-mono break-all text-kol-text-muted leading-relaxed">
+                      <code className="block text-[11px] font-mono break-all text-white/70 leading-relaxed">
                         {currentNetwork.address}
                       </code>
                     </div>
