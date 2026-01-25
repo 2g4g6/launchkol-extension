@@ -10,7 +10,6 @@ export interface BaseModalProps {
   isOpen: boolean
   onClose: () => void
   title: string
-  icon?: string
   children: ReactNode
   width?: string
 }
@@ -29,7 +28,6 @@ export function BaseModal({
   isOpen,
   onClose,
   title,
-  icon,
   children,
   width = 'w-[390px]'
 }: BaseModalProps) {
@@ -87,10 +85,7 @@ export function BaseModal({
             <div className="bg-kol-bg rounded-lg overflow-hidden border border-kol-border">
               {/* Header */}
               <div className="flex items-center justify-between px-4 py-3 border-b border-kol-border">
-                <div className="flex items-center gap-2">
-                  {icon && <i className={`${icon} text-sm text-kol-text-muted`} />}
-                  <h2 className="font-medium text-white text-sm">{title}</h2>
-                </div>
+                <h2 className="font-medium text-white text-sm">{title}</h2>
                 <button
                   onClick={onClose}
                   className="rounded opacity-50 transition-opacity hover:opacity-100"

@@ -171,7 +171,6 @@ export function WithdrawModal({
       isOpen={isOpen}
       onClose={onClose}
       title="Withdraw"
-      icon="ri-arrow-up-line"
     >
       {/* Network Pill Dropdown - Centered */}
       <div className="flex justify-center mb-4">
