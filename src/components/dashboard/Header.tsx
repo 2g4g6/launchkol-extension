@@ -215,7 +215,7 @@ function WalletDropdown({
           className="relative z-10"
         />
 
-        <span className="relative z-10 text-sm font-mono text-white font-medium">
+        <span className="relative z-10 text-sm text-white font-medium">
           {balance.toFixed(2)}
         </span>
       </motion.button>
