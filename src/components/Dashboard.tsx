@@ -249,6 +249,7 @@ export function Dashboard({ user, onSignOut }: DashboardProps) {
         isOpen={isSearchModalOpen}
         onClose={() => setIsSearchModalOpen(false)}
         onSelectToken={handleSelectToken}
+        userWalletAddress={NETWORKS[0].address}
       />
 
       {/* Tab Content */}

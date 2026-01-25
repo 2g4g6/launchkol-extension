@@ -1,6 +1,8 @@
-import { useEffect, useState, useRef, ReactNode } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { createPortal } from 'react-dom'
+import { PumpLogo, BonkLogo, BagsLogo, RaydiumLogo, FourMemeLogo, BinanceLogo, PlatformLogoMap, PlatformType } from './PlatformLogos'
+import { CreatorFilterModal, CreatorFilter } from './CreatorFilterModal'
 
 // ============================================================================
 // Types
@@ -11,7 +13,7 @@ export interface TokenResult {
   name: string
   ticker: string
   image?: string
-  platform: 'pump' | 'bonk' | 'bags' | 'raydium'
+  platform: PlatformType
   age: string
   marketCap: string
   volume: string
@@ -19,12 +21,14 @@ export interface TokenResult {
   twitterUrl?: string
   websiteUrl?: string
   telegramUrl?: string
+  creatorWallet?: string
 }
 
 export interface SearchTokensModalProps {
   isOpen: boolean
   onClose: () => void
   onSelectToken: (token: TokenResult) => void
+  userWalletAddress?: string
 }
 
 // ============================================================================
@@ -33,14 +37,17 @@ export interface SearchTokensModalProps {
 
 const CUSTOM_EASE = [0.16, 1, 0.3, 1] as const
 
-type PlatformFilter = 'all' | 'pump' | 'bonk' | 'bags'
+type PlatformFilter = 'all' | PlatformType
 type SortOption = 'time' | 'trending' | 'volume' | 'liquidity'
 
-const PLATFORM_FILTERS: { id: PlatformFilter; label: string; icon?: string }[] = [
+const PLATFORM_FILTERS: { id: PlatformFilter; label: string; Logo?: React.FC<{ className?: string }> }[] = [
   { id: 'all', label: 'All' },
-  { id: 'pump', label: 'Pump' },
-  { id: 'bonk', label: 'Bonk' },
-  { id: 'bags', label: 'Bags' },
+  { id: 'pump', label: 'Pump', Logo: PumpLogo },
+  { id: 'bonk', label: 'Bonk', Logo: BonkLogo },
+  { id: 'bags', label: 'Bags', Logo: BagsLogo },
+  { id: 'raydium', label: 'Ray', Logo: RaydiumLogo },
+  { id: 'fourmeme', label: 'Four', Logo: FourMemeLogo },
+  { id: 'binance', label: 'BNB', Logo: BinanceLogo },
 ]
 
 const SORT_OPTIONS: { id: SortOption; icon: string; label: string }[] = [
@@ -49,6 +56,16 @@ const SORT_OPTIONS: { id: SortOption; icon: string; label: string }[] = [
   { id: 'volume', icon: 'ri-bar-chart-line', label: 'Volume' },
   { id: 'liquidity', icon: 'ri-drop-line', label: 'Liquidity' },
 ]
+
+// Platform badge colors
+const PLATFORM_COLORS: Record<PlatformType, string> = {
+  pump: 'bg-green-500/20 border-green-500/50',
+  bonk: 'bg-orange-500/20 border-orange-500/50',
+  bags: 'bg-purple-500/20 border-purple-500/50',
+  raydium: 'bg-cyan-500/20 border-cyan-500/50',
+  fourmeme: 'bg-pink-500/20 border-pink-500/50',
+  binance: 'bg-yellow-500/20 border-yellow-500/50',
+}
 
 // Mock data for demonstration
 const MOCK_TOKENS: TokenResult[] = [
@@ -63,6 +80,7 @@ const MOCK_TOKENS: TokenResult[] = [
     liquidity: '$8K',
     twitterUrl: 'https://twitter.com',
     websiteUrl: 'https://example.com',
+    creatorWallet: '43HPNeS2FroDxUGRQKV1iNDrYFD1wo5rPVj5Qc9igLZN',
   },
   {
     address: '7dNW2mhCtqoZcDuyRbj5LMoeFsS9TpaCdSkk4qMstGPm',
@@ -74,6 +92,7 @@ const MOCK_TOKENS: TokenResult[] = [
     volume: '$142',
     liquidity: '$61K',
     twitterUrl: 'https://twitter.com',
+    creatorWallet: 'DifferentWallet123456789012345678901234567890',
   },
   {
     address: 'HsRtbRWaB29bPg6wESHz61y6VYbZvJJzoreGuqTupfM9',
@@ -85,6 +104,29 @@ const MOCK_TOKENS: TokenResult[] = [
     volume: '$128',
     liquidity: '$50K',
     websiteUrl: 'https://example.com',
+    creatorWallet: '43HPNeS2FroDxUGRQKV1iNDrYFD1wo5rPVj5Qc9igLZN',
+  },
+  {
+    address: 'FourMeme123456789012345678901234567890ABCD',
+    name: 'Four Meme Token',
+    ticker: 'FOUR',
+    platform: 'fourmeme',
+    age: '2d',
+    marketCap: '$12K',
+    volume: '$5K',
+    liquidity: '$15K',
+    creatorWallet: 'AnotherWallet12345678901234567890123456789012',
+  },
+  {
+    address: 'BnbToken123456789012345678901234567890EFGH',
+    name: 'BNB Meme',
+    ticker: 'BNBM',
+    platform: 'binance',
+    age: '1w',
+    marketCap: '$85K',
+    volume: '$2K',
+    liquidity: '$40K',
+    creatorWallet: 'BnbCreator12345678901234567890123456789012345',
   },
 ]
 
@@ -92,21 +134,15 @@ const MOCK_TOKENS: TokenResult[] = [
 // Helper Components
 // ============================================================================
 
-function PlatformBadge({ platform }: { platform: TokenResult['platform'] }) {
-  const colors: Record<string, string> = {
-    pump: 'bg-green-500/20 border-green-500/50',
-    bonk: 'bg-orange-500/20 border-orange-500/50',
-    bags: 'bg-purple-500/20 border-purple-500/50',
-    raydium: 'bg-gradient-to-r from-purple-500/20 to-cyan-500/20 border-purple-500/50',
-  }
+function PlatformBadge({ platform }: { platform: PlatformType }) {
+  const LogoComponent = PlatformLogoMap[platform]
+  const colorClass = PLATFORM_COLORS[platform]
 
   return (
     <div
-      className={`absolute -bottom-0.5 -right-0.5 h-4 w-4 rounded-full bg-kol-bg shadow-sm z-10 flex items-center justify-center border ${colors[platform]}`}
+      className={`absolute -bottom-0.5 -right-0.5 h-4 w-4 rounded-full bg-kol-bg shadow-sm z-10 flex items-center justify-center border ${colorClass}`}
     >
-      <span className="text-[8px] font-bold uppercase text-white/80">
-        {platform.charAt(0)}
-      </span>
+      <LogoComponent className="w-2.5 h-2.5" />
     </div>
   )
 }
@@ -160,10 +196,10 @@ function TokenRow({
 
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1.5">
-          <span className="text-sm font-medium text-white truncate max-w-[80px]">
+          <span className="text-sm font-medium text-white truncate max-w-[100px]">
             {token.ticker}
           </span>
-          <span className="text-xs text-kol-text-muted truncate max-w-[60px]">
+          <span className="text-xs text-kol-text-muted truncate max-w-[80px]">
             {token.name}
           </span>
         </div>
@@ -241,12 +277,15 @@ export function SearchTokensModal({
   isOpen,
   onClose,
   onSelectToken,
+  userWalletAddress,
 }: SearchTokensModalProps) {
   const [mounted, setMounted] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [platformFilter, setPlatformFilter] = useState<PlatformFilter>('all')
   const [sortBy, setSortBy] = useState<SortOption>('time')
   const [selectedIndex, setSelectedIndex] = useState(0)
+  const [creatorFilter, setCreatorFilter] = useState<CreatorFilter>({ mode: 'any' })
+  const [isCreatorFilterOpen, setIsCreatorFilterOpen] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
@@ -265,13 +304,33 @@ export function SearchTokensModal({
     if (!isOpen) {
       setSearchQuery('')
       setSelectedIndex(0)
+      setCreatorFilter({ mode: 'any' })
     }
   }, [isOpen])
+
+  // Filter tokens based on search, platform, and creator
+  const filteredTokens = MOCK_TOKENS.filter((token) => {
+    const matchesSearch =
+      searchQuery === '' ||
+      token.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      token.ticker.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      token.address.toLowerCase().includes(searchQuery.toLowerCase())
+
+    const matchesPlatform =
+      platformFilter === 'all' || token.platform === platformFilter
+
+    const matchesCreator =
+      creatorFilter.mode === 'any' ||
+      (creatorFilter.mode === 'my-wallet' && token.creatorWallet === userWalletAddress) ||
+      (creatorFilter.mode === 'custom' && token.creatorWallet === creatorFilter.customAddress)
+
+    return matchesSearch && matchesPlatform && matchesCreator
+  })
 
   // Handle keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (!isOpen) return
+      if (!isOpen || isCreatorFilterOpen) return
 
       if (e.key === 'Escape') {
         onClose()
@@ -289,7 +348,7 @@ export function SearchTokensModal({
 
     document.addEventListener('keydown', handleKeyDown)
     return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [isOpen, selectedIndex, onClose, onSelectToken])
+  }, [isOpen, isCreatorFilterOpen, selectedIndex, filteredTokens, onClose, onSelectToken])
 
   // Lock body scroll when open
   useEffect(() => {
@@ -303,21 +362,9 @@ export function SearchTokensModal({
     }
   }, [isOpen])
 
-  // Filter tokens based on search and platform
-  const filteredTokens = MOCK_TOKENS.filter((token) => {
-    const matchesSearch =
-      searchQuery === '' ||
-      token.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      token.ticker.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      token.address.toLowerCase().includes(searchQuery.toLowerCase())
-
-    const matchesPlatform =
-      platformFilter === 'all' || token.platform === platformFilter
-
-    return matchesSearch && matchesPlatform
-  })
-
   if (!mounted) return null
+
+  const isCreatorFilterActive = creatorFilter.mode !== 'any'
 
   const modalContent = (
     <AnimatePresence>
@@ -335,31 +382,32 @@ export function SearchTokensModal({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: -10 }}
             transition={{ duration: 0.2, ease: CUSTOM_EASE }}
-            className="w-[364px] max-h-[500px] flex flex-col"
+            className="w-[480px] max-h-[500px] flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="bg-kol-bg rounded-lg overflow-hidden border border-kol-border shadow-2xl flex flex-col max-h-[500px]">
               {/* Filters Row */}
               <div className="flex items-center justify-between gap-2 px-3 pt-3 pb-2">
-                <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide">
+                <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide flex-1">
                   {PLATFORM_FILTERS.map((filter) => (
                     <button
                       key={filter.id}
                       onClick={() => setPlatformFilter(filter.id)}
                       className={`
-                        flex items-center gap-1 px-2 py-1 rounded text-xs font-medium whitespace-nowrap transition-colors
+                        flex items-center gap-1.5 px-2 py-1 rounded text-xs font-medium whitespace-nowrap transition-colors
                         ${platformFilter === filter.id
                           ? 'bg-kol-blue/20 text-kol-blue border border-kol-blue/50'
                           : 'bg-kol-surface border border-kol-border text-kol-text-muted hover:bg-kol-surface-elevated'
                         }
                       `}
                     >
+                      {filter.Logo && <filter.Logo className="w-3 h-3" />}
                       {filter.label}
                     </button>
                   ))}
                 </div>
 
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1 flex-shrink-0">
                   {SORT_OPTIONS.map((option) => (
                     <button
                       key={option.id}
@@ -376,6 +424,24 @@ export function SearchTokensModal({
                       <i className={`${option.icon} text-sm`} />
                     </button>
                   ))}
+
+                  {/* Divider */}
+                  <div className="w-px h-4 bg-kol-border mx-1" />
+
+                  {/* Creator Filter Button */}
+                  <button
+                    onClick={() => setIsCreatorFilterOpen(true)}
+                    title="Filter by creator"
+                    className={`
+                      h-6 w-6 flex items-center justify-center rounded transition-colors
+                      ${isCreatorFilterActive
+                        ? 'bg-kol-blue/20 text-kol-blue'
+                        : 'text-kol-text-muted hover:bg-kol-surface-elevated hover:text-white'
+                      }
+                    `}
+                  >
+                    <i className="ri-user-settings-line text-sm" />
+                  </button>
                 </div>
               </div>
 
@@ -403,6 +469,15 @@ export function SearchTokensModal({
                 <span className="text-xs text-kol-text-muted">
                   {filteredTokens.length} Results
                 </span>
+                {isCreatorFilterActive && (
+                  <button
+                    onClick={() => setCreatorFilter({ mode: 'any' })}
+                    className="flex items-center gap-1 text-xs text-kol-blue hover:text-kol-blue-hover transition-colors"
+                  >
+                    <i className="ri-filter-off-line text-sm" />
+                    Clear creator filter
+                  </button>
+                )}
               </div>
 
               {/* Results List */}
@@ -429,6 +504,15 @@ export function SearchTokensModal({
               </div>
             </div>
           </motion.div>
+
+          {/* Creator Filter Modal */}
+          <CreatorFilterModal
+            isOpen={isCreatorFilterOpen}
+            onClose={() => setIsCreatorFilterOpen(false)}
+            currentFilter={creatorFilter}
+            onApply={setCreatorFilter}
+            userWalletAddress={userWalletAddress}
+          />
         </motion.div>
       )}
     </AnimatePresence>
