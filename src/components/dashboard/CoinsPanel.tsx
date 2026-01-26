@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect } from 'react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { CoinCard, CoinData } from './CoinCard'
+import { Tooltip } from '../ui/Tooltip'
 
 // Mock data with new fields - showcasing all tweet types
 const MOCK_COINS: CoinData[] = [
@@ -229,6 +230,14 @@ export function CoinsPanel({}: CoinsPanelProps) {
   const [panelWidth, setPanelWidth] = useState(DEFAULT_WIDTH)
   const [panelHeight, setPanelHeight] = useState(DEFAULT_HEIGHT)
   const [isResizing, setIsResizing] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [isSearchFocused, setIsSearchFocused] = useState(false)
+
+  const filteredCoins = coins.filter(coin =>
+    coin.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    coin.symbol.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    coin.address.toLowerCase().includes(searchQuery.toLowerCase())
+  )
 
   const handleView = (coin: CoinData) => {
     window.open(`https://pump.fun/${coin.address}`, '_blank')
@@ -310,8 +319,8 @@ export function CoinsPanel({}: CoinsPanelProps) {
 
   const renderCoinsList = () => (
     <>
-      {coins.length > 0 ? (
-        coins.map((coin, index) => (
+      {filteredCoins.length > 0 ? (
+        filteredCoins.map((coin, index) => (
           <CoinCard
             key={coin.id}
             coin={coin}
@@ -330,7 +339,9 @@ export function CoinsPanel({}: CoinsPanelProps) {
         >
           <div className="relative mb-5">
             <div className="w-16 h-16 rounded-2xl bg-kol-surface-elevated/50 backdrop-blur-sm border border-kol-border/40 flex items-center justify-center">
-              <i className="ri-coin-line text-3xl text-kol-text-muted" />
+              <i className={`text-3xl text-kol-text-muted ${
+                searchQuery ? 'ri-search-line' : 'ri-coin-line'
+              }`} />
             </div>
             <div
               className="absolute inset-0 rounded-2xl opacity-50 blur-xl -z-10"
@@ -338,31 +349,39 @@ export function CoinsPanel({}: CoinsPanelProps) {
                 background: 'radial-gradient(circle, rgba(0, 123, 255, 0.15) 0%, transparent 70%)',
               }}
             />
-            <motion.div
-              className="absolute -top-2 -right-2 w-3 h-3 rounded-full bg-kol-blue/30"
-              animate={{ y: [0, -5, 0], opacity: [0.5, 1, 0.5] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            />
-            <motion.div
-              className="absolute -bottom-1 -left-1 w-2 h-2 rounded-full bg-kol-green/30"
-              animate={{ y: [0, -3, 0], opacity: [0.3, 0.7, 0.3] }}
-              transition={{ duration: 2.5, repeat: Infinity, delay: 0.5 }}
-            />
+            {!searchQuery && (
+              <>
+                <motion.div
+                  className="absolute -top-2 -right-2 w-3 h-3 rounded-full bg-kol-blue/30"
+                  animate={{ y: [0, -5, 0], opacity: [0.5, 1, 0.5] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                />
+                <motion.div
+                  className="absolute -bottom-1 -left-1 w-2 h-2 rounded-full bg-kol-green/30"
+                  animate={{ y: [0, -3, 0], opacity: [0.3, 0.7, 0.3] }}
+                  transition={{ duration: 2.5, repeat: Infinity, delay: 0.5 }}
+                />
+              </>
+            )}
           </div>
           <h3 className="font-body font-semibold text-base text-white mb-1">
-            No positions yet
+            {searchQuery ? 'No results found' : 'No positions yet'}
           </h3>
           <p className="font-body text-sm text-kol-text-muted max-w-[200px] mb-4">
-            Your token holdings will appear here once you make a trade
+            {searchQuery
+              ? `No coins matching "${searchQuery}"`
+              : 'Your token holdings will appear here once you make a trade'}
           </p>
-          <motion.button
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-kol-blue/15 border border-kol-blue/30 text-kol-blue text-sm font-medium hover:bg-kol-blue/25 transition-colors"
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            <i className="ri-search-line text-sm" />
-            <span>Find tokens</span>
-          </motion.button>
+          {!searchQuery && (
+            <motion.button
+              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-kol-blue/15 border border-kol-blue/30 text-kol-blue text-sm font-medium hover:bg-kol-blue/25 transition-colors"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <i className="ri-search-line text-sm" />
+              <span>Find tokens</span>
+            </motion.button>
+          )}
         </motion.div>
       )}
     </>
@@ -383,22 +402,81 @@ export function CoinsPanel({}: CoinsPanelProps) {
           <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 rounded-full bg-kol-border/50 group-hover:bg-kol-blue/50 transition-colors" />
         </div>
 
-        {/* Header */}
+        {/* Header with Search Bar */}
         <div className="px-3 pt-3 pb-2 border-b border-kol-border/30">
-          <div className="flex items-center justify-between h-9 px-3">
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-semibold text-white">Your Coins</span>
-              <span className="text-[10px] font-mono text-kol-text-tertiary bg-kol-surface/50 px-1.5 py-0.5 rounded">
-                {coins.length}
-              </span>
-            </div>
-            <div className="flex items-center gap-0.5">
-              <button className="w-7 h-7 rounded-lg flex items-center justify-center text-kol-text-muted hover:text-white hover:bg-white/5 transition-colors" title="Filter & Sort">
-                <i className="ri-filter-3-line text-sm" />
-              </button>
-              <button className="w-7 h-7 rounded-lg flex items-center justify-center text-kol-text-muted hover:text-white hover:bg-white/5 transition-colors" title="Refresh">
-                <i className="ri-refresh-line text-sm" />
-              </button>
+          {/* Focus glow effect */}
+          <div
+            className={`absolute inset-x-3 top-3 h-9 rounded-xl transition-opacity duration-500 blur-xl -z-10 ${
+              isSearchFocused ? 'opacity-100' : 'opacity-0'
+            }`}
+            style={{
+              background: 'radial-gradient(circle at 50% 50%, rgba(0, 123, 255, 0.15) 0%, transparent 70%)',
+            }}
+          />
+
+          <div className={`relative flex items-center bg-kol-surface/50 border rounded-xl transition-all duration-300 ${
+            isSearchFocused ? 'border-kol-blue/50' : 'border-kol-border/50'
+          }`}>
+            <i className={`ri-search-line absolute left-3 text-sm transition-colors duration-200 ${
+              isSearchFocused ? 'text-kol-blue' : 'text-kol-text-tertiary'
+            }`} />
+            <input
+              type="text"
+              placeholder="Search coins..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onFocus={() => setIsSearchFocused(true)}
+              onBlur={() => setIsSearchFocused(false)}
+              className="flex-1 h-9 pl-9 pr-2 bg-transparent border-0 rounded-xl text-sm text-white placeholder:text-kol-text-tertiary font-body focus:outline-none transition-all duration-300"
+            />
+
+            {/* Action Buttons */}
+            <div className="flex items-center gap-0.5 pr-2">
+              {/* Clear search */}
+              <AnimatePresence>
+                {searchQuery && (
+                  <motion.button
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    onClick={() => setSearchQuery('')}
+                    className="w-7 h-7 rounded-lg flex items-center justify-center text-kol-text-muted hover:text-white hover:bg-white/5 transition-colors"
+                  >
+                    <i className="ri-close-line text-sm" />
+                  </motion.button>
+                )}
+              </AnimatePresence>
+
+              {/* Divider */}
+              <div className="w-px h-4 bg-kol-border/40 mx-1" />
+
+              {/* Filter Button */}
+              <Tooltip content="Filter & Sort">
+                <button className="w-7 h-7 rounded-lg flex items-center justify-center text-kol-text-muted hover:text-white hover:bg-white/5 transition-colors">
+                  <i className="ri-filter-3-line text-sm" />
+                </button>
+              </Tooltip>
+
+              {/* Refresh Button */}
+              <Tooltip content="Refresh">
+                <button className="w-7 h-7 rounded-lg flex items-center justify-center text-kol-text-muted hover:text-white hover:bg-white/5 transition-colors">
+                  <i className="ri-refresh-line text-sm" />
+                </button>
+              </Tooltip>
+
+              {/* Clone Button */}
+              <Tooltip content="Clone">
+                <button className="w-7 h-7 rounded-lg flex items-center justify-center text-kol-text-muted hover:text-white hover:bg-white/5 transition-colors">
+                  <i className="ri-file-copy-line text-sm" />
+                </button>
+              </Tooltip>
+
+              {/* Create Button */}
+              <Tooltip content="Create">
+                <button className="w-7 h-7 rounded-lg flex items-center justify-center text-kol-text-muted hover:text-white hover:bg-white/5 transition-colors">
+                  <i className="ri-add-line text-sm" />
+                </button>
+              </Tooltip>
             </div>
           </div>
         </div>
@@ -423,22 +501,81 @@ export function CoinsPanel({}: CoinsPanelProps) {
           <div className="w-10 h-1 rounded-full bg-kol-border/50 hover:bg-kol-blue/50 transition-colors" />
         </div>
 
-        {/* Header - matches TrackerFeed search bar height */}
-        <div className="px-3 pt-3 pb-2 flex-shrink-0 border-b border-kol-border/30">
-          <div className="flex items-center justify-between h-9 px-3">
-            <div className="flex items-center gap-2">
-                            <span className="text-sm font-semibold text-white">Your Coins</span>
-              <span className="text-[10px] font-mono text-kol-text-tertiary bg-kol-surface/50 px-1.5 py-0.5 rounded">
-                {coins.length}
-              </span>
-            </div>
-            <div className="flex items-center gap-0.5">
-              <button className="w-7 h-7 rounded-lg flex items-center justify-center text-kol-text-muted hover:text-white hover:bg-white/5 transition-colors" title="Filter">
-                <i className="ri-filter-3-line text-sm" />
-              </button>
-              <button className="w-7 h-7 rounded-lg flex items-center justify-center text-kol-text-muted hover:text-white hover:bg-white/5 transition-colors" title="Refresh">
-                <i className="ri-refresh-line text-sm" />
-              </button>
+        {/* Header with Search Bar - matches TrackerFeed search bar height */}
+        <div className="px-3 pt-3 pb-2 flex-shrink-0 border-b border-kol-border/30 relative">
+          {/* Focus glow effect */}
+          <div
+            className={`absolute inset-x-3 top-3 h-9 rounded-xl transition-opacity duration-500 blur-xl -z-10 ${
+              isSearchFocused ? 'opacity-100' : 'opacity-0'
+            }`}
+            style={{
+              background: 'radial-gradient(circle at 50% 50%, rgba(0, 123, 255, 0.15) 0%, transparent 70%)',
+            }}
+          />
+
+          <div className={`relative flex items-center bg-kol-surface/50 border rounded-xl transition-all duration-300 ${
+            isSearchFocused ? 'border-kol-blue/50' : 'border-kol-border/50'
+          }`}>
+            <i className={`ri-search-line absolute left-3 text-sm transition-colors duration-200 ${
+              isSearchFocused ? 'text-kol-blue' : 'text-kol-text-tertiary'
+            }`} />
+            <input
+              type="text"
+              placeholder="Search coins..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onFocus={() => setIsSearchFocused(true)}
+              onBlur={() => setIsSearchFocused(false)}
+              className="flex-1 h-9 pl-9 pr-2 bg-transparent border-0 rounded-xl text-sm text-white placeholder:text-kol-text-tertiary font-body focus:outline-none transition-all duration-300"
+            />
+
+            {/* Action Buttons */}
+            <div className="flex items-center gap-0.5 pr-2">
+              {/* Clear search */}
+              <AnimatePresence>
+                {searchQuery && (
+                  <motion.button
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    onClick={() => setSearchQuery('')}
+                    className="w-7 h-7 rounded-lg flex items-center justify-center text-kol-text-muted hover:text-white hover:bg-white/5 transition-colors"
+                  >
+                    <i className="ri-close-line text-sm" />
+                  </motion.button>
+                )}
+              </AnimatePresence>
+
+              {/* Divider */}
+              <div className="w-px h-4 bg-kol-border/40 mx-1" />
+
+              {/* Filter Button */}
+              <Tooltip content="Filter & Sort">
+                <button className="w-7 h-7 rounded-lg flex items-center justify-center text-kol-text-muted hover:text-white hover:bg-white/5 transition-colors">
+                  <i className="ri-filter-3-line text-sm" />
+                </button>
+              </Tooltip>
+
+              {/* Refresh Button */}
+              <Tooltip content="Refresh">
+                <button className="w-7 h-7 rounded-lg flex items-center justify-center text-kol-text-muted hover:text-white hover:bg-white/5 transition-colors">
+                  <i className="ri-refresh-line text-sm" />
+                </button>
+              </Tooltip>
+
+              {/* Clone Button */}
+              <Tooltip content="Clone">
+                <button className="w-7 h-7 rounded-lg flex items-center justify-center text-kol-text-muted hover:text-white hover:bg-white/5 transition-colors">
+                  <i className="ri-file-copy-line text-sm" />
+                </button>
+              </Tooltip>
+
+              {/* Create Button */}
+              <Tooltip content="Create">
+                <button className="w-7 h-7 rounded-lg flex items-center justify-center text-kol-text-muted hover:text-white hover:bg-white/5 transition-colors">
+                  <i className="ri-add-line text-sm" />
+                </button>
+              </Tooltip>
             </div>
           </div>
         </div>
