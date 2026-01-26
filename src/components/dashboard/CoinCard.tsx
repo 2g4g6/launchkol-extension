@@ -42,13 +42,13 @@ interface CoinCardProps {
 }
 
 // Platform configuration with colors matching Axiom
-const PLATFORM_CONFIG: Record<PlatformType, { name: string; logo: string; color: string; ringColor: string }> = {
-  pump: { name: 'Pump.fun', logo: '/images/pump.svg', color: 'bg-green-500/20 border-green-500/40', ringColor: '#00c46b' },
-  bonk: { name: 'Bonk.fun', logo: '/images/bonk.svg', color: 'bg-orange-500/20 border-orange-500/40', ringColor: '#f97316' },
-  bags: { name: 'Bags', logo: '/images/bags.svg', color: 'bg-purple-500/20 border-purple-500/40', ringColor: '#a855f7' },
-  mayhem: { name: 'Mayhem', logo: '/images/mayhem.svg', color: 'bg-red-500/20 border-red-500/40', ringColor: '#ff4d4f' },
-  fourmeme: { name: '4Meme', logo: '/images/fourmeme.svg', color: 'bg-pink-500/20 border-pink-500/40', ringColor: '#ec4899' },
-  raydium: { name: 'Raydium', logo: '/images/raydium.svg', color: 'bg-indigo-500/20 border-indigo-500/40', ringColor: '#6366f1' },
+const PLATFORM_CONFIG: Record<PlatformType, { name: string; logo: string; color: string; ringColor: string; urlPattern: string }> = {
+  pump: { name: 'Pump.fun', logo: '/images/pump.svg', color: 'bg-green-500/20 border-green-500/40', ringColor: '#00c46b', urlPattern: 'https://pump.fun/{address}' },
+  bonk: { name: 'Bonk.fun', logo: '/images/bonk.svg', color: 'bg-orange-500/20 border-orange-500/40', ringColor: '#f97316', urlPattern: 'https://bonk.fun/{address}' },
+  bags: { name: 'Bags', logo: '/images/bags.svg', color: 'bg-purple-500/20 border-purple-500/40', ringColor: '#a855f7', urlPattern: 'https://bags.fm/{address}' },
+  mayhem: { name: 'Mayhem', logo: '/images/mayhem.svg', color: 'bg-red-500/20 border-red-500/40', ringColor: '#ff4d4f', urlPattern: 'https://mayhem.fun/{address}' },
+  fourmeme: { name: '4Meme', logo: '/images/fourmeme.svg', color: 'bg-pink-500/20 border-pink-500/40', ringColor: '#ec4899', urlPattern: 'https://4meme.fun/{address}' },
+  raydium: { name: 'Raydium', logo: '/images/raydium.svg', color: 'bg-indigo-500/20 border-indigo-500/40', ringColor: '#6366f1', urlPattern: 'https://raydium.io/swap/?inputMint=sol&outputMint={address}' },
 }
 
 // Platform Badge Component
@@ -284,6 +284,8 @@ function getTweetTypeColor(type?: TweetType): string {
 function QuickLinks({ coin }: { coin: CoinData }) {
   const tweetIcon = getTweetTypeIcon(coin.tweetType)
   const tweetColor = getTweetTypeColor(coin.tweetType)
+  const platformConfig = PLATFORM_CONFIG[coin.platform]
+  const platformUrl = platformConfig.urlPattern.replace('{address}', coin.address)
 
   return (
     <div className="flex items-center gap-2">
@@ -309,6 +311,16 @@ function QuickLinks({ coin }: { coin: CoinData }) {
         title="Search on X"
       >
         <i className="ri-search-line text-[20px]" />
+      </a>
+      <a
+        href={platformUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        onClick={(e) => e.stopPropagation()}
+        className="flex items-center hover:opacity-80 transition-opacity"
+        title={`View on ${platformConfig.name}`}
+      >
+        <img src={platformConfig.logo} alt={platformConfig.name} className="w-5 h-5 object-contain" />
       </a>
       {coin.axiomUrl && (
         <a
