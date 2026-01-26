@@ -2,7 +2,6 @@ import { useEffect, useState, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { createPortal } from 'react-dom'
 import { PumpLogo, BonkLogo, BagsLogo, RaydiumLogo, FourMemeLogo, BinanceLogo, PlatformLogoMap, PlatformType } from './PlatformLogos'
-import { CreatorFilterModal, CreatorFilter } from './CreatorFilterModal'
 
 // ============================================================================
 // Types
@@ -271,15 +270,12 @@ export function SearchTokensModal({
   isOpen,
   onClose,
   onSelectToken,
-  userWalletAddress,
 }: SearchTokensModalProps) {
   const [mounted, setMounted] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [platformFilter, setPlatformFilter] = useState<PlatformFilter>('all')
   const [sortBy, setSortBy] = useState<SortOption>('time')
   const [selectedIndex, setSelectedIndex] = useState(0)
-  const [creatorFilter, setCreatorFilter] = useState<CreatorFilter>({ mode: 'any' })
-  const [isCreatorFilterOpen, setIsCreatorFilterOpen] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
@@ -298,11 +294,10 @@ export function SearchTokensModal({
     if (!isOpen) {
       setSearchQuery('')
       setSelectedIndex(0)
-      setCreatorFilter({ mode: 'any' })
     }
   }, [isOpen])
 
-  // Filter tokens based on search, platform, and creator
+  // Filter tokens based on search and platform
   const filteredTokens = MOCK_TOKENS.filter((token) => {
     const matchesSearch =
       searchQuery === '' ||
@@ -313,18 +308,13 @@ export function SearchTokensModal({
     const matchesPlatform =
       platformFilter === 'all' || token.platform === platformFilter
 
-    const matchesCreator =
-      creatorFilter.mode === 'any' ||
-      (creatorFilter.mode === 'my-wallet' && token.creatorWallet === userWalletAddress) ||
-      (creatorFilter.mode === 'custom' && token.creatorWallet === creatorFilter.customAddress)
-
-    return matchesSearch && matchesPlatform && matchesCreator
+    return matchesSearch && matchesPlatform
   })
 
   // Handle keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (!isOpen || isCreatorFilterOpen) return
+      if (!isOpen) return
 
       if (e.key === 'Escape') {
         onClose()
@@ -342,7 +332,7 @@ export function SearchTokensModal({
 
     document.addEventListener('keydown', handleKeyDown)
     return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [isOpen, isCreatorFilterOpen, selectedIndex, filteredTokens, onClose, onSelectToken])
+  }, [isOpen, selectedIndex, filteredTokens, onClose, onSelectToken])
 
   // Lock body scroll when open
   useEffect(() => {
@@ -357,8 +347,6 @@ export function SearchTokensModal({
   }, [isOpen])
 
   if (!mounted) return null
-
-  const isCreatorFilterActive = creatorFilter.mode !== 'any'
 
   const modalContent = (
     <AnimatePresence>
@@ -401,23 +389,7 @@ export function SearchTokensModal({
                         <span className="font-medium">{filter.label}</span>
                       </button>
                     ))}
-                    {/* Creator Filter Button */}
-                    <button
-                      onClick={() => setIsCreatorFilterOpen(true)}
-                      className={`
-                        group flex h-6 flex-shrink-0 items-center gap-[3px] px-1 rounded text-xs font-medium whitespace-nowrap transition-colors border
-                        ${isCreatorFilterActive
-                          ? 'bg-kol-blue/15 text-kol-blue border-kol-blue/50'
-                          : 'bg-kol-surface/45 border-kol-border text-kol-text-muted hover:bg-kol-surface-elevated'
-                        }
-                      `}
-                    >
-                      <i className="ri-user-settings-line text-sm opacity-70 group-hover:opacity-100" />
-                      <span className="font-medium">Creator</span>
-                    </button>
                   </div>
-                  {/* Fade gradient for scroll indication */}
-                  <div className="absolute right-0 top-0 z-10 h-full w-8 bg-gradient-to-l from-kol-bg to-transparent pointer-events-none" />
                 </div>
 
                 {/* Sort Icons */}
@@ -465,15 +437,6 @@ export function SearchTokensModal({
                 <span className="text-xs text-kol-text-secondary">
                   {filteredTokens.length > 0 ? `${filteredTokens.length} Results` : 'History'}
                 </span>
-                {isCreatorFilterActive && (
-                  <button
-                    onClick={() => setCreatorFilter({ mode: 'any' })}
-                    className="flex items-center gap-1 text-xs text-kol-blue hover:text-kol-blue-hover transition-colors"
-                  >
-                    <i className="ri-filter-off-line text-sm" />
-                    Clear filter
-                  </button>
-                )}
               </div>
 
               {/* Results List */}
@@ -500,15 +463,6 @@ export function SearchTokensModal({
               </div>
             </div>
           </motion.div>
-
-          {/* Creator Filter Modal */}
-          <CreatorFilterModal
-            isOpen={isCreatorFilterOpen}
-            onClose={() => setIsCreatorFilterOpen(false)}
-            currentFilter={creatorFilter}
-            onApply={setCreatorFilter}
-            userWalletAddress={userWalletAddress}
-          />
         </motion.div>
       )}
     </AnimatePresence>
