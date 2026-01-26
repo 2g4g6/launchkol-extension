@@ -243,15 +243,15 @@ function TxnStats({ buyTxns, sellTxns }: { buyTxns: number; sellTxns: number }) 
   return (
     <div className="flex items-center gap-2">
       <div className="flex items-center gap-1 text-[14px] font-medium">
-        <span className="font-mono text-kol-green-light">{buyTxns}</span>
+        <span className="font-mono" style={{ color: '#4ade80' }}>{buyTxns}</span>
         <span className="text-kol-text-muted">/</span>
         <span className="font-mono text-kol-red">{sellTxns}</span>
       </div>
       {/* Visual ratio bar - 2px split style */}
       <div className="flex h-[2px] w-16 flex-row items-center">
         <div
-          className="flex h-[2px] rounded-l-full bg-kol-green-light"
-          style={{ width: `${buyPercent}%` }}
+          className="flex h-[2px] rounded-l-full"
+          style={{ width: `${buyPercent}%`, backgroundColor: '#4ade80' }}
         />
         <div className="flex h-[2px] flex-1 rounded-r-full bg-kol-red" />
       </div>
