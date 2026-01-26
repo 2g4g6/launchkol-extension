@@ -2,7 +2,9 @@ import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Header } from './dashboard/Header'
 import { TrackerFeed } from './dashboard/TrackerFeed'
+import { CoinsPanel } from './dashboard/CoinsPanel'
 import { SocialPostData } from './dashboard/SocialPost'
+import { CoinData } from './dashboard/CoinCard'
 import { DepositModal, NetworkConfig } from './ui/DepositModal'
 import { WithdrawModal } from './ui/WithdrawModal'
 import { SearchTokensModal, TokenResult } from './ui/SearchTokensModal'
@@ -42,6 +44,7 @@ export function Dashboard({ user, onSignOut }: DashboardProps) {
   const [isDepositModalOpen, setIsDepositModalOpen] = useState(false)
   const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false)
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false)
+  const [isCoinsOpen, setIsCoinsOpen] = useState(false)
 
   // Simulated balance fetch
   useEffect(() => {
@@ -75,6 +78,10 @@ export function Dashboard({ user, onSignOut }: DashboardProps) {
 
   const handleDeploy = (post: SocialPostData) => {
     console.log('Deploy from post:', post)
+  }
+
+  const handleSell = (coin: CoinData, percent: number) => {
+    console.log(`Selling ${percent}% of ${coin.symbol}`)
   }
 
 
@@ -247,22 +254,30 @@ export function Dashboard({ user, onSignOut }: DashboardProps) {
         userWalletAddress={NETWORKS[0].address}
       />
 
-      {/* Tab Content */}
-      <div className="flex-1 min-h-0 overflow-hidden relative z-10">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={activeTab}
-            className="absolute inset-0"
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-          >
-            {activeTab === 'feed' && (
-              <TrackerFeed onDeploy={handleDeploy} />
-            )}
-          </motion.div>
-        </AnimatePresence>
+      {/* Main Content Area */}
+      <div className="flex-1 min-h-0 overflow-hidden relative z-10 flex flex-col lg:flex-row lg:gap-3 lg:p-3">
+        {/* Feed - takes most space */}
+        <div className="flex-1 min-h-0 lg:min-w-0">
+          <TrackerFeed onDeploy={handleDeploy} />
+        </div>
+
+        {/* Coins Panel - sidebar on lg, bottom drawer on smaller */}
+        <div className="hidden lg:block lg:w-80 lg:flex-shrink-0 lg:h-full">
+          <CoinsPanel
+            isOpen={isCoinsOpen}
+            onClose={() => setIsCoinsOpen(false)}
+            onSell={handleSell}
+          />
+        </div>
+
+        {/* Mobile coins drawer (rendered outside the flex for proper positioning) */}
+        <div className="lg:hidden">
+          <CoinsPanel
+            isOpen={isCoinsOpen}
+            onClose={() => setIsCoinsOpen(false)}
+            onSell={handleSell}
+          />
+        </div>
       </div>
     </motion.div>
   )

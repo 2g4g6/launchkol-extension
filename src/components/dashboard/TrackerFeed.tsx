@@ -253,7 +253,7 @@ export function TrackerFeed({ onDeploy }: TrackerFeedProps) {
   )
 
   return (
-    <div className="relative flex flex-col h-full overflow-hidden lg:p-3">
+    <div className="relative flex flex-col h-full overflow-hidden">
       {/* Container for search and feed */}
       <div className="flex flex-col h-full lg:bg-kol-surface/50 lg:backdrop-blur-sm lg:border lg:border-kol-border/50 lg:rounded-xl overflow-hidden">
         {/* Search Bar */}
