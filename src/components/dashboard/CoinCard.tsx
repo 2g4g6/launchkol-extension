@@ -139,7 +139,7 @@ function TimeBadge({ date }: { date: Date }) {
   }
 
   return (
-    <span className="text-[14px] font-medium text-kol-green">
+    <span className="text-[16px] font-medium text-kol-green">
       {formatTime()}
     </span>
   )
@@ -286,7 +286,7 @@ function QuickLinks({ coin }: { coin: CoinData }) {
   const tweetColor = getTweetTypeColor(coin.tweetType)
 
   return (
-    <div className="flex items-center gap-1.5">
+    <div className="flex items-center gap-2">
       {coin.twitterUrl && (
         <a
           href={coin.twitterUrl}
@@ -297,7 +297,7 @@ function QuickLinks({ coin }: { coin: CoinData }) {
           title="View source tweet"
           style={{ color: tweetColor }}
         >
-          <i className={`${tweetIcon} text-[16px]`} />
+          <i className={`${tweetIcon} text-[20px]`} />
         </a>
       )}
       <a
@@ -308,7 +308,7 @@ function QuickLinks({ coin }: { coin: CoinData }) {
         className="flex items-center text-kol-text-muted hover:text-kol-blue-hover transition-colors"
         title="Search on X"
       >
-        <i className="ri-search-line text-[16px]" />
+        <i className="ri-search-line text-[20px]" />
       </a>
       {coin.axiomUrl && (
         <a
@@ -319,7 +319,7 @@ function QuickLinks({ coin }: { coin: CoinData }) {
           className="flex items-center text-white hover:opacity-80 transition-opacity"
           title="Trade on Axiom"
         >
-          <AxiomIcon className="w-5 h-5" />
+          <AxiomIcon className="w-6 h-6" />
         </a>
       )}
     </div>
