@@ -244,37 +244,30 @@ function CompactActionButton({ icon, label, onClick }: {
   return (
     <button
       onClick={onClick}
-      className="flex items-center gap-1 px-2 py-1 rounded text-[10px] font-medium border bg-kol-bg text-kol-text-muted border-kol-border hover:bg-kol-surface-elevated hover:text-white transition-colors"
+      className="flex items-center gap-1.5 px-3 py-1.5 rounded text-[11px] font-medium border bg-kol-bg text-kol-text-muted border-kol-border hover:bg-kol-surface-elevated hover:text-white transition-colors"
     >
-      <i className={`${icon} text-[10px]`} />
+      <i className={`${icon} text-xs`} />
       <span>{label}</span>
     </button>
   )
 }
 
-// TXN Stats Component (buy/sell transaction counts with visual bar)
+// TXN Stats Component (buy/sell transaction counts with thin inline bar)
 function TxnStats({ buyTxns, sellTxns }: { buyTxns: number; sellTxns: number }) {
   const total = buyTxns + sellTxns
   const buyPercent = total > 0 ? (buyTxns / total) * 100 : 50
 
   return (
-    <div className="flex flex-col gap-1.5 mt-1">
-      {/* Numbers row */}
-      <div className="flex items-center gap-1 text-[14px] font-medium">
+    <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1 text-[13px] font-medium">
         <span className="text-kol-green">{buyTxns}</span>
         <span className="text-kol-text-muted">/</span>
         <span className="text-kol-red">{sellTxns}</span>
       </div>
-      {/* Full-width visual ratio bar */}
-      <div className="h-1 w-full rounded-full overflow-hidden flex">
-        <div
-          className="h-full bg-kol-green transition-all"
-          style={{ width: `${buyPercent}%` }}
-        />
-        <div
-          className="h-full bg-kol-red transition-all"
-          style={{ width: `${100 - buyPercent}%` }}
-        />
+      {/* Thin inline bar */}
+      <div className="h-[3px] w-16 rounded-full overflow-hidden flex">
+        <div className="h-full bg-kol-green" style={{ width: `${buyPercent}%` }} />
+        <div className="h-full bg-kol-red" style={{ width: `${100 - buyPercent}%` }} />
       </div>
     </div>
   )
@@ -383,14 +376,20 @@ export function CoinCard({ coin, index, onView, onDevPanel, onRelaunch }: CoinCa
         {/* MAIN CONTENT - 3 column layout */}
         <div className="flex items-start gap-4 p-3">
 
-          {/* LEFT: Image + Address */}
-          <div className="flex flex-col items-center gap-2 flex-shrink-0">
+          {/* LEFT: Image + Address/TXN row */}
+          <div className="flex flex-col items-start gap-2 flex-shrink-0">
             <TokenImage
               image={coin.image}
               symbol={coin.symbol}
               platform={coin.platform}
             />
-            <CompactContractAddress address={coin.address} />
+            {/* Address + TXN Stats inline */}
+            <div className="flex items-center gap-3">
+              <CompactContractAddress address={coin.address} />
+              {coin.buyTxns !== undefined && (
+                <TxnStats buyTxns={coin.buyTxns} sellTxns={coin.sellTxns ?? 0} />
+              )}
+            </div>
           </div>
 
           {/* MIDDLE: Token Info */}
@@ -417,11 +416,6 @@ export function CoinCard({ coin, index, onView, onDevPanel, onRelaunch }: CoinCa
               <TimeBadge date={coin.launchedAt} />
               <QuickLinks coin={coin} />
             </div>
-
-            {/* Row 3: TXN Stats */}
-            {coin.buyTxns !== undefined && (
-              <TxnStats buyTxns={coin.buyTxns} sellTxns={coin.sellTxns ?? 0} />
-            )}
           </div>
 
           {/* RIGHT: Action Buttons */}
