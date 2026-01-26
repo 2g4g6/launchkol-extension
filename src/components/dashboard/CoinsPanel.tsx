@@ -27,6 +27,8 @@ const MOCK_COINS: CoinData[] = [
     },
     buyTxns: 335,
     sellTxns: 199,
+    buyVolumeUsd: 4200,
+    sellVolumeUsd: 2100,
   },
   {
     id: '2',
@@ -50,6 +52,8 @@ const MOCK_COINS: CoinData[] = [
     },
     buyTxns: 128,
     sellTxns: 45,
+    buyVolumeUsd: 1850,
+    sellVolumeUsd: 620,
   },
   {
     id: '3',
@@ -74,6 +78,8 @@ const MOCK_COINS: CoinData[] = [
     },
     buyTxns: 892,
     sellTxns: 234,
+    buyVolumeUsd: 12500,
+    sellVolumeUsd: 3400,
   },
   {
     id: '4',
@@ -98,6 +104,8 @@ const MOCK_COINS: CoinData[] = [
     },
     buyTxns: 456,
     sellTxns: 312,
+    buyVolumeUsd: 5600,
+    sellVolumeUsd: 3900,
   },
   {
     id: '5',
@@ -121,6 +129,8 @@ const MOCK_COINS: CoinData[] = [
     },
     buyTxns: 1205,
     sellTxns: 678,
+    buyVolumeUsd: 18700,
+    sellVolumeUsd: 9200,
   },
   {
     id: '6',
@@ -145,6 +155,8 @@ const MOCK_COINS: CoinData[] = [
     },
     buyTxns: 67,
     sellTxns: 23,
+    buyVolumeUsd: 980,
+    sellVolumeUsd: 340,
   },
   {
     id: '7',
@@ -168,6 +180,8 @@ const MOCK_COINS: CoinData[] = [
     },
     buyTxns: 234,
     sellTxns: 456,
+    buyVolumeUsd: 2900,
+    sellVolumeUsd: 5600,
   },
   {
     id: '8',
@@ -192,6 +206,8 @@ const MOCK_COINS: CoinData[] = [
     },
     buyTxns: 567,
     sellTxns: 321,
+    buyVolumeUsd: 7800,
+    sellVolumeUsd: 4500,
   },
 ]
 

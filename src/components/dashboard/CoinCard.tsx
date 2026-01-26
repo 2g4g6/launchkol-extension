@@ -34,6 +34,8 @@ export interface CoinData {
   axiomUrl?: string
   buyTxns?: number
   sellTxns?: number
+  buyVolumeUsd?: number
+  sellVolumeUsd?: number
 }
 
 interface CoinCardProps {
@@ -243,21 +245,43 @@ function AxiomIcon({ className }: { className?: string }) {
   )
 }
 
+// Format USD volume (e.g., 4200 -> "$4.2k", 1500000 -> "$1.5M")
+function formatVolumeUsd(value: number): string {
+  if (value >= 1_000_000) {
+    return `$${(value / 1_000_000).toFixed(1)}M`
+  }
+  if (value >= 1_000) {
+    return `$${(value / 1_000).toFixed(1)}k`
+  }
+  return `$${value.toFixed(0)}`
+}
+
 // TXN Stats Component (buy/sell transaction counts with full-width visual bar)
-function TxnStats({ buyTxns, sellTxns }: { buyTxns: number; sellTxns: number }) {
+function TxnStats({ buyTxns, sellTxns, buyVolumeUsd, sellVolumeUsd }: { buyTxns: number; sellTxns: number; buyVolumeUsd?: number; sellVolumeUsd?: number }) {
+  const [hovered, setHovered] = useState(false)
   const total = buyTxns + sellTxns
   const buyPercent = total > 0 ? (buyTxns / total) * 100 : 50
 
+  const showVolume = hovered && buyVolumeUsd !== undefined && sellVolumeUsd !== undefined
+
   return (
-    <div className="flex items-center gap-2 w-full">
+    <div
+      className="flex items-center gap-2 w-full"
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
       {/* Stats on the left */}
       <div className="flex items-center gap-1 text-[14px] font-medium flex-shrink-0">
-        <Tooltip content="Buy transactions" position="top">
-          <span className="font-mono cursor-default" style={{ color: '#00d492' }}>{buyTxns}</span>
+        <Tooltip content={showVolume ? "Buy volume (USD)" : "Buy transactions"} position="top">
+          <span className="font-mono cursor-default" style={{ color: '#00d492' }}>
+            {showVolume ? formatVolumeUsd(buyVolumeUsd!) : buyTxns}
+          </span>
         </Tooltip>
         <span className="text-kol-text-muted">/</span>
-        <Tooltip content="Sell transactions" position="top">
-          <span className="font-mono text-kol-red cursor-default">{sellTxns}</span>
+        <Tooltip content={showVolume ? "Sell volume (USD)" : "Sell transactions"} position="top">
+          <span className="font-mono text-kol-red cursor-default">
+            {showVolume ? formatVolumeUsd(sellVolumeUsd!) : sellTxns}
+          </span>
         </Tooltip>
       </div>
       {/* Visual ratio bar - on the right */}
@@ -440,7 +464,12 @@ export function CoinCard({ coin, index, onView, onDevPanel, onRelaunch }: CoinCa
         {/* TXN Stats Row - aligned with middle content */}
         {coin.buyTxns !== undefined && (
           <div className="-mt-8 pl-28 pr-10">
-            <TxnStats buyTxns={coin.buyTxns} sellTxns={coin.sellTxns ?? 0} />
+            <TxnStats
+              buyTxns={coin.buyTxns}
+              sellTxns={coin.sellTxns ?? 0}
+              buyVolumeUsd={coin.buyVolumeUsd}
+              sellVolumeUsd={coin.sellVolumeUsd}
+            />
           </div>
         )}
 
