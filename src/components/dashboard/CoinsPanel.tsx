@@ -250,7 +250,7 @@ export function CoinsPanel({}: CoinsPanelProps) {
 
         {/* Header - matches TrackerFeed search bar height */}
         <div className="px-3 pt-3 pb-2">
-          <div className="flex items-center justify-between h-9 px-3 bg-kol-surface/50 border border-kol-border/50 rounded-xl">
+          <div className="flex items-center justify-between h-9 px-3">
             <div className="flex items-center gap-2">
               <i className="ri-coin-line text-sm text-kol-text-tertiary" />
               <span className="text-sm font-semibold text-white">Your Coins</span>
@@ -270,7 +270,7 @@ export function CoinsPanel({}: CoinsPanelProps) {
         </div>
 
         {/* Coins List */}
-        <div className="flex-1 overflow-y-auto px-2 py-2 space-y-2 scrollbar-styled">
+        <div className="flex-1 overflow-y-auto px-2 space-y-2 scrollbar-styled">
           {renderCoinsList()}
         </div>
       </div>
@@ -291,7 +291,7 @@ export function CoinsPanel({}: CoinsPanelProps) {
 
         {/* Header - matches TrackerFeed search bar height */}
         <div className="px-3 pt-3 pb-2 flex-shrink-0">
-          <div className="flex items-center justify-between h-9 px-3 bg-kol-surface/50 border border-kol-border/50 rounded-xl">
+          <div className="flex items-center justify-between h-9 px-3">
             <div className="flex items-center gap-2">
               <i className="ri-coin-line text-sm text-kol-text-tertiary" />
               <span className="text-sm font-semibold text-white">Your Coins</span>
@@ -311,7 +311,7 @@ export function CoinsPanel({}: CoinsPanelProps) {
         </div>
 
         {/* Coins List - vertical scroll */}
-        <div className="flex-1 overflow-y-auto px-2 pb-2 space-y-2 scrollbar-styled">
+        <div className="flex-1 overflow-y-auto px-2 space-y-2 scrollbar-styled">
           {renderCoinsList()}
         </div>
       </div>
