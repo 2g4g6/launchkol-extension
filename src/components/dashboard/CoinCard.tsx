@@ -244,43 +244,79 @@ function TimeBadge({ date }: { date: Date }) {
   )
 }
 
-// Inline Trading Stats Component
-function InlineTradingStats({
+// Trading Stats Bar Component (Bought, Sold, Holding, PnL)
+function TradingStatsBar({
   stats,
-  pnl
+  pnl,
+  holdings,
+  holdingsSol,
+  symbol
 }: {
   stats: TradingStats
   pnl: number
+  holdings: number
+  holdingsSol?: number
+  symbol: string
 }) {
   const isProfitable = pnl >= 0
 
   return (
-    <div className="flex items-center gap-1.5 text-[11px] mt-1">
+    <div className="flex max-h-[64px] min-h-[64px] flex-1 flex-row items-center justify-center py-2 border-t border-kol-border/20">
       {/* Bought */}
-      <div className="flex items-center gap-0.5">
-        <span className="text-kol-text-muted">B:</span>
-        <img src="/images/sol-fill.svg" alt="SOL" className="w-3 h-3" />
-        <span className="text-kol-green font-medium">{stats.boughtAmount.toFixed(2)}</span>
+      <div className="flex flex-1 flex-col items-center justify-center gap-1">
+        <span className="text-[12px] font-normal leading-4 text-kol-text-muted">Bought</span>
+        <div className="flex flex-row items-center gap-1">
+          <img alt="SOL" width="14" height="14" src="/images/sol-fill.svg" />
+          <span className="text-[12px] font-medium leading-4 text-kol-green">{stats.boughtAmount.toFixed(2)}</span>
+        </div>
       </div>
 
-      <span className="text-kol-border">|</span>
+      {/* Divider */}
+      <div className="h-12 w-px bg-kol-border/40" />
 
       {/* Sold */}
-      <div className="flex items-center gap-0.5">
-        <span className="text-kol-text-muted">S:</span>
-        <img src="/images/sol-fill.svg" alt="SOL" className="w-3 h-3" />
-        <span className="text-kol-red font-medium">{stats.soldAmount.toFixed(2)}</span>
+      <div className="flex flex-1 flex-col items-center justify-center gap-1">
+        <span className="text-[12px] font-normal leading-4 text-kol-text-muted">Sold</span>
+        <div className="flex flex-row items-center gap-1">
+          <img alt="SOL" width="14" height="14" src="/images/sol-fill.svg" />
+          <span className="text-[12px] font-medium leading-4 text-kol-red">{stats.soldAmount.toFixed(2)}</span>
+        </div>
       </div>
 
-      <span className="text-kol-border">|</span>
+      {/* Divider */}
+      <div className="h-12 w-px bg-kol-border/40" />
+
+      {/* Holding */}
+      <div className="flex flex-1 flex-col items-center justify-center gap-1">
+        <span className="text-[12px] font-normal leading-4 text-kol-text-muted">Holding</span>
+        <div className="group flex flex-row items-center gap-1">
+          <div className="flex flex-row items-center gap-1 group-hover:hidden">
+            <img alt="SOL" width="14" height="14" src="/images/sol-fill.svg" />
+            <span className="text-[12px] font-medium leading-4 text-kol-text-secondary">{(holdingsSol ?? holdings).toFixed(2)}</span>
+          </div>
+          <span className="hidden text-[12px] font-medium leading-4 text-kol-text-secondary group-hover:inline">
+            {holdings.toFixed(2)} {symbol}
+          </span>
+        </div>
+      </div>
+
+      {/* Divider */}
+      <div className="h-12 w-px bg-kol-border/40" />
 
       {/* PnL */}
-      <div className="flex items-center gap-0.5">
-        <span className="text-kol-text-muted">PnL:</span>
-        <img src="/images/sol-fill.svg" alt="SOL" className="w-3 h-3" />
-        <span className={`font-medium ${isProfitable ? 'text-kol-green' : 'text-kol-red'}`}>
-          {isProfitable ? '+' : ''}{pnl.toFixed(2)}
-        </span>
+      <div className="flex min-w-[100px] flex-col items-center justify-center gap-1 px-1">
+        <div className="flex h-4 flex-row items-center justify-center">
+          <button className="group flex flex-row items-center justify-center gap-1 rounded px-1.5 pl-2 transition-colors duration-150 ease-in-out hover:cursor-pointer hover:bg-kol-border/50">
+            <span className="text-[12px] font-normal leading-4 text-kol-text-muted transition-colors duration-150 ease-in-out group-hover:text-kol-text-secondary">PnL</span>
+            <i className="ri-exchange-dollar-line text-[14px] text-kol-text-muted transition-colors duration-150 ease-in-out group-hover:text-kol-text-secondary" />
+          </button>
+        </div>
+        <div className="flex flex-row items-center gap-1">
+          <img alt="SOL" width="14" height="14" src="/images/sol-fill.svg" />
+          <span className={`text-nowrap text-[12px] font-medium leading-4 ${isProfitable ? 'text-kol-green' : 'text-kol-red'}`}>
+            {isProfitable ? '+' : ''}{pnl.toFixed(2)}
+          </span>
+        </div>
       </div>
     </div>
   )
@@ -447,28 +483,19 @@ export function CoinCard({ coin, index, onView, onTradePanel, onDevPanel, onVamp
               <TimeBadge date={coin.launchedAt} />
               <QuickLinks coin={coin} />
             </div>
-
-            {/* Inline Trading Stats */}
-            {coin.tradingStats && (
-              <InlineTradingStats stats={coin.tradingStats} pnl={coin.pnl} />
-            )}
-          </div>
-
-          {/* RIGHT: Holdings */}
-          <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
-            <div className="flex items-center gap-1.5">
-              <img src="/images/sol-fill.svg" alt="SOL" className="w-3 h-3" />
-              <span className="text-[11px] font-medium text-white">{coin.holdings.toFixed(2)}</span>
-            </div>
-
-            <div className={`flex items-center gap-0.5 text-[10px] font-semibold px-1.5 py-0.5 rounded ${
-              isProfitable ? 'text-kol-green bg-kol-green/10' : 'text-kol-red bg-kol-red/10'
-            }`}>
-              <i className={`text-[8px] ${isProfitable ? 'ri-arrow-up-s-fill' : 'ri-arrow-down-s-fill'}`} />
-              {isProfitable ? '+' : ''}{coin.pnlPercent.toFixed(1)}%
-            </div>
           </div>
         </div>
+
+        {/* TRADING STATS BAR */}
+        {coin.tradingStats && (
+          <TradingStatsBar
+            stats={coin.tradingStats}
+            pnl={coin.pnl}
+            holdings={coin.holdings}
+            holdingsSol={coin.holdingsSol}
+            symbol={coin.symbol}
+          />
+        )}
 
         {/* ACTION BUTTONS */}
         <div className="flex gap-1.5 p-2 border-t border-kol-border/20">
