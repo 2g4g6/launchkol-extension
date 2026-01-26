@@ -249,7 +249,7 @@ export function CoinsPanel({}: CoinsPanelProps) {
         </div>
 
         {/* Header - matches TrackerFeed search bar height */}
-        <div className="px-3 pt-3 pb-2">
+        <div className="px-3 pt-3 pb-2 border-b border-kol-border/30">
           <div className="flex items-center justify-between h-9 px-3">
             <div className="flex items-center gap-2">
               <i className="ri-coin-line text-sm text-kol-text-tertiary" />
@@ -290,7 +290,7 @@ export function CoinsPanel({}: CoinsPanelProps) {
         </div>
 
         {/* Header - matches TrackerFeed search bar height */}
-        <div className="px-3 pt-3 pb-2 flex-shrink-0">
+        <div className="px-3 pt-3 pb-2 flex-shrink-0 border-b border-kol-border/30">
           <div className="flex items-center justify-between h-9 px-3">
             <div className="flex items-center gap-2">
               <i className="ri-coin-line text-sm text-kol-text-tertiary" />
