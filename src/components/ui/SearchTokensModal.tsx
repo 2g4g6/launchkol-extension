@@ -230,27 +230,31 @@ function TokenRow({
           <span className="text-xs sm:text-sm font-medium text-kol-green">{token.age}</span>
 
           {token.twitterUrl && (
-            <a
-              href={token.twitterUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
-              className="text-kol-text-muted hover:text-kol-blue transition-colors"
-            >
-              <i className="ri-user-line text-xs sm:text-base" />
-            </a>
+            <Tooltip content="Twitter" position="top" delayShow={200}>
+              <a
+                href={token.twitterUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="text-kol-text-muted hover:text-kol-blue transition-colors"
+              >
+                <i className="ri-user-line text-xs sm:text-base" />
+              </a>
+            </Tooltip>
           )}
 
           {token.websiteUrl && (
-            <a
-              href={token.websiteUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
-              className="text-kol-text-muted hover:text-kol-blue transition-colors"
-            >
-              <i className="ri-global-line text-xs sm:text-base" />
-            </a>
+            <Tooltip content="Website" position="top" delayShow={200}>
+              <a
+                href={token.websiteUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="text-kol-text-muted hover:text-kol-blue transition-colors"
+              >
+                <i className="ri-global-line text-xs sm:text-base" />
+              </a>
+            </Tooltip>
           )}
         </div>
       </div>
