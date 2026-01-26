@@ -234,7 +234,7 @@ export function Tooltip({
   delayHide = 0,
   maxWidth = 250,
   disabled = false,
-  showArrow = true,
+  showArrow = false,
   offset = DEFAULT_OFFSET,
   className = '',
 }: TooltipProps) {
@@ -388,8 +388,8 @@ export function Tooltip({
           className={`
             fixed z-[9999] pointer-events-none
             px-3 py-2 rounded-lg
-            font-body text-[11px] leading-relaxed tracking-wide
-            text-kol-text-secondary
+            font-body text-xs leading-normal
+            text-white
             ${className}
           `}
           style={{
