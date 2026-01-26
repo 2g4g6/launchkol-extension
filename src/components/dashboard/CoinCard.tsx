@@ -258,17 +258,22 @@ function TxnStats({ buyTxns, sellTxns }: { buyTxns: number; sellTxns: number }) 
   const buyPercent = total > 0 ? (buyTxns / total) * 100 : 50
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex flex-col gap-1.5 mt-1">
+      {/* Numbers row */}
       <div className="flex items-center gap-1 text-[14px] font-medium">
         <span className="text-kol-green">{buyTxns}</span>
         <span className="text-kol-text-muted">/</span>
         <span className="text-kol-red">{sellTxns}</span>
       </div>
-      {/* Visual ratio bar */}
-      <div className="h-1.5 w-16 rounded-full bg-kol-red/40 overflow-hidden">
+      {/* Full-width visual ratio bar */}
+      <div className="h-1 w-full rounded-full overflow-hidden flex">
         <div
-          className="h-full bg-kol-green rounded-full transition-all"
+          className="h-full bg-kol-green transition-all"
           style={{ width: `${buyPercent}%` }}
+        />
+        <div
+          className="h-full bg-kol-red transition-all"
+          style={{ width: `${100 - buyPercent}%` }}
         />
       </div>
     </div>
@@ -366,7 +371,7 @@ function QuickLinks({ coin }: { coin: CoinData }) {
 export function CoinCard({ coin, index, onView, onDevPanel, onRelaunch }: CoinCardProps) {
   return (
     <motion.div
-      className="group relative mx-3 my-2"
+      className="group relative mx-3 my-2 min-w-[320px]"
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: index * 0.06, ease: [0.16, 1, 0.3, 1] }}
@@ -376,10 +381,10 @@ export function CoinCard({ coin, index, onView, onDevPanel, onRelaunch }: CoinCa
         onClick={() => onView(coin)}
       >
         {/* MAIN CONTENT - 3 column layout */}
-        <div className="flex items-start gap-3 p-3">
+        <div className="flex items-start gap-4 p-3">
 
           {/* LEFT: Image + Address */}
-          <div className="flex flex-col items-center gap-1 flex-shrink-0">
+          <div className="flex flex-col items-center gap-2 flex-shrink-0">
             <TokenImage
               image={coin.image}
               symbol={coin.symbol}
