@@ -369,7 +369,7 @@ export function CoinCard({ coin, index, onView, onDevPanel, onRelaunch }: CoinCa
         <div className="flex items-start gap-3 p-3">
 
           {/* LEFT: Image + Address */}
-          <div className="flex flex-col items-center gap-1 flex-shrink-0">
+          <div className="flex flex-col items-center gap-2 flex-shrink-0">
             <TokenImage
               image={coin.image}
               symbol={coin.symbol}
