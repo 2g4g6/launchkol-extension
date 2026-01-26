@@ -248,11 +248,11 @@ export function CoinsPanel({}: CoinsPanelProps) {
           <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 rounded-full bg-kol-border/50 group-hover:bg-kol-blue/50 transition-colors" />
         </div>
 
-        {/* Header - matches TrackerFeed search bar height */}
+        {/* Header */}
         <div className="px-3 pt-3 pb-2 border-b border-kol-border/30">
           <div className="flex items-center justify-between h-9 px-3">
             <div className="flex items-center gap-2">
-                            <span className="text-sm font-semibold text-white">Your Coins</span>
+              <span className="text-sm font-semibold text-white">Your Coins</span>
               <span className="text-[10px] font-mono text-kol-text-tertiary bg-kol-surface/50 px-1.5 py-0.5 rounded">
                 {coins.length}
               </span>
