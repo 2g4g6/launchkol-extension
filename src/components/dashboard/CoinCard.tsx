@@ -31,6 +31,8 @@ export interface CoinData {
   launchedAt: Date
   progressPercent?: number
   axiomUrl?: string
+  buyTxns?: number
+  sellTxns?: number
 }
 
 interface CoinCardProps {
@@ -233,8 +235,8 @@ function AxiomIcon({ className }: { className?: string }) {
   )
 }
 
-// Action Button Component
-function ActionButton({ icon, label, onClick }: {
+// Compact Action Button Component (for top-right placement)
+function CompactActionButton({ icon, label, onClick }: {
   icon: string
   label: string
   onClick: (e: React.MouseEvent) => void
@@ -242,11 +244,34 @@ function ActionButton({ icon, label, onClick }: {
   return (
     <button
       onClick={onClick}
-      className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-md text-[10px] font-semibold border bg-kol-bg text-kol-text-muted border-kol-border hover:bg-kol-surface-elevated hover:text-white transition-colors"
+      className="flex items-center gap-1 px-2 py-1 rounded text-[10px] font-medium border bg-kol-bg text-kol-text-muted border-kol-border hover:bg-kol-surface-elevated hover:text-white transition-colors"
     >
-      <i className={`${icon} text-xs`} />
+      <i className={`${icon} text-[10px]`} />
       <span>{label}</span>
     </button>
+  )
+}
+
+// TXN Stats Component (buy/sell transaction counts with visual bar)
+function TxnStats({ buyTxns, sellTxns }: { buyTxns: number; sellTxns: number }) {
+  const total = buyTxns + sellTxns
+  const buyPercent = total > 0 ? (buyTxns / total) * 100 : 50
+
+  return (
+    <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1 text-[14px] font-medium">
+        <span className="text-kol-green">{buyTxns}</span>
+        <span className="text-kol-text-muted">/</span>
+        <span className="text-kol-red">{sellTxns}</span>
+      </div>
+      {/* Visual ratio bar */}
+      <div className="h-1.5 w-16 rounded-full bg-kol-red/40 overflow-hidden">
+        <div
+          className="h-full bg-kol-green rounded-full transition-all"
+          style={{ width: `${buyPercent}%` }}
+        />
+      </div>
+    </div>
   )
 }
 
@@ -365,7 +390,7 @@ export function CoinCard({ coin, index, onView, onDevPanel, onRelaunch }: CoinCa
 
           {/* MIDDLE: Token Info */}
           <div className="flex-1 min-w-0 flex flex-col gap-1 pt-0.5">
-            {/* Ticker (white) + Name (grey) with copy */}
+            {/* Row 1: Ticker (white) + Name (grey) with copy */}
             <div className="flex items-center gap-1.5">
               <span className="text-[16px] font-medium text-white truncate tracking-[-0.02em]">
                 {coin.symbol}
@@ -382,11 +407,36 @@ export function CoinCard({ coin, index, onView, onDevPanel, onRelaunch }: CoinCa
               </button>
             </div>
 
-            {/* Time + Quick Links */}
+            {/* Row 2: Time + Quick Links */}
             <div className="flex items-center gap-3">
               <TimeBadge date={coin.launchedAt} />
               <QuickLinks coin={coin} />
             </div>
+
+            {/* Row 3: TXN Stats */}
+            {coin.buyTxns !== undefined && (
+              <TxnStats buyTxns={coin.buyTxns} sellTxns={coin.sellTxns ?? 0} />
+            )}
+          </div>
+
+          {/* RIGHT: Action Buttons */}
+          <div className="flex flex-col gap-1 flex-shrink-0">
+            <CompactActionButton
+              icon="ri-code-s-slash-line"
+              label="Manage"
+              onClick={(e) => {
+                e.stopPropagation()
+                onDevPanel?.(coin)
+              }}
+            />
+            <CompactActionButton
+              icon="ri-restart-line"
+              label="Relaunch"
+              onClick={(e) => {
+                e.stopPropagation()
+                onRelaunch?.(coin)
+              }}
+            />
           </div>
         </div>
 
@@ -400,26 +450,6 @@ export function CoinCard({ coin, index, onView, onDevPanel, onRelaunch }: CoinCa
             symbol={coin.symbol}
           />
         )}
-
-        {/* ACTION BUTTONS */}
-        <div className="flex gap-1.5 p-2 border-t border-kol-border/20">
-          <ActionButton
-            icon="ri-code-s-slash-line"
-            label="Manage"
-            onClick={(e) => {
-              e.stopPropagation()
-              onDevPanel?.(coin)
-            }}
-          />
-          <ActionButton
-            icon="ri-restart-line"
-            label="Relaunch"
-            onClick={(e) => {
-              e.stopPropagation()
-              onRelaunch?.(coin)
-            }}
-          />
-        </div>
       </div>
     </motion.div>
   )

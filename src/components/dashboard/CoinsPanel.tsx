@@ -25,6 +25,8 @@ const MOCK_COINS: CoinData[] = [
       boughtAmount: 1.5,
       soldAmount: 0.6,
     },
+    buyTxns: 335,
+    sellTxns: 199,
   },
   {
     id: '2',
@@ -46,6 +48,8 @@ const MOCK_COINS: CoinData[] = [
       boughtAmount: 0.97,
       soldAmount: 0,
     },
+    buyTxns: 128,
+    sellTxns: 45,
   },
   {
     id: '3',
@@ -68,6 +72,8 @@ const MOCK_COINS: CoinData[] = [
       boughtAmount: 2.86,
       soldAmount: 0,
     },
+    buyTxns: 892,
+    sellTxns: 234,
   },
   {
     id: '4',
@@ -90,6 +96,8 @@ const MOCK_COINS: CoinData[] = [
       boughtAmount: 1.2,
       soldAmount: 0.75,
     },
+    buyTxns: 456,
+    sellTxns: 312,
   },
   {
     id: '5',
@@ -111,6 +119,8 @@ const MOCK_COINS: CoinData[] = [
       boughtAmount: 3.8,
       soldAmount: 2.65,
     },
+    buyTxns: 1205,
+    sellTxns: 678,
   },
   {
     id: '6',
@@ -133,6 +143,8 @@ const MOCK_COINS: CoinData[] = [
       boughtAmount: 0.5,
       soldAmount: 0,
     },
+    buyTxns: 67,
+    sellTxns: 23,
   },
   {
     id: '7',
@@ -154,6 +166,8 @@ const MOCK_COINS: CoinData[] = [
       boughtAmount: 2.0,
       soldAmount: 1.65,
     },
+    buyTxns: 234,
+    sellTxns: 456,
   },
   {
     id: '8',
@@ -176,6 +190,8 @@ const MOCK_COINS: CoinData[] = [
       boughtAmount: 4.5,
       soldAmount: 3.78,
     },
+    buyTxns: 567,
+    sellTxns: 321,
   },
 ]
 

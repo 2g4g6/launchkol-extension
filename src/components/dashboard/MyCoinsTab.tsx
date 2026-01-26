@@ -21,6 +21,8 @@ const MOCK_COINS: CoinData[] = [
     axiomUrl: 'https://axiom.trade/t/EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm',
     progressPercent: 85,
     tradingStats: { boughtAmount: 1.5, soldAmount: 0.6 },
+    buyTxns: 335,
+    sellTxns: 199,
   },
   {
     id: '2',
@@ -38,6 +40,8 @@ const MOCK_COINS: CoinData[] = [
     axiomUrl: 'https://axiom.trade/t/DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263',
     progressPercent: 42,
     tradingStats: { boughtAmount: 0.97, soldAmount: 0 },
+    buyTxns: 128,
+    sellTxns: 45,
   },
   {
     id: '3',
@@ -56,6 +60,8 @@ const MOCK_COINS: CoinData[] = [
     axiomUrl: 'https://axiom.trade/t/HhJpBhRRn4g56VsyLuT8DL5Bv31HkXqsrahTTUCZeZg4',
     progressPercent: 100,
     tradingStats: { boughtAmount: 2.86, soldAmount: 0 },
+    buyTxns: 892,
+    sellTxns: 234,
   },
 ]
 
