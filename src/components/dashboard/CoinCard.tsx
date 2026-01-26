@@ -45,13 +45,13 @@ interface CoinCardProps {
 }
 
 // Platform configuration with colors matching Axiom
-const PLATFORM_CONFIG: Record<PlatformType, { name: string; logo: string; color: string; ringColor: string; urlPattern: string }> = {
-  pump: { name: 'Pump.fun', logo: '/images/pump.svg', color: 'bg-green-500/20 border-green-500/40', ringColor: '#00c46b', urlPattern: 'https://pump.fun/{address}' },
-  bonk: { name: 'Bonk.fun', logo: '/images/bonk.svg', color: 'bg-orange-500/20 border-orange-500/40', ringColor: '#f97316', urlPattern: 'https://bonk.fun/{address}' },
-  bags: { name: 'Bags', logo: '/images/bags.svg', color: 'bg-purple-500/20 border-purple-500/40', ringColor: '#a855f7', urlPattern: 'https://bags.fm/{address}' },
-  mayhem: { name: 'Mayhem', logo: '/images/mayhem.svg', color: 'bg-red-500/20 border-red-500/40', ringColor: '#ff4d4f', urlPattern: 'https://mayhem.fun/{address}' },
-  fourmeme: { name: '4Meme', logo: '/images/fourmeme.svg', color: 'bg-pink-500/20 border-pink-500/40', ringColor: '#ec4899', urlPattern: 'https://4meme.fun/{address}' },
-  raydium: { name: 'Raydium', logo: '/images/raydium.svg', color: 'bg-indigo-500/20 border-indigo-500/40', ringColor: '#6366f1', urlPattern: 'https://raydium.io/swap/?inputMint=sol&outputMint={address}' },
+const PLATFORM_CONFIG: Record<PlatformType, { name: string; logo: string; color: string; ringColor: string; ringGradient: string; urlPattern: string }> = {
+  pump: { name: 'Pump.fun', logo: '/images/pump.svg', color: 'bg-green-500/20 border-green-500/40', ringColor: '#00c46b', ringGradient: 'linear-gradient(219deg, #00FF88 0%, #00c46b 49%, #009950 100%)', urlPattern: 'https://pump.fun/{address}' },
+  bonk: { name: 'Bonk.fun', logo: '/images/bonk.svg', color: 'bg-orange-500/20 border-orange-500/40', ringColor: '#f97316', ringGradient: 'linear-gradient(219deg, #FFA500 0%, #f97316 49%, #CC5500 100%)', urlPattern: 'https://bonk.fun/{address}' },
+  bags: { name: 'Bags', logo: '/images/bags.svg', color: 'bg-purple-500/20 border-purple-500/40', ringColor: '#a855f7', ringGradient: 'linear-gradient(219deg, #C084FC 0%, #a855f7 49%, #7C3AED 100%)', urlPattern: 'https://bags.fm/{address}' },
+  mayhem: { name: 'Mayhem', logo: '/images/mayhem.svg', color: 'bg-red-500/20 border-red-500/40', ringColor: '#ff4d4f', ringGradient: 'linear-gradient(219deg, #FF6B6B 0%, #ff4d4f 49%, #CC3333 100%)', urlPattern: 'https://mayhem.fun/{address}' },
+  fourmeme: { name: '4Meme', logo: '/images/fourmeme.svg', color: 'bg-pink-500/20 border-pink-500/40', ringColor: '#ec4899', ringGradient: 'linear-gradient(219deg, #F472B6 0%, #ec4899 49%, #BE185D 100%)', urlPattern: 'https://4meme.fun/{address}' },
+  raydium: { name: 'Raydium', logo: '/images/raydium.svg', color: 'bg-indigo-500/20 border-indigo-500/40', ringColor: '#6366f1', ringGradient: 'linear-gradient(219deg, #818CF8 0%, #6366f1 49%, #4F46E5 100%)', urlPattern: 'https://raydium.io/swap/?inputMint=sol&outputMint={address}' },
 }
 
 // Platform Badge Component
@@ -82,24 +82,31 @@ function TokenImage({
   platform: PlatformType
 }) {
   const imageSize = 64
+  const config = PLATFORM_CONFIG[platform]
 
   return (
-    <div className="relative" style={{ width: imageSize, height: imageSize }}>
-      {image ? (
-        <img
-          src={image}
-          alt={symbol}
-          className="rounded-md object-cover"
-          style={{ width: imageSize, height: imageSize }}
-        />
-      ) : (
-        <div
-          className="rounded-md bg-kol-bg flex items-center justify-center text-lg font-bold text-kol-text-muted"
-          style={{ width: imageSize, height: imageSize }}
-        >
-          {symbol.slice(0, 2)}
+    <div className="relative" style={{ width: imageSize + 6, height: imageSize + 6 }}>
+      {/* Gradient ring - base layer */}
+      <div
+        className="absolute inset-0 z-10 rounded-[4px]"
+        style={{ background: config.ringGradient }}
+      />
+      {/* Image container - on top */}
+      <div className="absolute inset-0 z-20 flex items-center justify-center rounded-[4px] p-[3px]">
+        <div className="h-full w-full rounded-[3px] bg-kol-surface p-[2px]">
+          {image ? (
+            <img
+              src={image}
+              alt={symbol}
+              className="h-full w-full rounded-[1px] object-cover"
+            />
+          ) : (
+            <div className="h-full w-full rounded-[1px] bg-kol-bg flex items-center justify-center text-lg font-bold text-kol-text-muted">
+              {symbol.slice(0, 2)}
+            </div>
+          )}
         </div>
-      )}
+      </div>
 
       {/* Platform badge */}
       <PlatformBadge platform={platform} />

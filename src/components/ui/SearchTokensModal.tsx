@@ -84,6 +84,15 @@ const PLATFORM_NAMES: Record<PlatformType, string> = {
   fourmeme: 'Four.meme',
 }
 
+// Platform ring gradients (matching Axiom style)
+const PLATFORM_RING_GRADIENTS: Record<PlatformType, string> = {
+  pump: 'linear-gradient(219deg, #00FF88 0%, #00c46b 49%, #009950 100%)',
+  bonk: 'linear-gradient(219deg, #FFA500 0%, #f97316 49%, #CC5500 100%)',
+  bags: 'linear-gradient(219deg, #C084FC 0%, #a855f7 49%, #7C3AED 100%)',
+  mayhem: 'linear-gradient(219deg, #FF6B6B 0%, #ff4d4f 49%, #CC3333 100%)',
+  fourmeme: 'linear-gradient(219deg, #F472B6 0%, #ec4899 49%, #BE185D 100%)',
+}
+
 // Mock data for demonstration
 const MOCK_TOKENS: TokenResult[] = [
   {
@@ -159,7 +168,7 @@ function PlatformBadge({ platform }: { platform: PlatformType }) {
   return (
     <Tooltip content={platformName} position="top" delayShow={200}>
       <div
-        className={`absolute -bottom-0.5 -right-0.5 sm:bottom-0 sm:right-0 h-[14px] w-[14px] sm:h-4 sm:w-4 rounded-full bg-kol-bg shadow-sm z-10 flex items-center justify-center border ${colorClass}`}
+        className={`absolute -bottom-0.5 -right-0.5 sm:bottom-0 sm:right-0 h-[14px] w-[14px] sm:h-4 sm:w-4 rounded-full bg-kol-bg shadow-sm z-30 flex items-center justify-center border ${colorClass}`}
       >
         <img src={iconSrc} alt={platformName} className="w-2 h-2 sm:w-2.5 sm:h-2.5" />
       </div>
@@ -169,19 +178,27 @@ function PlatformBadge({ platform }: { platform: PlatformType }) {
 
 function TokenAvatar({ token }: { token: TokenResult }) {
   return (
-    <div className="relative h-11 w-11 sm:h-[62px] sm:w-[62px] flex-shrink-0">
-      <div className="h-full w-full rounded-[4px] border border-kol-border bg-kol-surface overflow-hidden">
-        {token.image ? (
-          <img
-            src={token.image}
-            alt={token.name}
-            className="h-full w-full object-cover"
-          />
-        ) : (
-          <div className="h-full w-full flex items-center justify-center text-sm sm:text-base font-bold text-kol-text-muted">
-            {token.ticker.slice(0, 2)}
-          </div>
-        )}
+    <div className="relative h-[48px] w-[48px] sm:h-[66px] sm:w-[66px] flex-shrink-0">
+      {/* Gradient ring - base layer */}
+      <div
+        className="absolute inset-0 z-10 rounded-[4px]"
+        style={{ background: PLATFORM_RING_GRADIENTS[token.platform] }}
+      />
+      {/* Image container - on top */}
+      <div className="absolute inset-0 z-20 flex items-center justify-center rounded-[4px] p-[3px]">
+        <div className="h-full w-full rounded-[3px] bg-kol-surface p-[2px]">
+          {token.image ? (
+            <img
+              src={token.image}
+              alt={token.name}
+              className="h-full w-full rounded-[1px] object-cover"
+            />
+          ) : (
+            <div className="h-full w-full rounded-[1px] flex items-center justify-center text-sm sm:text-base font-bold text-kol-text-muted">
+              {token.ticker.slice(0, 2)}
+            </div>
+          )}
+        </div>
       </div>
       <PlatformBadge platform={token.platform} />
     </div>
