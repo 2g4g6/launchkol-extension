@@ -242,7 +242,7 @@ function TxnStats({ buyTxns, sellTxns }: { buyTxns: number; sellTxns: number }) 
   const buyPercent = total > 0 ? (buyTxns / total) * 100 : 50
 
   return (
-    <div className="flex items-center gap-2 w-[calc(100%+24px)]">
+    <div className="flex items-center gap-2 w-full">
       {/* Stats on the left */}
       <div className="flex items-center gap-1 text-[14px] font-medium flex-shrink-0">
         <Tooltip content="Buy transactions" position="top">
@@ -402,11 +402,6 @@ export function CoinCard({ coin, index, onView, onDevPanel, onRelaunch }: CoinCa
               <TimeBadge date={coin.launchedAt} />
               <QuickLinks coin={coin} />
             </div>
-
-            {/* Row 3: TXN Stats - aligned right */}
-            {coin.buyTxns !== undefined && (
-              <TxnStats buyTxns={coin.buyTxns} sellTxns={coin.sellTxns ?? 0} />
-            )}
           </div>
 
           {/* RIGHT: Action Buttons */}
@@ -434,6 +429,15 @@ export function CoinCard({ coin, index, onView, onDevPanel, onRelaunch }: CoinCa
             </Tooltip>
           </div>
         </div>
+
+        {/* TXN Stats Row - spans below header */}
+        {coin.buyTxns !== undefined && (
+          <div className="px-3 pb-2">
+            <div className="ml-[76px]">
+              <TxnStats buyTxns={coin.buyTxns} sellTxns={coin.sellTxns ?? 0} />
+            </div>
+          </div>
+        )}
 
         {/* TRADING STATS BAR */}
         {coin.tradingStats && (
