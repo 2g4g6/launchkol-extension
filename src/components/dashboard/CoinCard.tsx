@@ -359,7 +359,6 @@ function QuickLinks({ coin }: { coin: CoinData }) {
 
 export function CoinCard({ coin, index, onView, onTradePanel, onDevPanel, onVamp, onRelaunch }: CoinCardProps) {
   const isProfitable = coin.pnl >= 0
-  const platformConfig = PLATFORM_CONFIG[coin.platform]
 
   return (
     <motion.div
@@ -429,19 +428,6 @@ export function CoinCard({ coin, index, onView, onTradePanel, onDevPanel, onVamp
 
           {/* RIGHT: Holdings */}
           <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
-            <a
-              href={`https://pump.fun/${coin.address}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
-              className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-kol-surface/50 border border-kol-border/30 hover:bg-kol-surface-elevated transition-colors"
-            >
-              <img src={platformConfig.logo} alt={platformConfig.name} className="h-3.5 w-3.5 rounded" onError={(e) => {
-                (e.target as HTMLImageElement).style.display = 'none'
-              }} />
-              <span className="text-[10px] font-medium text-white">{platformConfig.name}</span>
-            </a>
-
             <div className="flex items-center gap-1.5">
               <img src="/images/sol-fill.svg" alt="SOL" className="w-3 h-3" />
               <span className="text-[11px] font-medium text-white">{coin.holdings.toFixed(2)}</span>
