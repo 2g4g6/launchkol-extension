@@ -282,7 +282,7 @@ function WalletDropdown({
             <div className="grid grid-cols-2 gap-2 p-3">
               <button
                 onClick={handleDeposit}
-                className="h-8 rounded-md text-sm font-medium bg-kol-blue/25 hover:bg-kol-blue/40 text-white transition-colors"
+                className="h-8 rounded-md text-sm font-medium bg-kol-blue/25 hover:bg-kol-blue/40 text-white transition-colors border border-kol-blue/40"
               >
                 Deposit
               </button>
