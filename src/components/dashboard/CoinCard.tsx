@@ -185,7 +185,7 @@ function TradingStatsBar({
       </div>
 
       {/* Divider */}
-      <div className="h-12 w-px bg-kol-border/40" />
+      <div className="h-12 w-px bg-kol-border" />
 
       {/* Sold */}
       <div className="flex flex-1 flex-col items-center justify-center gap-1">
@@ -197,7 +197,7 @@ function TradingStatsBar({
       </div>
 
       {/* Divider */}
-      <div className="h-12 w-px bg-kol-border/40" />
+      <div className="h-12 w-px bg-kol-border" />
 
       {/* Holding */}
       <div className="flex flex-1 flex-col items-center justify-center gap-1">
@@ -214,7 +214,7 @@ function TradingStatsBar({
       </div>
 
       {/* Divider */}
-      <div className="h-12 w-px bg-kol-border/40" />
+      <div className="h-12 w-px bg-kol-border" />
 
       {/* PnL */}
       <div className="flex min-w-[100px] flex-col items-center justify-center gap-1 px-1">
@@ -393,7 +393,7 @@ export function CoinCard({ coin, index, onView, onDevPanel, onRelaunch }: CoinCa
       transition={{ duration: 0.4, delay: index * 0.06, ease: [0.16, 1, 0.3, 1] }}
     >
       <div
-        className="relative bg-kol-surface border border-kol-border/80 rounded-lg hover:bg-kol-surface-elevated hover:border-kol-border-hover transition-colors duration-200 cursor-pointer overflow-hidden"
+        className="relative bg-kol-surface border border-kol-border rounded-lg hover:bg-kol-surface-elevated hover:border-kol-border-hover transition-colors duration-200 cursor-pointer overflow-hidden"
         onClick={() => onView(coin)}
       >
         {/* MAIN CONTENT - 3 column layout */}
