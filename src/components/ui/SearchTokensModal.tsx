@@ -386,63 +386,62 @@ export function SearchTokensModal({
             onClick={(e) => e.stopPropagation()}
           >
             <div className="bg-kol-bg rounded-lg overflow-hidden border border-kol-border shadow-2xl flex flex-col max-h-[500px]">
-              {/* Filters Row */}
-              <div className="flex items-center justify-between gap-2 px-3 pt-3 pb-2">
-                <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide flex-1">
-                  {PLATFORM_FILTERS.map((filter) => (
-                    <button
-                      key={filter.id}
-                      onClick={() => setPlatformFilter(filter.id)}
-                      className={`
-                        flex items-center gap-1.5 px-2 py-1 rounded text-xs font-medium whitespace-nowrap transition-colors
-                        ${platformFilter === filter.id
-                          ? 'bg-kol-blue/20 text-kol-blue border border-kol-blue/50'
-                          : 'bg-kol-surface border border-kol-border text-kol-text-muted hover:bg-kol-surface-elevated'
-                        }
-                      `}
-                    >
-                      {filter.Logo && <filter.Logo className="w-3 h-3" />}
-                      {filter.label}
-                    </button>
-                  ))}
-                </div>
-
-                <div className="flex items-center gap-1 flex-shrink-0">
-                  {SORT_OPTIONS.map((option) => (
-                    <button
-                      key={option.id}
-                      onClick={() => setSortBy(option.id)}
-                      title={option.label}
-                      className={`
-                        h-6 w-6 flex items-center justify-center rounded transition-colors
-                        ${sortBy === option.id
-                          ? 'bg-kol-blue/20 text-kol-blue'
-                          : 'text-kol-text-muted hover:bg-kol-surface-elevated hover:text-white'
-                        }
-                      `}
-                    >
-                      <i className={`${option.icon} text-sm`} />
-                    </button>
-                  ))}
-
-                  {/* Divider */}
-                  <div className="w-px h-4 bg-kol-border mx-1" />
-
-                  {/* Creator Filter Button */}
+              {/* Sort Options Row */}
+              <div className="flex items-center gap-1.5 px-3 pt-3 pb-2 overflow-x-auto scrollbar-hide">
+                {SORT_OPTIONS.map((option) => (
                   <button
-                    onClick={() => setIsCreatorFilterOpen(true)}
-                    title="Filter by creator"
+                    key={option.id}
+                    onClick={() => setSortBy(option.id)}
                     className={`
-                      h-6 w-6 flex items-center justify-center rounded transition-colors
-                      ${isCreatorFilterActive
-                        ? 'bg-kol-blue/20 text-kol-blue'
-                        : 'text-kol-text-muted hover:bg-kol-surface-elevated hover:text-white'
+                      flex items-center gap-1.5 px-2 py-1 rounded text-xs font-medium whitespace-nowrap transition-colors
+                      ${sortBy === option.id
+                        ? 'bg-kol-blue/20 text-kol-blue border border-kol-blue/50'
+                        : 'bg-kol-surface border border-kol-border text-kol-text-muted hover:bg-kol-surface-elevated'
                       }
                     `}
                   >
-                    <i className="ri-user-settings-line text-sm" />
+                    <i className={`${option.icon} text-sm`} />
+                    {option.label}
                   </button>
-                </div>
+                ))}
+
+                {/* Divider */}
+                <div className="w-px h-5 bg-kol-border mx-1" />
+
+                {/* Creator Filter Button */}
+                <button
+                  onClick={() => setIsCreatorFilterOpen(true)}
+                  className={`
+                    flex items-center gap-1.5 px-2 py-1 rounded text-xs font-medium whitespace-nowrap transition-colors
+                    ${isCreatorFilterActive
+                      ? 'bg-kol-blue/20 text-kol-blue border border-kol-blue/50'
+                      : 'bg-kol-surface border border-kol-border text-kol-text-muted hover:bg-kol-surface-elevated'
+                    }
+                  `}
+                >
+                  <i className="ri-user-settings-line text-sm" />
+                  Creator
+                </button>
+              </div>
+
+              {/* Platform Filters Row */}
+              <div className="flex items-center gap-1.5 px-3 pb-2 overflow-x-auto scrollbar-hide">
+                {PLATFORM_FILTERS.map((filter) => (
+                  <button
+                    key={filter.id}
+                    onClick={() => setPlatformFilter(filter.id)}
+                    className={`
+                      flex items-center gap-1.5 px-2 py-1 rounded text-xs font-medium whitespace-nowrap transition-colors
+                      ${platformFilter === filter.id
+                        ? 'bg-kol-blue/20 text-kol-blue border border-kol-blue/50'
+                        : 'bg-kol-surface border border-kol-border text-kol-text-muted hover:bg-kol-surface-elevated'
+                      }
+                    `}
+                  >
+                    {filter.Logo && <filter.Logo className="w-3 h-3" />}
+                    {filter.label}
+                  </button>
+                ))}
               </div>
 
               {/* Search Input */}
