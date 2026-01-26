@@ -217,13 +217,15 @@ function TokenRow({
           <span className="text-xs sm:text-base font-medium text-white truncate max-w-[80px] sm:max-w-none tracking-[-0.02em]">
             {token.ticker}
           </span>
-          <button
-            onClick={copyAddress}
-            className="flex items-center gap-1 text-xs sm:text-base text-kol-text-muted hover:text-kol-blue transition-colors"
-          >
-            <span className="truncate max-w-[48px] sm:max-w-[150px] font-medium tracking-[-0.02em]">{token.name}</span>
-            <i className="ri-file-copy-line text-xs sm:text-sm" />
-          </button>
+          <Tooltip content={token.name} position="top" delayShow={200}>
+            <button
+              onClick={copyAddress}
+              className="flex items-center gap-1 text-xs sm:text-base text-kol-text-muted hover:text-kol-blue transition-colors"
+            >
+              <span className="truncate max-w-[48px] sm:max-w-[150px] font-medium tracking-[-0.02em]">{token.name}</span>
+              <i className="ri-file-copy-line text-xs sm:text-sm" />
+            </button>
+          </Tooltip>
         </div>
 
         <div className="flex items-center gap-2 mt-1">
