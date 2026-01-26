@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { BaseModal } from '../ui/BaseModal'
 
@@ -114,15 +114,18 @@ function ToggleSwitch({ enabled, onChange, disabled }: ToggleSwitchProps) {
       onClick={() => !disabled && onChange(!enabled)}
       disabled={disabled}
       className={`
-        relative w-9 h-5 rounded-full transition-colors
-        ${enabled ? 'bg-kol-blue' : 'bg-kol-border'}
-        ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
+        relative w-10 h-[22px] rounded-full transition-all duration-200
+        ${enabled
+          ? 'bg-kol-blue shadow-[0_0_8px_rgba(0,123,255,0.4)]'
+          : 'bg-kol-border'
+        }
+        ${disabled ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'}
       `}
     >
       <motion.div
-        className="absolute top-0.5 w-4 h-4 rounded-full bg-white shadow"
-        animate={{ left: enabled ? 18 : 2 }}
-        transition={{ duration: 0.15 }}
+        className="absolute top-[3px] w-4 h-4 rounded-full bg-white shadow-sm"
+        animate={{ left: enabled ? 21 : 3 }}
+        transition={{ type: "spring", stiffness: 500, damping: 30 }}
       />
     </button>
   )
@@ -157,18 +160,35 @@ function TweetTypePill({ label, enabled, onChange, disabled }: TweetTypePillProp
 interface IconPickerProps {
   currentIcon: string
   onSelect: (icon: string) => void
-  isOpen: boolean
-  onOpenChange: (open: boolean) => void
 }
 
-function IconPicker({ currentIcon, onSelect, isOpen, onOpenChange }: IconPickerProps) {
+function IconPicker({ currentIcon, onSelect }: IconPickerProps) {
+  const [isOpen, setIsOpen] = useState(false)
+  const pickerRef = useRef<HTMLDivElement>(null)
+
+  // Click outside to close
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (pickerRef.current && !pickerRef.current.contains(event.target as Node)) {
+        setIsOpen(false)
+      }
+    }
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+      return () => document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [isOpen])
+
   return (
-    <div className="relative">
+    <div className="relative" ref={pickerRef}>
       <button
-        onClick={() => onOpenChange(!isOpen)}
-        className="w-8 h-8 rounded-lg bg-kol-surface border border-kol-border flex items-center justify-center hover:border-kol-text-muted transition-colors"
+        onClick={(e) => {
+          e.stopPropagation()
+          setIsOpen(!isOpen)
+        }}
+        className="w-6 h-6 rounded flex items-center justify-center hover:bg-kol-surface-elevated transition-colors"
       >
-        <i className={`${currentIcon} text-kol-text-secondary`} />
+        <i className={`${currentIcon} text-sm text-kol-text-muted`} />
       </button>
 
       <AnimatePresence>
@@ -178,20 +198,21 @@ function IconPicker({ currentIcon, onSelect, isOpen, onOpenChange }: IconPickerP
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: -4 }}
             transition={{ duration: 0.15 }}
-            className="absolute top-full left-0 mt-1 p-2 bg-kol-bg border border-kol-border rounded-lg shadow-xl z-10 grid grid-cols-5 gap-1"
+            className="absolute top-full left-0 mt-1 p-2 bg-kol-bg border border-kol-border rounded-lg shadow-[0_4px_24px_rgba(0,0,0,0.4)] z-50 grid grid-cols-5 gap-1"
           >
             {GROUP_ICONS.map(icon => (
               <button
                 key={icon}
-                onClick={() => {
+                onClick={(e) => {
+                  e.stopPropagation()
                   onSelect(icon)
-                  onOpenChange(false)
+                  setIsOpen(false)
                 }}
                 className={`
                   w-7 h-7 rounded flex items-center justify-center transition-colors
                   ${icon === currentIcon
-                    ? 'bg-kol-blue/20 text-kol-blue'
-                    : 'hover:bg-kol-surface text-kol-text-muted hover:text-white'
+                    ? 'bg-kol-blue/15 text-kol-blue'
+                    : 'hover:bg-kol-surface-elevated text-kol-text-muted hover:text-white'
                   }
                 `}
               >
@@ -218,7 +239,6 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
   const [newAccountHandle, setNewAccountHandle] = useState('')
   const [editingGroupId, setEditingGroupId] = useState<string | null>(null)
   const [editingGroupName, setEditingGroupName] = useState('')
-  const [iconPickerGroupId, setIconPickerGroupId] = useState<string | null>(null)
 
   // Load from storage on mount
   useEffect(() => {
@@ -256,7 +276,6 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
       setAccountSearchQuery('')
       setNewAccountHandle('')
       setEditingGroupId(null)
-      setIconPickerGroupId(null)
     }
   }, [isOpen])
 
@@ -377,9 +396,9 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
       title="Feed Settings"
       width="w-[520px]"
     >
-      <div className="flex gap-4 h-[380px] -mx-4 -mb-4">
+      <div className="flex h-[380px] -mx-4 -mt-4 -mb-4">
         {/* Left Column - Groups Sidebar */}
-        <div className="w-[160px] flex flex-col border-r border-kol-border pl-4 pr-3 py-1">
+        <div className="w-[160px] flex flex-col border-r border-kol-border/50 bg-kol-surface/30">
           {/* All Feeds (Global) */}
           <button
             onClick={() => {
@@ -387,10 +406,10 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
               setSelectedTab('settings')
             }}
             className={`
-              flex items-center gap-2 px-2 py-2 rounded-lg text-left transition-colors
+              w-full flex items-center gap-2.5 px-3 py-2.5 text-left transition-all mt-1
               ${selectedGroupId === null
-                ? 'bg-kol-blue/10 text-white'
-                : 'text-kol-text-secondary hover:bg-kol-surface hover:text-white'
+                ? 'bg-kol-blue/10 text-white border-l-2 border-kol-blue'
+                : 'text-kol-text-muted hover:bg-kol-surface-elevated/50 hover:text-white border-l-2 border-transparent'
               }
             `}
           >
@@ -399,10 +418,10 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
           </button>
 
           {/* Divider */}
-          <div className="h-px bg-kol-border my-2" />
+          <div className="h-px bg-kol-border/50 mx-3 my-2" />
 
           {/* Groups List */}
-          <div className="flex-1 overflow-y-auto space-y-0.5 scrollbar-styled">
+          <div className="flex-1 overflow-y-auto scrollbar-styled">
             {groups.map(group => (
               <div
                 key={group.id}
@@ -414,31 +433,17 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                     setSelectedTab('accounts')
                   }}
                   className={`
-                    w-full flex items-center gap-2 px-2 py-2 rounded-lg text-left transition-colors
+                    w-full flex items-center gap-2.5 px-3 py-2.5 text-left transition-all
                     ${selectedGroupId === group.id
-                      ? 'bg-kol-blue/10 text-white'
-                      : 'text-kol-text-secondary hover:bg-kol-surface hover:text-white'
+                      ? 'bg-kol-blue/10 text-white border-l-2 border-kol-blue'
+                      : 'text-kol-text-muted hover:bg-kol-surface-elevated/50 hover:text-white border-l-2 border-transparent'
                     }
                   `}
                 >
-                  <div className="relative">
-                    {iconPickerGroupId === group.id ? (
-                      <IconPicker
-                        currentIcon={group.icon}
-                        isOpen={true}
-                        onOpenChange={(open) => !open && setIconPickerGroupId(null)}
-                        onSelect={(icon) => updateGroupIcon(group.id, icon)}
-                      />
-                    ) : (
-                      <i
-                        className={`${group.icon} text-sm cursor-pointer hover:text-kol-blue`}
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          setIconPickerGroupId(group.id)
-                        }}
-                      />
-                    )}
-                  </div>
+                  <IconPicker
+                    currentIcon={group.icon}
+                    onSelect={(icon) => updateGroupIcon(group.id, icon)}
+                  />
 
                   {editingGroupId === group.id ? (
                     <input
@@ -490,7 +495,7 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
           {/* New Group Button */}
           <button
             onClick={createGroup}
-            className="flex items-center gap-2 px-2 py-2 rounded-lg text-kol-text-muted hover:text-white hover:bg-kol-surface transition-colors mt-2"
+            className="flex items-center gap-2.5 px-3 py-2.5 text-kol-text-muted hover:text-white hover:bg-kol-surface-elevated/50 transition-colors border-t border-kol-border/30"
           >
             <i className="ri-add-line text-sm" />
             <span className="text-xs font-medium">New Group</span>
@@ -498,34 +503,38 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
         </div>
 
         {/* Right Column - Tab Content */}
-        <div className="flex-1 flex flex-col pr-4 py-1 min-w-0">
+        <div className="flex-1 flex flex-col p-4 min-w-0">
           {/* Tab Bar (only show for groups, not global) */}
           {selectedGroupId !== null && (
-            <div className="flex gap-1 mb-3 p-1 bg-kol-surface rounded-lg">
-              <button
-                onClick={() => setSelectedTab('accounts')}
-                className={`
-                  flex-1 py-1.5 rounded-md text-xs font-medium transition-colors
-                  ${selectedTab === 'accounts'
-                    ? 'bg-kol-bg text-white'
-                    : 'text-kol-text-muted hover:text-white'
-                  }
-                `}
-              >
-                Accounts
-              </button>
-              <button
-                onClick={() => setSelectedTab('settings')}
-                className={`
-                  flex-1 py-1.5 rounded-md text-xs font-medium transition-colors
-                  ${selectedTab === 'settings'
-                    ? 'bg-kol-bg text-white'
-                    : 'text-kol-text-muted hover:text-white'
-                  }
-                `}
-              >
-                Settings
-              </button>
+            <div className="pb-3 mb-3 border-b border-kol-border/30">
+              <div className="flex gap-1 p-1 bg-kol-surface/50 rounded-lg border border-kol-border/30">
+                <button
+                  onClick={() => setSelectedTab('accounts')}
+                  className={`
+                    flex-1 py-2 rounded-md text-xs font-medium transition-all
+                    ${selectedTab === 'accounts'
+                      ? 'bg-kol-bg text-white shadow-sm'
+                      : 'text-kol-text-muted hover:text-white'
+                    }
+                  `}
+                >
+                  <i className="ri-user-line mr-1.5" />
+                  Accounts
+                </button>
+                <button
+                  onClick={() => setSelectedTab('settings')}
+                  className={`
+                    flex-1 py-2 rounded-md text-xs font-medium transition-all
+                    ${selectedTab === 'settings'
+                      ? 'bg-kol-bg text-white shadow-sm'
+                      : 'text-kol-text-muted hover:text-white'
+                    }
+                  `}
+                >
+                  <i className="ri-settings-3-line mr-1.5" />
+                  Settings
+                </button>
+              </div>
             </div>
           )}
 
@@ -533,17 +542,27 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
           <div className="flex-1 overflow-y-auto scrollbar-styled">
             {/* Global Settings (All Feeds selected) */}
             {selectedGroupId === null && (
-              <div className="space-y-4">
-                <div className="text-xs text-kol-text-muted mb-4">
-                  These settings apply to all groups that have "Use global settings" enabled.
+              <div className="space-y-5">
+                <div className="p-3 rounded-lg bg-kol-surface/30 border border-kol-border/30">
+                  <p className="text-xs text-kol-text-muted">
+                    <i className="ri-information-line mr-1.5" />
+                    These settings apply to all groups that have "Use global settings" enabled.
+                  </p>
+                </div>
+
+                {/* Section Label */}
+                <div>
+                  <span className="text-[10px] text-kol-text-muted uppercase tracking-wide font-medium">
+                    Feed Behavior
+                  </span>
                 </div>
 
                 {/* Toggle Settings */}
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-white">Auto-translate tweets</p>
-                      <p className="text-xs text-kol-text-muted">Automatically translate non-English tweets</p>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between py-1">
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-white">Auto-translate tweets</p>
+                      <p className="text-xs text-kol-text-muted mt-0.5">Translate non-English tweets</p>
                     </div>
                     <ToggleSwitch
                       enabled={globalSettings.autoTranslate}
@@ -551,10 +570,10 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                     />
                   </div>
 
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-white">Pause feed on hover</p>
-                      <p className="text-xs text-kol-text-muted">Stop auto-scrolling when hovering over feed</p>
+                  <div className="flex items-center justify-between py-1">
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-white">Pause feed on hover</p>
+                      <p className="text-xs text-kol-text-muted mt-0.5">Stop auto-scrolling when hovering</p>
                     </div>
                     <ToggleSwitch
                       enabled={globalSettings.pauseOnHover}
@@ -562,10 +581,10 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                     />
                   </div>
 
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-white">Desktop notifications</p>
-                      <p className="text-xs text-kol-text-muted">Get notified about new tweets</p>
+                  <div className="flex items-center justify-between py-1">
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-white">Desktop notifications</p>
+                      <p className="text-xs text-kol-text-muted mt-0.5">Get notified about new tweets</p>
                     </div>
                     <ToggleSwitch
                       enabled={globalSettings.notifications}
@@ -574,10 +593,12 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                   </div>
                 </div>
 
-                {/* Tweet Types */}
+                {/* Tweet Types Section */}
                 <div className="pt-2">
-                  <p className="text-sm text-white mb-2">Tweet types to show</p>
-                  <div className="flex flex-wrap gap-2">
+                  <span className="text-[10px] text-kol-text-muted uppercase tracking-wide font-medium">
+                    Tweet Types
+                  </span>
+                  <div className="flex flex-wrap gap-2 mt-3">
                     <TweetTypePill
                       label="Posts"
                       enabled={globalSettings.tweetTypes.posts}
@@ -614,30 +635,35 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                     placeholder="Search accounts..."
                     value={accountSearchQuery}
                     onChange={(e) => setAccountSearchQuery(e.target.value)}
-                    className="w-full h-9 pl-8 pr-3 rounded-md bg-kol-surface border border-kol-border text-sm text-white placeholder:text-kol-text-muted/50 focus:outline-none focus:border-kol-blue/50 focus:ring-1 focus:ring-kol-blue/30 transition-colors"
+                    className="w-full h-9 pl-8 pr-3 rounded-lg bg-kol-surface/50 border border-kol-border/50 text-sm text-white placeholder:text-kol-text-muted/50 focus:outline-none focus:border-kol-blue/50 focus:ring-1 focus:ring-kol-blue/30 transition-colors"
                   />
                 </div>
 
                 {/* Accounts List */}
                 <div className="space-y-1">
                   {filteredAccounts.length === 0 && !accountSearchQuery ? (
-                    <div className="text-center py-8 text-kol-text-muted">
-                      <i className="ri-user-add-line text-2xl mb-2 block" />
-                      <p className="text-sm">No accounts yet</p>
-                      <p className="text-xs">Add accounts to track their tweets</p>
+                    <div className="flex flex-col items-center justify-center py-12 text-center">
+                      <div className="w-12 h-12 rounded-xl bg-kol-surface-elevated/50 flex items-center justify-center mb-3">
+                        <i className="ri-user-add-line text-xl text-kol-text-muted" />
+                      </div>
+                      <p className="text-sm font-medium text-white mb-1">No accounts yet</p>
+                      <p className="text-xs text-kol-text-muted">Add Twitter accounts to track</p>
                     </div>
                   ) : filteredAccounts.length === 0 ? (
-                    <div className="text-center py-4 text-kol-text-muted">
-                      <p className="text-sm">No accounts match "{accountSearchQuery}"</p>
+                    <div className="flex flex-col items-center justify-center py-8 text-center">
+                      <div className="w-10 h-10 rounded-lg bg-kol-surface-elevated/30 flex items-center justify-center mb-2">
+                        <i className="ri-search-line text-lg text-kol-text-muted" />
+                      </div>
+                      <p className="text-sm text-kol-text-muted">No accounts match "{accountSearchQuery}"</p>
                     </div>
                   ) : (
                     filteredAccounts.map(account => (
                       <div
                         key={account.id}
-                        className="group flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-kol-surface transition-colors"
+                        className="group flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-kol-surface-elevated/50 transition-colors"
                       >
                         {/* Avatar */}
-                        <div className="w-8 h-8 rounded-full bg-kol-surface-elevated flex items-center justify-center overflow-hidden">
+                        <div className="w-8 h-8 rounded-full bg-kol-surface-elevated flex items-center justify-center overflow-hidden ring-1 ring-kol-border/50">
                           {account.avatar ? (
                             <img src={account.avatar} alt="" className="w-full h-full object-cover" />
                           ) : (
@@ -647,7 +673,7 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
 
                         {/* Info */}
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm text-white truncate">{account.name}</p>
+                          <p className="text-sm font-medium text-white truncate">{account.name}</p>
                           <p className="text-xs text-kol-text-muted">@{account.handle}</p>
                         </div>
 
@@ -664,7 +690,7 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                 </div>
 
                 {/* Add Account */}
-                <div className="flex gap-2 pt-2">
+                <div className="flex gap-2 pt-2 border-t border-kol-border/30 mt-3">
                   <input
                     type="text"
                     placeholder="@username"
@@ -673,16 +699,16 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') addAccount(selectedGroupId)
                     }}
-                    className="flex-1 h-9 px-3 rounded-md bg-kol-surface border border-kol-border text-sm text-white placeholder:text-kol-text-muted/50 focus:outline-none focus:border-kol-blue/50 focus:ring-1 focus:ring-kol-blue/30 transition-colors"
+                    className="flex-1 h-9 px-3 rounded-lg bg-kol-surface/50 border border-kol-border/50 text-sm text-white placeholder:text-kol-text-muted/50 focus:outline-none focus:border-kol-blue/50 focus:ring-1 focus:ring-kol-blue/30 transition-colors mt-3"
                   />
                   <button
                     onClick={() => addAccount(selectedGroupId)}
                     disabled={!newAccountHandle.trim()}
                     className={`
-                      px-3 h-9 rounded-md text-xs font-medium transition-colors
+                      px-4 h-9 rounded-lg text-xs font-medium transition-all mt-3
                       ${newAccountHandle.trim()
-                        ? 'bg-kol-blue hover:bg-kol-blue-hover text-white'
-                        : 'bg-kol-surface border border-kol-border text-kol-text-muted cursor-not-allowed'
+                        ? 'bg-kol-blue hover:bg-kol-blue-hover text-white shadow-[0_0_12px_rgba(0,123,255,0.3)]'
+                        : 'bg-kol-surface border border-kol-border/50 text-kol-text-muted cursor-not-allowed'
                       }
                     `}
                   >
@@ -694,12 +720,12 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
 
             {/* Settings Tab */}
             {selectedGroupId !== null && selectedTab === 'settings' && selectedGroup && (
-              <div className="space-y-4">
+              <div className="space-y-5">
                 {/* Use Global Settings Toggle */}
-                <div className="flex items-center justify-between pb-3 border-b border-kol-border">
-                  <div>
-                    <p className="text-sm text-white">Use global settings</p>
-                    <p className="text-xs text-kol-text-muted">Override with group-specific settings when disabled</p>
+                <div className="flex items-center justify-between p-3 rounded-lg bg-kol-surface/30 border border-kol-border/30">
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-white">Use global settings</p>
+                    <p className="text-xs text-kol-text-muted mt-0.5">Override with group-specific settings when disabled</p>
                   </div>
                   <ToggleSwitch
                     enabled={selectedGroup.settings.useGlobalSettings}
@@ -708,12 +734,19 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                 </div>
 
                 {/* Group-specific Settings */}
-                <div className={selectedGroup.settings.useGlobalSettings ? 'opacity-50 pointer-events-none' : ''}>
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm text-white">Auto-translate tweets</p>
-                        <p className="text-xs text-kol-text-muted">Automatically translate non-English tweets</p>
+                <div className={selectedGroup.settings.useGlobalSettings ? 'opacity-40 pointer-events-none' : ''}>
+                  {/* Section Label */}
+                  <div className="mb-3">
+                    <span className="text-[10px] text-kol-text-muted uppercase tracking-wide font-medium">
+                      Feed Behavior
+                    </span>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between py-1">
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-white">Auto-translate tweets</p>
+                        <p className="text-xs text-kol-text-muted mt-0.5">Translate non-English tweets</p>
                       </div>
                       <ToggleSwitch
                         enabled={getEffectiveSettings(selectedGroup).autoTranslate}
@@ -722,10 +755,10 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                       />
                     </div>
 
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm text-white">Pause feed on hover</p>
-                        <p className="text-xs text-kol-text-muted">Stop auto-scrolling when hovering</p>
+                    <div className="flex items-center justify-between py-1">
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-white">Pause feed on hover</p>
+                        <p className="text-xs text-kol-text-muted mt-0.5">Stop auto-scrolling when hovering</p>
                       </div>
                       <ToggleSwitch
                         enabled={getEffectiveSettings(selectedGroup).pauseOnHover}
@@ -734,10 +767,10 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                       />
                     </div>
 
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm text-white">Desktop notifications</p>
-                        <p className="text-xs text-kol-text-muted">Get notified about new tweets</p>
+                    <div className="flex items-center justify-between py-1">
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-white">Desktop notifications</p>
+                        <p className="text-xs text-kol-text-muted mt-0.5">Get notified about new tweets</p>
                       </div>
                       <ToggleSwitch
                         enabled={getEffectiveSettings(selectedGroup).notifications}
@@ -747,10 +780,12 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                     </div>
                   </div>
 
-                  {/* Tweet Types */}
-                  <div className="pt-3">
-                    <p className="text-sm text-white mb-2">Tweet types to show</p>
-                    <div className="flex flex-wrap gap-2">
+                  {/* Tweet Types Section */}
+                  <div className="pt-4">
+                    <span className="text-[10px] text-kol-text-muted uppercase tracking-wide font-medium">
+                      Tweet Types
+                    </span>
+                    <div className="flex flex-wrap gap-2 mt-3">
                       <TweetTypePill
                         label="Posts"
                         enabled={getEffectiveSettings(selectedGroup).tweetTypes.posts}
