@@ -202,12 +202,12 @@ function TradingStatsBar({
       {/* Holding */}
       <div className="flex flex-1 flex-col items-center justify-center gap-1">
         <span className="text-[12px] font-normal leading-4 text-kol-text-muted">Holding</span>
-        <div className="group flex flex-row items-center gap-1">
-          <div className="flex flex-row items-center gap-1 group-hover:hidden">
+        <div className="group/holding flex flex-row items-center gap-1 cursor-default">
+          <div className="flex flex-row items-center gap-1 group-hover/holding:hidden">
             <img alt="SOL" width="14" height="14" src="/images/solanaLogoMark.svg" />
             <span className="text-[12px] font-medium leading-4 text-kol-text-secondary">{(holdingsSol ?? holdings).toFixed(2)}</span>
           </div>
-          <span className="hidden text-[12px] font-medium leading-4 text-kol-text-secondary group-hover:inline">
+          <span className="hidden text-[12px] font-medium leading-4 text-kol-text-secondary group-hover/holding:inline">
             {holdings.toFixed(2)} {symbol}
           </span>
         </div>
