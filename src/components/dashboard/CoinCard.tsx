@@ -316,10 +316,10 @@ function QuickLinks({ coin }: { coin: CoinData }) {
           target="_blank"
           rel="noopener noreferrer"
           onClick={(e) => e.stopPropagation()}
-          className="flex items-center text-kol-text-muted hover:text-white transition-colors"
+          className="flex items-center text-white hover:opacity-80 transition-opacity"
           title="Trade on Axiom"
         >
-          <AxiomIcon />
+          <AxiomIcon className="w-4 h-4" />
         </a>
       )}
     </div>
