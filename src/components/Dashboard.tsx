@@ -4,7 +4,6 @@ import { Header } from './dashboard/Header'
 import { TrackerFeed } from './dashboard/TrackerFeed'
 import { CoinsPanel } from './dashboard/CoinsPanel'
 import { SocialPostData } from './dashboard/SocialPost'
-import { CoinData } from './dashboard/CoinCard'
 import { DepositModal, NetworkConfig } from './ui/DepositModal'
 import { WithdrawModal } from './ui/WithdrawModal'
 import { SearchTokensModal, TokenResult } from './ui/SearchTokensModal'
@@ -78,10 +77,6 @@ export function Dashboard({ user, onSignOut }: DashboardProps) {
 
   const handleDeploy = (post: SocialPostData) => {
     console.log('Deploy from post:', post)
-  }
-
-  const handleSell = (coin: CoinData, percent: number) => {
-    console.log(`Selling ${percent}% of ${coin.symbol}`)
   }
 
 
@@ -266,7 +261,6 @@ export function Dashboard({ user, onSignOut }: DashboardProps) {
           <CoinsPanel
             isOpen={isCoinsOpen}
             onClose={() => setIsCoinsOpen(false)}
-            onSell={handleSell}
           />
         </div>
       </div>

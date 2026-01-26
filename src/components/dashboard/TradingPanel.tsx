@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { MyCoinsTab } from './MyCoinsTab'
 import { LaunchTab } from './LaunchTab'
 import { TradeTab } from './TradeTab'
-import { CoinData } from './CoinCard'
 
 type Tab = 'coins' | 'launch' | 'trade'
 
@@ -69,11 +68,6 @@ export function TradingPanel({
       }
     }
   })
-
-  const handleSell = (coin: CoinData, percent: number) => {
-    console.log(`Selling ${percent}% of ${coin.symbol}`)
-    // TODO: Implement actual sell logic
-  }
 
   const handleLaunch = (data: any) => {
     console.log('Launching token:', data)
@@ -156,7 +150,7 @@ export function TradingPanel({
                   exit={{ opacity: 0, x: -10 }}
                   transition={{ duration: 0.15 }}
                 >
-                  {activeTab === 'coins' && <MyCoinsTab onSell={handleSell} balance={4.523} />}
+                  {activeTab === 'coins' && <MyCoinsTab balance={4.523} />}
                   {activeTab === 'launch' && <LaunchTab onLaunch={handleLaunch} />}
                   {activeTab === 'trade' && <TradeTab onTrade={handleTrade} balance={4.523} />}
                 </motion.div>

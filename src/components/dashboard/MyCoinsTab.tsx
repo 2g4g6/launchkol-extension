@@ -2,19 +2,25 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { CoinCard, CoinData } from './CoinCard'
 
-// Mock data
+// Mock data with new fields
 const MOCK_COINS: CoinData[] = [
   {
     id: '1',
     name: 'DogWifHat',
     symbol: 'WIF',
+    image: 'https://pbs.twimg.com/profile_images/1742059584087289856/viSxBP1h_400x400.jpg',
     address: 'EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm',
     holdings: 2.45,
     holdingsUsd: 245.50,
-    pnl: 89.20,
+    pnl: 0.89,
     pnlPercent: 57.2,
     marketCap: 156000,
     launchedAt: new Date(Date.now() - 3600000 * 24),
+    platform: 'pump',
+    twitterUrl: 'https://x.com/dogwifcoin/status/1234567890',
+    axiomUrl: 'https://axiom.trade/t/EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm',
+    progressPercent: 85,
+    tradingStats: { boughtAmount: 1.5, soldAmount: 0.6 },
   },
   {
     id: '2',
@@ -23,27 +29,35 @@ const MOCK_COINS: CoinData[] = [
     address: 'DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263',
     holdings: 0.85,
     holdingsUsd: 85.00,
-    pnl: -12.50,
+    pnl: -0.12,
     pnlPercent: -12.8,
     marketCap: 89000,
     launchedAt: new Date(Date.now() - 3600000 * 2),
+    platform: 'bonk',
+    progressPercent: 42,
+    tradingStats: { boughtAmount: 0.97, soldAmount: 0 },
   },
   {
     id: '3',
     name: 'Myro',
     symbol: 'MYRO',
+    image: 'https://pbs.twimg.com/profile_images/1755899881783185408/Mtp0uwfM_400x400.jpg',
     address: 'HhJpBhRRn4g56VsyLuT8DL5Bv31HkXqsrahTTUCZeZg4',
     holdings: 5.20,
     holdingsUsd: 520.00,
-    pnl: 234.00,
+    pnl: 2.34,
     pnlPercent: 82.1,
     marketCap: 445000,
     launchedAt: new Date(Date.now() - 3600000 * 48),
+    platform: 'pump',
+    twitterUrl: 'https://x.com/myro_sol/status/9876543210',
+    axiomUrl: 'https://axiom.trade/t/HhJpBhRRn4g56VsyLuT8DL5Bv31HkXqsrahTTUCZeZg4',
+    progressPercent: 100,
+    tradingStats: { boughtAmount: 2.86, soldAmount: 0 },
   },
 ]
 
 interface MyCoinsTabProps {
-  onSell: (coin: CoinData, percent: number) => void
   balance: number
 }
 
@@ -65,7 +79,7 @@ const itemVariants = {
   }
 }
 
-export function MyCoinsTab({ onSell, balance }: MyCoinsTabProps) {
+export function MyCoinsTab({ balance }: MyCoinsTabProps) {
   const [coins] = useState<CoinData[]>(MOCK_COINS)
   const [sortBy, setSortBy] = useState<'recent' | 'pnl' | 'holdings'>('recent')
 
@@ -86,6 +100,22 @@ export function MyCoinsTab({ onSell, balance }: MyCoinsTabProps) {
 
   const handleView = (coin: CoinData) => {
     window.open(`https://pump.fun/${coin.address}`, '_blank')
+  }
+
+  const handleTradePanel = (coin: CoinData) => {
+    console.log('Trade panel for:', coin.symbol)
+  }
+
+  const handleDevPanel = (coin: CoinData) => {
+    console.log('Dev panel for:', coin.symbol)
+  }
+
+  const handleVamp = (coin: CoinData) => {
+    console.log('Vamp for:', coin.symbol)
+  }
+
+  const handleRelaunch = (coin: CoinData) => {
+    console.log('Relaunch for:', coin.symbol)
   }
 
   return (
@@ -231,8 +261,11 @@ export function MyCoinsTab({ onSell, balance }: MyCoinsTabProps) {
                 key={coin.id}
                 coin={coin}
                 index={index}
-                onSell={onSell}
                 onView={handleView}
+                onTradePanel={handleTradePanel}
+                onDevPanel={handleDevPanel}
+                onVamp={handleVamp}
+                onRelaunch={handleRelaunch}
               />
             ))
           ) : (

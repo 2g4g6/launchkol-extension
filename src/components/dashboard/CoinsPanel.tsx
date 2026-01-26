@@ -1,19 +1,29 @@
-import { useState, useRef, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect } from 'react'
+import { motion } from 'framer-motion'
 import { CoinCard, CoinData } from './CoinCard'
 
-// Mock data - same as MyCoinsTab
+// Mock data with new fields
 const MOCK_COINS: CoinData[] = [
   {
     id: '1',
     name: 'DogWifHat',
     symbol: 'WIF',
+    image: 'https://pbs.twimg.com/profile_images/1742059584087289856/viSxBP1h_400x400.jpg',
     address: 'EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm',
     holdings: 2.45,
     holdingsUsd: 245.50,
-    pnl: 89.20,
+    pnl: 0.89,
     pnlPercent: 57.2,
     marketCap: 156000,
     launchedAt: new Date(Date.now() - 3600000 * 24),
+    platform: 'pump',
+    twitterUrl: 'https://x.com/dogwifcoin/status/1234567890',
+    axiomUrl: 'https://axiom.trade/t/EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm',
+    progressPercent: 85,
+    tradingStats: {
+      boughtAmount: 1.5,
+      soldAmount: 0.6,
+    },
   },
   {
     id: '2',
@@ -22,29 +32,74 @@ const MOCK_COINS: CoinData[] = [
     address: 'DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263',
     holdings: 0.85,
     holdingsUsd: 85.00,
-    pnl: -12.50,
+    pnl: -0.12,
     pnlPercent: -12.8,
     marketCap: 89000,
     launchedAt: new Date(Date.now() - 3600000 * 2),
+    platform: 'bonk',
+    progressPercent: 42,
+    tradingStats: {
+      boughtAmount: 0.97,
+      soldAmount: 0,
+    },
   },
   {
     id: '3',
     name: 'Myro',
     symbol: 'MYRO',
+    image: 'https://pbs.twimg.com/profile_images/1755899881783185408/Mtp0uwfM_400x400.jpg',
     address: 'HhJpBhRRn4g56VsyLuT8DL5Bv31HkXqsrahTTUCZeZg4',
     holdings: 5.20,
     holdingsUsd: 520.00,
-    pnl: 234.00,
+    pnl: 2.34,
     pnlPercent: 82.1,
     marketCap: 445000,
     launchedAt: new Date(Date.now() - 3600000 * 48),
+    platform: 'pump',
+    twitterUrl: 'https://x.com/myro_sol/status/9876543210',
+    axiomUrl: 'https://axiom.trade/t/HhJpBhRRn4g56VsyLuT8DL5Bv31HkXqsrahTTUCZeZg4',
+    progressPercent: 100,
+    tradingStats: {
+      boughtAmount: 2.86,
+      soldAmount: 0,
+    },
   },
 ]
+
+// Portfolio Summary Component
+function PortfolioSummary({ coins }: { coins: CoinData[] }) {
+  const totalValue = coins.reduce((sum, c) => sum + c.holdingsUsd, 0)
+  const totalPnl = coins.reduce((sum, c) => sum + c.pnl, 0)
+  const totalPnlPercent = totalValue > 0 ? (totalPnl / (totalValue - totalPnl)) * 100 : 0
+  const isProfitable = totalPnl >= 0
+
+  return (
+    <div className="flex items-center justify-between px-3 py-2 bg-kol-surface/20 border-b border-kol-border/20">
+      <div>
+        <p className="text-[9px] text-kol-text-muted uppercase tracking-wider">Total Value</p>
+        <p className="text-sm font-mono font-semibold text-white">
+          ${totalValue.toFixed(2)}
+        </p>
+      </div>
+      <div className="text-right">
+        <p className="text-[9px] text-kol-text-muted uppercase tracking-wider">Total PnL</p>
+        <div className="flex items-center justify-end gap-1">
+          <img src="/images/sol-fill.svg" alt="SOL" className="w-3 h-3" />
+          <span className={`text-sm font-mono font-semibold ${isProfitable ? 'text-kol-green' : 'text-kol-red'}`}>
+            {isProfitable ? '+' : ''}{totalPnl.toFixed(2)}
+          </span>
+          <span className={`text-[10px] ${isProfitable ? 'text-kol-green' : 'text-kol-red'}`}>
+            ({isProfitable ? '+' : ''}{totalPnlPercent.toFixed(1)}%)
+          </span>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 interface CoinsPanelProps {
   isOpen: boolean
   onClose: () => void
-  onSell: (coin: CoinData, percent: number) => void
 }
 
 // Default sizes
@@ -55,15 +110,30 @@ const DEFAULT_HEIGHT = 300 // Mobile panel height
 const MIN_HEIGHT = 150
 const MAX_HEIGHT = 500
 
-export function CoinsPanel({ onSell }: CoinsPanelProps) {
+export function CoinsPanel({}: CoinsPanelProps) {
   const [coins] = useState<CoinData[]>(MOCK_COINS)
   const [panelWidth, setPanelWidth] = useState(DEFAULT_WIDTH)
   const [panelHeight, setPanelHeight] = useState(DEFAULT_HEIGHT)
   const [isResizing, setIsResizing] = useState(false)
-  const panelRef = useRef<HTMLDivElement>(null)
 
   const handleView = (coin: CoinData) => {
     window.open(`https://pump.fun/${coin.address}`, '_blank')
+  }
+
+  const handleTradePanel = (coin: CoinData) => {
+    console.log('Trade panel for:', coin.symbol)
+  }
+
+  const handleDevPanel = (coin: CoinData) => {
+    console.log('Dev panel for:', coin.symbol)
+  }
+
+  const handleVamp = (coin: CoinData) => {
+    console.log('Vamp for:', coin.symbol)
+  }
+
+  const handleRelaunch = (coin: CoinData) => {
+    console.log('Relaunch for:', coin.symbol)
   }
 
   // Desktop resize (width) - drag from left edge
@@ -140,18 +210,56 @@ export function CoinsPanel({ onSell }: CoinsPanelProps) {
             key={coin.id}
             coin={coin}
             index={index}
-            onSell={onSell}
             onView={handleView}
+            onTradePanel={handleTradePanel}
+            onDevPanel={handleDevPanel}
+            onVamp={handleVamp}
+            onRelaunch={handleRelaunch}
           />
         ))
       ) : (
-        <div className="flex flex-col items-center justify-center h-full py-8 text-center">
-          <div className="w-12 h-12 rounded-xl bg-kol-surface-elevated/50 border border-kol-border/40 flex items-center justify-center mb-3">
-            <i className="ri-coin-line text-xl text-kol-text-muted" />
+        <motion.div
+          className="flex flex-col items-center justify-center h-full py-12 text-center px-6"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+        >
+          <div className="relative mb-5">
+            <div className="w-16 h-16 rounded-2xl bg-kol-surface-elevated/50 backdrop-blur-sm border border-kol-border/40 flex items-center justify-center">
+              <i className="ri-coin-line text-3xl text-kol-text-muted" />
+            </div>
+            <div
+              className="absolute inset-0 rounded-2xl opacity-50 blur-xl -z-10"
+              style={{
+                background: 'radial-gradient(circle, rgba(0, 123, 255, 0.15) 0%, transparent 70%)',
+              }}
+            />
+            <motion.div
+              className="absolute -top-2 -right-2 w-3 h-3 rounded-full bg-kol-blue/30"
+              animate={{ y: [0, -5, 0], opacity: [0.5, 1, 0.5] }}
+              transition={{ duration: 2, repeat: Infinity }}
+            />
+            <motion.div
+              className="absolute -bottom-1 -left-1 w-2 h-2 rounded-full bg-kol-green/30"
+              animate={{ y: [0, -3, 0], opacity: [0.3, 0.7, 0.3] }}
+              transition={{ duration: 2.5, repeat: Infinity, delay: 0.5 }}
+            />
           </div>
-          <p className="text-sm font-semibold text-white mb-1">No coins yet</p>
-          <p className="text-xs text-kol-text-muted">Your holdings will appear here</p>
-        </div>
+          <h3 className="font-body font-semibold text-base text-white mb-1">
+            No positions yet
+          </h3>
+          <p className="font-body text-sm text-kol-text-muted max-w-[200px] mb-4">
+            Your token holdings will appear here once you make a trade
+          </p>
+          <motion.button
+            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-kol-blue/15 border border-kol-blue/30 text-kol-blue text-sm font-medium hover:bg-kol-blue/25 transition-colors"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            <i className="ri-search-line text-sm" />
+            <span>Find tokens</span>
+          </motion.button>
+        </motion.div>
       )}
     </>
   )
@@ -160,7 +268,6 @@ export function CoinsPanel({ onSell }: CoinsPanelProps) {
     <>
       {/* Desktop sidebar (>=lg) - resizable width */}
       <div
-        ref={panelRef}
         className="hidden lg:flex lg:flex-col h-full bg-kol-surface/50 backdrop-blur-sm border border-kol-border/50 rounded-xl overflow-hidden relative"
         style={{ width: panelWidth }}
       >
@@ -172,16 +279,29 @@ export function CoinsPanel({ onSell }: CoinsPanelProps) {
           <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 rounded-full bg-kol-border/50 group-hover:bg-kol-blue/50 transition-colors" />
         </div>
 
-        {/* Header */}
-        <div className="flex items-center justify-between px-3 py-3 border-b border-kol-border/30">
+        {/* Enhanced Header */}
+        <div className="flex items-center justify-between px-3 py-3 border-b border-kol-border/30 bg-kol-surface/30">
           <div className="flex items-center gap-2">
-            <i className="ri-coin-line text-sm text-kol-text-muted" />
-            <span className="text-sm font-semibold text-white">Your Coins</span>
+            <div className="w-7 h-7 rounded-lg bg-kol-blue/10 flex items-center justify-center">
+              <i className="ri-coin-line text-sm text-kol-blue" />
+            </div>
+            <div>
+              <span className="text-sm font-semibold text-white">Your Coins</span>
+              <p className="text-[10px] text-kol-text-muted">{coins.length} positions</p>
+            </div>
           </div>
-          <span className="text-[10px] font-mono text-kol-text-tertiary bg-kol-surface/50 px-2 py-0.5 rounded-full">
-            {coins.length}
-          </span>
+          <div className="flex items-center gap-1.5">
+            <button className="w-7 h-7 rounded-lg bg-kol-surface/50 border border-kol-border/30 flex items-center justify-center text-kol-text-muted hover:text-white hover:border-kol-blue/30 transition-all" title="Filter & Sort">
+              <i className="ri-filter-3-line text-sm" />
+            </button>
+            <button className="w-7 h-7 rounded-lg bg-kol-surface/50 border border-kol-border/30 flex items-center justify-center text-kol-text-muted hover:text-white hover:border-kol-blue/30 transition-all" title="Refresh">
+              <i className="ri-refresh-line text-sm" />
+            </button>
+          </div>
         </div>
+
+        {/* Portfolio Summary */}
+        {coins.length > 0 && <PortfolioSummary coins={coins} />}
 
         {/* Coins List */}
         <div className="flex-1 overflow-y-auto px-2 py-2 space-y-2 scrollbar-styled">
@@ -203,16 +323,29 @@ export function CoinsPanel({ onSell }: CoinsPanelProps) {
           <div className="w-10 h-1 rounded-full bg-kol-border/50 hover:bg-kol-blue/50 transition-colors" />
         </div>
 
-        {/* Header */}
-        <div className="flex items-center justify-between px-3 py-2 flex-shrink-0">
+        {/* Enhanced Header */}
+        <div className="flex items-center justify-between px-3 py-2 flex-shrink-0 bg-kol-surface/30">
           <div className="flex items-center gap-2">
-            <i className="ri-coin-line text-sm text-kol-text-muted" />
+            <div className="w-6 h-6 rounded-lg bg-kol-blue/10 flex items-center justify-center">
+              <i className="ri-coin-line text-xs text-kol-blue" />
+            </div>
             <span className="text-sm font-semibold text-white">Your Coins</span>
-            <span className="text-[10px] font-mono text-kol-text-tertiary bg-kol-surface/50 px-2 py-0.5 rounded-full">
+            <span className="text-[10px] font-mono text-kol-text-tertiary bg-kol-surface/50 px-2 py-0.5 rounded-full border border-kol-border/30">
               {coins.length}
             </span>
           </div>
+          <div className="flex items-center gap-1">
+            <button className="w-6 h-6 rounded-lg bg-kol-surface/50 border border-kol-border/30 flex items-center justify-center text-kol-text-muted hover:text-white transition-all" title="Filter">
+              <i className="ri-filter-3-line text-xs" />
+            </button>
+            <button className="w-6 h-6 rounded-lg bg-kol-surface/50 border border-kol-border/30 flex items-center justify-center text-kol-text-muted hover:text-white transition-all" title="Refresh">
+              <i className="ri-refresh-line text-xs" />
+            </button>
+          </div>
         </div>
+
+        {/* Portfolio Summary */}
+        {coins.length > 0 && <PortfolioSummary coins={coins} />}
 
         {/* Coins List - vertical scroll */}
         <div className="flex-1 overflow-y-auto px-2 pb-2 space-y-2 scrollbar-styled">
