@@ -140,17 +140,17 @@ function PlatformBadge({ platform }: { platform: PlatformType }) {
 
   return (
     <div
-      className={`absolute -bottom-0.5 -right-0.5 h-4 w-4 rounded-full bg-kol-bg shadow-sm z-10 flex items-center justify-center border ${colorClass}`}
+      className={`absolute -bottom-0.5 -right-0.5 sm:bottom-0 sm:right-0 h-[14px] w-[14px] sm:h-4 sm:w-4 rounded-full bg-kol-bg shadow-sm z-10 flex items-center justify-center border ${colorClass}`}
     >
-      <LogoComponent className="w-2.5 h-2.5" />
+      <LogoComponent className="w-2 h-2 sm:w-2.5 sm:h-2.5" />
     </div>
   )
 }
 
 function TokenAvatar({ token }: { token: TokenResult }) {
   return (
-    <div className="relative h-10 w-10 flex-shrink-0">
-      <div className="h-full w-full rounded-lg border border-kol-border bg-kol-surface overflow-hidden">
+    <div className="relative h-11 w-11 sm:h-[62px] sm:w-[62px] flex-shrink-0">
+      <div className="h-full w-full rounded-[4px] border border-kol-border bg-kol-surface overflow-hidden">
         {token.image ? (
           <img
             src={token.image}
@@ -158,7 +158,7 @@ function TokenAvatar({ token }: { token: TokenResult }) {
             className="h-full w-full object-cover"
           />
         ) : (
-          <div className="h-full w-full flex items-center justify-center text-sm font-bold text-kol-text-muted">
+          <div className="h-full w-full flex items-center justify-center text-sm sm:text-base font-bold text-kol-text-muted">
             {token.ticker.slice(0, 2)}
           </div>
         )}
@@ -177,8 +177,6 @@ function TokenRow({
   isSelected?: boolean
   onClick: () => void
 }) {
-  const truncateAddress = (addr: string) => `${addr.slice(0, 6)}...${addr.slice(-4)}`
-
   const copyAddress = (e: React.MouseEvent) => {
     e.stopPropagation()
     navigator.clipboard.writeText(token.address)
@@ -188,32 +186,28 @@ function TokenRow({
     <div
       onClick={onClick}
       className={`
-        flex items-center gap-3 px-3 py-2.5 cursor-pointer transition-colors
-        ${isSelected ? 'bg-kol-surface-elevated' : 'hover:bg-kol-surface'}
+        flex items-center gap-3 px-4 h-16 sm:h-[88px] cursor-pointer transition-colors
+        ${isSelected ? 'bg-kol-surface-elevated' : 'hover:bg-white/[7%]'}
       `}
     >
       <TokenAvatar token={token} />
 
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1.5">
-          <span className="text-sm font-medium text-white truncate max-w-[100px]">
+          <span className="text-xs sm:text-base font-medium text-white truncate max-w-[80px] sm:max-w-none tracking-[-0.02em]">
             {token.ticker}
           </span>
-          <span className="text-xs text-kol-text-muted truncate max-w-[80px]">
-            {token.name}
-          </span>
-        </div>
-
-        <div className="flex items-center gap-2 mt-0.5">
           <button
             onClick={copyAddress}
-            className="flex items-center gap-1 text-xs text-kol-text-muted hover:text-kol-blue transition-colors"
+            className="flex items-center gap-1 text-xs sm:text-base text-kol-text-muted hover:text-kol-blue transition-colors"
           >
-            <span className="font-mono">{truncateAddress(token.address)}</span>
-            <i className="ri-file-copy-line text-[10px]" />
+            <span className="truncate max-w-[48px] sm:max-w-[150px] font-medium tracking-[-0.02em]">{token.name}</span>
+            <i className="ri-file-copy-line text-xs sm:text-sm" />
           </button>
+        </div>
 
-          <span className="text-xs font-medium text-kol-green">{token.age}</span>
+        <div className="flex items-center gap-2 mt-1">
+          <span className="text-xs sm:text-sm font-medium text-kol-green">{token.age}</span>
 
           {token.twitterUrl && (
             <a
@@ -223,7 +217,7 @@ function TokenRow({
               onClick={(e) => e.stopPropagation()}
               className="text-kol-text-muted hover:text-kol-blue transition-colors"
             >
-              <i className="ri-twitter-x-line text-xs" />
+              <i className="ri-user-line text-xs sm:text-base" />
             </a>
           )}
 
@@ -235,24 +229,24 @@ function TokenRow({
               onClick={(e) => e.stopPropagation()}
               className="text-kol-text-muted hover:text-kol-blue transition-colors"
             >
-              <i className="ri-global-line text-xs" />
+              <i className="ri-global-line text-xs sm:text-base" />
             </a>
           )}
         </div>
       </div>
 
-      <div className="flex items-center gap-3 text-xs">
-        <div className="text-right">
-          <span className="text-kol-text-muted">MC </span>
-          <span className="text-white font-medium">{token.marketCap}</span>
+      <div className="flex items-center gap-4">
+        <div className="flex items-end gap-1">
+          <span className="text-[10px] sm:text-xs text-kol-text-muted pb-[1.6px]">MC</span>
+          <span className="text-xs sm:text-base text-white font-medium">{token.marketCap}</span>
         </div>
-        <div className="text-right">
-          <span className="text-kol-text-muted">V </span>
-          <span className="text-white font-medium">{token.volume}</span>
+        <div className="flex items-end gap-1">
+          <span className="text-[10px] sm:text-xs text-kol-text-muted pb-[1.6px]">V</span>
+          <span className="text-xs sm:text-base text-white font-medium">{token.volume}</span>
         </div>
-        <div className="text-right">
-          <span className="text-kol-text-muted">L </span>
-          <span className="text-white font-medium">{token.liquidity}</span>
+        <div className="flex items-end gap-1">
+          <span className="text-[10px] sm:text-xs text-kol-text-muted pb-[1.6px]">L</span>
+          <span className="text-xs sm:text-base text-white font-medium">{token.liquidity}</span>
         </div>
       </div>
 
@@ -261,9 +255,9 @@ function TokenRow({
           e.stopPropagation()
           onClick()
         }}
-        className="h-7 w-7 flex items-center justify-center rounded-full bg-kol-blue hover:bg-kol-blue-hover transition-colors"
+        className="hidden sm:flex h-[30px] w-[30px] items-center justify-center rounded-full bg-kol-blue hover:bg-kol-blue-hover transition-colors"
       >
-        <i className="ri-flashlight-fill text-sm text-black" />
+        <i className="ri-flashlight-fill text-base text-black" />
       </button>
     </div>
   )
@@ -374,7 +368,7 @@ export function SearchTokensModal({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.15 }}
-          className="fixed inset-0 z-[9998] flex items-start justify-center pt-4 bg-black/70"
+          className="fixed inset-0 z-[9998] flex items-start sm:items-center justify-center bg-black/70"
           onClick={onClose}
         >
           <motion.div
@@ -382,91 +376,94 @@ export function SearchTokensModal({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: -10 }}
             transition={{ duration: 0.2, ease: CUSTOM_EASE }}
-            className="w-[480px] max-h-[500px] flex flex-col"
+            className="w-[calc(100%-8px)] sm:w-[640px] h-[480px] sm:h-[600px] flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="bg-kol-bg rounded-lg overflow-hidden border border-kol-border shadow-2xl flex flex-col max-h-[500px]">
-              {/* Sort Options Row */}
-              <div className="flex items-center gap-1.5 px-3 pt-3 pb-2 overflow-x-auto scrollbar-hide">
-                {SORT_OPTIONS.map((option) => (
-                  <button
-                    key={option.id}
-                    onClick={() => setSortBy(option.id)}
-                    className={`
-                      flex items-center gap-1.5 px-2 py-1 rounded text-xs font-medium whitespace-nowrap transition-colors
-                      ${sortBy === option.id
-                        ? 'bg-kol-blue/20 text-kol-blue border border-kol-blue/50'
-                        : 'bg-kol-surface border border-kol-border text-kol-text-muted hover:bg-kol-surface-elevated'
-                      }
-                    `}
-                  >
-                    <i className={`${option.icon} text-sm`} />
-                    {option.label}
-                  </button>
-                ))}
+            <div className="bg-kol-bg rounded-lg overflow-hidden border border-kol-border shadow-[0_4px_4px_0_rgba(0,0,0,0.30),0_8px_8px_0_rgba(0,0,0,0.45)] flex flex-col h-full">
+              {/* Filters Row - Platform filters left, Sort icons right */}
+              <div className="flex items-center justify-between gap-4 px-4 pl-3 pt-3">
+                {/* Platform Filters - scrollable */}
+                <div className="relative flex-1 min-w-0 overflow-hidden">
+                  <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide -ml-2 pl-2 pr-8">
+                    {PLATFORM_FILTERS.map((filter) => (
+                      <button
+                        key={filter.id}
+                        onClick={() => setPlatformFilter(filter.id)}
+                        className={`
+                          flex h-6 flex-shrink-0 items-center gap-[3px] px-1 rounded text-xs font-medium whitespace-nowrap transition-colors border
+                          ${platformFilter === filter.id
+                            ? 'bg-kol-blue/15 text-kol-blue border-kol-blue/50'
+                            : 'bg-kol-surface/45 border-kol-border text-kol-text-muted hover:bg-kol-surface-elevated'
+                          }
+                        `}
+                      >
+                        {filter.Logo && <filter.Logo className="w-3 h-3" />}
+                        <span className="font-medium">{filter.label}</span>
+                      </button>
+                    ))}
+                    {/* Creator Filter Button */}
+                    <button
+                      onClick={() => setIsCreatorFilterOpen(true)}
+                      className={`
+                        group flex h-6 flex-shrink-0 items-center gap-[3px] px-1 rounded text-xs font-medium whitespace-nowrap transition-colors border
+                        ${isCreatorFilterActive
+                          ? 'bg-kol-blue/15 text-kol-blue border-kol-blue/50'
+                          : 'bg-kol-surface/45 border-kol-border text-kol-text-muted hover:bg-kol-surface-elevated'
+                        }
+                      `}
+                    >
+                      <i className="ri-user-settings-line text-sm opacity-70 group-hover:opacity-100" />
+                      <span className="font-medium">Creator</span>
+                    </button>
+                  </div>
+                  {/* Fade gradient for scroll indication */}
+                  <div className="absolute right-0 top-0 z-10 h-full w-8 bg-gradient-to-l from-kol-bg to-transparent pointer-events-none" />
+                </div>
 
-                {/* Divider */}
-                <div className="w-px h-5 bg-kol-border mx-1" />
-
-                {/* Creator Filter Button */}
-                <button
-                  onClick={() => setIsCreatorFilterOpen(true)}
-                  className={`
-                    flex items-center gap-1.5 px-2 py-1 rounded text-xs font-medium whitespace-nowrap transition-colors
-                    ${isCreatorFilterActive
-                      ? 'bg-kol-blue/20 text-kol-blue border border-kol-blue/50'
-                      : 'bg-kol-surface border border-kol-border text-kol-text-muted hover:bg-kol-surface-elevated'
-                    }
-                  `}
-                >
-                  <i className="ri-user-settings-line text-sm" />
-                  Creator
-                </button>
-              </div>
-
-              {/* Platform Filters Row */}
-              <div className="flex items-center gap-1.5 px-3 pb-2 overflow-x-auto scrollbar-hide">
-                {PLATFORM_FILTERS.map((filter) => (
-                  <button
-                    key={filter.id}
-                    onClick={() => setPlatformFilter(filter.id)}
-                    className={`
-                      flex items-center gap-1.5 px-2 py-1 rounded text-xs font-medium whitespace-nowrap transition-colors
-                      ${platformFilter === filter.id
-                        ? 'bg-kol-blue/20 text-kol-blue border border-kol-blue/50'
-                        : 'bg-kol-surface border border-kol-border text-kol-text-muted hover:bg-kol-surface-elevated'
-                      }
-                    `}
-                  >
-                    {filter.Logo && <filter.Logo className="w-3 h-3" />}
-                    {filter.label}
-                  </button>
-                ))}
+                {/* Sort Icons */}
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <span className="text-xs text-kol-text-muted">Sort by</span>
+                  {SORT_OPTIONS.map((option) => (
+                    <button
+                      key={option.id}
+                      onClick={() => setSortBy(option.id)}
+                      title={option.label}
+                      className={`
+                        h-6 w-6 flex items-center justify-center rounded transition-colors
+                        ${sortBy === option.id
+                          ? 'bg-kol-blue/15 text-kol-blue'
+                          : 'text-kol-text-muted hover:bg-kol-surface-elevated'
+                        }
+                      `}
+                    >
+                      <i className={`${option.icon} text-sm`} />
+                    </button>
+                  ))}
+                </div>
               </div>
 
               {/* Search Input */}
-              <div className="flex items-center gap-2 px-3 py-3 border-y border-kol-border/50">
-                <i className="ri-search-line text-kol-text-muted" />
+              <div className="flex h-16 items-center gap-2 px-4 border-b border-kol-border/50">
                 <input
                   ref={inputRef}
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search by name, ticker, or CA..."
-                  className="flex-1 bg-transparent text-sm text-white placeholder:text-kol-text-muted outline-none"
+                  className="flex-1 bg-transparent text-xl text-white placeholder:text-xl placeholder:text-kol-text-muted outline-none"
                 />
                 <button
                   onClick={onClose}
-                  className="flex items-center gap-1 px-2 py-0.5 rounded-full border border-kol-border bg-kol-surface text-xs text-kol-text-muted hover:bg-kol-surface-elevated transition-colors"
+                  className="flex h-5 items-center px-2 rounded-full border border-kol-border bg-kol-surface text-xs text-white hover:bg-kol-surface-elevated transition-colors"
                 >
                   Esc
                 </button>
               </div>
 
               {/* Results Header */}
-              <div className="flex items-center justify-between px-3 py-2">
-                <span className="text-xs text-kol-text-muted">
-                  {filteredTokens.length} Results
+              <div className="flex h-10 items-center justify-between px-4 pr-2">
+                <span className="text-xs text-kol-text-secondary">
+                  {filteredTokens.length > 0 ? `${filteredTokens.length} Results` : 'History'}
                 </span>
                 {isCreatorFilterActive && (
                   <button
@@ -474,13 +471,13 @@ export function SearchTokensModal({
                     className="flex items-center gap-1 text-xs text-kol-blue hover:text-kol-blue-hover transition-colors"
                   >
                     <i className="ri-filter-off-line text-sm" />
-                    Clear creator filter
+                    Clear filter
                   </button>
                 )}
               </div>
 
               {/* Results List */}
-              <div className="flex-1 overflow-y-auto min-h-0">
+              <div className="flex-1 overflow-y-auto">
                 {filteredTokens.length > 0 ? (
                   filteredTokens.map((token, index) => (
                     <TokenRow
