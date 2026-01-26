@@ -23,8 +23,6 @@ const MOCK_COINS: CoinData[] = [
     tradingStats: { boughtAmount: 1.5, soldAmount: 0.6 },
     buyTxns: 335,
     sellTxns: 199,
-    buyVolumeUsd: 135000,
-    sellVolumeUsd: 132000,
   },
   {
     id: '2',
@@ -44,8 +42,6 @@ const MOCK_COINS: CoinData[] = [
     tradingStats: { boughtAmount: 0.97, soldAmount: 0 },
     buyTxns: 128,
     sellTxns: 45,
-    buyVolumeUsd: 45000,
-    sellVolumeUsd: 12000,
   },
   {
     id: '3',
@@ -66,8 +62,6 @@ const MOCK_COINS: CoinData[] = [
     tradingStats: { boughtAmount: 2.86, soldAmount: 0 },
     buyTxns: 892,
     sellTxns: 234,
-    buyVolumeUsd: 285000,
-    sellVolumeUsd: 78000,
   },
 ]
 
