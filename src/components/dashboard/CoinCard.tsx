@@ -265,7 +265,7 @@ export function CoinCard({ coin, index, onView, onTradePanel, onDevPanel, onVamp
 
   return (
     <motion.div
-      className="group relative"
+      className="group relative mx-3 my-2"
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: index * 0.06, ease: [0.16, 1, 0.3, 1] }}

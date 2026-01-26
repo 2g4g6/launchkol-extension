@@ -270,7 +270,7 @@ export function CoinsPanel({}: CoinsPanelProps) {
         </div>
 
         {/* Coins List */}
-        <div className="flex-1 overflow-y-auto px-2 space-y-2 scrollbar-styled">
+        <div className="flex-1 overflow-y-auto scrollbar-styled">
           {renderCoinsList()}
         </div>
       </div>
@@ -311,7 +311,7 @@ export function CoinsPanel({}: CoinsPanelProps) {
         </div>
 
         {/* Coins List - vertical scroll */}
-        <div className="flex-1 overflow-y-auto px-2 space-y-2 scrollbar-styled">
+        <div className="flex-1 overflow-y-auto scrollbar-styled">
           {renderCoinsList()}
         </div>
       </div>
