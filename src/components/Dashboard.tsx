@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { Header } from './dashboard/Header'
 import { TrackerFeed } from './dashboard/TrackerFeed'
 import { CoinsPanel } from './dashboard/CoinsPanel'

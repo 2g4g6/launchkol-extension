@@ -1,5 +1,4 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
-import { motion } from 'framer-motion'
 import { CoinCard, CoinData } from './CoinCard'
 
 // Mock data - same as MyCoinsTab

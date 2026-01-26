@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { SocialPost, SocialPostData } from './SocialPost'
 import { Tooltip } from '../ui/Tooltip'
+import { FeedSettingsModal } from './FeedSettingsModal'
 
 // Mock data - tweets with different types (normal, reply, repost, quote) and media
 const MOCK_POSTS: SocialPostData[] = [
@@ -243,8 +244,7 @@ export function TrackerFeed({ onDeploy }: TrackerFeedProps) {
   const [posts] = useState<SocialPostData[]>(MOCK_POSTS)
   const [searchQuery, setSearchQuery] = useState('')
   const [isSearchFocused, setIsSearchFocused] = useState(false)
-  const [isTranslateEnabled, setIsTranslateEnabled] = useState(false)
-  const [isPauseOnHover, setIsPauseOnHover] = useState(false)
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
 
   const filteredPosts = posts.filter(post =>
     post.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -309,35 +309,16 @@ export function TrackerFeed({ onDeploy }: TrackerFeedProps) {
             {/* Divider */}
             <div className="w-px h-4 bg-kol-border/40 mx-1" />
 
-            {/* Translate Toggle */}
-            <Tooltip content={isTranslateEnabled ? 'Disable auto-translate' : 'Enable auto-translate'}>
+            {/* Settings Button */}
+            <Tooltip content="Feed settings">
               <motion.button
-                onClick={() => setIsTranslateEnabled(!isTranslateEnabled)}
-                className={`w-7 h-7 rounded-lg flex items-center justify-center transition-colors ${
-                  isTranslateEnabled
-                    ? 'text-kol-blue bg-kol-blue/10'
-                    : 'text-kol-text-tertiary hover:text-kol-text-secondary hover:bg-white/5'
-                }`}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                onClick={() => setIsSettingsModalOpen(true)}
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-kol-text-tertiary hover:text-white hover:bg-white/5 transition-colors"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
               >
-                <i className="ri-translate-2 text-sm" />
-              </motion.button>
-            </Tooltip>
-
-            {/* Pause on Hover Toggle */}
-            <Tooltip content={isPauseOnHover ? 'Disable pause on hover' : 'Enable pause on hover'}>
-              <motion.button
-                onClick={() => setIsPauseOnHover(!isPauseOnHover)}
-                className={`w-7 h-7 rounded-lg flex items-center justify-center transition-colors ${
-                  isPauseOnHover
-                    ? 'text-kol-blue bg-kol-blue/10'
-                    : 'text-kol-text-tertiary hover:text-kol-text-secondary hover:bg-white/5'
-                }`}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <i className={`${isPauseOnHover ? 'ri-pause-line' : 'ri-play-line'} text-sm`} />
+                <i className="ri-settings-3-line text-sm" />
+                <span className="text-xs font-medium">Settings</span>
               </motion.button>
             </Tooltip>
           </div>
@@ -409,6 +390,12 @@ export function TrackerFeed({ onDeploy }: TrackerFeedProps) {
         <div className="h-2" />
       </motion.div>
       </div>
+
+      {/* Settings Modal */}
+      <FeedSettingsModal
+        isOpen={isSettingsModalOpen}
+        onClose={() => setIsSettingsModalOpen(false)}
+      />
     </div>
   )
 }
