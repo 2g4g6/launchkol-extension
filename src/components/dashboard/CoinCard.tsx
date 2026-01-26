@@ -242,7 +242,7 @@ function TxnStats({ buyTxns, sellTxns }: { buyTxns: number; sellTxns: number }) 
   const buyPercent = total > 0 ? (buyTxns / total) * 100 : 50
 
   return (
-    <div className="flex items-center gap-2 w-full">
+    <div className="flex items-center gap-2 w-[calc(100%+24px)]">
       {/* Stats on the left */}
       <div className="flex items-center gap-1 text-[14px] font-medium flex-shrink-0">
         <Tooltip content="Buy transactions" position="top">
