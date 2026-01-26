@@ -60,16 +60,18 @@ const PLATFORM_CONFIG: Record<PlatformType, { name: string; logo: string; color:
 function PlatformBadge({ platform }: { platform: PlatformType }) {
   const config = PLATFORM_CONFIG[platform]
   return (
-    <div
-      className="absolute z-30 flex h-[16px] w-[16px] items-center justify-center rounded-full p-[1px]"
-      style={{ bottom: '-4px', right: '-4px', background: config.ringColor }}
-    >
-      <div className="flex h-[14px] w-[14px] items-center justify-center rounded-full bg-kol-bg">
-        <img src={config.logo} alt={config.name} className="w-2.5 h-2.5 object-cover" onError={(e) => {
-          (e.target as HTMLImageElement).style.display = 'none'
-        }} />
+    <Tooltip content={`Launched on ${config.name}`} position="right">
+      <div
+        className="absolute z-30 flex h-[16px] w-[16px] items-center justify-center rounded-full p-[1px] cursor-default"
+        style={{ bottom: '-4px', right: '-4px', background: config.ringColor }}
+      >
+        <div className="flex h-[14px] w-[14px] items-center justify-center rounded-full bg-kol-bg">
+          <img src={config.logo} alt={config.name} className="w-2.5 h-2.5 object-cover" onError={(e) => {
+            (e.target as HTMLImageElement).style.display = 'none'
+          }} />
+        </div>
       </div>
-    </div>
+    </Tooltip>
   )
 }
 
@@ -118,24 +120,22 @@ function TokenImage({
 
 // Compact Contract Address Component
 function CompactContractAddress({ address }: { address: string }) {
-  const [copied, setCopied] = useState(false)
   const short = `${address.slice(0, 4)}...${address.slice(-4)}`
 
-  const handleCopy = async (e: React.MouseEvent) => {
+  const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation()
-    await navigator.clipboard.writeText(address)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 1500)
+    window.open(`https://solscan.io/token/${address}`, '_blank')
   }
 
   return (
-    <button
-      onClick={handleCopy}
-      className="flex items-center gap-1 text-[12px] font-medium text-kol-text-tertiary hover:text-kol-blue-hover transition-colors"
-    >
-      <span>{short}</span>
-      <i className={`text-[10px] ${copied ? 'ri-check-line text-kol-green' : ''}`} />
-    </button>
+    <Tooltip content={address} position="bottom" maxWidth={320}>
+      <button
+        onClick={handleClick}
+        className="flex items-center gap-1 text-[12px] font-medium text-kol-text-tertiary hover:text-kol-blue-hover transition-colors"
+      >
+        <span>{short}</span>
+      </button>
+    </Tooltip>
   )
 }
 
@@ -150,10 +150,22 @@ function TimeBadge({ date }: { date: Date }) {
     return `${Math.floor(diffMinutes / 1440)}d`
   }
 
+  const fullTimestamp = date.toLocaleString('en-US', {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true
+  })
+
   return (
-    <span className="text-[16px] font-medium text-kol-green">
-      {formatTime()}
-    </span>
+    <Tooltip content={fullTimestamp} position="top">
+      <span className="text-[16px] font-medium text-kol-green cursor-default">
+        {formatTime()}
+      </span>
+    </Tooltip>
   )
 }
 
@@ -326,59 +338,79 @@ function getTweetTypeColor(type?: TweetType): string {
   }
 }
 
+// Get tweet type label for tooltip
+function getTweetTypeLabel(type?: TweetType): string {
+  switch (type) {
+    case 'reply': return 'View reply'
+    case 'retweet': return 'View retweet'
+    case 'quote': return 'View quote tweet'
+    case 'pin': return 'View pinned tweet'
+    case 'follow': return 'View follow'
+    case 'delete': return 'View deleted tweet'
+    case 'profile': return 'View profile update'
+    case 'tweet':
+    default: return 'View source tweet'
+  }
+}
+
 // Quick Links Component
 function QuickLinks({ coin }: { coin: CoinData }) {
   const tweetIcon = getTweetTypeIcon(coin.tweetType)
   const tweetColor = getTweetTypeColor(coin.tweetType)
+  const tweetLabel = getTweetTypeLabel(coin.tweetType)
   const platformConfig = PLATFORM_CONFIG[coin.platform]
   const platformUrl = platformConfig.urlPattern.replace('{address}', coin.address)
 
   return (
     <div className="flex items-center gap-2">
       {coin.twitterUrl && (
-        <a
-          href={coin.twitterUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={(e) => e.stopPropagation()}
-          className="flex items-center transition-colors hover:opacity-80"
-          title="View source tweet"
-          style={{ color: tweetColor }}
-        >
-          <i className={`${tweetIcon} text-[20px]`} />
-        </a>
+        <Tooltip content={tweetLabel} position="top">
+          <a
+            href={coin.twitterUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            className="flex items-center transition-colors hover:opacity-80"
+            style={{ color: tweetColor }}
+          >
+            <i className={`${tweetIcon} text-[20px]`} />
+          </a>
+        </Tooltip>
       )}
-      <a
-        href={`https://x.com/search?q=${coin.address}`}
-        target="_blank"
-        rel="noopener noreferrer"
-        onClick={(e) => e.stopPropagation()}
-        className="flex items-center text-kol-text-muted hover:text-kol-blue-hover transition-colors"
-        title="Search on X"
-      >
-        <i className="ri-search-line text-[20px]" />
-      </a>
-      <a
-        href={platformUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        onClick={(e) => e.stopPropagation()}
-        className="flex items-center hover:opacity-80 transition-opacity"
-        title={`View on ${platformConfig.name}`}
-      >
-        <img src={platformConfig.logo} alt={platformConfig.name} className="w-5 h-5 object-contain" />
-      </a>
-      {coin.axiomUrl && (
+      <Tooltip content="Search on X" position="top">
         <a
-          href={coin.axiomUrl}
+          href={`https://x.com/search?q=${coin.address}`}
           target="_blank"
           rel="noopener noreferrer"
           onClick={(e) => e.stopPropagation()}
-          className="flex items-center text-white hover:opacity-80 transition-opacity"
-          title="Trade on Axiom"
+          className="flex items-center text-kol-text-muted hover:text-kol-blue-hover transition-colors"
         >
-          <AxiomIcon className="w-6 h-6" />
+          <i className="ri-search-line text-[20px]" />
         </a>
+      </Tooltip>
+      <Tooltip content={`View on ${platformConfig.name}`} position="top">
+        <a
+          href={platformUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={(e) => e.stopPropagation()}
+          className="flex items-center hover:opacity-80 transition-opacity"
+        >
+          <img src={platformConfig.logo} alt={platformConfig.name} className="w-5 h-5 object-contain" />
+        </a>
+      </Tooltip>
+      {coin.axiomUrl && (
+        <Tooltip content="Trade on Axiom" position="top">
+          <a
+            href={coin.axiomUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            className="flex items-center text-white hover:opacity-80 transition-opacity"
+          >
+            <AxiomIcon className="w-6 h-6" />
+          </a>
+        </Tooltip>
       )}
     </div>
   )
@@ -416,16 +448,18 @@ export function CoinCard({ coin, index, onView, onDevPanel, onRelaunch }: CoinCa
               <span className="text-[16px] font-medium text-white truncate tracking-[-0.02em]">
                 {coin.symbol}
               </span>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation()
-                  navigator.clipboard.writeText(coin.name)
-                }}
-                className="flex items-center gap-1 text-[16px] font-medium text-kol-text-muted hover:text-kol-blue-hover transition-colors min-w-0"
-              >
-                <span className="truncate">{coin.name}</span>
-                <i className="ri-file-copy-line text-[14px]" />
-              </button>
+              <Tooltip content={`${coin.name} (click to copy)`} position="top">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    navigator.clipboard.writeText(coin.name)
+                  }}
+                  className="flex items-center gap-1 text-[16px] font-medium text-kol-text-muted hover:text-kol-blue-hover transition-colors min-w-0"
+                >
+                  <span className="truncate">{coin.name}</span>
+                  <i className="ri-file-copy-line text-[14px]" />
+                </button>
+              </Tooltip>
             </div>
 
             {/* Row 2: Time + Quick Links */}
