@@ -432,7 +432,7 @@ export function CoinCard({ coin, index, onView, onDevPanel, onRelaunch }: CoinCa
 
         {/* TXN Stats Row - spans below header */}
         {coin.buyTxns !== undefined && (
-          <div className="px-3 pb-2">
+          <div className="px-3 -mt-1 pb-1">
             <div className="ml-[76px]">
               <TxnStats buyTxns={coin.buyTxns} sellTxns={coin.sellTxns ?? 0} />
             </div>
