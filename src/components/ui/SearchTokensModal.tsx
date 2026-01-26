@@ -185,8 +185,8 @@ function TokenAvatar({ token }: { token: TokenResult }) {
         style={{ background: PLATFORM_RING_GRADIENTS[token.platform] }}
       />
       {/* Image container - on top */}
-      <div className="absolute inset-0 z-20 flex items-center justify-center rounded-[4px] p-[3px]">
-        <div className="h-full w-full rounded-[3px] bg-kol-surface p-[2px]">
+      <div className="absolute inset-0 z-20 flex items-center justify-center rounded-[4px] p-[1px]">
+        <div className="h-full w-full rounded-[3px] bg-kol-surface overflow-hidden">
           {token.image ? (
             <img
               src={token.image}

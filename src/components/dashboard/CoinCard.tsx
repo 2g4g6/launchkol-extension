@@ -85,15 +85,15 @@ function TokenImage({
   const config = PLATFORM_CONFIG[platform]
 
   return (
-    <div className="relative" style={{ width: imageSize + 6, height: imageSize + 6 }}>
+    <div className="relative" style={{ width: imageSize + 2, height: imageSize + 2 }}>
       {/* Gradient ring - base layer */}
       <div
         className="absolute inset-0 z-10 rounded-[4px]"
         style={{ background: config.ringGradient }}
       />
       {/* Image container - on top */}
-      <div className="absolute inset-0 z-20 flex items-center justify-center rounded-[4px] p-[3px]">
-        <div className="h-full w-full rounded-[3px] bg-kol-surface p-[2px]">
+      <div className="absolute inset-0 z-20 flex items-center justify-center rounded-[4px] p-[1px]">
+        <div className="h-full w-full rounded-[3px] bg-kol-surface overflow-hidden">
           {image ? (
             <img
               src={image}
