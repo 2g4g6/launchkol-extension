@@ -276,11 +276,36 @@ export function SearchTokensModal({
   const [platformFilter, setPlatformFilter] = useState<PlatformFilter>('all')
   const [sortBy, setSortBy] = useState<SortOption>('time')
   const [selectedIndex, setSelectedIndex] = useState(0)
+  const [canScrollRight, setCanScrollRight] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
+  const filterScrollRef = useRef<HTMLDivElement>(null)
+
+  // Check if filters can scroll
+  const checkScrollable = () => {
+    if (filterScrollRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = filterScrollRef.current
+      setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 10)
+    }
+  }
+
+  const scrollFiltersRight = () => {
+    if (filterScrollRef.current) {
+      filterScrollRef.current.scrollBy({ left: 100, behavior: 'smooth' })
+    }
+  }
 
   useEffect(() => {
     setMounted(true)
   }, [])
+
+  // Check scroll on mount and resize
+  useEffect(() => {
+    if (isOpen) {
+      setTimeout(checkScrollable, 100)
+      window.addEventListener('resize', checkScrollable)
+      return () => window.removeEventListener('resize', checkScrollable)
+    }
+  }, [isOpen])
 
   // Focus input when modal opens
   useEffect(() => {
@@ -372,7 +397,11 @@ export function SearchTokensModal({
               <div className="flex items-center justify-between gap-4 px-4 pl-3 pt-3">
                 {/* Platform Filters - scrollable */}
                 <div className="relative flex-1 min-w-0 overflow-hidden">
-                  <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide -ml-2 pl-2 pr-8">
+                  <div
+                    ref={filterScrollRef}
+                    onScroll={checkScrollable}
+                    className="flex items-center gap-2 overflow-x-auto scrollbar-hide -ml-2 pl-2 pr-0"
+                  >
                     {PLATFORM_FILTERS.map((filter) => (
                       <button
                         key={filter.id}
@@ -390,6 +419,18 @@ export function SearchTokensModal({
                       </button>
                     ))}
                   </div>
+                  {/* Scroll arrow with gradient */}
+                  {canScrollRight && (
+                    <div className="absolute right-0 top-0 z-10 h-full w-8 bg-gradient-to-l from-kol-bg to-transparent pointer-events-none flex items-center justify-end">
+                      <button
+                        type="button"
+                        onClick={scrollFiltersRight}
+                        className="pointer-events-auto flex items-center justify-center w-6 h-6 text-kol-text-muted hover:text-white transition-colors"
+                      >
+                        <i className="ri-arrow-right-s-line text-xl" />
+                      </button>
+                    </div>
+                  )}
                 </div>
 
                 {/* Sort Icons */}
