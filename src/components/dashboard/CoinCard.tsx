@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { Tooltip } from '../ui/Tooltip'
 
 // Platform types
-export type PlatformType = 'pump' | 'bonk' | 'bags' | 'mayhem' | 'fourmeme' | 'raydium'
+export type PlatformType = 'pump' | 'bonk' | 'bags' | 'mayhem' | 'fourmeme'
 
 // Tweet types
 export type TweetType = 'tweet' | 'reply' | 'retweet' | 'quote' | 'pin' | 'follow' | 'delete' | 'profile'
@@ -53,7 +53,6 @@ const PLATFORM_CONFIG: Record<PlatformType, { name: string; logo: string; color:
   bags: { name: 'Bags', logo: '/images/bags.svg', color: 'bg-purple-500/20 border-purple-500/40', ringColor: '#a855f7', ringGradient: 'linear-gradient(219deg, #C084FC 0%, #a855f7 49%, #7C3AED 100%)', urlPattern: 'https://bags.fm/{address}' },
   mayhem: { name: 'Mayhem', logo: '/images/mayhem.svg', color: 'bg-red-500/20 border-red-500/40', ringColor: '#ff4d4f', ringGradient: 'linear-gradient(219deg, #FF6B6B 0%, #ff4d4f 49%, #CC3333 100%)', urlPattern: 'https://mayhem.fun/{address}' },
   fourmeme: { name: '4Meme', logo: '/images/fourmeme.svg', color: 'bg-pink-500/20 border-pink-500/40', ringColor: '#ec4899', ringGradient: 'linear-gradient(219deg, #F472B6 0%, #ec4899 49%, #BE185D 100%)', urlPattern: 'https://4meme.fun/{address}' },
-  raydium: { name: 'Raydium', logo: '/images/raydium.svg', color: 'bg-indigo-500/20 border-indigo-500/40', ringColor: '#6366f1', ringGradient: 'linear-gradient(219deg, #818CF8 0%, #6366f1 49%, #4F46E5 100%)', urlPattern: 'https://raydium.io/swap/?inputMint=sol&outputMint={address}' },
 }
 
 // Platform Badge Component

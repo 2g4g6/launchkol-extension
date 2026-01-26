@@ -57,24 +57,6 @@ export function BagsLogo({ className }: LogoProps) {
   )
 }
 
-// Raydium logo - Purple to cyan rays
-export function RaydiumLogo({ className }: LogoProps) {
-  return (
-    <svg className={className} viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="8" cy="8" r="5" fill="url(#raydium-gradient)" />
-      <path d="M8 4V8L11 10" stroke="white" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
-      <circle cx="8" cy="8" r="1" fill="white" />
-      <defs>
-        <linearGradient id="raydium-gradient" x1="3" y1="3" x2="13" y2="13" gradientUnits="userSpaceOnUse">
-          <stop stopColor="#B50CFB" />
-          <stop offset="0.5" stopColor="#3D6DFF" />
-          <stop offset="1" stopColor="#4DC5CA" />
-        </linearGradient>
-      </defs>
-    </svg>
-  )
-}
-
 // Four.meme logo - Pink/magenta 4 shape
 export function FourMemeLogo({ className }: LogoProps) {
   return (
@@ -108,7 +90,6 @@ export const PlatformLogoMap = {
   pump: PumpLogo,
   bonk: BonkLogo,
   bags: BagsLogo,
-  raydium: RaydiumLogo,
   fourmeme: FourMemeLogo,
   binance: BinanceLogo,
 } as const

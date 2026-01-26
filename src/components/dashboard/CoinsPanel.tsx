@@ -169,7 +169,7 @@ const MOCK_COINS: CoinData[] = [
     pnlPercent: -17.5,
     marketCap: 95000,
     launchedAt: new Date(Date.now() - 3600000 * 72),
-    platform: 'raydium',
+    platform: 'bonk',
     twitterUrl: 'https://x.com/shibacoin/status/555555555',
     tweetType: 'delete',
     axiomUrl: 'https://axiom.trade/t/ShibaABC123XYZ789DEF456GHI012JKL345MNO678PQ',
