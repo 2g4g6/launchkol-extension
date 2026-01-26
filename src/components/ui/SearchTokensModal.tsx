@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { createPortal } from 'react-dom'
+import { Tooltip } from './Tooltip'
 
 // ============================================================================
 // Types
@@ -74,6 +75,15 @@ const PLATFORM_ICONS: Record<PlatformType, string> = {
   fourmeme: '/images/fourmeme.svg',
 }
 
+// Platform display names for tooltips
+const PLATFORM_NAMES: Record<PlatformType, string> = {
+  pump: 'Pump.fun',
+  bonk: 'Bonk',
+  bags: 'Bags',
+  mayhem: 'Mayhem',
+  fourmeme: 'Four.meme',
+}
+
 // Mock data for demonstration
 const MOCK_TOKENS: TokenResult[] = [
   {
@@ -144,13 +154,16 @@ const MOCK_TOKENS: TokenResult[] = [
 function PlatformBadge({ platform }: { platform: PlatformType }) {
   const colorClass = PLATFORM_COLORS[platform]
   const iconSrc = PLATFORM_ICONS[platform]
+  const platformName = PLATFORM_NAMES[platform]
 
   return (
-    <div
-      className={`absolute -bottom-0.5 -right-0.5 sm:bottom-0 sm:right-0 h-[14px] w-[14px] sm:h-4 sm:w-4 rounded-full bg-kol-bg shadow-sm z-10 flex items-center justify-center border ${colorClass}`}
-    >
-      <img src={iconSrc} alt={platform} className="w-2 h-2 sm:w-2.5 sm:h-2.5" />
-    </div>
+    <Tooltip content={platformName} position="top" delayShow={200}>
+      <div
+        className={`absolute -bottom-0.5 -right-0.5 sm:bottom-0 sm:right-0 h-[14px] w-[14px] sm:h-4 sm:w-4 rounded-full bg-kol-bg shadow-sm z-10 flex items-center justify-center border cursor-help ${colorClass}`}
+      >
+        <img src={iconSrc} alt={platformName} className="w-2 h-2 sm:w-2.5 sm:h-2.5" />
+      </div>
+    </Tooltip>
   )
 }
 
@@ -465,20 +478,20 @@ export function SearchTokensModal({
                 <div className="flex items-center gap-2 flex-shrink-0">
                   <span className="text-xs text-kol-text-muted">Sort by</span>
                   {SORT_OPTIONS.map((option) => (
-                    <button
-                      key={option.id}
-                      onClick={() => setSortBy(option.id)}
-                      title={option.label}
-                      className={`
-                        h-6 w-6 flex items-center justify-center rounded transition-colors
-                        ${sortBy === option.id
-                          ? 'bg-kol-blue/15 text-kol-blue'
-                          : 'text-kol-text-muted hover:bg-kol-surface-elevated'
-                        }
-                      `}
-                    >
-                      <i className={`${option.icon} text-sm`} />
-                    </button>
+                    <Tooltip key={option.id} content={option.label} position="bottom" delayShow={200}>
+                      <button
+                        onClick={() => setSortBy(option.id)}
+                        className={`
+                          h-6 w-6 flex items-center justify-center rounded transition-colors
+                          ${sortBy === option.id
+                            ? 'bg-kol-blue/15 text-kol-blue'
+                            : 'text-kol-text-muted hover:bg-kol-surface-elevated'
+                          }
+                        `}
+                      >
+                        <i className={`${option.icon} text-sm`} />
+                      </button>
+                    </Tooltip>
                   ))}
                 </div>
               </div>
