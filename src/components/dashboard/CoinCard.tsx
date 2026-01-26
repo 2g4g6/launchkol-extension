@@ -70,132 +70,35 @@ function PlatformBadge({ platform }: { platform: PlatformType }) {
   )
 }
 
-// Rectangular Progress Ring Component (like Axiom)
-function RectangularProgressRing({
-  progress,
-  platform,
-  size = 74
-}: {
-  progress?: number
-  platform: PlatformType
-  size?: number
-}) {
-  const config = PLATFORM_CONFIG[platform]
-  const svgSize = size + 4 // SVG is slightly larger than container
-  const cornerRadius = 4
-
-  // Calculate the path for a rounded rectangle
-  // Path goes: bottom-right -> bottom-left -> top-left -> top-right -> back to bottom-right
-  const pathD = `
-    M ${svgSize - 2} ${svgSize - 2}
-    L ${cornerRadius + 2} ${svgSize - 2}
-    Q 2 ${svgSize - 2} 2 ${svgSize - cornerRadius - 2}
-    L 2 ${cornerRadius + 2}
-    Q 2 2 ${cornerRadius + 2} 2
-    L ${svgSize - cornerRadius - 2} 2
-    Q ${svgSize - 2} 2 ${svgSize - 2} ${cornerRadius + 2}
-    L ${svgSize - 2} ${svgSize - cornerRadius - 2}
-    Q ${svgSize - 2} ${svgSize - 2} ${svgSize - 2} ${svgSize - 2}
-  `
-
-  // Calculate perimeter for dash array (approximate)
-  const perimeter = (size * 4) + (Math.PI * cornerRadius * 2)
-  const progressPercent = progress !== undefined ? progress : 97
-  const dashOffset = perimeter - (progressPercent / 100) * perimeter
-
-  return (
-    <svg
-      width={svgSize}
-      height={svgSize}
-      viewBox={`0 0 ${svgSize} ${svgSize}`}
-      className="absolute left-0 top-0 z-10"
-      style={{ marginLeft: '-2px', marginTop: '-2px' }}
-    >
-      {/* Background track */}
-      <path
-        d={pathD}
-        fill="transparent"
-        stroke={config.ringColor}
-        strokeWidth="1"
-        opacity="0.4"
-      />
-      {/* Progress indicator */}
-      <path
-        d={pathD}
-        fill="transparent"
-        stroke={config.ringColor}
-        strokeWidth="1"
-        strokeLinecap="round"
-        strokeDasharray={perimeter}
-        strokeDashoffset={dashOffset}
-        className="transition-all duration-300 ease-in-out"
-      />
-    </svg>
-  )
-}
-
-// Token Image with Rectangular Progress Ring Component
-function TokenImageWithProgress({
+// Token Image Component (simplified flat design)
+function TokenImage({
   image,
   symbol,
-  progress,
   platform
 }: {
   image?: string
   symbol: string
-  progress?: number
   platform: PlatformType
 }) {
-  const config = PLATFORM_CONFIG[platform]
-  const containerSize = 74
-  const innerSize = 72
-  const imageSize = 68
+  const imageSize = 64
 
   return (
-    <div className="relative" style={{ width: containerSize, height: containerSize }}>
-      {/* Rectangular progress ring */}
-      <RectangularProgressRing progress={progress} platform={platform} size={containerSize} />
-
-      {/* Image container with platform-colored background */}
-      <div
-        className="absolute flex items-center justify-start p-[1px] rounded-[4px] z-20"
-        style={{ background: `${config.ringColor}20` }}
-      >
+    <div className="relative" style={{ width: imageSize, height: imageSize }}>
+      {image ? (
+        <img
+          src={image}
+          alt={symbol}
+          className="rounded-md object-cover"
+          style={{ width: imageSize, height: imageSize }}
+        />
+      ) : (
         <div
-          className="bg-kol-surface-elevated relative rounded-[3px]"
-          style={{ width: innerSize, height: innerSize }}
+          className="rounded-md bg-kol-bg flex items-center justify-center text-lg font-bold text-kol-text-muted"
+          style={{ width: imageSize, height: imageSize }}
         >
-          <div className="absolute inset-0 p-[2px]">
-            <div
-              className="group/image relative flex-shrink-0"
-              style={{ width: imageSize, height: imageSize }}
-            >
-              <div className="relative h-full w-full">
-                {/* Inner border overlay */}
-                <div
-                  className="pointer-events-none absolute border border-white/10 z-10 rounded-[1px]"
-                  style={{ width: imageSize, height: imageSize }}
-                />
-                {image ? (
-                  <img
-                    src={image}
-                    alt={symbol}
-                    className="rounded-[1px] object-cover"
-                    style={{ width: imageSize, height: imageSize }}
-                  />
-                ) : (
-                  <div
-                    className="rounded-[1px] bg-kol-surface flex items-center justify-center text-lg font-bold text-kol-text-muted"
-                    style={{ width: imageSize, height: imageSize }}
-                  >
-                    {symbol.slice(0, 2)}
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
+          {symbol.slice(0, 2)}
         </div>
-      </div>
+      )}
 
       {/* Platform badge */}
       <PlatformBadge platform={platform} />
@@ -342,18 +245,16 @@ function ActionButton({ icon, label, onClick, variant = 'default', customIcon }:
 }) {
   const variantClasses = variant === 'primary'
     ? 'bg-kol-blue/15 text-kol-blue border-kol-blue/30 hover:bg-kol-blue/25'
-    : 'bg-kol-surface/50 text-kol-text-muted border-kol-border/30 hover:bg-kol-surface-elevated hover:text-white'
+    : 'bg-kol-bg text-kol-text-muted border-kol-border hover:bg-kol-surface-elevated hover:text-white'
 
   return (
-    <motion.button
+    <button
       onClick={onClick}
-      className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-[10px] font-semibold border transition-colors ${variantClasses}`}
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
+      className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-md text-[10px] font-semibold border transition-colors ${variantClasses}`}
     >
       {customIcon || <i className={`${icon} text-xs`} />}
       <span>{label}</span>
-    </motion.button>
+    </button>
   )
 }
 
@@ -422,8 +323,6 @@ function QuickLinks({ coin }: { coin: CoinData }) {
 }
 
 export function CoinCard({ coin, index, onView, onTradePanel, onDevPanel, onVamp, onRelaunch }: CoinCardProps) {
-  const isProfitable = coin.pnl >= 0
-
   return (
     <motion.div
       className="group relative mx-3 my-2"
@@ -431,18 +330,8 @@ export function CoinCard({ coin, index, onView, onTradePanel, onDevPanel, onVamp
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: index * 0.06, ease: [0.16, 1, 0.3, 1] }}
     >
-      {/* Hover glow effect */}
       <div
-        className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl -z-10"
-        style={{
-          background: isProfitable
-            ? 'radial-gradient(circle at 50% 50%, rgba(0, 196, 107, 0.15) 0%, transparent 70%)'
-            : 'radial-gradient(circle at 50% 50%, rgba(255, 77, 79, 0.15) 0%, transparent 70%)',
-        }}
-      />
-
-      <div
-        className="relative bg-kol-surface-elevated/40 backdrop-blur-md border border-kol-border/40 rounded-xl hover:border-kol-border/60 hover:bg-kol-surface-elevated/60 transition-all duration-300 cursor-pointer overflow-hidden"
+        className="relative bg-kol-surface border border-kol-border rounded-lg hover:bg-kol-surface-elevated transition-colors duration-200 cursor-pointer overflow-hidden"
         onClick={() => onView(coin)}
       >
         {/* MAIN CONTENT - 3 column layout */}
@@ -450,10 +339,9 @@ export function CoinCard({ coin, index, onView, onTradePanel, onDevPanel, onVamp
 
           {/* LEFT: Image + Address */}
           <div className="flex flex-col items-center gap-1 flex-shrink-0">
-            <TokenImageWithProgress
+            <TokenImage
               image={coin.image}
               symbol={coin.symbol}
-              progress={coin.progressPercent}
               platform={coin.platform}
             />
             <CompactContractAddress address={coin.address} />
