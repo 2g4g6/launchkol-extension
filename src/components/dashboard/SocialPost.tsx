@@ -495,14 +495,16 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
 
               {/* Handle & Followers Row */}
               <div className="flex items-center gap-1.5 text-xs">
-                <a
-                  href={`https://x.com/${post.author.handle}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-gray-400 hover:text-kol-blue hover:underline truncate transition-colors"
-                >
-                  @{post.author.handle}
-                </a>
+                <Tooltip content={`@${post.author.handle}`} position="top">
+                  <a
+                    href={`https://x.com/${post.author.handle}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-gray-400 hover:text-kol-blue hover:underline truncate transition-colors max-w-[100px] inline-block"
+                  >
+                    @{post.author.handle}
+                  </a>
+                </Tooltip>
                 {post.author.followers && (
                   <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-kol-surface border border-kol-border/50 text-[11px] text-gray-400">
                     <i className="ri-group-line text-[10px]" />
