@@ -397,7 +397,7 @@ export function SearchTokensModal({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.15 }}
-          className="fixed inset-0 z-[9998] flex items-start sm:items-center justify-center bg-black/70"
+          className="fixed inset-0 z-[9998] flex items-start sm:items-center justify-center pt-6 sm:pt-0 px-4 sm:px-0 bg-black/70"
           onClick={onClose}
         >
           <motion.div
@@ -405,7 +405,7 @@ export function SearchTokensModal({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: -10 }}
             transition={{ duration: 0.2, ease: CUSTOM_EASE }}
-            className="w-[calc(100%-8px)] sm:w-[640px] h-[480px] sm:h-[600px] flex flex-col"
+            className="w-full sm:w-[640px] max-h-[calc(100vh-48px)] sm:max-h-[600px] h-[480px] sm:h-[600px] flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="bg-kol-bg rounded-lg overflow-hidden border border-kol-border shadow-[0_4px_4px_0_rgba(0,0,0,0.30),0_8px_8px_0_rgba(0,0,0,0.45)] flex flex-col h-full">
