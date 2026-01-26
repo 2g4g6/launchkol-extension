@@ -402,11 +402,6 @@ export function CoinCard({ coin, index, onView, onDevPanel, onRelaunch }: CoinCa
               <TimeBadge date={coin.launchedAt} />
               <QuickLinks coin={coin} />
             </div>
-
-            {/* Row 3: TXN Stats - aligned right */}
-            {coin.buyTxns !== undefined && (
-              <TxnStats buyTxns={coin.buyTxns} sellTxns={coin.sellTxns ?? 0} />
-            )}
           </div>
 
           {/* RIGHT: Action Buttons */}
@@ -434,6 +429,13 @@ export function CoinCard({ coin, index, onView, onDevPanel, onRelaunch }: CoinCa
             </Tooltip>
           </div>
         </div>
+
+        {/* TXN STATS - Full Width */}
+        {coin.buyTxns !== undefined && (
+          <div className="px-3 pb-2">
+            <TxnStats buyTxns={coin.buyTxns} sellTxns={coin.sellTxns ?? 0} />
+          </div>
+        )}
 
         {/* TRADING STATS BAR */}
         {coin.tradingStats && (
