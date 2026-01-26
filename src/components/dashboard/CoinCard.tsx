@@ -242,9 +242,9 @@ function TxnStats({ buyTxns, sellTxns }: { buyTxns: number; sellTxns: number }) 
   const buyPercent = total > 0 ? (buyTxns / total) * 100 : 50
 
   return (
-    <div className="flex items-center gap-2 w-full justify-end">
+    <div className="flex items-center gap-2 w-full">
       {/* Stats on the left */}
-      <div className="flex items-center gap-1 text-[14px] font-medium">
+      <div className="flex items-center gap-1 text-[14px] font-medium flex-shrink-0">
         <Tooltip content="Buy transactions" position="top">
           <span className="font-mono cursor-default" style={{ color: '#00d492' }}>{buyTxns}</span>
         </Tooltip>
@@ -254,7 +254,7 @@ function TxnStats({ buyTxns, sellTxns }: { buyTxns: number; sellTxns: number }) 
         </Tooltip>
       </div>
       {/* Visual ratio bar - on the right */}
-      <div className="flex h-[2px] flex-1 min-w-[100px] flex-row items-center gap-[4px]">
+      <div className="flex h-[2px] flex-1 flex-row items-center gap-[4px]">
         <div
           className="flex h-[2px] rounded-l-full"
           style={{ width: `${buyPercent}%`, backgroundColor: '#00d492' }}
