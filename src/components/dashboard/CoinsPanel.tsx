@@ -252,8 +252,7 @@ export function CoinsPanel({}: CoinsPanelProps) {
         <div className="px-3 pt-3 pb-2 border-b border-kol-border/30">
           <div className="flex items-center justify-between h-9 px-3">
             <div className="flex items-center gap-2">
-              <i className="ri-coin-line text-sm text-kol-text-tertiary" />
-              <span className="text-sm font-semibold text-white">Your Coins</span>
+                            <span className="text-sm font-semibold text-white">Your Coins</span>
               <span className="text-[10px] font-mono text-kol-text-tertiary bg-kol-surface/50 px-1.5 py-0.5 rounded">
                 {coins.length}
               </span>
@@ -293,8 +292,7 @@ export function CoinsPanel({}: CoinsPanelProps) {
         <div className="px-3 pt-3 pb-2 flex-shrink-0 border-b border-kol-border/30">
           <div className="flex items-center justify-between h-9 px-3">
             <div className="flex items-center gap-2">
-              <i className="ri-coin-line text-sm text-kol-text-tertiary" />
-              <span className="text-sm font-semibold text-white">Your Coins</span>
+                            <span className="text-sm font-semibold text-white">Your Coins</span>
               <span className="text-[10px] font-mono text-kol-text-tertiary bg-kol-surface/50 px-1.5 py-0.5 rounded">
                 {coins.length}
               </span>
