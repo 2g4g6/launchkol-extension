@@ -193,32 +193,32 @@ function Arrow({ position, offset }: ArrowProps) {
       left: offset,
       borderLeft: `${ARROW_SIZE}px solid transparent`,
       borderRight: `${ARROW_SIZE}px solid transparent`,
-      borderTop: `${ARROW_SIZE}px solid rgba(32, 32, 32, 0.95)`,
-      filter: 'drop-shadow(0 2px 2px rgba(0, 0, 0, 0.2))',
+      borderTop: `${ARROW_SIZE}px solid rgba(26, 26, 26, 0.92)`,
+      filter: 'drop-shadow(0 2px 3px rgba(0, 0, 0, 0.25))',
     },
     bottom: {
       top: -ARROW_SIZE,
       left: offset,
       borderLeft: `${ARROW_SIZE}px solid transparent`,
       borderRight: `${ARROW_SIZE}px solid transparent`,
-      borderBottom: `${ARROW_SIZE}px solid rgba(32, 32, 32, 0.95)`,
-      filter: 'drop-shadow(0 -1px 2px rgba(0, 0, 0, 0.2))',
+      borderBottom: `${ARROW_SIZE}px solid rgba(26, 26, 26, 0.92)`,
+      filter: 'drop-shadow(0 -1px 3px rgba(0, 0, 0, 0.25))',
     },
     left: {
       right: -ARROW_SIZE,
       top: offset,
       borderTop: `${ARROW_SIZE}px solid transparent`,
       borderBottom: `${ARROW_SIZE}px solid transparent`,
-      borderLeft: `${ARROW_SIZE}px solid rgba(32, 32, 32, 0.95)`,
-      filter: 'drop-shadow(2px 0 2px rgba(0, 0, 0, 0.2))',
+      borderLeft: `${ARROW_SIZE}px solid rgba(26, 26, 26, 0.92)`,
+      filter: 'drop-shadow(2px 0 3px rgba(0, 0, 0, 0.25))',
     },
     right: {
       left: -ARROW_SIZE,
       top: offset,
       borderTop: `${ARROW_SIZE}px solid transparent`,
       borderBottom: `${ARROW_SIZE}px solid transparent`,
-      borderRight: `${ARROW_SIZE}px solid rgba(32, 32, 32, 0.95)`,
-      filter: 'drop-shadow(-1px 0 2px rgba(0, 0, 0, 0.2))',
+      borderRight: `${ARROW_SIZE}px solid rgba(26, 26, 26, 0.92)`,
+      filter: 'drop-shadow(-1px 0 3px rgba(0, 0, 0, 0.25))',
     },
   }
 
@@ -400,22 +400,23 @@ export function Tooltip({
             left: coords.x,
             top: coords.y,
             maxWidth,
-            background: 'rgba(32, 32, 32, 0.95)',
-            backdropFilter: 'blur(16px)',
-            WebkitBackdropFilter: 'blur(16px)',
-            border: '1px solid rgba(255, 255, 255, 0.06)',
+            background: 'rgba(26, 26, 26, 0.92)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            border: '1px solid rgba(42, 42, 42, 0.6)',
             boxShadow: `
-              0 4px 24px rgba(0, 0, 0, 0.5),
-              0 0 0 1px rgba(255, 255, 255, 0.02) inset,
-              0 1px 0 rgba(255, 255, 255, 0.04) inset
+              0 8px 32px rgba(0, 0, 0, 0.45),
+              0 0 0 1px rgba(255, 255, 255, 0.03) inset,
+              0 1px 0 rgba(255, 255, 255, 0.05) inset,
+              0 0 20px rgba(0, 123, 255, 0.06)
             `,
           }}
         >
-          {/* Subtle top highlight line */}
+          {/* Blue accent top highlight line */}
           <div
-            className="absolute top-0 left-3 right-3 h-px"
+            className="absolute top-0 left-2 right-2 h-px"
             style={{
-              background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent)',
+              background: 'linear-gradient(90deg, transparent 0%, rgba(0, 123, 255, 0.25) 50%, transparent 100%)',
             }}
           />
 
