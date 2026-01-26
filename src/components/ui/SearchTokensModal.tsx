@@ -1,11 +1,12 @@
 import { useEffect, useState, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { createPortal } from 'react-dom'
-import { PumpLogo, BonkLogo, BagsLogo, RaydiumLogo, FourMemeLogo, BinanceLogo, PlatformLogoMap, PlatformType } from './PlatformLogos'
 
 // ============================================================================
 // Types
 // ============================================================================
+
+export type PlatformType = 'pump' | 'bonk' | 'bags' | 'mayhem' | 'fourmeme'
 
 export interface TokenResult {
   address: string
@@ -39,14 +40,13 @@ const CUSTOM_EASE = [0.16, 1, 0.3, 1] as const
 type PlatformFilter = 'all' | PlatformType
 type SortOption = 'time' | 'trending' | 'volume' | 'liquidity'
 
-const PLATFORM_FILTERS: { id: PlatformFilter; label: string; Logo?: React.FC<{ className?: string }> }[] = [
+const PLATFORM_FILTERS: { id: PlatformFilter; label: string; icon?: string }[] = [
   { id: 'all', label: 'All' },
-  { id: 'pump', label: 'Pump', Logo: PumpLogo },
-  { id: 'bonk', label: 'Bonk', Logo: BonkLogo },
-  { id: 'bags', label: 'Bags', Logo: BagsLogo },
-  { id: 'raydium', label: 'Ray', Logo: RaydiumLogo },
-  { id: 'fourmeme', label: 'Four', Logo: FourMemeLogo },
-  { id: 'binance', label: 'BNB', Logo: BinanceLogo },
+  { id: 'pump', label: 'Pump', icon: '/images/pump.svg' },
+  { id: 'bonk', label: 'Bonk', icon: '/images/bonk.svg' },
+  { id: 'bags', label: 'Bags', icon: '/images/bags.svg' },
+  { id: 'mayhem', label: 'Mayhem', icon: '/images/mayhem.svg' },
+  { id: 'fourmeme', label: 'Four', icon: '/images/fourmeme.svg' },
 ]
 
 const SORT_OPTIONS: { id: SortOption; icon: string; label: string }[] = [
@@ -61,9 +61,17 @@ const PLATFORM_COLORS: Record<PlatformType, string> = {
   pump: 'bg-green-500/20 border-green-500/50',
   bonk: 'bg-orange-500/20 border-orange-500/50',
   bags: 'bg-purple-500/20 border-purple-500/50',
-  raydium: 'bg-cyan-500/20 border-cyan-500/50',
+  mayhem: 'bg-red-500/20 border-red-500/50',
   fourmeme: 'bg-pink-500/20 border-pink-500/50',
-  binance: 'bg-yellow-500/20 border-yellow-500/50',
+}
+
+// Platform icons for badges
+const PLATFORM_ICONS: Record<PlatformType, string> = {
+  pump: '/images/pump.svg',
+  bonk: '/images/bonk.svg',
+  bags: '/images/bags.svg',
+  mayhem: '/images/mayhem.svg',
+  fourmeme: '/images/fourmeme.svg',
 }
 
 // Mock data for demonstration
@@ -85,7 +93,7 @@ const MOCK_TOKENS: TokenResult[] = [
     address: '7dNW2mhCtqoZcDuyRbj5LMoeFsS9TpaCdSkk4qMstGPm',
     name: 'Hello Kitty',
     ticker: 'KITTY',
-    platform: 'raydium',
+    platform: 'mayhem',
     age: '3mo',
     marketCap: '$146K',
     volume: '$142',
@@ -97,7 +105,7 @@ const MOCK_TOKENS: TokenResult[] = [
     address: 'HsRtbRWaB29bPg6wESHz61y6VYbZvJJzoreGuqTupfM9',
     name: 'Hello Kitty',
     ticker: 'KITTY',
-    platform: 'pump',
+    platform: 'bonk',
     age: '8mo',
     marketCap: '$65K',
     volume: '$128',
@@ -117,15 +125,15 @@ const MOCK_TOKENS: TokenResult[] = [
     creatorWallet: 'AnotherWallet12345678901234567890123456789012',
   },
   {
-    address: 'BnbToken123456789012345678901234567890EFGH',
-    name: 'BNB Meme',
-    ticker: 'BNBM',
-    platform: 'binance',
+    address: 'BagsToken123456789012345678901234567890EFGH',
+    name: 'Bags Meme',
+    ticker: 'BAGS',
+    platform: 'bags',
     age: '1w',
     marketCap: '$85K',
     volume: '$2K',
     liquidity: '$40K',
-    creatorWallet: 'BnbCreator12345678901234567890123456789012345',
+    creatorWallet: 'BagsCreator12345678901234567890123456789012345',
   },
 ]
 
@@ -134,14 +142,14 @@ const MOCK_TOKENS: TokenResult[] = [
 // ============================================================================
 
 function PlatformBadge({ platform }: { platform: PlatformType }) {
-  const LogoComponent = PlatformLogoMap[platform]
   const colorClass = PLATFORM_COLORS[platform]
+  const iconSrc = PLATFORM_ICONS[platform]
 
   return (
     <div
       className={`absolute -bottom-0.5 -right-0.5 sm:bottom-0 sm:right-0 h-[14px] w-[14px] sm:h-4 sm:w-4 rounded-full bg-kol-bg shadow-sm z-10 flex items-center justify-center border ${colorClass}`}
     >
-      <LogoComponent className="w-2 h-2 sm:w-2.5 sm:h-2.5" />
+      <img src={iconSrc} alt={platform} className="w-2 h-2 sm:w-2.5 sm:h-2.5" />
     </div>
   )
 }
@@ -434,7 +442,7 @@ export function SearchTokensModal({
                           }
                         `}
                       >
-                        {filter.Logo && <filter.Logo className="w-3 h-3" />}
+                        {filter.icon && <img src={filter.icon} alt={filter.label} className="w-3 h-3" />}
                         <span className="font-medium">{filter.label}</span>
                       </button>
                     ))}
