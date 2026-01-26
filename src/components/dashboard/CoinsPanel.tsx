@@ -66,37 +66,6 @@ const MOCK_COINS: CoinData[] = [
   },
 ]
 
-// Portfolio Summary Component
-function PortfolioSummary({ coins }: { coins: CoinData[] }) {
-  const totalValue = coins.reduce((sum, c) => sum + c.holdingsUsd, 0)
-  const totalPnl = coins.reduce((sum, c) => sum + c.pnl, 0)
-  const totalPnlPercent = totalValue > 0 ? (totalPnl / (totalValue - totalPnl)) * 100 : 0
-  const isProfitable = totalPnl >= 0
-
-  return (
-    <div className="flex items-center justify-between px-3 py-2 bg-kol-surface/20 border-b border-kol-border/20">
-      <div>
-        <p className="text-[9px] text-kol-text-muted uppercase tracking-wider">Total Value</p>
-        <p className="text-sm font-mono font-semibold text-white">
-          ${totalValue.toFixed(2)}
-        </p>
-      </div>
-      <div className="text-right">
-        <p className="text-[9px] text-kol-text-muted uppercase tracking-wider">Total PnL</p>
-        <div className="flex items-center justify-end gap-1">
-          <img src="/images/sol-fill.svg" alt="SOL" className="w-3 h-3" />
-          <span className={`text-sm font-mono font-semibold ${isProfitable ? 'text-kol-green' : 'text-kol-red'}`}>
-            {isProfitable ? '+' : ''}{totalPnl.toFixed(2)}
-          </span>
-          <span className={`text-[10px] ${isProfitable ? 'text-kol-green' : 'text-kol-red'}`}>
-            ({isProfitable ? '+' : ''}{totalPnlPercent.toFixed(1)}%)
-          </span>
-        </div>
-      </div>
-    </div>
-  )
-}
-
 interface CoinsPanelProps {
   isOpen: boolean
   onClose: () => void
@@ -300,9 +269,6 @@ export function CoinsPanel({}: CoinsPanelProps) {
           </div>
         </div>
 
-        {/* Portfolio Summary */}
-        {coins.length > 0 && <PortfolioSummary coins={coins} />}
-
         {/* Coins List */}
         <div className="flex-1 overflow-y-auto px-2 py-2 space-y-2 scrollbar-styled">
           {renderCoinsList()}
@@ -343,9 +309,6 @@ export function CoinsPanel({}: CoinsPanelProps) {
             </button>
           </div>
         </div>
-
-        {/* Portfolio Summary */}
-        {coins.length > 0 && <PortfolioSummary coins={coins} />}
 
         {/* Coins List - vertical scroll */}
         <div className="flex-1 overflow-y-auto px-2 pb-2 space-y-2 scrollbar-styled">
