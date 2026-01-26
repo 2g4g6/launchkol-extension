@@ -244,30 +244,32 @@ function CompactActionButton({ icon, label, onClick }: {
   return (
     <button
       onClick={onClick}
-      className="flex items-center gap-1.5 px-3 py-1.5 rounded text-[11px] font-medium border bg-kol-bg text-kol-text-muted border-kol-border hover:bg-kol-surface-elevated hover:text-white transition-colors"
+      className="flex items-center gap-1 px-2 py-1 rounded text-[10px] font-medium border bg-kol-bg text-kol-text-muted border-kol-border hover:bg-kol-surface-elevated hover:text-white transition-colors"
     >
-      <i className={`${icon} text-xs`} />
+      <i className={`${icon} text-[10px]`} />
       <span>{label}</span>
     </button>
   )
 }
 
-// TXN Stats Component (buy/sell transaction counts with thin inline bar)
+// TXN Stats Component (buy/sell transaction counts with visual bar)
 function TxnStats({ buyTxns, sellTxns }: { buyTxns: number; sellTxns: number }) {
   const total = buyTxns + sellTxns
   const buyPercent = total > 0 ? (buyTxns / total) * 100 : 50
 
   return (
     <div className="flex items-center gap-2">
-      <div className="flex items-center gap-1 text-[13px] font-medium">
+      <div className="flex items-center gap-1 text-[14px] font-medium">
         <span className="text-kol-green">{buyTxns}</span>
         <span className="text-kol-text-muted">/</span>
         <span className="text-kol-red">{sellTxns}</span>
       </div>
-      {/* Thin inline bar */}
-      <div className="h-[3px] w-16 rounded-full overflow-hidden flex">
-        <div className="h-full bg-kol-green" style={{ width: `${buyPercent}%` }} />
-        <div className="h-full bg-kol-red" style={{ width: `${100 - buyPercent}%` }} />
+      {/* Visual ratio bar */}
+      <div className="h-1.5 w-16 rounded-full bg-kol-red/40 overflow-hidden">
+        <div
+          className="h-full bg-kol-green rounded-full transition-all"
+          style={{ width: `${buyPercent}%` }}
+        />
       </div>
     </div>
   )
@@ -364,7 +366,7 @@ function QuickLinks({ coin }: { coin: CoinData }) {
 export function CoinCard({ coin, index, onView, onDevPanel, onRelaunch }: CoinCardProps) {
   return (
     <motion.div
-      className="group relative mx-3 my-2 min-w-[320px]"
+      className="group relative mx-3 my-2"
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: index * 0.06, ease: [0.16, 1, 0.3, 1] }}
@@ -374,22 +376,16 @@ export function CoinCard({ coin, index, onView, onDevPanel, onRelaunch }: CoinCa
         onClick={() => onView(coin)}
       >
         {/* MAIN CONTENT - 3 column layout */}
-        <div className="flex items-start gap-4 p-3">
+        <div className="flex items-start gap-3 p-3">
 
-          {/* LEFT: Image + Address/TXN row */}
-          <div className="flex flex-col items-start gap-2 flex-shrink-0">
+          {/* LEFT: Image + Address */}
+          <div className="flex flex-col items-center gap-1 flex-shrink-0">
             <TokenImage
               image={coin.image}
               symbol={coin.symbol}
               platform={coin.platform}
             />
-            {/* Address + TXN Stats inline */}
-            <div className="flex items-center gap-3">
-              <CompactContractAddress address={coin.address} />
-              {coin.buyTxns !== undefined && (
-                <TxnStats buyTxns={coin.buyTxns} sellTxns={coin.sellTxns ?? 0} />
-              )}
-            </div>
+            <CompactContractAddress address={coin.address} />
           </div>
 
           {/* MIDDLE: Token Info */}
@@ -416,6 +412,11 @@ export function CoinCard({ coin, index, onView, onDevPanel, onRelaunch }: CoinCa
               <TimeBadge date={coin.launchedAt} />
               <QuickLinks coin={coin} />
             </div>
+
+            {/* Row 3: TXN Stats */}
+            {coin.buyTxns !== undefined && (
+              <TxnStats buyTxns={coin.buyTxns} sellTxns={coin.sellTxns ?? 0} />
+            )}
           </div>
 
           {/* RIGHT: Action Buttons */}
