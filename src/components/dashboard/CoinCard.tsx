@@ -248,12 +248,12 @@ function TxnStats({ buyTxns, sellTxns }: { buyTxns: number; sellTxns: number }) 
         <span className="font-mono text-kol-red">{sellTxns}</span>
       </div>
       {/* Visual ratio bar - 2px split style */}
-      <div className="flex h-[2px] w-16 flex-row items-center gap-[1px]">
+      <div className="flex h-[2px] w-16 flex-row items-center">
         <div
-          className="h-[2px] rounded-l-full bg-kol-green-light transition-all"
+          className="flex h-[2px] rounded-l-full bg-kol-green-light"
           style={{ width: `${buyPercent}%` }}
         />
-        <div className="h-[2px] flex-1 rounded-r-full bg-kol-red" />
+        <div className="flex h-[2px] flex-1 rounded-r-full bg-kol-red" />
       </div>
     </div>
   )
@@ -403,29 +403,26 @@ export function CoinCard({ coin, index, onView, onDevPanel, onRelaunch }: CoinCa
             )}
           </div>
 
-          {/* RIGHT: Combined Manage + Relaunch Button */}
-          <div className="flex flex-shrink-0">
+          {/* RIGHT: Action Buttons */}
+          <div className="flex items-center gap-1 flex-shrink-0">
             <button
-              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[11px] font-medium bg-kol-surface-elevated border border-kol-border hover:border-kol-border-hover transition-colors"
+              onClick={(e) => {
+                e.stopPropagation()
+                onDevPanel?.(coin)
+              }}
+              className="flex items-center gap-1 px-2 py-1.5 rounded-md text-[11px] font-medium bg-kol-surface-elevated border border-kol-border text-kol-text-muted hover:border-kol-border-hover hover:text-white transition-colors"
             >
-              <span
-                className="flex items-center gap-1 text-kol-text-muted hover:text-white transition-colors cursor-pointer"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  onDevPanel?.(coin)
-                }}
-              >
-                <i className="ri-code-s-slash-line text-[12px]" />
-                Manage
-              </span>
-              <span className="w-px h-3 bg-kol-border" />
-              <i
-                className="ri-restart-line text-[12px] text-kol-text-muted hover:text-white transition-colors cursor-pointer"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  onRelaunch?.(coin)
-                }}
-              />
+              <i className="ri-code-s-slash-line text-[12px]" />
+              Manage
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                onRelaunch?.(coin)
+              }}
+              className="flex items-center justify-center p-1.5 rounded-md bg-kol-surface-elevated border border-kol-border text-kol-text-muted hover:border-kol-border-hover hover:text-white transition-colors"
+            >
+              <i className="ri-restart-line text-[12px]" />
             </button>
           </div>
         </div>
