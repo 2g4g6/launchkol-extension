@@ -159,7 +159,7 @@ function PlatformBadge({ platform }: { platform: PlatformType }) {
   return (
     <Tooltip content={platformName} position="top" delayShow={200}>
       <div
-        className={`absolute -bottom-0.5 -right-0.5 sm:bottom-0 sm:right-0 h-[14px] w-[14px] sm:h-4 sm:w-4 rounded-full bg-kol-bg shadow-sm z-10 flex items-center justify-center border cursor-help ${colorClass}`}
+        className={`absolute -bottom-0.5 -right-0.5 sm:bottom-0 sm:right-0 h-[14px] w-[14px] sm:h-4 sm:w-4 rounded-full bg-kol-bg shadow-sm z-10 flex items-center justify-center border ${colorClass}`}
       >
         <img src={iconSrc} alt={platformName} className="w-2 h-2 sm:w-2.5 sm:h-2.5" />
       </div>
