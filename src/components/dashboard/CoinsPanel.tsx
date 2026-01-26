@@ -248,24 +248,24 @@ export function CoinsPanel({}: CoinsPanelProps) {
           <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 rounded-full bg-kol-border/50 group-hover:bg-kol-blue/50 transition-colors" />
         </div>
 
-        {/* Enhanced Header */}
-        <div className="flex items-center justify-between px-3 py-3 border-b border-kol-border/30 bg-kol-surface/30">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-kol-blue/10 flex items-center justify-center">
-              <i className="ri-coin-line text-sm text-kol-blue" />
-            </div>
-            <div>
+        {/* Header - matches TrackerFeed search bar height */}
+        <div className="px-3 pt-3 pb-2">
+          <div className="flex items-center justify-between h-9 px-3 bg-kol-surface/50 border border-kol-border/50 rounded-xl">
+            <div className="flex items-center gap-2">
+              <i className="ri-coin-line text-sm text-kol-text-tertiary" />
               <span className="text-sm font-semibold text-white">Your Coins</span>
-              <p className="text-[10px] text-kol-text-muted">{coins.length} positions</p>
+              <span className="text-[10px] font-mono text-kol-text-tertiary bg-kol-surface/50 px-1.5 py-0.5 rounded">
+                {coins.length}
+              </span>
             </div>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <button className="w-7 h-7 rounded-lg bg-kol-surface/50 border border-kol-border/30 flex items-center justify-center text-kol-text-muted hover:text-white hover:border-kol-blue/30 transition-all" title="Filter & Sort">
-              <i className="ri-filter-3-line text-sm" />
-            </button>
-            <button className="w-7 h-7 rounded-lg bg-kol-surface/50 border border-kol-border/30 flex items-center justify-center text-kol-text-muted hover:text-white hover:border-kol-blue/30 transition-all" title="Refresh">
-              <i className="ri-refresh-line text-sm" />
-            </button>
+            <div className="flex items-center gap-0.5">
+              <button className="w-7 h-7 rounded-lg flex items-center justify-center text-kol-text-muted hover:text-white hover:bg-white/5 transition-colors" title="Filter & Sort">
+                <i className="ri-filter-3-line text-sm" />
+              </button>
+              <button className="w-7 h-7 rounded-lg flex items-center justify-center text-kol-text-muted hover:text-white hover:bg-white/5 transition-colors" title="Refresh">
+                <i className="ri-refresh-line text-sm" />
+              </button>
+            </div>
           </div>
         </div>
 
@@ -289,24 +289,24 @@ export function CoinsPanel({}: CoinsPanelProps) {
           <div className="w-10 h-1 rounded-full bg-kol-border/50 hover:bg-kol-blue/50 transition-colors" />
         </div>
 
-        {/* Enhanced Header */}
-        <div className="flex items-center justify-between px-3 py-2 flex-shrink-0 bg-kol-surface/30">
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-lg bg-kol-blue/10 flex items-center justify-center">
-              <i className="ri-coin-line text-xs text-kol-blue" />
+        {/* Header - matches TrackerFeed search bar height */}
+        <div className="px-3 pt-3 pb-2 flex-shrink-0">
+          <div className="flex items-center justify-between h-9 px-3 bg-kol-surface/50 border border-kol-border/50 rounded-xl">
+            <div className="flex items-center gap-2">
+              <i className="ri-coin-line text-sm text-kol-text-tertiary" />
+              <span className="text-sm font-semibold text-white">Your Coins</span>
+              <span className="text-[10px] font-mono text-kol-text-tertiary bg-kol-surface/50 px-1.5 py-0.5 rounded">
+                {coins.length}
+              </span>
             </div>
-            <span className="text-sm font-semibold text-white">Your Coins</span>
-            <span className="text-[10px] font-mono text-kol-text-tertiary bg-kol-surface/50 px-2 py-0.5 rounded-full border border-kol-border/30">
-              {coins.length}
-            </span>
-          </div>
-          <div className="flex items-center gap-1">
-            <button className="w-6 h-6 rounded-lg bg-kol-surface/50 border border-kol-border/30 flex items-center justify-center text-kol-text-muted hover:text-white transition-all" title="Filter">
-              <i className="ri-filter-3-line text-xs" />
-            </button>
-            <button className="w-6 h-6 rounded-lg bg-kol-surface/50 border border-kol-border/30 flex items-center justify-center text-kol-text-muted hover:text-white transition-all" title="Refresh">
-              <i className="ri-refresh-line text-xs" />
-            </button>
+            <div className="flex items-center gap-0.5">
+              <button className="w-7 h-7 rounded-lg flex items-center justify-center text-kol-text-muted hover:text-white hover:bg-white/5 transition-colors" title="Filter">
+                <i className="ri-filter-3-line text-sm" />
+              </button>
+              <button className="w-7 h-7 rounded-lg flex items-center justify-center text-kol-text-muted hover:text-white hover:bg-white/5 transition-colors" title="Refresh">
+                <i className="ri-refresh-line text-sm" />
+              </button>
+            </div>
           </div>
         </div>
 
