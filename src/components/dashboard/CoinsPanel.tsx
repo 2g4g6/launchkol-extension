@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { CoinCard, CoinData } from './CoinCard'
 
-// Mock data with new fields
+// Mock data with new fields - showcasing all tweet types
 const MOCK_COINS: CoinData[] = [
   {
     id: '1',
@@ -18,7 +18,7 @@ const MOCK_COINS: CoinData[] = [
     launchedAt: new Date(Date.now() - 3600000 * 24),
     platform: 'pump',
     twitterUrl: 'https://x.com/dogwifcoin/status/1234567890',
-    axiomUrl: 'https://axiom.trade/t/EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm',
+    tweetType: 'tweet', // Original tweet - teal quill icon
     progressPercent: 85,
     tradingStats: {
       boughtAmount: 1.5,
@@ -37,6 +37,8 @@ const MOCK_COINS: CoinData[] = [
     marketCap: 89000,
     launchedAt: new Date(Date.now() - 3600000 * 2),
     platform: 'bonk',
+    twitterUrl: 'https://x.com/bonk_inu/status/111111111',
+    tweetType: 'reply', // Reply - blue reply icon
     progressPercent: 42,
     tradingStats: {
       boughtAmount: 0.97,
@@ -57,11 +59,114 @@ const MOCK_COINS: CoinData[] = [
     launchedAt: new Date(Date.now() - 3600000 * 48),
     platform: 'pump',
     twitterUrl: 'https://x.com/myro_sol/status/9876543210',
-    axiomUrl: 'https://axiom.trade/t/HhJpBhRRn4g56VsyLuT8DL5Bv31HkXqsrahTTUCZeZg4',
+    tweetType: 'retweet', // Retweet - green repeat icon
     progressPercent: 100,
     tradingStats: {
       boughtAmount: 2.86,
       soldAmount: 0,
+    },
+  },
+  {
+    id: '4',
+    name: 'Popcat',
+    symbol: 'POPCAT',
+    image: 'https://pbs.twimg.com/profile_images/1800000000000000000/example_400x400.jpg',
+    address: 'PopcatABC123XYZ789DEF456GHI012JKL345MNO678',
+    holdings: 1.20,
+    holdingsUsd: 120.00,
+    pnl: 0.45,
+    pnlPercent: 37.5,
+    marketCap: 230000,
+    launchedAt: new Date(Date.now() - 3600000 * 5),
+    platform: 'bags',
+    twitterUrl: 'https://x.com/popcat/status/222222222',
+    tweetType: 'quote', // Quote tweet - orange chat quote icon
+    progressPercent: 67,
+    tradingStats: {
+      boughtAmount: 1.2,
+      soldAmount: 0.75,
+    },
+  },
+  {
+    id: '5',
+    name: 'Gigachad',
+    symbol: 'GIGA',
+    address: 'GigaABC123XYZ789DEF456GHI012JKL345MNO678PQR',
+    holdings: 3.80,
+    holdingsUsd: 380.00,
+    pnl: 1.15,
+    pnlPercent: 30.3,
+    marketCap: 780000,
+    launchedAt: new Date(Date.now() - 3600000 * 12),
+    platform: 'mayhem',
+    twitterUrl: 'https://x.com/gigachad/status/333333333',
+    tweetType: 'pin', // Pinned tweet - gold pushpin icon
+    progressPercent: 91,
+    tradingStats: {
+      boughtAmount: 3.8,
+      soldAmount: 2.65,
+    },
+  },
+  {
+    id: '6',
+    name: 'Pepe',
+    symbol: 'PEPE',
+    image: 'https://pbs.twimg.com/profile_images/1700000000000000000/pepe_400x400.jpg',
+    address: 'PepeABC123XYZ789DEF456GHI012JKL345MNO678PQR',
+    holdings: 0.50,
+    holdingsUsd: 50.00,
+    pnl: -0.08,
+    pnlPercent: -16.0,
+    marketCap: 120000,
+    launchedAt: new Date(Date.now() - 3600000 * 1),
+    platform: 'fourmeme',
+    twitterUrl: 'https://x.com/pepecoin/status/444444444',
+    tweetType: 'follow', // Follow action - red user add icon
+    progressPercent: 23,
+    tradingStats: {
+      boughtAmount: 0.5,
+      soldAmount: 0,
+    },
+  },
+  {
+    id: '7',
+    name: 'Shiba',
+    symbol: 'SHIB',
+    address: 'ShibaABC123XYZ789DEF456GHI012JKL345MNO678PQ',
+    holdings: 2.00,
+    holdingsUsd: 200.00,
+    pnl: -0.35,
+    pnlPercent: -17.5,
+    marketCap: 95000,
+    launchedAt: new Date(Date.now() - 3600000 * 72),
+    platform: 'raydium',
+    twitterUrl: 'https://x.com/shibacoin/status/555555555',
+    tweetType: 'delete', // Deleted tweet - light red delete icon
+    progressPercent: 55,
+    tradingStats: {
+      boughtAmount: 2.0,
+      soldAmount: 1.65,
+    },
+  },
+  {
+    id: '8',
+    name: 'Doge',
+    symbol: 'DOGE',
+    image: 'https://pbs.twimg.com/profile_images/1600000000000000000/doge_400x400.jpg',
+    address: 'DogeABC123XYZ789DEF456GHI012JKL345MNO678PQRS',
+    holdings: 4.50,
+    holdingsUsd: 450.00,
+    pnl: 0.72,
+    pnlPercent: 16.0,
+    marketCap: 560000,
+    launchedAt: new Date(Date.now() - 3600000 * 36),
+    platform: 'pump',
+    twitterUrl: 'https://x.com/dogecoin/status/666666666',
+    tweetType: 'profile', // Profile update - purple user settings icon
+    progressPercent: 78,
+    tradingStats: {
+      boughtAmount: 4.5,
+      soldAmount: 3.78,
     },
   },
 ]
