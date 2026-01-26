@@ -233,14 +233,8 @@ function TimeBadge({ date }: { date: Date }) {
     return `${Math.floor(diffMinutes / 1440)}d`
   }
 
-  const getTimeColor = () => {
-    if (diffMinutes < 30) return 'text-kol-green'
-    if (diffMinutes < 120) return 'text-yellow-400'
-    return 'text-kol-text-muted'
-  }
-
   return (
-    <span className={`text-[14px] font-medium ${getTimeColor()}`}>
+    <span className="text-[14px] font-medium text-kol-green">
       {formatTime()}
     </span>
   )
