@@ -44,7 +44,7 @@ export function Dashboard({ user, onSignOut }: DashboardProps) {
   const [isDepositModalOpen, setIsDepositModalOpen] = useState(false)
   const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false)
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false)
-  const [isCoinsOpen, setIsCoinsOpen] = useState(false)
+  const [isCoinsOpen, setIsCoinsOpen] = useState(true)
 
   // Simulated balance fetch
   useEffect(() => {
