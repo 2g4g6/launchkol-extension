@@ -243,15 +243,7 @@ function TxnStats({ buyTxns, sellTxns }: { buyTxns: number; sellTxns: number }) 
 
   return (
     <div className="flex items-center gap-2 w-full justify-end">
-      {/* Visual ratio bar - on the left */}
-      <div className="flex h-[2px] flex-1 flex-row items-center gap-[4px]">
-        <div
-          className="flex h-[2px] rounded-l-full"
-          style={{ width: `${buyPercent}%`, backgroundColor: '#00d492' }}
-        />
-        <div className="flex h-[2px] flex-1 rounded-r-full bg-kol-red" />
-      </div>
-      {/* Stats on the right */}
+      {/* Stats on the left */}
       <div className="flex items-center gap-1 text-[14px] font-medium">
         <Tooltip content="Buy transactions" position="top">
           <span className="font-mono cursor-default" style={{ color: '#00d492' }}>{buyTxns}</span>
@@ -260,6 +252,14 @@ function TxnStats({ buyTxns, sellTxns }: { buyTxns: number; sellTxns: number }) 
         <Tooltip content="Sell transactions" position="top">
           <span className="font-mono text-kol-red cursor-default">{sellTxns}</span>
         </Tooltip>
+      </div>
+      {/* Visual ratio bar - on the right */}
+      <div className="flex h-[2px] flex-1 flex-row items-center gap-[4px]">
+        <div
+          className="flex h-[2px] rounded-l-full"
+          style={{ width: `${buyPercent}%`, backgroundColor: '#00d492' }}
+        />
+        <div className="flex h-[2px] flex-1 rounded-r-full bg-kol-red" />
       </div>
     </div>
   )
