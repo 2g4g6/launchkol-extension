@@ -288,12 +288,23 @@ function InlineTradingStats({
   )
 }
 
+// Axiom Icon Component
+function AxiomIcon({ className }: { className?: string }) {
+  return (
+    <svg width="12" height="12" viewBox="0 0 36 36" fill="currentColor" className={className}>
+      <path d="M24.1384 17.3876H11.8623L18.0001 7.00012L24.1384 17.3876Z" />
+      <path d="M31 29.0003L5 29.0003L9.96764 20.5933L26.0324 20.5933L31 29.0003Z" />
+    </svg>
+  )
+}
+
 // Action Button Component
-function ActionButton({ icon, label, onClick, variant = 'default' }: {
-  icon: string
+function ActionButton({ icon, label, onClick, variant = 'default', customIcon }: {
+  icon?: string
   label: string
   onClick: (e: React.MouseEvent) => void
   variant?: 'default' | 'primary'
+  customIcon?: React.ReactNode
 }) {
   const variantClasses = variant === 'primary'
     ? 'bg-kol-blue/15 text-kol-blue border-kol-blue/30 hover:bg-kol-blue/25'
@@ -306,7 +317,7 @@ function ActionButton({ icon, label, onClick, variant = 'default' }: {
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
     >
-      <i className={`${icon} text-xs`} />
+      {customIcon || <i className={`${icon} text-xs`} />}
       <span>{label}</span>
     </motion.button>
   )
@@ -326,21 +337,6 @@ function QuickLinks({ coin }: { coin: CoinData }) {
           title="View source tweet"
         >
           <i className="ri-twitter-x-line text-[16px]" />
-        </a>
-      )}
-      {coin.axiomUrl && (
-        <a
-          href={coin.axiomUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={(e) => e.stopPropagation()}
-          className="flex items-center text-kol-text-muted hover:text-kol-blue-hover transition-colors"
-          title="Open in Axiom"
-        >
-          <svg width="16" height="16" viewBox="0 0 36 36" fill="currentColor">
-            <path d="M24.1384 17.3876H11.8623L18.0001 7.00012L24.1384 17.3876Z" />
-            <path d="M31 29.0003L5 29.0003L9.96764 20.5933L26.0324 20.5933L31 29.0003Z" />
-          </svg>
         </a>
       )}
       <a
@@ -445,17 +441,17 @@ export function CoinCard({ coin, index, onView, onTradePanel, onDevPanel, onVamp
         {/* ACTION BUTTONS */}
         <div className="flex gap-1.5 p-2 border-t border-kol-border/20">
           <ActionButton
-            icon="ri-line-chart-line"
             label="Trade"
             onClick={(e) => {
               e.stopPropagation()
               onTradePanel?.(coin)
             }}
             variant="primary"
+            customIcon={<AxiomIcon />}
           />
           <ActionButton
             icon="ri-code-s-slash-line"
-            label="Dev"
+            label="Manage"
             onClick={(e) => {
               e.stopPropagation()
               onDevPanel?.(coin)
