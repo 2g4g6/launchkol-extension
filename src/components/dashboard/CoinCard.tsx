@@ -266,7 +266,7 @@ function TradingStatsBar({
       <div className="flex flex-1 flex-col items-center justify-center gap-1">
         <span className="text-[12px] font-normal leading-4 text-kol-text-muted">Bought</span>
         <div className="flex flex-row items-center gap-1">
-          <img alt="SOL" width="14" height="14" src="/images/sol-fill.svg" />
+          <img alt="SOL" width="14" height="14" src="/images/solanaLogoMark.svg" />
           <span className="text-[12px] font-medium leading-4 text-kol-green">{stats.boughtAmount.toFixed(2)}</span>
         </div>
       </div>
@@ -278,7 +278,7 @@ function TradingStatsBar({
       <div className="flex flex-1 flex-col items-center justify-center gap-1">
         <span className="text-[12px] font-normal leading-4 text-kol-text-muted">Sold</span>
         <div className="flex flex-row items-center gap-1">
-          <img alt="SOL" width="14" height="14" src="/images/sol-fill.svg" />
+          <img alt="SOL" width="14" height="14" src="/images/solanaLogoMark.svg" />
           <span className="text-[12px] font-medium leading-4 text-kol-red">{stats.soldAmount.toFixed(2)}</span>
         </div>
       </div>
@@ -291,7 +291,7 @@ function TradingStatsBar({
         <span className="text-[12px] font-normal leading-4 text-kol-text-muted">Holding</span>
         <div className="group flex flex-row items-center gap-1">
           <div className="flex flex-row items-center gap-1 group-hover:hidden">
-            <img alt="SOL" width="14" height="14" src="/images/sol-fill.svg" />
+            <img alt="SOL" width="14" height="14" src="/images/solanaLogoMark.svg" />
             <span className="text-[12px] font-medium leading-4 text-kol-text-secondary">{(holdingsSol ?? holdings).toFixed(2)}</span>
           </div>
           <span className="hidden text-[12px] font-medium leading-4 text-kol-text-secondary group-hover:inline">
@@ -312,7 +312,7 @@ function TradingStatsBar({
           </button>
         </div>
         <div className="flex flex-row items-center gap-1">
-          <img alt="SOL" width="14" height="14" src="/images/sol-fill.svg" />
+          <img alt="SOL" width="14" height="14" src="/images/solanaLogoMark.svg" />
           <span className={`text-nowrap text-[12px] font-medium leading-4 ${isProfitable ? 'text-kol-green' : 'text-kol-red'}`}>
             {isProfitable ? '+' : ''}{pnl.toFixed(2)}
           </span>
