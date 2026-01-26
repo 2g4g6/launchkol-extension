@@ -432,7 +432,7 @@ export function CoinCard({ coin, index, onView, onDevPanel, onRelaunch }: CoinCa
 
         {/* TXN Stats Row - aligned with middle content */}
         {coin.buyTxns !== undefined && (
-          <div className="-mt-2 pb-1 pr-3" style={{ marginLeft: '76px' }}>
+          <div className="-mt-3 pb-1 px-16">
             <TxnStats buyTxns={coin.buyTxns} sellTxns={coin.sellTxns ?? 0} />
           </div>
         )}
