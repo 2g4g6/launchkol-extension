@@ -2,14 +2,12 @@ import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Header } from './dashboard/Header'
 import { TrackerFeed } from './dashboard/TrackerFeed'
-import { MyCoinsTab } from './dashboard/MyCoinsTab'
 import { SocialPostData } from './dashboard/SocialPost'
-import { CoinData } from './dashboard/CoinCard'
 import { DepositModal, NetworkConfig } from './ui/DepositModal'
 import { WithdrawModal } from './ui/WithdrawModal'
 import { SearchTokensModal, TokenResult } from './ui/SearchTokensModal'
 
-type TabId = 'feed' | 'coins'
+type TabId = 'feed'
 
 interface DashboardProps {
   user: { email: string }
@@ -79,9 +77,6 @@ export function Dashboard({ user, onSignOut }: DashboardProps) {
     console.log('Deploy from post:', post)
   }
 
-  const handleSell = (coin: CoinData, percent: number) => {
-    console.log(`Selling ${percent}% of ${coin.symbol}`)
-  }
 
   return (
     <motion.div
@@ -265,9 +260,6 @@ export function Dashboard({ user, onSignOut }: DashboardProps) {
           >
             {activeTab === 'feed' && (
               <TrackerFeed onDeploy={handleDeploy} />
-            )}
-            {activeTab === 'coins' && (
-              <MyCoinsTab onSell={handleSell} balance={balance} />
             )}
           </motion.div>
         </AnimatePresence>

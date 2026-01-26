@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Logo } from "../Logo";
 
-type TabId = "feed" | "coins";
+type TabId = "feed";
 
 interface Tab {
   id: TabId;
@@ -12,7 +12,6 @@ interface Tab {
 
 const TABS: Tab[] = [
   { id: "feed", label: "Radar", icon: "ri-radar-line" },
-  { id: "coins", label: "Coins", icon: "ri-coin-line" },
 ];
 
 export interface NetworkConfig {
@@ -47,7 +46,7 @@ function SearchInput({ onClick }: { onClick?: () => void }) {
     >
       <i className="ri-search-line text-sm text-kol-text-muted group-hover:text-kol-text-secondary transition-colors" />
       <span className="text-xs text-kol-text-muted group-hover:text-kol-text-secondary transition-colors font-body flex-1">
-        Search tokens...
+        Search...
       </span>
       {/* Keyboard shortcut badge */}
       <span className="px-1.5 py-0.5 rounded text-[9px] font-mono bg-kol-border/40 text-kol-text-muted border border-kol-border/30">
