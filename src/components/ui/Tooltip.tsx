@@ -186,39 +186,79 @@ interface ArrowProps {
 
 function Arrow({ position, offset }: ArrowProps) {
   const baseClasses = 'absolute w-0 h-0'
+  const borderColor = '#2a2a2a'
+  const fillColor = '#0a0a0a'
 
-  const positionStyles: Record<TooltipPosition, React.CSSProperties> = {
+  // Border (outer) arrow styles - slightly larger
+  const borderStyles: Record<TooltipPosition, React.CSSProperties> = {
+    top: {
+      bottom: -ARROW_SIZE - 1,
+      left: offset - 1,
+      borderLeft: `${ARROW_SIZE + 1}px solid transparent`,
+      borderRight: `${ARROW_SIZE + 1}px solid transparent`,
+      borderTop: `${ARROW_SIZE + 1}px solid ${borderColor}`,
+    },
+    bottom: {
+      top: -ARROW_SIZE - 1,
+      left: offset - 1,
+      borderLeft: `${ARROW_SIZE + 1}px solid transparent`,
+      borderRight: `${ARROW_SIZE + 1}px solid transparent`,
+      borderBottom: `${ARROW_SIZE + 1}px solid ${borderColor}`,
+    },
+    left: {
+      right: -ARROW_SIZE - 1,
+      top: offset - 1,
+      borderTop: `${ARROW_SIZE + 1}px solid transparent`,
+      borderBottom: `${ARROW_SIZE + 1}px solid transparent`,
+      borderLeft: `${ARROW_SIZE + 1}px solid ${borderColor}`,
+    },
+    right: {
+      left: -ARROW_SIZE - 1,
+      top: offset - 1,
+      borderTop: `${ARROW_SIZE + 1}px solid transparent`,
+      borderBottom: `${ARROW_SIZE + 1}px solid transparent`,
+      borderRight: `${ARROW_SIZE + 1}px solid ${borderColor}`,
+    },
+  }
+
+  // Fill (inner) arrow styles
+  const fillStyles: Record<TooltipPosition, React.CSSProperties> = {
     top: {
       bottom: -ARROW_SIZE,
       left: offset,
       borderLeft: `${ARROW_SIZE}px solid transparent`,
       borderRight: `${ARROW_SIZE}px solid transparent`,
-      borderTop: `${ARROW_SIZE}px solid #0a0a0a`,
+      borderTop: `${ARROW_SIZE}px solid ${fillColor}`,
     },
     bottom: {
       top: -ARROW_SIZE,
       left: offset,
       borderLeft: `${ARROW_SIZE}px solid transparent`,
       borderRight: `${ARROW_SIZE}px solid transparent`,
-      borderBottom: `${ARROW_SIZE}px solid #0a0a0a`,
+      borderBottom: `${ARROW_SIZE}px solid ${fillColor}`,
     },
     left: {
       right: -ARROW_SIZE,
       top: offset,
       borderTop: `${ARROW_SIZE}px solid transparent`,
       borderBottom: `${ARROW_SIZE}px solid transparent`,
-      borderLeft: `${ARROW_SIZE}px solid #0a0a0a`,
+      borderLeft: `${ARROW_SIZE}px solid ${fillColor}`,
     },
     right: {
       left: -ARROW_SIZE,
       top: offset,
       borderTop: `${ARROW_SIZE}px solid transparent`,
       borderBottom: `${ARROW_SIZE}px solid transparent`,
-      borderRight: `${ARROW_SIZE}px solid #0a0a0a`,
+      borderRight: `${ARROW_SIZE}px solid ${fillColor}`,
     },
   }
 
-  return <div className={baseClasses} style={positionStyles[position]} />
+  return (
+    <>
+      <div className={baseClasses} style={borderStyles[position]} />
+      <div className={baseClasses} style={fillStyles[position]} />
+    </>
+  )
 }
 
 // ============================================================================
@@ -234,7 +274,7 @@ export function Tooltip({
   delayHide = 0,
   maxWidth = 250,
   disabled = false,
-  showArrow = false,
+  showArrow = true,
   offset = DEFAULT_OFFSET,
   className = '',
 }: TooltipProps) {
