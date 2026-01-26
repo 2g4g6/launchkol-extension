@@ -34,6 +34,8 @@ const MOCK_COINS: CoinData[] = [
     marketCap: 89000,
     launchedAt: new Date(Date.now() - 3600000 * 2),
     platform: 'bonk',
+    twitterUrl: 'https://x.com/bonaborabonk/status/1234567891',
+    axiomUrl: 'https://axiom.trade/t/DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263',
     progressPercent: 42,
     tradingStats: { boughtAmount: 0.97, soldAmount: 0 },
   },
@@ -102,16 +104,8 @@ export function MyCoinsTab({ balance }: MyCoinsTabProps) {
     window.open(`https://pump.fun/${coin.address}`, '_blank')
   }
 
-  const handleTradePanel = (coin: CoinData) => {
-    console.log('Trade panel for:', coin.symbol)
-  }
-
   const handleDevPanel = (coin: CoinData) => {
     console.log('Dev panel for:', coin.symbol)
-  }
-
-  const handleVamp = (coin: CoinData) => {
-    console.log('Vamp for:', coin.symbol)
   }
 
   const handleRelaunch = (coin: CoinData) => {
@@ -262,9 +256,7 @@ export function MyCoinsTab({ balance }: MyCoinsTabProps) {
                 coin={coin}
                 index={index}
                 onView={handleView}
-                onTradePanel={handleTradePanel}
                 onDevPanel={handleDevPanel}
-                onVamp={handleVamp}
                 onRelaunch={handleRelaunch}
               />
             ))

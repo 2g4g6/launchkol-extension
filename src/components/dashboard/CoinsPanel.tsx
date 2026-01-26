@@ -18,7 +18,8 @@ const MOCK_COINS: CoinData[] = [
     launchedAt: new Date(Date.now() - 3600000 * 24),
     platform: 'pump',
     twitterUrl: 'https://x.com/dogwifcoin/status/1234567890',
-    tweetType: 'tweet', // Original tweet - teal quill icon
+    tweetType: 'tweet',
+    axiomUrl: 'https://axiom.trade/t/EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm',
     progressPercent: 85,
     tradingStats: {
       boughtAmount: 1.5,
@@ -38,7 +39,8 @@ const MOCK_COINS: CoinData[] = [
     launchedAt: new Date(Date.now() - 3600000 * 2),
     platform: 'bonk',
     twitterUrl: 'https://x.com/bonk_inu/status/111111111',
-    tweetType: 'reply', // Reply - blue reply icon
+    tweetType: 'reply',
+    axiomUrl: 'https://axiom.trade/t/DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263',
     progressPercent: 42,
     tradingStats: {
       boughtAmount: 0.97,
@@ -59,7 +61,8 @@ const MOCK_COINS: CoinData[] = [
     launchedAt: new Date(Date.now() - 3600000 * 48),
     platform: 'pump',
     twitterUrl: 'https://x.com/myro_sol/status/9876543210',
-    tweetType: 'retweet', // Retweet - green repeat icon
+    tweetType: 'retweet',
+    axiomUrl: 'https://axiom.trade/t/HhJpBhRRn4g56VsyLuT8DL5Bv31HkXqsrahTTUCZeZg4',
     progressPercent: 100,
     tradingStats: {
       boughtAmount: 2.86,
@@ -80,7 +83,8 @@ const MOCK_COINS: CoinData[] = [
     launchedAt: new Date(Date.now() - 3600000 * 5),
     platform: 'bags',
     twitterUrl: 'https://x.com/popcat/status/222222222',
-    tweetType: 'quote', // Quote tweet - orange chat quote icon
+    tweetType: 'quote',
+    axiomUrl: 'https://axiom.trade/t/PopcatABC123XYZ789DEF456GHI012JKL345MNO678',
     progressPercent: 67,
     tradingStats: {
       boughtAmount: 1.2,
@@ -100,7 +104,8 @@ const MOCK_COINS: CoinData[] = [
     launchedAt: new Date(Date.now() - 3600000 * 12),
     platform: 'mayhem',
     twitterUrl: 'https://x.com/gigachad/status/333333333',
-    tweetType: 'pin', // Pinned tweet - gold pushpin icon
+    tweetType: 'pin',
+    axiomUrl: 'https://axiom.trade/t/GigaABC123XYZ789DEF456GHI012JKL345MNO678PQR',
     progressPercent: 91,
     tradingStats: {
       boughtAmount: 3.8,
@@ -121,7 +126,8 @@ const MOCK_COINS: CoinData[] = [
     launchedAt: new Date(Date.now() - 3600000 * 1),
     platform: 'fourmeme',
     twitterUrl: 'https://x.com/pepecoin/status/444444444',
-    tweetType: 'follow', // Follow action - red user add icon
+    tweetType: 'follow',
+    axiomUrl: 'https://axiom.trade/t/PepeABC123XYZ789DEF456GHI012JKL345MNO678PQR',
     progressPercent: 23,
     tradingStats: {
       boughtAmount: 0.5,
@@ -141,7 +147,8 @@ const MOCK_COINS: CoinData[] = [
     launchedAt: new Date(Date.now() - 3600000 * 72),
     platform: 'raydium',
     twitterUrl: 'https://x.com/shibacoin/status/555555555',
-    tweetType: 'delete', // Deleted tweet - light red delete icon
+    tweetType: 'delete',
+    axiomUrl: 'https://axiom.trade/t/ShibaABC123XYZ789DEF456GHI012JKL345MNO678PQ',
     progressPercent: 55,
     tradingStats: {
       boughtAmount: 2.0,
@@ -162,7 +169,8 @@ const MOCK_COINS: CoinData[] = [
     launchedAt: new Date(Date.now() - 3600000 * 36),
     platform: 'pump',
     twitterUrl: 'https://x.com/dogecoin/status/666666666',
-    tweetType: 'profile', // Profile update - purple user settings icon
+    tweetType: 'profile',
+    axiomUrl: 'https://axiom.trade/t/DogeABC123XYZ789DEF456GHI012JKL345MNO678PQRS',
     progressPercent: 78,
     tradingStats: {
       boughtAmount: 4.5,
@@ -194,16 +202,8 @@ export function CoinsPanel({}: CoinsPanelProps) {
     window.open(`https://pump.fun/${coin.address}`, '_blank')
   }
 
-  const handleTradePanel = (coin: CoinData) => {
-    console.log('Trade panel for:', coin.symbol)
-  }
-
   const handleDevPanel = (coin: CoinData) => {
     console.log('Dev panel for:', coin.symbol)
-  }
-
-  const handleVamp = (coin: CoinData) => {
-    console.log('Vamp for:', coin.symbol)
   }
 
   const handleRelaunch = (coin: CoinData) => {
@@ -285,9 +285,7 @@ export function CoinsPanel({}: CoinsPanelProps) {
             coin={coin}
             index={index}
             onView={handleView}
-            onTradePanel={handleTradePanel}
             onDevPanel={handleDevPanel}
-            onVamp={handleVamp}
             onRelaunch={handleRelaunch}
           />
         ))
