@@ -235,23 +235,6 @@ function AxiomIcon({ className }: { className?: string }) {
   )
 }
 
-// Compact Action Button Component (for top-right placement)
-function CompactActionButton({ icon, label, onClick }: {
-  icon: string
-  label: string
-  onClick: (e: React.MouseEvent) => void
-}) {
-  return (
-    <button
-      onClick={onClick}
-      className="flex items-center gap-1 px-2 py-1 rounded text-[10px] font-medium border bg-kol-bg text-kol-text-muted border-kol-border hover:bg-kol-surface-elevated hover:text-white transition-colors"
-    >
-      <i className={`${icon} text-[10px]`} />
-      <span>{label}</span>
-    </button>
-  )
-}
-
 // TXN Stats Component (buy/sell transaction counts with visual bar)
 function TxnStats({ buyTxns, sellTxns }: { buyTxns: number; sellTxns: number }) {
   const total = buyTxns + sellTxns
@@ -260,16 +243,17 @@ function TxnStats({ buyTxns, sellTxns }: { buyTxns: number; sellTxns: number }) 
   return (
     <div className="flex items-center gap-2">
       <div className="flex items-center gap-1 text-[14px] font-medium">
-        <span className="text-kol-green">{buyTxns}</span>
+        <span className="font-mono text-kol-green-light">{buyTxns}</span>
         <span className="text-kol-text-muted">/</span>
-        <span className="text-kol-red">{sellTxns}</span>
+        <span className="font-mono text-kol-red">{sellTxns}</span>
       </div>
-      {/* Visual ratio bar */}
-      <div className="h-1.5 w-16 rounded-full bg-kol-red/40 overflow-hidden">
+      {/* Visual ratio bar - 2px split style */}
+      <div className="flex h-[2px] w-16 flex-row items-center gap-[1px]">
         <div
-          className="h-full bg-kol-green rounded-full transition-all"
+          className="h-[2px] rounded-l-full bg-kol-green-light transition-all"
           style={{ width: `${buyPercent}%` }}
         />
+        <div className="h-[2px] flex-1 rounded-r-full bg-kol-red" />
       </div>
     </div>
   )
@@ -419,24 +403,30 @@ export function CoinCard({ coin, index, onView, onDevPanel, onRelaunch }: CoinCa
             )}
           </div>
 
-          {/* RIGHT: Action Buttons */}
-          <div className="flex flex-col gap-1 flex-shrink-0">
-            <CompactActionButton
-              icon="ri-code-s-slash-line"
-              label="Manage"
-              onClick={(e) => {
-                e.stopPropagation()
-                onDevPanel?.(coin)
-              }}
-            />
-            <CompactActionButton
-              icon="ri-restart-line"
-              label="Relaunch"
-              onClick={(e) => {
-                e.stopPropagation()
-                onRelaunch?.(coin)
-              }}
-            />
+          {/* RIGHT: Combined Manage + Relaunch Button */}
+          <div className="flex flex-shrink-0">
+            <button
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[11px] font-medium bg-kol-surface-elevated border border-kol-border hover:border-kol-border-hover transition-colors"
+            >
+              <span
+                className="flex items-center gap-1 text-kol-text-muted hover:text-white transition-colors cursor-pointer"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  onDevPanel?.(coin)
+                }}
+              >
+                <i className="ri-code-s-slash-line text-[12px]" />
+                Manage
+              </span>
+              <span className="w-px h-3 bg-kol-border" />
+              <i
+                className="ri-restart-line text-[12px] text-kol-text-muted hover:text-white transition-colors cursor-pointer"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  onRelaunch?.(coin)
+                }}
+              />
+            </button>
           </div>
         </div>
 

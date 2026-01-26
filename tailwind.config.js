@@ -17,6 +17,7 @@ export default {
           'blue-hover': '#3390ff',
           'blue-glow': 'rgba(0, 123, 255, 0.4)',
           'green': '#00c46b',
+          'green-light': '#4ade80',
           'red': '#ff4d4f',
           'text': '#ffffff',
           'text-secondary': '#cfcfcf',
