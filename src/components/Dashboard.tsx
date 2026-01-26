@@ -261,8 +261,8 @@ export function Dashboard({ user, onSignOut }: DashboardProps) {
           <TrackerFeed onDeploy={handleDeploy} />
         </div>
 
-        {/* Coins Panel - sidebar on lg, bottom section on smaller */}
-        <div className="flex-shrink-0 lg:w-80 lg:h-full">
+        {/* Coins Panel - sidebar on lg (resizable width), bottom on smaller (resizable height) */}
+        <div className="flex-shrink-0 lg:h-full">
           <CoinsPanel
             isOpen={isCoinsOpen}
             onClose={() => setIsCoinsOpen(false)}

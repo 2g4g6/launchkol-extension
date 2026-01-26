@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { useState, useRef, useCallback, useEffect } from 'react'
+import { motion } from 'framer-motion'
 import { CoinCard, CoinData } from './CoinCard'
 
 // Mock data - same as MyCoinsTab
@@ -48,78 +48,131 @@ interface CoinsPanelProps {
   onSell: (coin: CoinData, percent: number) => void
 }
 
-// Compact coin card for horizontal scroll mode
-function CompactCoinCard({
-  coin,
-  onClick
-}: {
-  coin: CoinData
-  onClick: () => void
-}) {
-  const isProfitable = coin.pnl >= 0
+// Default sizes
+const DEFAULT_WIDTH = 320 // Desktop sidebar width
+const MIN_WIDTH = 280
+const MAX_WIDTH = 500
+const DEFAULT_HEIGHT = 300 // Mobile panel height
+const MIN_HEIGHT = 150
+const MAX_HEIGHT = 500
 
-  return (
-    <motion.button
-      onClick={onClick}
-      className="flex-shrink-0 w-[140px] bg-kol-surface-elevated/40 backdrop-blur-md border border-kol-border/40 rounded-xl p-3 text-left hover:border-kol-border/60 transition-colors"
-      whileTap={{ scale: 0.98 }}
-    >
-      {/* PnL indicator line */}
-      <div
-        className="absolute top-0 left-0 right-0 h-[2px] rounded-t-xl"
-        style={{
-          background: isProfitable
-            ? 'linear-gradient(90deg, transparent 0%, #00c46b 50%, transparent 100%)'
-            : 'linear-gradient(90deg, transparent 0%, #ff4d4f 50%, transparent 100%)',
-        }}
-      />
-
-      <div className="flex items-center gap-2 mb-2">
-        {/* Token Image */}
-        {coin.image ? (
-          <img
-            src={coin.image}
-            alt={coin.name}
-            className="w-8 h-8 rounded-lg object-cover border border-kol-border/40"
-          />
-        ) : (
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-kol-blue/30 to-kol-green/20 flex items-center justify-center border border-kol-border/40">
-            <span className="text-xs font-body font-bold text-white">
-              {coin.symbol.charAt(0)}
-            </span>
-          </div>
-        )}
-        <div className="min-w-0">
-          <p className="text-xs font-semibold text-white truncate">{coin.symbol}</p>
-          <p className="text-[10px] text-kol-text-muted truncate">{coin.name}</p>
-        </div>
-      </div>
-
-      <div className="flex items-center justify-between">
-        <span className="text-[11px] font-mono text-white">
-          {coin.holdings.toFixed(2)}
-        </span>
-        <span className={`text-[11px] font-mono font-semibold ${
-          isProfitable ? 'text-kol-green' : 'text-kol-red'
-        }`}>
-          {isProfitable ? '+' : ''}{coin.pnlPercent.toFixed(1)}%
-        </span>
-      </div>
-    </motion.button>
-  )
-}
-
-export function CoinsPanel({ isOpen, onClose, onSell }: CoinsPanelProps) {
+export function CoinsPanel({ onSell }: CoinsPanelProps) {
   const [coins] = useState<CoinData[]>(MOCK_COINS)
+  const [panelWidth, setPanelWidth] = useState(DEFAULT_WIDTH)
+  const [panelHeight, setPanelHeight] = useState(DEFAULT_HEIGHT)
+  const [isResizing, setIsResizing] = useState(false)
+  const panelRef = useRef<HTMLDivElement>(null)
 
   const handleView = (coin: CoinData) => {
     window.open(`https://pump.fun/${coin.address}`, '_blank')
   }
 
+  // Desktop resize (width) - drag from left edge
+  const handleDesktopResizeStart = useCallback((e: React.MouseEvent) => {
+    e.preventDefault()
+    setIsResizing(true)
+    const startX = e.clientX
+    const startWidth = panelWidth
+
+    const handleMouseMove = (e: MouseEvent) => {
+      const delta = startX - e.clientX
+      const newWidth = Math.min(MAX_WIDTH, Math.max(MIN_WIDTH, startWidth + delta))
+      setPanelWidth(newWidth)
+    }
+
+    const handleMouseUp = () => {
+      setIsResizing(false)
+      document.removeEventListener('mousemove', handleMouseMove)
+      document.removeEventListener('mouseup', handleMouseUp)
+    }
+
+    document.addEventListener('mousemove', handleMouseMove)
+    document.addEventListener('mouseup', handleMouseUp)
+  }, [panelWidth])
+
+  // Mobile resize (height) - drag from top edge
+  const handleMobileResizeStart = useCallback((e: React.MouseEvent | React.TouchEvent) => {
+    e.preventDefault()
+    setIsResizing(true)
+    const startY = 'touches' in e ? e.touches[0].clientY : e.clientY
+    const startHeight = panelHeight
+
+    const handleMove = (e: MouseEvent | TouchEvent) => {
+      const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY
+      const delta = startY - clientY
+      const newHeight = Math.min(MAX_HEIGHT, Math.max(MIN_HEIGHT, startHeight + delta))
+      setPanelHeight(newHeight)
+    }
+
+    const handleEnd = () => {
+      setIsResizing(false)
+      document.removeEventListener('mousemove', handleMove)
+      document.removeEventListener('mouseup', handleEnd)
+      document.removeEventListener('touchmove', handleMove)
+      document.removeEventListener('touchend', handleEnd)
+    }
+
+    document.addEventListener('mousemove', handleMove)
+    document.addEventListener('mouseup', handleEnd)
+    document.addEventListener('touchmove', handleMove)
+    document.addEventListener('touchend', handleEnd)
+  }, [panelHeight])
+
+  // Prevent text selection while resizing
+  useEffect(() => {
+    if (isResizing) {
+      document.body.style.userSelect = 'none'
+      document.body.style.cursor = 'col-resize'
+    } else {
+      document.body.style.userSelect = ''
+      document.body.style.cursor = ''
+    }
+    return () => {
+      document.body.style.userSelect = ''
+      document.body.style.cursor = ''
+    }
+  }, [isResizing])
+
+  const renderCoinsList = () => (
+    <>
+      {coins.length > 0 ? (
+        coins.map((coin, index) => (
+          <CoinCard
+            key={coin.id}
+            coin={coin}
+            index={index}
+            onSell={onSell}
+            onView={handleView}
+          />
+        ))
+      ) : (
+        <div className="flex flex-col items-center justify-center h-full py-8 text-center">
+          <div className="w-12 h-12 rounded-xl bg-kol-surface-elevated/50 border border-kol-border/40 flex items-center justify-center mb-3">
+            <i className="ri-coin-line text-xl text-kol-text-muted" />
+          </div>
+          <p className="text-sm font-semibold text-white mb-1">No coins yet</p>
+          <p className="text-xs text-kol-text-muted">Your holdings will appear here</p>
+        </div>
+      )}
+    </>
+  )
+
   return (
     <>
-      {/* Desktop sidebar (>=lg) - always visible */}
-      <div className="hidden lg:flex lg:flex-col h-full bg-kol-surface/50 backdrop-blur-sm border border-kol-border/50 rounded-xl overflow-hidden">
+      {/* Desktop sidebar (>=lg) - resizable width */}
+      <div
+        ref={panelRef}
+        className="hidden lg:flex lg:flex-col h-full bg-kol-surface/50 backdrop-blur-sm border border-kol-border/50 rounded-xl overflow-hidden relative"
+        style={{ width: panelWidth }}
+      >
+        {/* Left resize handle */}
+        <div
+          onMouseDown={handleDesktopResizeStart}
+          className="absolute left-0 top-0 bottom-0 w-1 cursor-col-resize hover:bg-kol-blue/30 transition-colors z-10 group"
+        >
+          <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 rounded-full bg-kol-border/50 group-hover:bg-kol-blue/50 transition-colors" />
+        </div>
+
         {/* Header */}
         <div className="flex items-center justify-between px-3 py-3 border-b border-kol-border/30">
           <div className="flex items-center gap-2">
@@ -133,32 +186,26 @@ export function CoinsPanel({ isOpen, onClose, onSell }: CoinsPanelProps) {
 
         {/* Coins List */}
         <div className="flex-1 overflow-y-auto px-2 py-2 space-y-2 scrollbar-thin">
-          {coins.length > 0 ? (
-            coins.map((coin, index) => (
-              <CoinCard
-                key={coin.id}
-                coin={coin}
-                index={index}
-                onSell={onSell}
-                onView={handleView}
-              />
-            ))
-          ) : (
-            <div className="flex flex-col items-center justify-center h-full py-8 text-center">
-              <div className="w-12 h-12 rounded-xl bg-kol-surface-elevated/50 border border-kol-border/40 flex items-center justify-center mb-3">
-                <i className="ri-coin-line text-xl text-kol-text-muted" />
-              </div>
-              <p className="text-sm font-semibold text-white mb-1">No coins yet</p>
-              <p className="text-xs text-kol-text-muted">Your holdings will appear here</p>
-            </div>
-          )}
+          {renderCoinsList()}
         </div>
       </div>
 
-      {/* Mobile bottom section (<lg) - always visible */}
-      <div className="lg:hidden border-t border-kol-border/50 bg-kol-bg/80 backdrop-blur-sm">
+      {/* Mobile bottom section (<lg) - resizable height */}
+      <div
+        className="lg:hidden border-t border-kol-border/50 bg-kol-bg/80 backdrop-blur-sm relative flex flex-col"
+        style={{ height: panelHeight }}
+      >
+        {/* Top resize handle */}
+        <div
+          onMouseDown={handleMobileResizeStart}
+          onTouchStart={handleMobileResizeStart}
+          className="absolute -top-2 left-0 right-0 h-4 cursor-row-resize flex items-center justify-center z-10"
+        >
+          <div className="w-10 h-1 rounded-full bg-kol-border/50 hover:bg-kol-blue/50 transition-colors" />
+        </div>
+
         {/* Header */}
-        <div className="flex items-center justify-between px-3 py-2">
+        <div className="flex items-center justify-between px-3 py-2 flex-shrink-0">
           <div className="flex items-center gap-2">
             <i className="ri-coin-line text-sm text-kol-text-muted" />
             <span className="text-sm font-semibold text-white">Your Coins</span>
@@ -168,21 +215,9 @@ export function CoinsPanel({ isOpen, onClose, onSell }: CoinsPanelProps) {
           </div>
         </div>
 
-        {/* Horizontal scrollable coins */}
-        <div className="flex gap-2 overflow-x-auto px-3 pb-3 scrollbar-hide">
-          {coins.length > 0 ? (
-            coins.map((coin) => (
-              <CompactCoinCard
-                key={coin.id}
-                coin={coin}
-                onClick={() => handleView(coin)}
-              />
-            ))
-          ) : (
-            <div className="flex-1 flex items-center justify-center py-4 text-kol-text-muted text-sm">
-              No coins yet
-            </div>
-          )}
+        {/* Coins List - vertical scroll */}
+        <div className="flex-1 overflow-y-auto px-2 pb-2 space-y-2 scrollbar-thin">
+          {renderCoinsList()}
         </div>
       </div>
     </>
