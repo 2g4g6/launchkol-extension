@@ -481,14 +481,14 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
                 )}
                 {post.tweetType === 'repost' && (
                   <div className="flex items-center gap-1">
-                    <i className="ri-repeat-line text-xs text-kol-green" />
+                    <i className="ri-repeat-2-line text-xs text-kol-green" />
                     <span className="text-xs text-kol-green">Repost</span>
                   </div>
                 )}
                 {post.tweetType === 'quote' && (
                   <div className="flex items-center gap-1">
-                    <i className="ri-chat-quote-line text-xs text-purple-400" />
-                    <span className="text-xs text-purple-400">Quote</span>
+                    <i className="ri-chat-quote-line text-xs" style={{ color: '#ff9500' }} />
+                    <span className="text-xs" style={{ color: '#ff9500' }}>Quote</span>
                   </div>
                 )}
               </div>
