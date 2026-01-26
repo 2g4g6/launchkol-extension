@@ -4,6 +4,9 @@ import { useState } from 'react'
 // Platform types
 export type PlatformType = 'pump' | 'bonk' | 'bags' | 'mayhem' | 'fourmeme' | 'raydium'
 
+// Tweet types
+export type TweetType = 'tweet' | 'reply' | 'retweet' | 'quote' | 'pin' | 'follow' | 'delete' | 'profile'
+
 export interface TradingStats {
   boughtAmount: number
   soldAmount: number
@@ -24,6 +27,7 @@ export interface CoinData {
   tradingStats?: TradingStats
   platform: PlatformType
   twitterUrl?: string
+  tweetType?: TweetType
   launchedAt: Date
   progressPercent?: number
   axiomUrl?: string
@@ -317,8 +321,41 @@ function ActionButton({ icon, label, onClick, variant = 'default', customIcon }:
   )
 }
 
+// Tweet Type Icon Helper
+function getTweetTypeIcon(type?: TweetType): string {
+  switch (type) {
+    case 'reply': return 'ri-reply-line'
+    case 'retweet': return 'ri-repeat-2-line'
+    case 'quote': return 'ri-chat-quote-line'
+    case 'pin': return 'ri-pushpin-line'
+    case 'follow': return 'ri-user-add-line'
+    case 'delete': return 'ri-delete-bin-line'
+    case 'profile': return 'ri-user-settings-line'
+    case 'tweet':
+    default: return 'ri-quill-pen-line'
+  }
+}
+
+// Tweet Type Color Helper
+function getTweetTypeColor(type?: TweetType): string {
+  switch (type) {
+    case 'reply': return '#007bff'
+    case 'retweet': return '#00c46b'
+    case 'quote': return '#ff9500'
+    case 'pin': return '#ffd700'
+    case 'follow': return '#ff4d4f'
+    case 'delete': return '#ff6b6b'
+    case 'profile': return '#8b5cf6'
+    case 'tweet':
+    default: return '#00bfa6'
+  }
+}
+
 // Quick Links Component
 function QuickLinks({ coin }: { coin: CoinData }) {
+  const tweetIcon = getTweetTypeIcon(coin.tweetType)
+  const tweetColor = getTweetTypeColor(coin.tweetType)
+
   return (
     <div className="flex items-center gap-1.5">
       {coin.twitterUrl && (
@@ -327,10 +364,11 @@ function QuickLinks({ coin }: { coin: CoinData }) {
           target="_blank"
           rel="noopener noreferrer"
           onClick={(e) => e.stopPropagation()}
-          className="flex items-center text-kol-text-muted hover:text-kol-blue-hover transition-colors"
+          className="flex items-center transition-colors hover:opacity-80"
           title="View source tweet"
+          style={{ color: tweetColor }}
         >
-          <i className="ri-twitter-x-line text-[16px]" />
+          <i className={`${tweetIcon} text-[16px]`} />
         </a>
       )}
       <a
