@@ -257,21 +257,12 @@ export function Dashboard({ user, onSignOut }: DashboardProps) {
       {/* Main Content Area */}
       <div className="flex-1 min-h-0 overflow-hidden relative z-10 flex flex-col lg:flex-row lg:gap-3 lg:p-3">
         {/* Feed - takes most space */}
-        <div className="flex-1 min-h-0 lg:min-w-0">
+        <div className="flex-1 min-h-0 min-w-0 overflow-hidden">
           <TrackerFeed onDeploy={handleDeploy} />
         </div>
 
-        {/* Coins Panel - sidebar on lg, bottom drawer on smaller */}
-        <div className="hidden lg:block lg:w-80 lg:flex-shrink-0 lg:h-full">
-          <CoinsPanel
-            isOpen={isCoinsOpen}
-            onClose={() => setIsCoinsOpen(false)}
-            onSell={handleSell}
-          />
-        </div>
-
-        {/* Mobile coins drawer (rendered outside the flex for proper positioning) */}
-        <div className="lg:hidden">
+        {/* Coins Panel - sidebar on lg, bottom section on smaller */}
+        <div className="flex-shrink-0 lg:w-80 lg:h-full">
           <CoinsPanel
             isOpen={isCoinsOpen}
             onClose={() => setIsCoinsOpen(false)}

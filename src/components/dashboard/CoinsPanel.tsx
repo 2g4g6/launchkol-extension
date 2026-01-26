@@ -155,71 +155,36 @@ export function CoinsPanel({ isOpen, onClose, onSell }: CoinsPanelProps) {
         </div>
       </div>
 
-      {/* Mobile bottom drawer (<lg) */}
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ y: '100%' }}
-            animate={{ y: 0 }}
-            exit={{ y: '100%' }}
-            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-kol-bg/95 backdrop-blur-xl border-t border-kol-border/50 rounded-t-2xl"
-            style={{ maxHeight: '40vh' }}
-          >
-            {/* Handle bar */}
-            <div className="flex justify-center py-2">
-              <div className="w-10 h-1 rounded-full bg-kol-border/50" />
-            </div>
+      {/* Mobile bottom section (<lg) - always visible */}
+      <div className="lg:hidden border-t border-kol-border/50 bg-kol-bg/80 backdrop-blur-sm">
+        {/* Header */}
+        <div className="flex items-center justify-between px-3 py-2">
+          <div className="flex items-center gap-2">
+            <i className="ri-coin-line text-sm text-kol-text-muted" />
+            <span className="text-sm font-semibold text-white">Your Coins</span>
+            <span className="text-[10px] font-mono text-kol-text-tertiary bg-kol-surface/50 px-2 py-0.5 rounded-full">
+              {coins.length}
+            </span>
+          </div>
+        </div>
 
-            {/* Header */}
-            <div className="flex items-center justify-between px-4 pb-3">
-              <div className="flex items-center gap-2">
-                <i className="ri-coin-line text-sm text-kol-text-muted" />
-                <span className="text-sm font-semibold text-white">Your Coins</span>
-                <span className="text-[10px] font-mono text-kol-text-tertiary bg-kol-surface/50 px-2 py-0.5 rounded-full">
-                  {coins.length}
-                </span>
-              </div>
-              <button
-                onClick={onClose}
-                className="w-7 h-7 rounded-lg flex items-center justify-center text-kol-text-muted hover:text-white hover:bg-kol-surface transition-colors"
-              >
-                <i className="ri-close-line text-lg" />
-              </button>
+        {/* Horizontal scrollable coins */}
+        <div className="flex gap-2 overflow-x-auto px-3 pb-3 scrollbar-hide">
+          {coins.length > 0 ? (
+            coins.map((coin) => (
+              <CompactCoinCard
+                key={coin.id}
+                coin={coin}
+                onClick={() => handleView(coin)}
+              />
+            ))
+          ) : (
+            <div className="flex-1 flex items-center justify-center py-4 text-kol-text-muted text-sm">
+              No coins yet
             </div>
-
-            {/* Horizontal scrollable coins */}
-            <div className="flex gap-2 overflow-x-auto px-4 pb-4 scrollbar-hide">
-              {coins.length > 0 ? (
-                coins.map((coin) => (
-                  <CompactCoinCard
-                    key={coin.id}
-                    coin={coin}
-                    onClick={() => handleView(coin)}
-                  />
-                ))
-              ) : (
-                <div className="flex-1 flex items-center justify-center py-6 text-kol-text-muted text-sm">
-                  No coins yet
-                </div>
-              )}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Backdrop for mobile drawer */}
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={onClose}
-            className="lg:hidden fixed inset-0 z-40 bg-black/50"
-          />
-        )}
-      </AnimatePresence>
+          )}
+        </div>
+      </div>
     </>
   )
 }
