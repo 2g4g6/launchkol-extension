@@ -276,6 +276,7 @@ export function SearchTokensModal({
   const [platformFilter, setPlatformFilter] = useState<PlatformFilter>('all')
   const [sortBy, setSortBy] = useState<SortOption>('time')
   const [selectedIndex, setSelectedIndex] = useState(0)
+  const [canScrollLeft, setCanScrollLeft] = useState(false)
   const [canScrollRight, setCanScrollRight] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const filterScrollRef = useRef<HTMLDivElement>(null)
@@ -284,7 +285,14 @@ export function SearchTokensModal({
   const checkScrollable = () => {
     if (filterScrollRef.current) {
       const { scrollLeft, scrollWidth, clientWidth } = filterScrollRef.current
+      setCanScrollLeft(scrollLeft > 10)
       setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 10)
+    }
+  }
+
+  const scrollFiltersLeft = () => {
+    if (filterScrollRef.current) {
+      filterScrollRef.current.scrollBy({ left: -100, behavior: 'smooth' })
     }
   }
 
@@ -397,6 +405,18 @@ export function SearchTokensModal({
               <div className="flex items-center justify-between gap-4 px-4 pl-3 pt-3">
                 {/* Platform Filters - scrollable */}
                 <div className="relative flex-1 min-w-0 overflow-hidden">
+                  {/* Left scroll arrow */}
+                  {canScrollLeft && (
+                    <div className="absolute left-0 top-0 z-10 h-full w-8 bg-gradient-to-r from-kol-bg to-transparent pointer-events-none flex items-center justify-start">
+                      <button
+                        type="button"
+                        onClick={scrollFiltersLeft}
+                        className="pointer-events-auto flex items-center justify-center w-6 h-6 text-kol-text-muted hover:text-white transition-colors"
+                      >
+                        <i className="ri-arrow-left-s-line text-xl" />
+                      </button>
+                    </div>
+                  )}
                   <div
                     ref={filterScrollRef}
                     onScroll={checkScrollable}
@@ -419,7 +439,7 @@ export function SearchTokensModal({
                       </button>
                     ))}
                   </div>
-                  {/* Scroll arrow with gradient */}
+                  {/* Right scroll arrow */}
                   {canScrollRight && (
                     <div className="absolute right-0 top-0 z-10 h-full w-8 bg-gradient-to-l from-kol-bg to-transparent pointer-events-none flex items-center justify-end">
                       <button
