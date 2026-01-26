@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import { useState } from 'react'
+import { Tooltip } from '../ui/Tooltip'
 
 // Platform types
 export type PlatformType = 'pump' | 'bonk' | 'bags' | 'mayhem' | 'fourmeme' | 'raydium'
@@ -235,20 +236,24 @@ function AxiomIcon({ className }: { className?: string }) {
   )
 }
 
-// TXN Stats Component (buy/sell transaction counts with visual bar)
+// TXN Stats Component (buy/sell transaction counts with full-width visual bar)
 function TxnStats({ buyTxns, sellTxns }: { buyTxns: number; sellTxns: number }) {
   const total = buyTxns + sellTxns
   const buyPercent = total > 0 ? (buyTxns / total) * 100 : 50
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2 w-full">
       <div className="flex items-center gap-1 text-[14px] font-medium">
-        <span className="font-mono" style={{ color: '#00d492' }}>{buyTxns}</span>
+        <Tooltip content="Buy transactions" position="top">
+          <span className="font-mono cursor-default" style={{ color: '#00d492' }}>{buyTxns}</span>
+        </Tooltip>
         <span className="text-kol-text-muted">/</span>
-        <span className="font-mono text-kol-red">{sellTxns}</span>
+        <Tooltip content="Sell transactions" position="top">
+          <span className="font-mono text-kol-red cursor-default">{sellTxns}</span>
+        </Tooltip>
       </div>
-      {/* Visual ratio bar - 2px split style */}
-      <div className="flex h-[2px] w-16 flex-row items-center">
+      {/* Visual ratio bar - full width with gap */}
+      <div className="flex h-[2px] flex-1 flex-row items-center gap-[4px]">
         <div
           className="flex h-[2px] rounded-l-full"
           style={{ width: `${buyPercent}%`, backgroundColor: '#00d492' }}
@@ -274,18 +279,18 @@ function getTweetTypeIcon(type?: TweetType): string {
   }
 }
 
-// Tweet Type Color Helper
+// Tweet Type Color Helper (colors match Twitter's actual display)
 function getTweetTypeColor(type?: TweetType): string {
   switch (type) {
-    case 'reply': return '#007bff'
-    case 'retweet': return '#00c46b'
-    case 'quote': return '#ff9500'
-    case 'pin': return '#ffd700'
-    case 'follow': return '#ff4d4f'
-    case 'delete': return '#ff6b6b'
-    case 'profile': return '#8b5cf6'
+    case 'reply': return '#00c46b'     // GREEN (matches Twitter)
+    case 'retweet': return '#00c46b'   // GREEN
+    case 'quote': return '#ff9500'     // ORANGE
+    case 'pin': return '#ffd700'       // GOLD
+    case 'follow': return '#ff4d4f'    // RED
+    case 'delete': return '#ff6b6b'    // RED
+    case 'profile': return '#8b5cf6'   // PURPLE
     case 'tweet':
-    default: return '#00bfa6'
+    default: return '#00bfa6'          // TEAL
   }
 }
 
@@ -356,7 +361,7 @@ export function CoinCard({ coin, index, onView, onDevPanel, onRelaunch }: CoinCa
       transition={{ duration: 0.4, delay: index * 0.06, ease: [0.16, 1, 0.3, 1] }}
     >
       <div
-        className="relative bg-kol-surface border border-kol-border rounded-lg hover:bg-kol-surface-elevated transition-colors duration-200 cursor-pointer overflow-hidden"
+        className="relative bg-kol-surface border border-kol-border/80 rounded-lg hover:bg-kol-surface-elevated hover:border-kol-border-hover transition-colors duration-200 cursor-pointer overflow-hidden"
         onClick={() => onView(coin)}
       >
         {/* MAIN CONTENT - 3 column layout */}
@@ -404,26 +409,28 @@ export function CoinCard({ coin, index, onView, onDevPanel, onRelaunch }: CoinCa
           </div>
 
           {/* RIGHT: Action Buttons */}
-          <div className="flex items-center gap-1 flex-shrink-0">
+          <div className="flex items-center gap-1.5 flex-shrink-0">
             <button
               onClick={(e) => {
                 e.stopPropagation()
                 onDevPanel?.(coin)
               }}
-              className="flex items-center gap-1 px-2 py-1.5 rounded-md text-[11px] font-medium bg-kol-surface-elevated border border-kol-border text-kol-text-muted hover:border-kol-border-hover hover:text-white transition-colors"
+              className="flex items-center gap-1.5 px-3 py-2 rounded-md text-[11px] font-medium bg-kol-blue/20 border border-kol-blue/40 text-white hover:bg-kol-blue/30 transition-colors"
             >
               <i className="ri-code-s-slash-line text-[12px]" />
               Manage
             </button>
-            <button
-              onClick={(e) => {
-                e.stopPropagation()
-                onRelaunch?.(coin)
-              }}
-              className="flex items-center justify-center p-1.5 rounded-md bg-kol-surface-elevated border border-kol-border text-kol-text-muted hover:border-kol-border-hover hover:text-white transition-colors"
-            >
-              <i className="ri-restart-line text-[12px]" />
-            </button>
+            <Tooltip content="Relaunch token" position="top">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation()
+                  onRelaunch?.(coin)
+                }}
+                className="flex items-center justify-center p-2 rounded-md bg-kol-surface-elevated border border-kol-border text-kol-text-muted hover:border-kol-border-hover hover:text-white transition-colors"
+              >
+                <i className="ri-restart-line text-[12px]" />
+              </button>
+            </Tooltip>
           </div>
         </div>
 
