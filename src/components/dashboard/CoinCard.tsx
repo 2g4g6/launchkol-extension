@@ -37,9 +37,7 @@ interface CoinCardProps {
   coin: CoinData
   index: number
   onView: (coin: CoinData) => void
-  onTradePanel?: (coin: CoinData) => void
   onDevPanel?: (coin: CoinData) => void
-  onVamp?: (coin: CoinData) => void
   onRelaunch?: (coin: CoinData) => void
 }
 
@@ -236,23 +234,17 @@ function AxiomIcon({ className }: { className?: string }) {
 }
 
 // Action Button Component
-function ActionButton({ icon, label, onClick, variant = 'default', customIcon }: {
-  icon?: string
+function ActionButton({ icon, label, onClick }: {
+  icon: string
   label: string
   onClick: (e: React.MouseEvent) => void
-  variant?: 'default' | 'primary'
-  customIcon?: React.ReactNode
 }) {
-  const variantClasses = variant === 'primary'
-    ? 'bg-kol-blue/15 text-kol-blue border-kol-blue/30 hover:bg-kol-blue/25'
-    : 'bg-kol-bg text-kol-text-muted border-kol-border hover:bg-kol-surface-elevated hover:text-white'
-
   return (
     <button
       onClick={onClick}
-      className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-md text-[10px] font-semibold border transition-colors ${variantClasses}`}
+      className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-md text-[10px] font-semibold border bg-kol-bg text-kol-text-muted border-kol-border hover:bg-kol-surface-elevated hover:text-white transition-colors"
     >
-      {customIcon || <i className={`${icon} text-xs`} />}
+      <i className={`${icon} text-xs`} />
       <span>{label}</span>
     </button>
   )
@@ -318,11 +310,23 @@ function QuickLinks({ coin }: { coin: CoinData }) {
       >
         <i className="ri-search-line text-[16px]" />
       </a>
+      {coin.axiomUrl && (
+        <a
+          href={coin.axiomUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={(e) => e.stopPropagation()}
+          className="flex items-center text-kol-text-muted hover:text-white transition-colors"
+          title="Trade on Axiom"
+        >
+          <AxiomIcon />
+        </a>
+      )}
     </div>
   )
 }
 
-export function CoinCard({ coin, index, onView, onTradePanel, onDevPanel, onVamp, onRelaunch }: CoinCardProps) {
+export function CoinCard({ coin, index, onView, onDevPanel, onRelaunch }: CoinCardProps) {
   return (
     <motion.div
       className="group relative mx-3 my-2"
@@ -388,28 +392,11 @@ export function CoinCard({ coin, index, onView, onTradePanel, onDevPanel, onVamp
         {/* ACTION BUTTONS */}
         <div className="flex gap-1.5 p-2 border-t border-kol-border/20">
           <ActionButton
-            label="Trade"
-            onClick={(e) => {
-              e.stopPropagation()
-              onTradePanel?.(coin)
-            }}
-            variant="primary"
-            customIcon={<AxiomIcon />}
-          />
-          <ActionButton
             icon="ri-code-s-slash-line"
             label="Manage"
             onClick={(e) => {
               e.stopPropagation()
               onDevPanel?.(coin)
-            }}
-          />
-          <ActionButton
-            icon="ri-flashlight-line"
-            label="Vamp"
-            onClick={(e) => {
-              e.stopPropagation()
-              onVamp?.(coin)
             }}
           />
           <ActionButton
