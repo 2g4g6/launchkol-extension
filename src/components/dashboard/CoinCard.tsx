@@ -397,10 +397,16 @@ export function CoinCard({ coin, index, onView, onDevPanel, onRelaunch }: CoinCa
               </button>
             </div>
 
-            {/* Row 2: Time + Quick Links */}
+            {/* Row 2: Time + Quick Links + TXN Stats */}
             <div className="flex items-center gap-3">
               <TimeBadge date={coin.launchedAt} />
               <QuickLinks coin={coin} />
+              {/* TXN Stats fills remaining space */}
+              {coin.buyTxns !== undefined && (
+                <div className="flex-1">
+                  <TxnStats buyTxns={coin.buyTxns} sellTxns={coin.sellTxns ?? 0} />
+                </div>
+              )}
             </div>
           </div>
 
@@ -429,13 +435,6 @@ export function CoinCard({ coin, index, onView, onDevPanel, onRelaunch }: CoinCa
             </Tooltip>
           </div>
         </div>
-
-        {/* TXN STATS - Full Width */}
-        {coin.buyTxns !== undefined && (
-          <div className="px-3 pb-2">
-            <TxnStats buyTxns={coin.buyTxns} sellTxns={coin.sellTxns ?? 0} />
-          </div>
-        )}
 
         {/* TRADING STATS BAR */}
         {coin.tradingStats && (
