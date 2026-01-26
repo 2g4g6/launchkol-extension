@@ -319,7 +319,7 @@ function QuickLinks({ coin }: { coin: CoinData }) {
           className="flex items-center text-white hover:opacity-80 transition-opacity"
           title="Trade on Axiom"
         >
-          <AxiomIcon className="w-4 h-4" />
+          <AxiomIcon className="w-5 h-5" />
         </a>
       )}
     </div>
