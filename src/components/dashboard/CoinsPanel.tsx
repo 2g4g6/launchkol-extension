@@ -185,7 +185,7 @@ export function CoinsPanel({ onSell }: CoinsPanelProps) {
         </div>
 
         {/* Coins List */}
-        <div className="flex-1 overflow-y-auto px-2 py-2 space-y-2 scrollbar-thin">
+        <div className="flex-1 overflow-y-auto px-2 py-2 space-y-2 scrollbar-styled">
           {renderCoinsList()}
         </div>
       </div>
@@ -216,7 +216,7 @@ export function CoinsPanel({ onSell }: CoinsPanelProps) {
         </div>
 
         {/* Coins List - vertical scroll */}
-        <div className="flex-1 overflow-y-auto px-2 pb-2 space-y-2 scrollbar-thin">
+        <div className="flex-1 overflow-y-auto px-2 pb-2 space-y-2 scrollbar-styled">
           {renderCoinsList()}
         </div>
       </div>

@@ -346,7 +346,7 @@ export function TrackerFeed({ onDeploy }: TrackerFeedProps) {
 
       {/* Feed Content */}
       <motion.div
-        className="relative z-10 flex-1 overflow-y-auto scrollbar-thin"
+        className="relative z-10 flex-1 overflow-y-auto scrollbar-styled"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
