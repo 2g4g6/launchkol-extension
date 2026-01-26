@@ -39,29 +39,98 @@ interface CoinCardProps {
   onRelaunch?: (coin: CoinData) => void
 }
 
-// Platform configuration
-const PLATFORM_CONFIG: Record<PlatformType, { name: string; logo: string; color: string }> = {
-  pump: { name: 'Pump.fun', logo: '/images/pump.svg', color: 'bg-green-500/20 border-green-500/40' },
-  bonk: { name: 'Bonk.fun', logo: '/images/bonk.svg', color: 'bg-orange-500/20 border-orange-500/40' },
-  bags: { name: 'Bags', logo: '/images/bags.svg', color: 'bg-purple-500/20 border-purple-500/40' },
-  mayhem: { name: 'Mayhem', logo: '/images/mayhem.svg', color: 'bg-red-500/20 border-red-500/40' },
-  fourmeme: { name: '4Meme', logo: '/images/fourmeme.svg', color: 'bg-pink-500/20 border-pink-500/40' },
-  raydium: { name: 'Raydium', logo: '/images/raydium.svg', color: 'bg-indigo-500/20 border-indigo-500/40' },
+// Platform configuration with colors matching Axiom
+const PLATFORM_CONFIG: Record<PlatformType, { name: string; logo: string; color: string; ringColor: string }> = {
+  pump: { name: 'Pump.fun', logo: '/images/pump.svg', color: 'bg-green-500/20 border-green-500/40', ringColor: '#00c46b' },
+  bonk: { name: 'Bonk.fun', logo: '/images/bonk.svg', color: 'bg-orange-500/20 border-orange-500/40', ringColor: '#f97316' },
+  bags: { name: 'Bags', logo: '/images/bags.svg', color: 'bg-purple-500/20 border-purple-500/40', ringColor: '#a855f7' },
+  mayhem: { name: 'Mayhem', logo: '/images/mayhem.svg', color: 'bg-red-500/20 border-red-500/40', ringColor: '#ff4d4f' },
+  fourmeme: { name: '4Meme', logo: '/images/fourmeme.svg', color: 'bg-pink-500/20 border-pink-500/40', ringColor: '#ec4899' },
+  raydium: { name: 'Raydium', logo: '/images/raydium.svg', color: 'bg-indigo-500/20 border-indigo-500/40', ringColor: '#6366f1' },
 }
 
 // Platform Badge Component
 function PlatformBadge({ platform }: { platform: PlatformType }) {
   const config = PLATFORM_CONFIG[platform]
   return (
-    <div className={`absolute -bottom-0.5 -right-0.5 w-[16px] h-[16px] rounded-full ${config.color} border flex items-center justify-center z-10 bg-kol-bg`}>
-      <img src={config.logo} alt={config.name} className="w-2.5 h-2.5" onError={(e) => {
-        (e.target as HTMLImageElement).style.display = 'none'
-      }} />
+    <div
+      className="absolute z-30 flex h-[16px] w-[16px] items-center justify-center rounded-full p-[1px]"
+      style={{ bottom: '-4px', right: '-4px', background: config.ringColor }}
+    >
+      <div className="flex h-[14px] w-[14px] items-center justify-center rounded-full bg-kol-bg">
+        <img src={config.logo} alt={config.name} className="w-2.5 h-2.5 object-cover" onError={(e) => {
+          (e.target as HTMLImageElement).style.display = 'none'
+        }} />
+      </div>
     </div>
   )
 }
 
-// Token Image with Progress Ring Component
+// Rectangular Progress Ring Component (like Axiom)
+function RectangularProgressRing({
+  progress,
+  platform,
+  size = 74
+}: {
+  progress?: number
+  platform: PlatformType
+  size?: number
+}) {
+  const config = PLATFORM_CONFIG[platform]
+  const svgSize = size + 4 // SVG is slightly larger than container
+  const cornerRadius = 4
+
+  // Calculate the path for a rounded rectangle
+  // Path goes: bottom-right -> bottom-left -> top-left -> top-right -> back to bottom-right
+  const pathD = `
+    M ${svgSize - 2} ${svgSize - 2}
+    L ${cornerRadius + 2} ${svgSize - 2}
+    Q 2 ${svgSize - 2} 2 ${svgSize - cornerRadius - 2}
+    L 2 ${cornerRadius + 2}
+    Q 2 2 ${cornerRadius + 2} 2
+    L ${svgSize - cornerRadius - 2} 2
+    Q ${svgSize - 2} 2 ${svgSize - 2} ${cornerRadius + 2}
+    L ${svgSize - 2} ${svgSize - cornerRadius - 2}
+    Q ${svgSize - 2} ${svgSize - 2} ${svgSize - 2} ${svgSize - 2}
+  `
+
+  // Calculate perimeter for dash array (approximate)
+  const perimeter = (size * 4) + (Math.PI * cornerRadius * 2)
+  const progressPercent = progress !== undefined ? progress : 97
+  const dashOffset = perimeter - (progressPercent / 100) * perimeter
+
+  return (
+    <svg
+      width={svgSize}
+      height={svgSize}
+      viewBox={`0 0 ${svgSize} ${svgSize}`}
+      className="absolute left-0 top-0 z-10"
+      style={{ marginLeft: '-2px', marginTop: '-2px' }}
+    >
+      {/* Background track */}
+      <path
+        d={pathD}
+        fill="transparent"
+        stroke={config.ringColor}
+        strokeWidth="1"
+        opacity="0.4"
+      />
+      {/* Progress indicator */}
+      <path
+        d={pathD}
+        fill="transparent"
+        stroke={config.ringColor}
+        strokeWidth="1"
+        strokeLinecap="round"
+        strokeDasharray={perimeter}
+        strokeDashoffset={dashOffset}
+        className="transition-all duration-300 ease-in-out"
+      />
+    </svg>
+  )
+}
+
+// Token Image with Rectangular Progress Ring Component
 function TokenImageWithProgress({
   image,
   symbol,
@@ -73,56 +142,54 @@ function TokenImageWithProgress({
   progress?: number
   platform: PlatformType
 }) {
-  const ringSize = 62
-  const strokeWidth = 2
-  const radius = (ringSize - strokeWidth) / 2
-  const circumference = radius * 2 * Math.PI
-  const offset = progress !== undefined
-    ? circumference - (progress / 100) * circumference
-    : circumference * 0.03 // 97% fill default
+  const config = PLATFORM_CONFIG[platform]
+  const containerSize = 74
+  const innerSize = 72
+  const imageSize = 68
 
   return (
-    <div className="relative" style={{ width: ringSize, height: ringSize }}>
-      {/* Progress ring SVG */}
-      <svg className="absolute inset-0 -rotate-90" width={ringSize} height={ringSize}>
-        <circle
-          cx={ringSize / 2}
-          cy={ringSize / 2}
-          r={radius}
-          fill="none"
-          stroke="rgba(0, 123, 255, 0.2)"
-          strokeWidth={strokeWidth}
-        />
-        <circle
-          cx={ringSize / 2}
-          cy={ringSize / 2}
-          r={radius}
-          fill="none"
-          stroke="url(#coin-progress-gradient)"
-          strokeWidth={strokeWidth}
-          strokeLinecap="round"
-          strokeDasharray={circumference}
-          strokeDashoffset={offset}
-          className="transition-all duration-500"
-        />
-        <defs>
-          <linearGradient id="coin-progress-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#007bff" />
-            <stop offset="100%" stopColor="#00c46b" />
-          </linearGradient>
-        </defs>
-      </svg>
+    <div className="relative" style={{ width: containerSize, height: containerSize }}>
+      {/* Rectangular progress ring */}
+      <RectangularProgressRing progress={progress} platform={platform} size={containerSize} />
 
-      {/* Image container - centered inside ring */}
-      <div className="absolute inset-0 flex items-center justify-center">
-        <div className="h-[54px] w-[54px] rounded-[4px] border border-kol-border bg-kol-surface overflow-hidden">
-          {image ? (
-            <img src={image} alt={symbol} className="h-full w-full object-cover" />
-          ) : (
-            <div className="h-full w-full flex items-center justify-center text-base font-bold text-kol-text-muted">
-              {symbol.slice(0, 2)}
+      {/* Image container with platform-colored background */}
+      <div
+        className="absolute flex items-center justify-start p-[1px] rounded-[4px] z-20"
+        style={{ background: `${config.ringColor}20` }}
+      >
+        <div
+          className="bg-kol-surface-elevated relative rounded-[3px]"
+          style={{ width: innerSize, height: innerSize }}
+        >
+          <div className="absolute inset-0 p-[2px]">
+            <div
+              className="group/image relative flex-shrink-0"
+              style={{ width: imageSize, height: imageSize }}
+            >
+              <div className="relative h-full w-full">
+                {/* Inner border overlay */}
+                <div
+                  className="pointer-events-none absolute border border-white/10 z-10 rounded-[1px]"
+                  style={{ width: imageSize, height: imageSize }}
+                />
+                {image ? (
+                  <img
+                    src={image}
+                    alt={symbol}
+                    className="rounded-[1px] object-cover"
+                    style={{ width: imageSize, height: imageSize }}
+                  />
+                ) : (
+                  <div
+                    className="rounded-[1px] bg-kol-surface flex items-center justify-center text-lg font-bold text-kol-text-muted"
+                    style={{ width: imageSize, height: imageSize }}
+                  >
+                    {symbol.slice(0, 2)}
+                  </div>
+                )}
+              </div>
             </div>
-          )}
+          </div>
         </div>
       </div>
 
@@ -135,7 +202,7 @@ function TokenImageWithProgress({
 // Compact Contract Address Component
 function CompactContractAddress({ address }: { address: string }) {
   const [copied, setCopied] = useState(false)
-  const short = `${address.slice(0, 4)}...${address.slice(-3)}`
+  const short = `${address.slice(0, 4)}...${address.slice(-4)}`
 
   const handleCopy = async (e: React.MouseEvent) => {
     e.stopPropagation()
@@ -147,10 +214,10 @@ function CompactContractAddress({ address }: { address: string }) {
   return (
     <button
       onClick={handleCopy}
-      className="flex items-center gap-1 text-[10px] font-mono text-kol-text-muted hover:text-kol-blue transition-colors"
+      className="flex items-center gap-1 text-[12px] font-medium text-kol-text-tertiary hover:text-kol-blue-hover transition-colors"
     >
       <span>{short}</span>
-      <i className={`text-[10px] ${copied ? 'ri-check-line text-kol-green' : 'ri-file-copy-line'}`} />
+      <i className={`text-[10px] ${copied ? 'ri-check-line text-kol-green' : ''}`} />
     </button>
   )
 }
@@ -167,13 +234,13 @@ function TimeBadge({ date }: { date: Date }) {
   }
 
   const getTimeColor = () => {
-    if (diffMinutes < 30) return 'text-kol-green bg-kol-green/10'
-    if (diffMinutes < 120) return 'text-yellow-400 bg-yellow-400/10'
-    return 'text-kol-text-muted bg-kol-surface/50'
+    if (diffMinutes < 30) return 'text-kol-green'
+    if (diffMinutes < 120) return 'text-yellow-400'
+    return 'text-kol-text-muted'
   }
 
   return (
-    <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded ${getTimeColor()}`}>
+    <span className={`text-[14px] font-medium ${getTimeColor()}`}>
       {formatTime()}
     </span>
   )
@@ -190,12 +257,12 @@ function InlineTradingStats({
   const isProfitable = pnl >= 0
 
   return (
-    <div className="flex items-center gap-1.5 text-[10px] font-mono mt-1">
+    <div className="flex items-center gap-1.5 text-[11px] mt-1">
       {/* Bought */}
       <div className="flex items-center gap-0.5">
         <span className="text-kol-text-muted">B:</span>
-        <img src="/images/sol-fill.svg" alt="SOL" className="w-2.5 h-2.5" />
-        <span className="text-kol-green">{stats.boughtAmount.toFixed(2)}</span>
+        <img src="/images/sol-fill.svg" alt="SOL" className="w-3 h-3" />
+        <span className="text-kol-green font-medium">{stats.boughtAmount.toFixed(2)}</span>
       </div>
 
       <span className="text-kol-border">|</span>
@@ -203,8 +270,8 @@ function InlineTradingStats({
       {/* Sold */}
       <div className="flex items-center gap-0.5">
         <span className="text-kol-text-muted">S:</span>
-        <img src="/images/sol-fill.svg" alt="SOL" className="w-2.5 h-2.5" />
-        <span className="text-kol-red">{stats.soldAmount.toFixed(2)}</span>
+        <img src="/images/sol-fill.svg" alt="SOL" className="w-3 h-3" />
+        <span className="text-kol-red font-medium">{stats.soldAmount.toFixed(2)}</span>
       </div>
 
       <span className="text-kol-border">|</span>
@@ -212,8 +279,8 @@ function InlineTradingStats({
       {/* PnL */}
       <div className="flex items-center gap-0.5">
         <span className="text-kol-text-muted">PnL:</span>
-        <img src="/images/sol-fill.svg" alt="SOL" className="w-2.5 h-2.5" />
-        <span className={isProfitable ? 'text-kol-green' : 'text-kol-red'}>
+        <img src="/images/sol-fill.svg" alt="SOL" className="w-3 h-3" />
+        <span className={`font-medium ${isProfitable ? 'text-kol-green' : 'text-kol-red'}`}>
           {isProfitable ? '+' : ''}{pnl.toFixed(2)}
         </span>
       </div>
@@ -255,10 +322,10 @@ function QuickLinks({ coin }: { coin: CoinData }) {
           target="_blank"
           rel="noopener noreferrer"
           onClick={(e) => e.stopPropagation()}
-          className="w-5 h-5 flex items-center justify-center rounded bg-kol-surface/50 border border-kol-border/30 text-kol-text-muted hover:text-white hover:border-kol-blue/50 transition-all"
+          className="flex items-center text-kol-text-muted hover:text-kol-blue-hover transition-colors"
           title="View source tweet"
         >
-          <i className="ri-twitter-x-line text-[10px]" />
+          <i className="ri-twitter-x-line text-[16px]" />
         </a>
       )}
       {coin.axiomUrl && (
@@ -267,10 +334,10 @@ function QuickLinks({ coin }: { coin: CoinData }) {
           target="_blank"
           rel="noopener noreferrer"
           onClick={(e) => e.stopPropagation()}
-          className="w-5 h-5 flex items-center justify-center rounded bg-kol-surface/50 border border-kol-border/30 hover:border-kol-blue/50 transition-all"
+          className="flex items-center text-kol-text-muted hover:text-kol-blue-hover transition-colors"
           title="Open in Axiom"
         >
-          <svg width="10" height="10" viewBox="0 0 36 36" fill="currentColor" className="text-kol-text-muted hover:text-white">
+          <svg width="16" height="16" viewBox="0 0 36 36" fill="currentColor">
             <path d="M24.1384 17.3876H11.8623L18.0001 7.00012L24.1384 17.3876Z" />
             <path d="M31 29.0003L5 29.0003L9.96764 20.5933L26.0324 20.5933L31 29.0003Z" />
           </svg>
@@ -281,10 +348,10 @@ function QuickLinks({ coin }: { coin: CoinData }) {
         target="_blank"
         rel="noopener noreferrer"
         onClick={(e) => e.stopPropagation()}
-        className="w-5 h-5 flex items-center justify-center rounded bg-kol-surface/50 border border-kol-border/30 text-kol-text-muted hover:text-white hover:border-kol-blue/50 transition-all"
+        className="flex items-center text-kol-text-muted hover:text-kol-blue-hover transition-colors"
         title="Search on X"
       >
-        <i className="ri-search-line text-[10px]" />
+        <i className="ri-search-line text-[16px]" />
       </a>
     </div>
   )
@@ -319,7 +386,7 @@ export function CoinCard({ coin, index, onView, onTradePanel, onDevPanel, onVamp
         <div className="flex items-start gap-3 p-3">
 
           {/* LEFT: Image + Address */}
-          <div className="flex flex-col items-center gap-1.5 flex-shrink-0">
+          <div className="flex flex-col items-center gap-1 flex-shrink-0">
             <TokenImageWithProgress
               image={coin.image}
               symbol={coin.symbol}
@@ -330,26 +397,26 @@ export function CoinCard({ coin, index, onView, onTradePanel, onDevPanel, onVamp
           </div>
 
           {/* MIDDLE: Token Info */}
-          <div className="flex-1 min-w-0 flex flex-col gap-1">
-            {/* Name + Ticker */}
+          <div className="flex-1 min-w-0 flex flex-col gap-1 pt-0.5">
+            {/* Ticker (white) + Name (grey) with copy */}
             <div className="flex items-center gap-1.5">
-              <span className="text-sm font-body font-semibold text-white truncate">
-                {coin.name}
+              <span className="text-[16px] font-medium text-white truncate tracking-[-0.02em]">
+                {coin.symbol}
               </span>
               <button
                 onClick={(e) => {
                   e.stopPropagation()
                   navigator.clipboard.writeText(coin.name)
                 }}
-                className="flex items-center gap-1 text-[11px] font-mono text-kol-text-muted hover:text-kol-blue transition-colors"
+                className="flex items-center gap-1 text-[16px] font-medium text-kol-text-muted hover:text-kol-blue-hover transition-colors min-w-0"
               >
-                <span className="truncate max-w-[60px]">{coin.symbol}</span>
-                <i className="ri-file-copy-line text-[10px]" />
+                <span className="truncate">{coin.name}</span>
+                <i className="ri-file-copy-line text-[14px]" />
               </button>
             </div>
 
             {/* Time + Quick Links */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
               <TimeBadge date={coin.launchedAt} />
               <QuickLinks coin={coin} />
             </div>
@@ -377,10 +444,10 @@ export function CoinCard({ coin, index, onView, onTradePanel, onDevPanel, onVamp
 
             <div className="flex items-center gap-1.5">
               <img src="/images/sol-fill.svg" alt="SOL" className="w-3 h-3" />
-              <span className="text-[11px] font-mono text-white">{coin.holdings.toFixed(2)}</span>
+              <span className="text-[11px] font-medium text-white">{coin.holdings.toFixed(2)}</span>
             </div>
 
-            <div className={`flex items-center gap-0.5 text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded ${
+            <div className={`flex items-center gap-0.5 text-[10px] font-semibold px-1.5 py-0.5 rounded ${
               isProfitable ? 'text-kol-green bg-kol-green/10' : 'text-kol-red bg-kol-red/10'
             }`}>
               <i className={`text-[8px] ${isProfitable ? 'ri-arrow-up-s-fill' : 'ri-arrow-down-s-fill'}`} />
