@@ -34,6 +34,8 @@ export interface CoinData {
   axiomUrl?: string
   buyTxns?: number
   sellTxns?: number
+  buyVolumeUsd?: number
+  sellVolumeUsd?: number
 }
 
 interface CoinCardProps {
@@ -236,23 +238,35 @@ function AxiomIcon({ className }: { className?: string }) {
   )
 }
 
-// TXN Stats Component (buy/sell transaction counts with full-width visual bar)
-function TxnStats({ buyTxns, sellTxns }: { buyTxns: number; sellTxns: number }) {
-  const total = buyTxns + sellTxns
-  const buyPercent = total > 0 ? (buyTxns / total) * 100 : 50
+// Format number as K/M (e.g., 2280 -> "2.28K", 135000 -> "$135K")
+function formatCompactNumber(num: number, prefix = ''): string {
+  if (num >= 1000000) {
+    return `${prefix}${(num / 1000000).toFixed(1)}M`
+  }
+  if (num >= 1000) {
+    return `${prefix}${(num / 1000).toFixed(2)}K`
+  }
+  return `${prefix}${num.toFixed(0)}`
+}
+
+// TXN Stats Component (buy/sell transaction counts with volume and visual bar)
+function TxnStats({
+  buyTxns,
+  sellTxns,
+  buyVolumeUsd,
+  sellVolumeUsd
+}: {
+  buyTxns: number
+  sellTxns: number
+  buyVolumeUsd?: number
+  sellVolumeUsd?: number
+}) {
+  const totalVolume = (buyVolumeUsd ?? 0) + (sellVolumeUsd ?? 0)
+  const buyPercent = totalVolume > 0 ? ((buyVolumeUsd ?? 0) / totalVolume) * 100 : 50
 
   return (
-    <div className="flex items-center gap-2 w-full">
-      <div className="flex items-center gap-1 text-[14px] font-medium">
-        <Tooltip content="Buy transactions" position="top">
-          <span className="font-mono cursor-default" style={{ color: '#00d492' }}>{buyTxns}</span>
-        </Tooltip>
-        <span className="text-kol-text-muted">/</span>
-        <Tooltip content="Sell transactions" position="top">
-          <span className="font-mono text-kol-red cursor-default">{sellTxns}</span>
-        </Tooltip>
-      </div>
-      {/* Visual ratio bar - full width with gap */}
+    <div className="flex items-center gap-2 w-full justify-end">
+      {/* Visual ratio bar - on the left now */}
       <div className="flex h-[2px] flex-1 flex-row items-center gap-[4px]">
         <div
           className="flex h-[2px] rounded-l-full"
@@ -260,6 +274,22 @@ function TxnStats({ buyTxns, sellTxns }: { buyTxns: number; sellTxns: number }) 
         />
         <div className="flex h-[2px] flex-1 rounded-r-full bg-kol-red" />
       </div>
+      {/* Buys */}
+      <Tooltip content="Buy transactions / volume" position="top">
+        <div className="flex items-center text-[13px] font-medium cursor-default">
+          <span className="font-mono" style={{ color: '#00d492' }}>
+            {formatCompactNumber(buyTxns)}/{buyVolumeUsd !== undefined ? formatCompactNumber(buyVolumeUsd, '$') : '-'}
+          </span>
+        </div>
+      </Tooltip>
+      {/* Sells */}
+      <Tooltip content="Sell transactions / volume" position="top">
+        <div className="flex items-center text-[13px] font-medium cursor-default">
+          <span className="font-mono text-kol-red">
+            {formatCompactNumber(sellTxns)}/{sellVolumeUsd !== undefined ? formatCompactNumber(sellVolumeUsd, '$') : '-'}
+          </span>
+        </div>
+      </Tooltip>
     </div>
   )
 }
@@ -402,9 +432,14 @@ export function CoinCard({ coin, index, onView, onDevPanel, onRelaunch }: CoinCa
               <QuickLinks coin={coin} />
             </div>
 
-            {/* Row 3: TXN Stats */}
+            {/* Row 3: TXN Stats - aligned right */}
             {coin.buyTxns !== undefined && (
-              <TxnStats buyTxns={coin.buyTxns} sellTxns={coin.sellTxns ?? 0} />
+              <TxnStats
+                buyTxns={coin.buyTxns}
+                sellTxns={coin.sellTxns ?? 0}
+                buyVolumeUsd={coin.buyVolumeUsd}
+                sellVolumeUsd={coin.sellVolumeUsd}
+              />
             )}
           </div>
 
