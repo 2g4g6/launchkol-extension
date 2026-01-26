@@ -418,8 +418,8 @@ export function CoinCard({ coin, index, onView, onDevPanel, onRelaunch }: CoinCa
               }}
               className="flex items-center gap-2 px-5 py-3 rounded-md text-[14px] font-medium bg-kol-blue/20 border border-kol-blue/40 text-white hover:bg-kol-blue/30 transition-colors"
             >
-              <i className="ri-code-s-slash-line text-[16px]" />
               Manage
+              <i className="ri-code-s-slash-line text-[16px]" />
             </button>
             <Tooltip content="Relaunch token" position="top">
               <button
