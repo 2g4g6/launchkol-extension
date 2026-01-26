@@ -254,7 +254,7 @@ function TxnStats({ buyTxns, sellTxns }: { buyTxns: number; sellTxns: number }) 
         </Tooltip>
       </div>
       {/* Visual ratio bar - on the right */}
-      <div className="flex h-[2px] flex-1 flex-row items-center gap-[4px]">
+      <div className="flex h-[2px] flex-1 min-w-[100px] flex-row items-center gap-[4px]">
         <div
           className="flex h-[2px] rounded-l-full"
           style={{ width: `${buyPercent}%`, backgroundColor: '#00d492' }}
