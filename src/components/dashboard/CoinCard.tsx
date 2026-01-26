@@ -410,15 +410,15 @@ export function CoinCard({ coin, index, onView, onDevPanel, onRelaunch }: CoinCa
           </div>
 
           {/* RIGHT: Action Buttons */}
-          <div className="flex items-center gap-1.5 flex-shrink-0">
+          <div className="flex items-center gap-2 flex-shrink-0">
             <button
               onClick={(e) => {
                 e.stopPropagation()
                 onDevPanel?.(coin)
               }}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-md text-[11px] font-medium bg-kol-blue/20 border border-kol-blue/40 text-white hover:bg-kol-blue/30 transition-colors"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-md text-[13px] font-medium bg-kol-blue/20 border border-kol-blue/40 text-white hover:bg-kol-blue/30 transition-colors"
             >
-              <i className="ri-code-s-slash-line text-[12px]" />
+              <i className="ri-code-s-slash-line text-[14px]" />
               Manage
             </button>
             <Tooltip content="Relaunch token" position="top">
@@ -427,9 +427,9 @@ export function CoinCard({ coin, index, onView, onDevPanel, onRelaunch }: CoinCa
                   e.stopPropagation()
                   onRelaunch?.(coin)
                 }}
-                className="flex items-center justify-center p-2 rounded-md bg-kol-surface-elevated border border-kol-border text-kol-text-muted hover:border-kol-border-hover hover:text-white transition-colors"
+                className="flex items-center justify-center w-10 h-10 rounded-md bg-kol-surface-elevated border border-kol-border text-kol-text-muted hover:border-kol-border-hover hover:text-white transition-colors"
               >
-                <i className="ri-restart-line text-[12px]" />
+                <i className="ri-restart-line text-[16px]" />
               </button>
             </Tooltip>
           </div>
