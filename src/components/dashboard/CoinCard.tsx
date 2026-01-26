@@ -49,34 +49,60 @@ const PLATFORM_CONFIG: Record<PlatformType, { name: string; logo: string; color:
   raydium: { name: 'Raydium', logo: '/images/raydium.svg', color: 'bg-indigo-500/20 border-indigo-500/40' },
 }
 
-// Progress Ring Component
-function ProgressRing({ progress, size, children }: { progress: number; size: number; children: React.ReactNode }) {
+// Platform Badge Component
+function PlatformBadge({ platform }: { platform: PlatformType }) {
+  const config = PLATFORM_CONFIG[platform]
+  return (
+    <div className={`absolute -bottom-0.5 -right-0.5 w-[16px] h-[16px] rounded-full ${config.color} border flex items-center justify-center z-10 bg-kol-bg`}>
+      <img src={config.logo} alt={config.name} className="w-2.5 h-2.5" onError={(e) => {
+        (e.target as HTMLImageElement).style.display = 'none'
+      }} />
+    </div>
+  )
+}
+
+// Token Image with Progress Ring Component
+function TokenImageWithProgress({
+  image,
+  symbol,
+  progress,
+  platform
+}: {
+  image?: string
+  symbol: string
+  progress?: number
+  platform: PlatformType
+}) {
+  const ringSize = 62
   const strokeWidth = 2
-  const radius = (size - strokeWidth) / 2
+  const radius = (ringSize - strokeWidth) / 2
   const circumference = radius * 2 * Math.PI
-  const strokeDashoffset = circumference - (progress / 100) * circumference
+  const offset = progress !== undefined
+    ? circumference - (progress / 100) * circumference
+    : circumference * 0.03 // 97% fill default
 
   return (
-    <div className="relative" style={{ width: size, height: size }}>
-      <svg className="absolute inset-0 -rotate-90" width={size} height={size}>
+    <div className="relative" style={{ width: ringSize, height: ringSize }}>
+      {/* Progress ring SVG */}
+      <svg className="absolute inset-0 -rotate-90" width={ringSize} height={ringSize}>
         <circle
-          cx={size / 2}
-          cy={size / 2}
+          cx={ringSize / 2}
+          cy={ringSize / 2}
           r={radius}
           fill="none"
-          stroke="rgba(42, 42, 42, 0.5)"
+          stroke="rgba(0, 123, 255, 0.2)"
           strokeWidth={strokeWidth}
         />
         <circle
-          cx={size / 2}
-          cy={size / 2}
+          cx={ringSize / 2}
+          cy={ringSize / 2}
           r={radius}
           fill="none"
           stroke="url(#coin-progress-gradient)"
           strokeWidth={strokeWidth}
           strokeLinecap="round"
           strokeDasharray={circumference}
-          strokeDashoffset={strokeDashoffset}
+          strokeDashoffset={offset}
           className="transition-all duration-500"
         />
         <defs>
@@ -86,22 +112,46 @@ function ProgressRing({ progress, size, children }: { progress: number; size: nu
           </linearGradient>
         </defs>
       </svg>
+
+      {/* Image container - centered inside ring */}
       <div className="absolute inset-0 flex items-center justify-center">
-        {children}
+        <div className="h-[54px] w-[54px] rounded-[4px] border border-kol-border bg-kol-surface overflow-hidden">
+          {image ? (
+            <img src={image} alt={symbol} className="h-full w-full object-cover" />
+          ) : (
+            <div className="h-full w-full flex items-center justify-center text-base font-bold text-kol-text-muted">
+              {symbol.slice(0, 2)}
+            </div>
+          )}
+        </div>
       </div>
+
+      {/* Platform badge */}
+      <PlatformBadge platform={platform} />
     </div>
   )
 }
 
-// Platform Badge Component
-function PlatformBadge({ platform }: { platform: PlatformType }) {
-  const config = PLATFORM_CONFIG[platform]
+// Compact Contract Address Component
+function CompactContractAddress({ address }: { address: string }) {
+  const [copied, setCopied] = useState(false)
+  const short = `${address.slice(0, 4)}...${address.slice(-3)}`
+
+  const handleCopy = async (e: React.MouseEvent) => {
+    e.stopPropagation()
+    await navigator.clipboard.writeText(address)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 1500)
+  }
+
   return (
-    <div className={`absolute -bottom-1 -right-1 w-[18px] h-[18px] rounded-full ${config.color} border flex items-center justify-center z-10 bg-kol-bg`}>
-      <img src={config.logo} alt={config.name} className="w-2.5 h-2.5" onError={(e) => {
-        (e.target as HTMLImageElement).style.display = 'none'
-      }} />
-    </div>
+    <button
+      onClick={handleCopy}
+      className="flex items-center gap-1 text-[10px] font-mono text-kol-text-muted hover:text-kol-blue transition-colors"
+    >
+      <span>{short}</span>
+      <i className={`text-[10px] ${copied ? 'ri-check-line text-kol-green' : 'ri-file-copy-line'}`} />
+    </button>
   )
 }
 
@@ -129,62 +179,43 @@ function TimeBadge({ date }: { date: Date }) {
   )
 }
 
-// Contract Address Bar Component
-function ContractAddressBar({ address }: { address: string }) {
-  const [copied, setCopied] = useState(false)
-  const formatAddress = (addr: string) => `${addr.slice(0, 6)}...${addr.slice(-4)}`
-
-  const handleCopy = async (e: React.MouseEvent) => {
-    e.stopPropagation()
-    await navigator.clipboard.writeText(address)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
-  }
-
-  return (
-    <div className="flex items-center gap-2 px-2 py-1.5 bg-kol-surface/30 border-y border-kol-border/20">
-      <code className="text-[11px] font-mono text-kol-text-muted flex-1 truncate">
-        {formatAddress(address)}
-      </code>
-      <button
-        onClick={handleCopy}
-        className="flex-shrink-0 p-1 rounded hover:bg-kol-surface-elevated text-kol-text-muted hover:text-white transition-colors"
-        title="Copy CA"
-      >
-        <i className={`text-xs ${copied ? 'ri-check-line text-kol-green' : 'ri-file-copy-line'}`} />
-      </button>
-    </div>
-  )
-}
-
-// Trading Stats Component
-function TradingStatsDisplay({ stats, pnl }: { stats: TradingStats; pnl: number }) {
+// Inline Trading Stats Component
+function InlineTradingStats({
+  stats,
+  pnl
+}: {
+  stats: TradingStats
+  pnl: number
+}) {
   const isProfitable = pnl >= 0
 
   return (
-    <div className="grid grid-cols-3 gap-1 px-3 py-2 border-b border-kol-border/20">
-      <div className="text-center">
-        <p className="text-[9px] text-kol-text-muted mb-0.5">Bought</p>
-        <div className="flex items-center justify-center gap-1">
-          <img src="/images/sol-fill.svg" alt="SOL" className="w-3 h-3" />
-          <span className="text-[11px] font-mono text-kol-green">{stats.boughtAmount.toFixed(2)}</span>
-        </div>
+    <div className="flex items-center gap-1.5 text-[10px] font-mono mt-1">
+      {/* Bought */}
+      <div className="flex items-center gap-0.5">
+        <span className="text-kol-text-muted">B:</span>
+        <img src="/images/sol-fill.svg" alt="SOL" className="w-2.5 h-2.5" />
+        <span className="text-kol-green">{stats.boughtAmount.toFixed(2)}</span>
       </div>
-      <div className="text-center border-x border-kol-border/20">
-        <p className="text-[9px] text-kol-text-muted mb-0.5">Sold</p>
-        <div className="flex items-center justify-center gap-1">
-          <img src="/images/sol-fill.svg" alt="SOL" className="w-3 h-3" />
-          <span className="text-[11px] font-mono text-kol-red">{stats.soldAmount.toFixed(2)}</span>
-        </div>
+
+      <span className="text-kol-border">|</span>
+
+      {/* Sold */}
+      <div className="flex items-center gap-0.5">
+        <span className="text-kol-text-muted">S:</span>
+        <img src="/images/sol-fill.svg" alt="SOL" className="w-2.5 h-2.5" />
+        <span className="text-kol-red">{stats.soldAmount.toFixed(2)}</span>
       </div>
-      <div className="text-center">
-        <p className="text-[9px] text-kol-text-muted mb-0.5">PnL</p>
-        <div className="flex items-center justify-center gap-1">
-          <img src="/images/sol-fill.svg" alt="SOL" className="w-3 h-3" />
-          <span className={`text-[11px] font-mono font-medium ${isProfitable ? 'text-kol-green' : 'text-kol-red'}`}>
-            {isProfitable ? '+' : ''}{pnl.toFixed(2)}
-          </span>
-        </div>
+
+      <span className="text-kol-border">|</span>
+
+      {/* PnL */}
+      <div className="flex items-center gap-0.5">
+        <span className="text-kol-text-muted">PnL:</span>
+        <img src="/images/sol-fill.svg" alt="SOL" className="w-2.5 h-2.5" />
+        <span className={isProfitable ? 'text-kol-green' : 'text-kol-red'}>
+          {isProfitable ? '+' : ''}{pnl.toFixed(2)}
+        </span>
       </div>
     </div>
   )
@@ -198,13 +229,13 @@ function ActionButton({ icon, label, onClick, variant = 'default' }: {
   variant?: 'default' | 'primary'
 }) {
   const variantClasses = variant === 'primary'
-    ? 'bg-kol-blue/10 text-kol-blue border-kol-blue/30 hover:bg-kol-blue/20'
+    ? 'bg-kol-blue/15 text-kol-blue border-kol-blue/30 hover:bg-kol-blue/25'
     : 'bg-kol-surface/50 text-kol-text-muted border-kol-border/30 hover:bg-kol-surface-elevated hover:text-white'
 
   return (
     <motion.button
       onClick={onClick}
-      className={`flex-1 flex items-center justify-center gap-1 py-1.5 rounded-lg text-[10px] font-semibold border transition-colors ${variantClasses}`}
+      className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-[10px] font-semibold border transition-colors ${variantClasses}`}
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
     >
@@ -284,103 +315,82 @@ export function CoinCard({ coin, index, onView, onTradePanel, onDevPanel, onVamp
         className="relative bg-kol-surface-elevated/40 backdrop-blur-md border border-kol-border/40 rounded-xl hover:border-kol-border/60 hover:bg-kol-surface-elevated/60 transition-all duration-300 cursor-pointer overflow-hidden"
         onClick={() => onView(coin)}
       >
-        {/* HEADER SECTION */}
-        <div className="p-3">
-          <div className="flex items-start justify-between gap-3">
-            {/* Left: Token image + info */}
-            <div className="flex items-center gap-3 flex-1 min-w-0">
-              {/* Token Image with Progress Ring */}
-              <div className="relative flex-shrink-0">
-                {coin.progressPercent !== undefined ? (
-                  <ProgressRing progress={coin.progressPercent} size={44}>
-                    {coin.image ? (
-                      <img
-                        src={coin.image}
-                        alt={coin.name}
-                        className="w-9 h-9 rounded-lg object-cover border border-kol-border/40"
-                      />
-                    ) : (
-                      <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-kol-blue/30 to-kol-green/20 flex items-center justify-center border border-kol-border/40">
-                        <span className="text-sm font-body font-bold text-white">
-                          {coin.symbol.charAt(0)}
-                        </span>
-                      </div>
-                    )}
-                  </ProgressRing>
-                ) : (
-                  <>
-                    {coin.image ? (
-                      <img
-                        src={coin.image}
-                        alt={coin.name}
-                        className="w-10 h-10 rounded-lg object-cover border border-kol-border/40"
-                      />
-                    ) : (
-                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-kol-blue/30 to-kol-green/20 flex items-center justify-center border border-kol-border/40">
-                        <span className="text-sm font-body font-bold text-white">
-                          {coin.symbol.charAt(0)}
-                        </span>
-                      </div>
-                    )}
-                  </>
-                )}
-                <PlatformBadge platform={coin.platform} />
-              </div>
+        {/* MAIN CONTENT - 3 column layout */}
+        <div className="flex items-start gap-3 p-3">
 
-              {/* Token Name & Symbol */}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-1.5 mb-1">
-                  <span className="text-sm font-body font-semibold text-white truncate">
-                    {coin.name}
-                  </span>
-                  <span className="text-[10px] font-mono text-kol-text-muted">
-                    ${coin.symbol}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <TimeBadge date={coin.launchedAt} />
-                  <QuickLinks coin={coin} />
-                </div>
-              </div>
+          {/* LEFT: Image + Address */}
+          <div className="flex flex-col items-center gap-1.5 flex-shrink-0">
+            <TokenImageWithProgress
+              image={coin.image}
+              symbol={coin.symbol}
+              progress={coin.progressPercent}
+              platform={coin.platform}
+            />
+            <CompactContractAddress address={coin.address} />
+          </div>
+
+          {/* MIDDLE: Token Info */}
+          <div className="flex-1 min-w-0 flex flex-col gap-1">
+            {/* Name + Ticker */}
+            <div className="flex items-center gap-1.5">
+              <span className="text-sm font-body font-semibold text-white truncate">
+                {coin.name}
+              </span>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation()
+                  navigator.clipboard.writeText(coin.name)
+                }}
+                className="flex items-center gap-1 text-[11px] font-mono text-kol-text-muted hover:text-kol-blue transition-colors"
+              >
+                <span className="truncate max-w-[60px]">{coin.symbol}</span>
+                <i className="ri-file-copy-line text-[10px]" />
+              </button>
             </div>
 
-            {/* Right: Platform link + Holdings */}
-            <div className="flex flex-col items-end gap-1 flex-shrink-0">
-              <a
-                href={`https://pump.fun/${coin.address}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={(e) => e.stopPropagation()}
-                className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-kol-surface/50 border border-kol-border/30 hover:bg-kol-surface-elevated transition-colors"
-              >
-                <img src={platformConfig.logo} alt={platformConfig.name} className="h-3.5 w-3.5 rounded" onError={(e) => {
-                  (e.target as HTMLImageElement).style.display = 'none'
-                }} />
-                <span className="text-[10px] font-medium text-white">{platformConfig.name}</span>
-              </a>
-              <div className="flex items-center gap-1 text-right">
-                <span className="text-[11px] font-mono text-white">{coin.holdings.toFixed(2)} SOL</span>
-                <div className={`flex items-center gap-0.5 text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded ${
-                  isProfitable ? 'text-kol-green bg-kol-green/10' : 'text-kol-red bg-kol-red/10'
-                }`}>
-                  <i className={`text-[8px] ${isProfitable ? 'ri-arrow-up-s-fill' : 'ri-arrow-down-s-fill'}`} />
-                  {isProfitable ? '+' : ''}{coin.pnlPercent.toFixed(1)}%
-                </div>
-              </div>
+            {/* Time + Quick Links */}
+            <div className="flex items-center gap-2">
+              <TimeBadge date={coin.launchedAt} />
+              <QuickLinks coin={coin} />
+            </div>
+
+            {/* Inline Trading Stats */}
+            {coin.tradingStats && (
+              <InlineTradingStats stats={coin.tradingStats} pnl={coin.pnl} />
+            )}
+          </div>
+
+          {/* RIGHT: Holdings */}
+          <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
+            <a
+              href={`https://pump.fun/${coin.address}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-kol-surface/50 border border-kol-border/30 hover:bg-kol-surface-elevated transition-colors"
+            >
+              <img src={platformConfig.logo} alt={platformConfig.name} className="h-3.5 w-3.5 rounded" onError={(e) => {
+                (e.target as HTMLImageElement).style.display = 'none'
+              }} />
+              <span className="text-[10px] font-medium text-white">{platformConfig.name}</span>
+            </a>
+
+            <div className="flex items-center gap-1.5">
+              <img src="/images/sol-fill.svg" alt="SOL" className="w-3 h-3" />
+              <span className="text-[11px] font-mono text-white">{coin.holdings.toFixed(2)}</span>
+            </div>
+
+            <div className={`flex items-center gap-0.5 text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded ${
+              isProfitable ? 'text-kol-green bg-kol-green/10' : 'text-kol-red bg-kol-red/10'
+            }`}>
+              <i className={`text-[8px] ${isProfitable ? 'ri-arrow-up-s-fill' : 'ri-arrow-down-s-fill'}`} />
+              {isProfitable ? '+' : ''}{coin.pnlPercent.toFixed(1)}%
             </div>
           </div>
         </div>
 
-        {/* CONTRACT ADDRESS BAR */}
-        <ContractAddressBar address={coin.address} />
-
-        {/* TRADING STATS */}
-        {coin.tradingStats && (
-          <TradingStatsDisplay stats={coin.tradingStats} pnl={coin.pnl} />
-        )}
-
         {/* ACTION BUTTONS */}
-        <div className="flex gap-1.5 p-2">
+        <div className="flex gap-1.5 p-2 border-t border-kol-border/20">
           <ActionButton
             icon="ri-line-chart-line"
             label="Trade"
