@@ -1,6 +1,8 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { createPortal } from 'react-dom'
 import { BaseModal } from '../ui/BaseModal'
+import { Tooltip } from '../ui/Tooltip'
 
 // ============================================================================
 // Types
@@ -164,12 +166,34 @@ interface IconPickerProps {
 
 function IconPicker({ currentIcon, onSelect }: IconPickerProps) {
   const [isOpen, setIsOpen] = useState(false)
-  const pickerRef = useRef<HTMLDivElement>(null)
+  const [mounted, setMounted] = useState(false)
+  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 })
+  const triggerRef = useRef<HTMLButtonElement>(null)
+  const dropdownRef = useRef<HTMLDivElement>(null)
+
+  // Mount check for portal
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  // Calculate dropdown position when opening
+  const updatePosition = useCallback(() => {
+    if (!triggerRef.current) return
+    const rect = triggerRef.current.getBoundingClientRect()
+    setDropdownPosition({
+      top: rect.bottom + 4,
+      left: rect.left,
+    })
+  }, [])
 
   // Click outside to close
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (pickerRef.current && !pickerRef.current.contains(event.target as Node)) {
+      const target = event.target as Node
+      if (
+        triggerRef.current && !triggerRef.current.contains(target) &&
+        dropdownRef.current && !dropdownRef.current.contains(target)
+      ) {
         setIsOpen(false)
       }
     }
@@ -179,50 +203,67 @@ function IconPicker({ currentIcon, onSelect }: IconPickerProps) {
     }
   }, [isOpen])
 
+  // Update position when open
+  useEffect(() => {
+    if (isOpen) {
+      updatePosition()
+      window.addEventListener('scroll', updatePosition, true)
+      window.addEventListener('resize', updatePosition)
+      return () => {
+        window.removeEventListener('scroll', updatePosition, true)
+        window.removeEventListener('resize', updatePosition)
+      }
+    }
+  }, [isOpen, updatePosition])
+
+  const dropdown = mounted && isOpen && (
+    <AnimatePresence>
+      <motion.div
+        ref={dropdownRef}
+        initial={{ opacity: 0, scale: 0.95, y: -4 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95, y: -4 }}
+        transition={{ duration: 0.15 }}
+        className="fixed p-2 bg-kol-bg border border-kol-border rounded-lg shadow-[0_4px_24px_rgba(0,0,0,0.4)] z-[9999] grid grid-cols-5 gap-1"
+        style={{ top: dropdownPosition.top, left: dropdownPosition.left }}
+      >
+        {GROUP_ICONS.map(icon => (
+          <button
+            key={icon}
+            onClick={(e) => {
+              e.stopPropagation()
+              onSelect(icon)
+              setIsOpen(false)
+            }}
+            className={`
+              w-7 h-7 rounded flex items-center justify-center transition-colors
+              ${icon === currentIcon
+                ? 'bg-kol-blue/15 text-kol-blue'
+                : 'hover:bg-kol-surface-elevated text-kol-text-muted hover:text-white'
+              }
+            `}
+          >
+            <i className={`${icon} text-sm`} />
+          </button>
+        ))}
+      </motion.div>
+    </AnimatePresence>
+  )
+
   return (
-    <div className="relative" ref={pickerRef}>
+    <>
       <button
+        ref={triggerRef}
         onClick={(e) => {
           e.stopPropagation()
           setIsOpen(!isOpen)
         }}
-        className="w-6 h-6 rounded flex items-center justify-center hover:bg-kol-surface-elevated transition-colors"
+        className="w-6 h-6 rounded flex items-center justify-center hover:bg-kol-surface-elevated transition-colors flex-shrink-0"
       >
         <i className={`${currentIcon} text-sm text-kol-text-muted`} />
       </button>
-
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: -4 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: -4 }}
-            transition={{ duration: 0.15 }}
-            className="absolute top-full left-0 mt-1 p-2 bg-kol-bg border border-kol-border rounded-lg shadow-[0_4px_24px_rgba(0,0,0,0.4)] z-50 grid grid-cols-5 gap-1"
-          >
-            {GROUP_ICONS.map(icon => (
-              <button
-                key={icon}
-                onClick={(e) => {
-                  e.stopPropagation()
-                  onSelect(icon)
-                  setIsOpen(false)
-                }}
-                className={`
-                  w-7 h-7 rounded flex items-center justify-center transition-colors
-                  ${icon === currentIcon
-                    ? 'bg-kol-blue/15 text-kol-blue'
-                    : 'hover:bg-kol-surface-elevated text-kol-text-muted hover:text-white'
-                  }
-                `}
-              >
-                <i className={`${icon} text-sm`} />
-              </button>
-            ))}
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
+      {mounted && createPortal(dropdown, document.body)}
+    </>
   )
 }
 
@@ -239,6 +280,8 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
   const [newAccountHandle, setNewAccountHandle] = useState('')
   const [editingGroupId, setEditingGroupId] = useState<string | null>(null)
   const [editingGroupName, setEditingGroupName] = useState('')
+  const [isAccountSearchFocused, setIsAccountSearchFocused] = useState(false)
+  const [isNewAccountFocused, setIsNewAccountFocused] = useState(false)
 
   // Load from storage on mount
   useEffect(() => {
@@ -427,13 +470,9 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                 key={group.id}
                 className="group relative"
               >
-                <button
-                  onClick={() => {
-                    setSelectedGroupId(group.id)
-                    setSelectedTab('accounts')
-                  }}
+                <div
                   className={`
-                    w-full flex items-center gap-2.5 px-3 py-2.5 text-left transition-all
+                    w-full flex items-center gap-2.5 px-3 py-2.5 transition-all
                     ${selectedGroupId === group.id
                       ? 'bg-kol-blue/10 text-white border-l-2 border-kol-blue'
                       : 'text-kol-text-muted hover:bg-kol-surface-elevated/50 hover:text-white border-l-2 border-transparent'
@@ -460,46 +499,60 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                       className="flex-1 bg-transparent text-xs font-medium outline-none border-b border-kol-blue min-w-0"
                     />
                   ) : (
-                    <span className="text-xs font-medium truncate flex-1">{group.name}</span>
+                    <button
+                      onClick={() => {
+                        setSelectedGroupId(group.id)
+                        setSelectedTab('accounts')
+                      }}
+                      className="flex-1 text-left text-xs font-medium truncate min-w-0"
+                    >
+                      {group.name}
+                    </button>
                   )}
 
                   <span className="text-[10px] text-kol-text-muted">{group.accounts.length}</span>
-                </button>
+                </div>
 
                 {/* Edit/Delete on hover */}
                 <div className="absolute right-1 top-1/2 -translate-y-1/2 hidden group-hover:flex items-center gap-0.5">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      setEditingGroupId(group.id)
-                      setEditingGroupName(group.name)
-                    }}
-                    className="w-5 h-5 rounded flex items-center justify-center text-kol-text-muted hover:text-white hover:bg-kol-surface"
-                  >
-                    <i className="ri-pencil-line text-[10px]" />
-                  </button>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      deleteGroup(group.id)
-                    }}
-                    className="w-5 h-5 rounded flex items-center justify-center text-kol-text-muted hover:text-kol-red hover:bg-kol-red/10"
-                  >
-                    <i className="ri-delete-bin-line text-[10px]" />
-                  </button>
+                  <Tooltip content="Rename group" position="top">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setEditingGroupId(group.id)
+                        setEditingGroupName(group.name)
+                      }}
+                      className="w-5 h-5 rounded flex items-center justify-center text-kol-text-muted hover:text-white hover:bg-kol-surface"
+                    >
+                      <i className="ri-pencil-line text-[10px]" />
+                    </button>
+                  </Tooltip>
+                  <Tooltip content="Delete group" position="top">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        deleteGroup(group.id)
+                      }}
+                      className="w-5 h-5 rounded flex items-center justify-center text-kol-text-muted hover:text-kol-red hover:bg-kol-red/10"
+                    >
+                      <i className="ri-delete-bin-line text-[10px]" />
+                    </button>
+                  </Tooltip>
                 </div>
               </div>
             ))}
           </div>
 
           {/* New Group Button */}
-          <button
-            onClick={createGroup}
-            className="flex items-center gap-2.5 px-3 py-2.5 text-kol-text-muted hover:text-white hover:bg-kol-surface-elevated/50 transition-colors border-t border-kol-border/30"
-          >
-            <i className="ri-add-line text-sm" />
-            <span className="text-xs font-medium">New Group</span>
-          </button>
+          <Tooltip content="Create new feed group" position="right">
+            <button
+              onClick={createGroup}
+              className="flex items-center gap-2.5 px-3 py-2.5 text-kol-text-muted hover:text-white hover:bg-kol-surface-elevated/50 transition-colors border-t border-kol-border/30 w-full"
+            >
+              <i className="ri-add-line text-sm" />
+              <span className="text-xs font-medium">New Group</span>
+            </button>
+          </Tooltip>
         </div>
 
         {/* Right Column - Tab Content */}
@@ -629,33 +682,84 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
               <div className="space-y-3">
                 {/* Search */}
                 <div className="relative">
-                  <i className="ri-search-line absolute left-2.5 top-1/2 -translate-y-1/2 text-kol-text-muted text-sm" />
+                  {/* Focus glow effect */}
+                  <div
+                    className={`absolute inset-0 rounded-lg transition-opacity duration-500 blur-xl -z-10 ${
+                      isAccountSearchFocused ? 'opacity-100' : 'opacity-0'
+                    }`}
+                    style={{
+                      background: 'radial-gradient(circle at 50% 50%, rgba(0, 123, 255, 0.15) 0%, transparent 70%)',
+                    }}
+                  />
+                  <i className={`ri-search-line absolute left-2.5 top-1/2 -translate-y-1/2 text-sm transition-colors duration-200 ${
+                    isAccountSearchFocused ? 'text-kol-blue' : 'text-kol-text-muted'
+                  }`} />
                   <input
                     type="text"
                     placeholder="Search accounts..."
                     value={accountSearchQuery}
                     onChange={(e) => setAccountSearchQuery(e.target.value)}
-                    className="w-full h-9 pl-8 pr-3 rounded-lg bg-kol-surface/50 border border-kol-border/50 text-sm text-white placeholder:text-kol-text-muted/50 focus:outline-none focus:border-kol-blue/50 focus:ring-1 focus:ring-kol-blue/30 transition-colors"
+                    onFocus={() => setIsAccountSearchFocused(true)}
+                    onBlur={() => setIsAccountSearchFocused(false)}
+                    className={`w-full h-9 pl-8 pr-3 rounded-lg bg-kol-surface/50 border text-sm text-white placeholder:text-kol-text-muted/50 focus:outline-none transition-all duration-300 ${
+                      isAccountSearchFocused ? 'border-kol-blue/50' : 'border-kol-border/50'
+                    }`}
                   />
                 </div>
 
                 {/* Accounts List */}
                 <div className="space-y-1">
                   {filteredAccounts.length === 0 && !accountSearchQuery ? (
-                    <div className="flex flex-col items-center justify-center py-12 text-center">
-                      <div className="w-12 h-12 rounded-xl bg-kol-surface-elevated/50 flex items-center justify-center mb-3">
-                        <i className="ri-user-add-line text-xl text-kol-text-muted" />
+                    <motion.div
+                      className="flex flex-col items-center justify-center py-12 text-center"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                    >
+                      <div className="relative mb-4">
+                        <div className="w-14 h-14 rounded-2xl bg-kol-surface-elevated/50 backdrop-blur-sm border border-kol-border/40 flex items-center justify-center">
+                          <i className="ri-user-add-line text-2xl text-kol-text-muted" />
+                        </div>
+                        <div
+                          className="absolute inset-0 rounded-2xl opacity-50 blur-xl -z-10"
+                          style={{
+                            background: 'radial-gradient(circle, rgba(0, 123, 255, 0.15) 0%, transparent 70%)',
+                          }}
+                        />
+                        <motion.div
+                          className="absolute -top-1.5 -right-1.5 w-2.5 h-2.5 rounded-full bg-kol-blue/30"
+                          animate={{ y: [0, -4, 0], opacity: [0.5, 1, 0.5] }}
+                          transition={{ duration: 2, repeat: Infinity }}
+                        />
+                        <motion.div
+                          className="absolute -bottom-1 -left-1 w-2 h-2 rounded-full bg-kol-green/30"
+                          animate={{ y: [0, -3, 0], opacity: [0.3, 0.7, 0.3] }}
+                          transition={{ duration: 2.5, repeat: Infinity, delay: 0.5 }}
+                        />
                       </div>
-                      <p className="text-sm font-medium text-white mb-1">No accounts yet</p>
-                      <p className="text-xs text-kol-text-muted">Add Twitter accounts to track</p>
-                    </div>
+                      <h3 className="text-sm font-semibold text-white mb-1">No accounts yet</h3>
+                      <p className="text-xs text-kol-text-muted max-w-[180px]">Add Twitter accounts to track in this group</p>
+                    </motion.div>
                   ) : filteredAccounts.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center py-8 text-center">
-                      <div className="w-10 h-10 rounded-lg bg-kol-surface-elevated/30 flex items-center justify-center mb-2">
-                        <i className="ri-search-line text-lg text-kol-text-muted" />
+                    <motion.div
+                      className="flex flex-col items-center justify-center py-8 text-center"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                    >
+                      <div className="relative mb-3">
+                        <div className="w-12 h-12 rounded-xl bg-kol-surface-elevated/30 flex items-center justify-center">
+                          <i className="ri-search-line text-xl text-kol-text-muted" />
+                        </div>
+                        <div
+                          className="absolute inset-0 rounded-xl opacity-40 blur-lg -z-10"
+                          style={{
+                            background: 'radial-gradient(circle, rgba(136, 136, 136, 0.1) 0%, transparent 70%)',
+                          }}
+                        />
                       </div>
-                      <p className="text-sm text-kol-text-muted">No accounts match "{accountSearchQuery}"</p>
-                    </div>
+                      <p className="text-sm text-kol-text-muted">No accounts match "<span className="text-white">{accountSearchQuery}</span>"</p>
+                    </motion.div>
                   ) : (
                     filteredAccounts.map(account => (
                       <div
@@ -690,30 +794,45 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                 </div>
 
                 {/* Add Account */}
-                <div className="flex gap-2 pt-2 border-t border-kol-border/30 mt-3">
-                  <input
-                    type="text"
-                    placeholder="@username"
-                    value={newAccountHandle}
-                    onChange={(e) => setNewAccountHandle(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') addAccount(selectedGroupId)
-                    }}
-                    className="flex-1 h-9 px-3 rounded-lg bg-kol-surface/50 border border-kol-border/50 text-sm text-white placeholder:text-kol-text-muted/50 focus:outline-none focus:border-kol-blue/50 focus:ring-1 focus:ring-kol-blue/30 transition-colors mt-3"
-                  />
-                  <button
-                    onClick={() => addAccount(selectedGroupId)}
-                    disabled={!newAccountHandle.trim()}
-                    className={`
-                      px-4 h-9 rounded-lg text-xs font-medium transition-all mt-3
-                      ${newAccountHandle.trim()
-                        ? 'bg-kol-blue hover:bg-kol-blue-hover text-white shadow-[0_0_12px_rgba(0,123,255,0.3)]'
-                        : 'bg-kol-surface border border-kol-border/50 text-kol-text-muted cursor-not-allowed'
-                      }
-                    `}
-                  >
-                    Add
-                  </button>
+                <div className="pt-2 border-t border-kol-border/30 mt-3">
+                  <div className="flex gap-2 mt-3 relative">
+                    {/* Focus glow effect */}
+                    <div
+                      className={`absolute inset-0 rounded-lg transition-opacity duration-500 blur-xl -z-10 ${
+                        isNewAccountFocused ? 'opacity-100' : 'opacity-0'
+                      }`}
+                      style={{
+                        background: 'radial-gradient(circle at 30% 50%, rgba(0, 123, 255, 0.15) 0%, transparent 70%)',
+                      }}
+                    />
+                    <input
+                      type="text"
+                      placeholder="@username"
+                      value={newAccountHandle}
+                      onChange={(e) => setNewAccountHandle(e.target.value)}
+                      onFocus={() => setIsNewAccountFocused(true)}
+                      onBlur={() => setIsNewAccountFocused(false)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') addAccount(selectedGroupId)
+                      }}
+                      className={`flex-1 h-9 px-3 rounded-lg bg-kol-surface/50 border text-sm text-white placeholder:text-kol-text-muted/50 focus:outline-none transition-all duration-300 ${
+                        isNewAccountFocused ? 'border-kol-blue/50' : 'border-kol-border/50'
+                      }`}
+                    />
+                    <button
+                      onClick={() => addAccount(selectedGroupId)}
+                      disabled={!newAccountHandle.trim()}
+                      className={`
+                        px-4 h-9 rounded-lg text-xs font-medium transition-all
+                        ${newAccountHandle.trim()
+                          ? 'bg-kol-blue hover:bg-kol-blue-hover text-white shadow-[0_0_12px_rgba(0,123,255,0.3)]'
+                          : 'bg-kol-surface border border-kol-border/50 text-kol-text-muted cursor-not-allowed'
+                        }
+                      `}
+                    >
+                      Add
+                    </button>
+                  </div>
                 </div>
               </div>
             )}
