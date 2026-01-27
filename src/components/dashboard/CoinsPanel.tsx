@@ -217,17 +217,16 @@ interface CoinsPanelProps {
   onClose: () => void
 }
 
-// Default sizes
-const DEFAULT_WIDTH = 320 // Desktop sidebar width
-const MIN_WIDTH = 280
-const MAX_WIDTH = 500
-const DEFAULT_HEIGHT = 300 // Mobile panel height
+// Mobile panel height constants
+const DEFAULT_HEIGHT = 300
 const MIN_HEIGHT = 150
 const MAX_HEIGHT = 500
 
+// Fixed desktop width
+const DESKTOP_WIDTH = 500
+
 export function CoinsPanel({}: CoinsPanelProps) {
   const [coins] = useState<CoinData[]>(MOCK_COINS)
-  const [panelWidth, setPanelWidth] = useState(DEFAULT_WIDTH)
   const [panelHeight, setPanelHeight] = useState(DEFAULT_HEIGHT)
   const [isResizing, setIsResizing] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
@@ -250,29 +249,6 @@ export function CoinsPanel({}: CoinsPanelProps) {
   const handleRelaunch = (coin: CoinData) => {
     console.log('Relaunch for:', coin.symbol)
   }
-
-  // Desktop resize (width) - drag from left edge
-  const handleDesktopResizeStart = useCallback((e: React.MouseEvent) => {
-    e.preventDefault()
-    setIsResizing(true)
-    const startX = e.clientX
-    const startWidth = panelWidth
-
-    const handleMouseMove = (e: MouseEvent) => {
-      const delta = startX - e.clientX
-      const newWidth = Math.min(MAX_WIDTH, Math.max(MIN_WIDTH, startWidth + delta))
-      setPanelWidth(newWidth)
-    }
-
-    const handleMouseUp = () => {
-      setIsResizing(false)
-      document.removeEventListener('mousemove', handleMouseMove)
-      document.removeEventListener('mouseup', handleMouseUp)
-    }
-
-    document.addEventListener('mousemove', handleMouseMove)
-    document.addEventListener('mouseup', handleMouseUp)
-  }, [panelWidth])
 
   // Mobile resize (height) - drag from top edge
   const handleMobileResizeStart = useCallback((e: React.MouseEvent | React.TouchEvent) => {
@@ -302,11 +278,11 @@ export function CoinsPanel({}: CoinsPanelProps) {
     document.addEventListener('touchend', handleEnd)
   }, [panelHeight])
 
-  // Prevent text selection while resizing
+  // Prevent text selection while resizing (mobile only)
   useEffect(() => {
     if (isResizing) {
       document.body.style.userSelect = 'none'
-      document.body.style.cursor = 'col-resize'
+      document.body.style.cursor = 'row-resize'
     } else {
       document.body.style.userSelect = ''
       document.body.style.cursor = ''
@@ -389,19 +365,11 @@ export function CoinsPanel({}: CoinsPanelProps) {
 
   return (
     <>
-      {/* Desktop sidebar (>=lg) - resizable width */}
+      {/* Desktop sidebar (>=lg) - fixed 500px width */}
       <div
         className="hidden lg:flex lg:flex-col h-full bg-kol-surface/50 backdrop-blur-sm border border-kol-border/50 rounded-xl overflow-hidden relative"
-        style={{ width: panelWidth }}
+        style={{ width: DESKTOP_WIDTH }}
       >
-        {/* Left resize handle */}
-        <div
-          onMouseDown={handleDesktopResizeStart}
-          className="absolute left-0 top-0 bottom-0 w-1 cursor-col-resize hover:bg-kol-blue/30 transition-colors z-10 group"
-        >
-          <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 rounded-full bg-kol-border/50 group-hover:bg-kol-blue/50 transition-colors" />
-        </div>
-
         {/* Header with Search Bar */}
         <div className="px-3 pt-3 pb-2 border-b border-kol-border/30">
           {/* Focus glow effect */}
