@@ -59,22 +59,24 @@ export function ColorPicker({ currentColor, onSelect }: ColorPickerProps) {
   // Calculate dropdown position - ABOVE the trigger
   const updatePosition = useCallback(() => {
     if (!triggerRef.current) return
-    const rect = triggerRef.current.getBoundingClientRect()
+
+    const triggerRect = triggerRef.current.getBoundingClientRect()
     const popupWidth = 380 // Extension popup width
+    const estimatedHeight = 340 // Approximate picker height
 
-    // Estimate picker height (gradient + hue + hex + presets + recent + padding)
-    const pickerHeight = 320
+    // Position ABOVE the trigger, centered horizontally
+    let left = triggerRect.left + triggerRect.width / 2 - PICKER_WIDTH / 2
+    let top = triggerRect.top - estimatedHeight - 8
 
-    // Position ABOVE the trigger, centered but clamped to popup bounds
-    let left = rect.left + rect.width / 2 - PICKER_WIDTH / 2
-
-    // Clamp to not overflow popup (8px padding)
+    // Clamp left to not overflow popup (8px padding)
     left = Math.max(8, Math.min(left, popupWidth - PICKER_WIDTH - 8))
 
-    setDropdownPosition({
-      top: rect.top - pickerHeight - 8,
-      left,
-    })
+    // If not enough room above, position below instead
+    if (top < 8) {
+      top = triggerRect.bottom + 8
+    }
+
+    setDropdownPosition({ top, left })
   }, [])
 
   // Click outside to close
@@ -255,7 +257,7 @@ export function ColorPicker({ currentColor, onSelect }: ColorPickerProps) {
         initial={{ opacity: 0, scale: 0.95, y: 8 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 8 }}
-        transition={{ duration: 0.2, ease: CUSTOM_EASE }}
+        transition={{ duration: 0.15, ease: CUSTOM_EASE }}
         className="fixed bg-kol-bg border border-kol-border rounded-lg shadow-[0_4px_24px_rgba(0,0,0,0.5)] z-[9999] overflow-hidden"
         style={{
           top: dropdownPosition.top,
