@@ -430,22 +430,24 @@ export function ColorPicker({ currentColor, onSelect }: ColorPickerProps) {
   return (
     <>
       <Tooltip content="Pick color" position="top">
-        <button
-          ref={triggerRef}
-          onClick={(e) => {
-            e.stopPropagation()
-            if (isOpen) {
-              handleClose()
-            } else {
-              setIsOpen(true)
-            }
-          }}
-          className="w-6 h-6 rounded-md flex items-center justify-center transition-all hover:scale-110 ring-1 ring-kol-border/50 group relative"
-          style={{ backgroundColor: currentColor }}
-        >
-          {/* Paint brush icon on hover */}
-          <i className="ri-palette-line text-white text-xs opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]" />
-        </button>
+        <div className="inline-flex">
+          <button
+            ref={triggerRef}
+            onClick={(e) => {
+              e.stopPropagation()
+              if (isOpen) {
+                handleClose()
+              } else {
+                setIsOpen(true)
+              }
+            }}
+            className="w-6 h-6 rounded-md flex items-center justify-center transition-all hover:scale-110 ring-1 ring-kol-border/50 group relative"
+            style={{ backgroundColor: currentColor }}
+          >
+            {/* Paint brush icon on hover */}
+            <i className="ri-palette-line text-white text-xs opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]" />
+          </button>
+        </div>
       </Tooltip>
       {mounted && createPortal(dropdown, document.body)}
     </>
