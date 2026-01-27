@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 
 export type ExpandableButtonVariant = 'default' | 'primary' | 'subtle'
+export type ExpandableButtonSize = 'default' | 'large'
 
 export interface ExpandableButtonProps {
   /** Remixicon class name (e.g., "ri-add-line") */
@@ -10,6 +11,8 @@ export interface ExpandableButtonProps {
   label: string
   /** Visual variant */
   variant?: ExpandableButtonVariant
+  /** Size variant */
+  size?: ExpandableButtonSize
   /** Click handler */
   onClick?: () => void
   /** Disable the button */
@@ -18,13 +21,29 @@ export interface ExpandableButtonProps {
   className?: string
 }
 
-const COLLAPSED_WIDTH = 28
+const sizeConfig = {
+  default: {
+    collapsedWidth: 28,
+    height: 'h-7',
+    iconSize: 'text-sm',
+    labelSize: 'text-xs',
+    baseWidth: 32,
+    charWidth: 6.5,
+  },
+  large: {
+    collapsedWidth: 36,
+    height: 'h-9',
+    iconSize: 'text-base',
+    labelSize: 'text-sm',
+    baseWidth: 40,
+    charWidth: 7.5,
+  },
+}
 
-// Calculate expanded width based on label length
-const getExpandedWidth = (label: string) => {
-  const baseWidth = 32 // padding + icon
-  const charWidth = 6.5 // approximate width per character
-  return Math.max(60, baseWidth + label.length * charWidth + 12)
+// Calculate expanded width based on label length and size
+const getExpandedWidth = (label: string, size: ExpandableButtonSize) => {
+  const config = sizeConfig[size]
+  return Math.max(size === 'large' ? 72 : 60, config.baseWidth + label.length * config.charWidth + 12)
 }
 
 const variantStyles: Record<
@@ -58,6 +77,7 @@ export function ExpandableButton({
   icon,
   label,
   variant = 'default',
+  size = 'default',
   onClick,
   disabled = false,
   className = '',
@@ -65,19 +85,20 @@ export function ExpandableButton({
   const [isExpanded, setIsExpanded] = useState(false)
 
   const styles = variantStyles[variant]
-  const expandedWidth = getExpandedWidth(label)
+  const config = sizeConfig[size]
+  const expandedWidth = getExpandedWidth(label, size)
 
   return (
     <motion.button
       className={`
-        group relative h-7 rounded-lg flex items-center justify-center overflow-hidden
+        group relative ${config.height} rounded-lg flex items-center justify-center overflow-hidden
         border border-transparent
         ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
         ${className}
       `}
       initial={false}
       animate={{
-        width: isExpanded ? expandedWidth : COLLAPSED_WIDTH,
+        width: isExpanded ? expandedWidth : config.collapsedWidth,
         backgroundColor: isExpanded
           ? (variant === 'primary' ? 'rgba(0, 123, 255, 0.2)' : 'rgba(255, 255, 255, 0.05)')
           : (variant === 'primary' ? 'rgba(0, 123, 255, 0.1)' : 'transparent'),
@@ -98,10 +119,10 @@ export function ExpandableButton({
       disabled={disabled}
       whileTap={disabled ? undefined : { scale: 0.97 }}
     >
-      <div className="flex items-center gap-1.5 px-2">
+      <div className={`flex items-center ${size === 'large' ? 'gap-2 px-2.5' : 'gap-1.5 px-2'}`}>
         {/* Icon */}
         <motion.i
-          className={`${icon} text-sm flex-shrink-0`}
+          className={`${icon} ${config.iconSize} flex-shrink-0`}
           animate={{
             color: isExpanded ? styles.iconExpanded : styles.icon,
           }}
@@ -114,7 +135,7 @@ export function ExpandableButton({
 
         {/* Label - fades in smoothly */}
         <motion.span
-          className={`text-xs font-medium whitespace-nowrap ${styles.label}`}
+          className={`${config.labelSize} font-medium whitespace-nowrap ${styles.label}`}
           initial={false}
           animate={{
             opacity: isExpanded ? 1 : 0,
