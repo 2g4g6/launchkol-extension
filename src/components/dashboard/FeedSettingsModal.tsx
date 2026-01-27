@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { createPortal } from 'react-dom'
 import { BaseModal } from '../ui/BaseModal'
 import { Tooltip } from '../ui/Tooltip'
+import { PlatformLogoMap } from '../ui/PlatformLogos'
 
 // ============================================================================
 // Types
@@ -18,11 +19,11 @@ interface TweetTypeNotificationSettings {
   soundId: string      // 'default' | 'buzz' | 'ching' | 'ring' | 'chime' | 'alert' | 'coin' | 'silent'
 }
 
-// Filters for highlighting/notifications (simple toggles)
+// Filters for highlighting/notifications
 interface ContentFilters {
   filterTokenSymbols: boolean    // Highlight tweets containing token symbols ($XXX)
   filterMintAddresses: boolean   // Highlight tweets containing mint addresses
-  filterKeywords: boolean        // Highlight tweets containing keywords
+  keywords: string[]             // Custom keywords to highlight (empty array = disabled)
 }
 
 // Per tweet type settings
@@ -132,12 +133,12 @@ const TWEET_TYPE_LABELS: Record<TweetTypeKey, string> = {
   followingUpdates: 'Following',
 }
 
-const PLATFORM_OPTIONS: { id: PlatformType; label: string }[] = [
-  { id: 'pump', label: 'Pump.fun' },
-  { id: 'bonk', label: 'Bonk.fun' },
-  { id: 'bags', label: 'Bags' },
-  { id: 'mayhem', label: 'Mayhem' },
-  { id: 'fourmeme', label: '4Meme' },
+const PLATFORM_OPTIONS: { id: PlatformType; label: string; Icon: React.ComponentType<{ className?: string }> }[] = [
+  { id: 'pump', label: 'Pump.fun', Icon: PlatformLogoMap.pump },
+  { id: 'bonk', label: 'Bonk.fun', Icon: PlatformLogoMap.bonk },
+  { id: 'bags', label: 'Bags', Icon: PlatformLogoMap.bags },
+  { id: 'mayhem', label: 'Mayhem', Icon: PlatformLogoMap.mayhem },
+  { id: 'fourmeme', label: '4Meme', Icon: PlatformLogoMap.fourmeme },
 ]
 
 // Create default tweet type settings
@@ -837,14 +838,15 @@ function PlatformPicker({ currentPlatform, onSelect, accountDefault }: PlatformP
               setIsOpen(false)
             }}
             className={`
-              w-full px-3 py-1.5 text-left text-xs transition-colors
+              w-full px-3 py-1.5 text-left text-xs transition-colors flex items-center gap-2
               ${platform.id === currentPlatform
                 ? 'bg-kol-blue/15 text-kol-blue'
                 : 'text-kol-text-muted hover:bg-kol-surface-elevated hover:text-white'
               }
             `}
           >
-            {platform.label}
+            <platform.Icon className="w-3.5 h-3.5 flex-shrink-0" />
+            <span>{platform.label}</span>
           </button>
         ))}
       </motion.div>
@@ -859,8 +861,9 @@ function PlatformPicker({ currentPlatform, onSelect, accountDefault }: PlatformP
           e.stopPropagation()
           setIsOpen(!isOpen)
         }}
-        className="flex items-center gap-1 h-6 px-1.5 rounded text-xs text-kol-text-muted hover:text-white hover:bg-kol-surface-elevated transition-colors"
+        className="flex items-center gap-1.5 h-6 px-1.5 rounded text-xs text-kol-text-muted hover:text-white hover:bg-kol-surface-elevated transition-colors"
       >
+        {selectedPlatform && <selectedPlatform.Icon className="w-3.5 h-3.5 flex-shrink-0" />}
         <span className="max-w-[60px] truncate">{displayLabel}</span>
         <i className={`ri-arrow-down-s-line text-[10px] ${isOpen ? 'rotate-180' : ''} transition-transform`} />
       </button>
@@ -1052,7 +1055,7 @@ function migrateFilters(oldFilters: Record<string, unknown> | undefined): Conten
   return {
     filterTokenSymbols: Boolean(oldTokenSymbols && oldTokenSymbols.length > 0),
     filterMintAddresses: Boolean(oldMintAddresses && oldMintAddresses.length > 0),
-    filterKeywords: Boolean(oldKeywords && oldKeywords.length > 0),
+    keywords: oldKeywords ?? [],
   }
 }
 
@@ -1227,6 +1230,215 @@ function migrateGlobalSettings(oldSettings: Record<string, unknown>): GlobalFeed
       },
     },
   }
+}
+
+// Platform select with icons
+interface PlatformSelectProps {
+  value: PlatformType
+  onChange: (value: PlatformType) => void
+  disabled?: boolean
+  showDefault?: boolean
+  defaultLabel?: string
+}
+
+function PlatformSelect({ value, onChange, disabled, showDefault, defaultLabel }: PlatformSelectProps) {
+  const [isOpen, setIsOpen] = useState(false)
+  const [mounted, setMounted] = useState(false)
+  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0, width: 0 })
+  const triggerRef = useRef<HTMLButtonElement>(null)
+  const dropdownRef = useRef<HTMLDivElement>(null)
+
+  const selectedOption = PLATFORM_OPTIONS.find(p => p.id === value) || PLATFORM_OPTIONS[0]
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  const updatePosition = useCallback(() => {
+    if (!triggerRef.current) return
+    const rect = triggerRef.current.getBoundingClientRect()
+    setDropdownPosition({
+      top: rect.bottom + 4,
+      left: rect.left,
+      width: Math.max(rect.width, 140),
+    })
+  }, [])
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      const target = event.target as Node
+      if (
+        triggerRef.current && !triggerRef.current.contains(target) &&
+        dropdownRef.current && !dropdownRef.current.contains(target)
+      ) {
+        setIsOpen(false)
+      }
+    }
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+      return () => document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [isOpen])
+
+  useEffect(() => {
+    if (isOpen) {
+      updatePosition()
+      window.addEventListener('scroll', updatePosition, true)
+      window.addEventListener('resize', updatePosition)
+      return () => {
+        window.removeEventListener('scroll', updatePosition, true)
+        window.removeEventListener('resize', updatePosition)
+      }
+    }
+  }, [isOpen, updatePosition])
+
+  const dropdown = mounted && isOpen && (
+    <AnimatePresence>
+      <motion.div
+        ref={dropdownRef}
+        initial={{ opacity: 0, y: -4 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -4 }}
+        transition={{ duration: 0.15 }}
+        className="fixed bg-kol-bg border border-kol-border rounded-lg shadow-[0_4px_24px_rgba(0,0,0,0.4)] z-[9999] py-1"
+        style={{ top: dropdownPosition.top, left: dropdownPosition.left, minWidth: dropdownPosition.width }}
+      >
+        {showDefault && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation()
+              setIsOpen(false)
+            }}
+            className="w-full px-3 py-2 text-left text-xs text-kol-text-muted hover:bg-kol-surface-elevated hover:text-white transition-colors"
+          >
+            Default {defaultLabel && <span className="text-kol-text-muted/60">({defaultLabel})</span>}
+          </button>
+        )}
+        {PLATFORM_OPTIONS.map(platform => (
+          <button
+            key={platform.id}
+            onClick={(e) => {
+              e.stopPropagation()
+              onChange(platform.id)
+              setIsOpen(false)
+            }}
+            className={`
+              w-full px-3 py-2 text-left text-xs transition-colors flex items-center gap-2
+              ${platform.id === value
+                ? 'bg-kol-blue/15 text-kol-blue'
+                : 'text-kol-text-muted hover:bg-kol-surface-elevated hover:text-white'
+              }
+            `}
+          >
+            <platform.Icon className="w-4 h-4 flex-shrink-0" />
+            <span>{platform.label}</span>
+          </button>
+        ))}
+      </motion.div>
+    </AnimatePresence>
+  )
+
+  return (
+    <>
+      <button
+        ref={triggerRef}
+        onClick={(e) => {
+          e.stopPropagation()
+          if (!disabled) setIsOpen(!isOpen)
+        }}
+        disabled={disabled}
+        className={`
+          flex items-center justify-between gap-2 h-8 px-3 rounded-lg bg-kol-surface/50 border text-xs transition-colors
+          ${isOpen ? 'border-kol-blue/50' : 'border-kol-border/50'}
+          ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:border-kol-border'}
+        `}
+      >
+        <div className="flex items-center gap-2">
+          <selectedOption.Icon className="w-4 h-4 flex-shrink-0" />
+          <span className="text-white">{selectedOption.label}</span>
+        </div>
+        <i className={`ri-arrow-down-s-line text-kol-text-muted transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+      </button>
+      {mounted && createPortal(dropdown, document.body)}
+    </>
+  )
+}
+
+// Keyword input component for custom keywords
+interface KeywordInputProps {
+  keywords: string[]
+  onChange: (keywords: string[]) => void
+  disabled?: boolean
+}
+
+function KeywordInput({ keywords, onChange, disabled }: KeywordInputProps) {
+  const [inputValue, setInputValue] = useState('')
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' || e.key === ',') {
+      e.preventDefault()
+      addKeyword()
+    } else if (e.key === 'Backspace' && inputValue === '' && keywords.length > 0) {
+      // Remove last keyword when backspace on empty input
+      onChange(keywords.slice(0, -1))
+    }
+  }
+
+  const addKeyword = () => {
+    const trimmed = inputValue.trim().toLowerCase()
+    if (trimmed && !keywords.includes(trimmed)) {
+      onChange([...keywords, trimmed])
+    }
+    setInputValue('')
+  }
+
+  const removeKeyword = (keyword: string) => {
+    onChange(keywords.filter(k => k !== keyword))
+  }
+
+  return (
+    <div
+      onClick={() => inputRef.current?.focus()}
+      className={`
+        min-h-[32px] px-2 py-1 rounded-lg bg-kol-surface/50 border border-kol-border/50
+        flex flex-wrap items-center gap-1.5 cursor-text transition-colors
+        focus-within:border-kol-blue/50
+        ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
+      `}
+    >
+      {keywords.map(keyword => (
+        <span
+          key={keyword}
+          className="inline-flex items-center gap-1 px-2 py-0.5 bg-kol-blue/20 text-kol-blue rounded text-xs"
+        >
+          {keyword}
+          {!disabled && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                removeKeyword(keyword)
+              }}
+              className="hover:text-white transition-colors"
+            >
+              <i className="ri-close-line text-[10px]" />
+            </button>
+          )}
+        </span>
+      ))}
+      <input
+        ref={inputRef}
+        type="text"
+        value={inputValue}
+        onChange={(e) => setInputValue(e.target.value)}
+        onKeyDown={handleKeyDown}
+        onBlur={addKeyword}
+        placeholder={keywords.length === 0 ? "Type keywords, press Enter..." : ""}
+        disabled={disabled}
+        className="flex-1 min-w-[100px] bg-transparent border-none outline-none text-xs text-white placeholder:text-kol-text-muted/50"
+      />
+    </div>
+  )
 }
 
 // ============================================================================
@@ -1718,15 +1930,10 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                       <p className="text-sm font-medium text-white">Default Launch Platform</p>
                       <p className="text-xs text-kol-text-muted mt-0.5">Platform to open coins on</p>
                     </div>
-                    <select
+                    <PlatformSelect
                       value={globalSettings.defaultLaunchPlatform}
-                      onChange={(e) => setGlobalSettings({ ...globalSettings, defaultLaunchPlatform: e.target.value as PlatformType })}
-                      className="h-8 px-2 rounded bg-kol-surface border border-kol-border/50 text-xs text-white focus:outline-none focus:border-kol-blue/50"
-                    >
-                      {PLATFORM_OPTIONS.map(p => (
-                        <option key={p.id} value={p.id}>{p.label}</option>
-                      ))}
-                    </select>
+                      onChange={(v) => setGlobalSettings({ ...globalSettings, defaultLaunchPlatform: v })}
+                    />
                   </div>
 
                   <div className="flex items-center justify-between gap-4 py-1">
@@ -1762,7 +1969,7 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                             ...globalSettings.filters,
                             filterTokenSymbols: v,
                             filterMintAddresses: globalSettings.filters?.filterMintAddresses ?? false,
-                            filterKeywords: globalSettings.filters?.filterKeywords ?? false,
+                            keywords: globalSettings.filters?.keywords ?? [],
                           }
                         })}
                       />
@@ -1780,25 +1987,25 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                             ...globalSettings.filters,
                             filterTokenSymbols: globalSettings.filters?.filterTokenSymbols ?? false,
                             filterMintAddresses: v,
-                            filterKeywords: globalSettings.filters?.filterKeywords ?? false,
+                            keywords: globalSettings.filters?.keywords ?? [],
                           }
                         })}
                       />
                     </div>
-                    <div className="flex items-center justify-between py-1">
-                      <div className="flex-1">
+                    <div className="py-1">
+                      <div className="mb-2">
                         <p className="text-sm font-medium text-white">Keywords</p>
-                        <p className="text-xs text-kol-text-muted mt-0.5">Highlight tweets with crypto keywords</p>
+                        <p className="text-xs text-kol-text-muted mt-0.5">Highlight tweets containing these keywords</p>
                       </div>
-                      <ToggleSwitch
-                        enabled={globalSettings.filters?.filterKeywords ?? false}
+                      <KeywordInput
+                        keywords={globalSettings.filters?.keywords ?? []}
                         onChange={(v) => setGlobalSettings({
                           ...globalSettings,
                           filters: {
                             ...globalSettings.filters,
                             filterTokenSymbols: globalSettings.filters?.filterTokenSymbols ?? false,
                             filterMintAddresses: globalSettings.filters?.filterMintAddresses ?? false,
-                            filterKeywords: v,
+                            keywords: v,
                           }
                         })}
                       />
@@ -2051,20 +2258,13 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                                             <p className="text-xs font-medium text-white">Default Launch Platform</p>
                                             <InheritedIndicator show={account.settings?.defaultLaunchPlatform === undefined} />
                                           </div>
-                                          <div className="flex items-center gap-1">
-                                            <select
-                                              value={account.settings?.defaultLaunchPlatform || ''}
-                                              onChange={(e) => updateAccountSettings(selectedGroupId, account.id, {
-                                                defaultLaunchPlatform: e.target.value ? e.target.value as PlatformType : undefined
-                                              })}
-                                              className="h-7 px-2 rounded bg-kol-surface border border-kol-border/50 text-xs text-white focus:outline-none focus:border-kol-blue/50"
-                                            >
-                                              <option value="">Default ({PLATFORM_OPTIONS.find(p => p.id === groupSettings.defaultLaunchPlatform)?.label})</option>
-                                              {PLATFORM_OPTIONS.map(p => (
-                                                <option key={p.id} value={p.id}>{p.label}</option>
-                                              ))}
-                                            </select>
-                                          </div>
+                                          <PlatformPicker
+                                            currentPlatform={account.settings?.defaultLaunchPlatform || null}
+                                            onSelect={(platform) => updateAccountSettings(selectedGroupId, account.id, {
+                                              defaultLaunchPlatform: platform as PlatformType | undefined
+                                            })}
+                                            accountDefault={PLATFORM_OPTIONS.find(p => p.id === groupSettings.defaultLaunchPlatform)?.label}
+                                          />
                                         </div>
 
                                         {/* Sound Volume */}
@@ -2101,7 +2301,7 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                                               ...account.settings?.filters,
                                               filterTokenSymbols: v,
                                               filterMintAddresses: account.settings?.filters?.filterMintAddresses ?? false,
-                                              filterKeywords: account.settings?.filters?.filterKeywords ?? false,
+                                              keywords: account.settings?.filters?.keywords ?? [],
                                             })}
                                           />
                                         </div>
@@ -2116,22 +2316,22 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                                               ...account.settings?.filters,
                                               filterTokenSymbols: account.settings?.filters?.filterTokenSymbols ?? false,
                                               filterMintAddresses: v,
-                                              filterKeywords: account.settings?.filters?.filterKeywords ?? false,
+                                              keywords: account.settings?.filters?.keywords ?? [],
                                             })}
                                           />
                                         </div>
-                                        <div className="flex items-center justify-between">
-                                          <div className="flex items-center gap-1.5">
+                                        <div>
+                                          <div className="flex items-center gap-1.5 mb-1.5">
                                             <p className="text-xs font-medium text-white">Keywords</p>
-                                            <InheritedIndicator show={account.settings?.filters?.filterKeywords === undefined} />
+                                            <InheritedIndicator show={account.settings?.filters?.keywords === undefined} />
                                           </div>
-                                          <ToggleSwitch
-                                            enabled={account.settings?.filters?.filterKeywords ?? groupSettings.filters?.filterKeywords ?? false}
+                                          <KeywordInput
+                                            keywords={account.settings?.filters?.keywords ?? groupSettings.filters?.keywords ?? []}
                                             onChange={(v) => updateAccountFilters(selectedGroupId, account.id, {
                                               ...account.settings?.filters,
                                               filterTokenSymbols: account.settings?.filters?.filterTokenSymbols ?? false,
                                               filterMintAddresses: account.settings?.filters?.filterMintAddresses ?? false,
-                                              filterKeywords: v,
+                                              keywords: v,
                                             })}
                                           />
                                         </div>
@@ -2304,16 +2504,11 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                           <p className="text-sm font-medium text-white">Default Launch Platform</p>
                           <p className="text-xs text-kol-text-muted mt-0.5">Platform to open coins on</p>
                         </div>
-                        <select
+                        <PlatformSelect
                           value={selectedGroup.settings.defaultLaunchPlatform}
-                          onChange={(e) => updateGroupSettings(selectedGroupId, { defaultLaunchPlatform: e.target.value as PlatformType })}
+                          onChange={(v) => updateGroupSettings(selectedGroupId, { defaultLaunchPlatform: v })}
                           disabled={selectedGroup.settings.useGlobalSettings}
-                          className="h-8 px-2 rounded bg-kol-surface border border-kol-border/50 text-xs text-white focus:outline-none focus:border-kol-blue/50"
-                        >
-                          {PLATFORM_OPTIONS.map(p => (
-                            <option key={p.id} value={p.id}>{p.label}</option>
-                          ))}
-                        </select>
+                        />
                       </div>
 
                       <div className="flex items-center justify-between gap-4 py-1">
@@ -2349,7 +2544,7 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                             ...selectedGroup.settings.filters,
                             filterTokenSymbols: v,
                             filterMintAddresses: selectedGroup.settings.filters?.filterMintAddresses ?? false,
-                            filterKeywords: selectedGroup.settings.filters?.filterKeywords ?? false,
+                            keywords: selectedGroup.settings.filters?.keywords ?? [],
                           })}
                           disabled={selectedGroup.settings.useGlobalSettings}
                         />
@@ -2365,23 +2560,23 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                             ...selectedGroup.settings.filters,
                             filterTokenSymbols: selectedGroup.settings.filters?.filterTokenSymbols ?? false,
                             filterMintAddresses: v,
-                            filterKeywords: selectedGroup.settings.filters?.filterKeywords ?? false,
+                            keywords: selectedGroup.settings.filters?.keywords ?? [],
                           })}
                           disabled={selectedGroup.settings.useGlobalSettings}
                         />
                       </div>
-                      <div className="flex items-center justify-between py-1">
-                        <div className="flex-1">
+                      <div className="py-1">
+                        <div className="mb-2">
                           <p className="text-sm font-medium text-white">Keywords</p>
-                          <p className="text-xs text-kol-text-muted mt-0.5">Highlight tweets with crypto keywords</p>
+                          <p className="text-xs text-kol-text-muted mt-0.5">Highlight tweets containing these keywords</p>
                         </div>
-                        <ToggleSwitch
-                          enabled={selectedGroup.settings.filters?.filterKeywords ?? false}
+                        <KeywordInput
+                          keywords={selectedGroup.settings.filters?.keywords ?? []}
                           onChange={(v) => updateGroupFilters(selectedGroupId, {
                             ...selectedGroup.settings.filters,
                             filterTokenSymbols: selectedGroup.settings.filters?.filterTokenSymbols ?? false,
                             filterMintAddresses: selectedGroup.settings.filters?.filterMintAddresses ?? false,
-                            filterKeywords: v,
+                            keywords: v,
                           })}
                           disabled={selectedGroup.settings.useGlobalSettings}
                         />

@@ -73,6 +73,24 @@ export function FourMemeLogo({ className }: LogoProps) {
   )
 }
 
+// Mayhem logo - Red/orange chaotic energy
+export function MayhemLogo({ className }: LogoProps) {
+  return (
+    <svg className={className} viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="8" cy="8" r="6" fill="url(#mayhem-gradient)" />
+      <path d="M5 6L8 10L11 6" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M8 4V6" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
+      <path d="M5 11L8 10L11 11" stroke="white" strokeWidth="1" strokeLinecap="round" strokeOpacity="0.7" />
+      <defs>
+        <linearGradient id="mayhem-gradient" x1="2" y1="2" x2="14" y2="14" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#EF4444" />
+          <stop offset="1" stopColor="#DC2626" />
+        </linearGradient>
+      </defs>
+    </svg>
+  )
+}
+
 // Binance/BNB logo - Yellow diamond
 export function BinanceLogo({ className }: LogoProps) {
   return (
@@ -90,6 +108,7 @@ export const PlatformLogoMap = {
   pump: PumpLogo,
   bonk: BonkLogo,
   bags: BagsLogo,
+  mayhem: MayhemLogo,
   fourmeme: FourMemeLogo,
   binance: BinanceLogo,
 } as const
