@@ -51,7 +51,7 @@ export function KeywordInput({
   }
 
   return (
-    <div className="rounded-lg bg-kol-surface/20 border border-kol-border/30 p-3">
+    <div>
       {/* Header with title and add button */}
       <div className="flex items-start justify-between gap-2 mb-2">
         <div className="flex-1">
