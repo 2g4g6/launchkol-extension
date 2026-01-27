@@ -2,7 +2,8 @@ import type { PlatformType, TweetTypeKey, TweetTypeSettings, GlobalFeedSettings,
 
 export const STORAGE_KEYS = {
   groups: 'launchkol_feed_groups',
-  globalSettings: 'launchkol_global_feed_settings'
+  globalSettings: 'launchkol_global_feed_settings',
+  recentColors: 'launchkol_recent_colors'
 }
 
 export const NOTIFICATION_SOUNDS = [
