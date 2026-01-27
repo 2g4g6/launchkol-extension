@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { createPortal } from 'react-dom'
 import { BaseModal } from '../ui/BaseModal'
 import { Tooltip } from '../ui/Tooltip'
-import { PlatformLogoMap } from '../ui/PlatformLogos'
 
 // ============================================================================
 // Types
@@ -133,12 +132,12 @@ const TWEET_TYPE_LABELS: Record<TweetTypeKey, string> = {
   followingUpdates: 'Following',
 }
 
-const PLATFORM_OPTIONS: { id: PlatformType; label: string; Icon: React.ComponentType<{ className?: string }> }[] = [
-  { id: 'pump', label: 'Pump.fun', Icon: PlatformLogoMap.pump },
-  { id: 'bonk', label: 'Bonk.fun', Icon: PlatformLogoMap.bonk },
-  { id: 'bags', label: 'Bags', Icon: PlatformLogoMap.bags },
-  { id: 'mayhem', label: 'Mayhem', Icon: PlatformLogoMap.mayhem },
-  { id: 'fourmeme', label: '4Meme', Icon: PlatformLogoMap.fourmeme },
+const PLATFORM_OPTIONS: { id: PlatformType; label: string; icon: string }[] = [
+  { id: 'pump', label: 'Pump.fun', icon: '/images/pump.svg' },
+  { id: 'bonk', label: 'Bonk.fun', icon: '/images/bonk.svg' },
+  { id: 'bags', label: 'Bags', icon: '/images/bags.svg' },
+  { id: 'mayhem', label: 'Mayhem', icon: '/images/mayhem.svg' },
+  { id: 'fourmeme', label: '4Meme', icon: '/images/fourmeme.svg' },
 ]
 
 // Create default tweet type settings
@@ -845,7 +844,7 @@ function PlatformPicker({ currentPlatform, onSelect, accountDefault }: PlatformP
               }
             `}
           >
-            <platform.Icon className="w-3.5 h-3.5 flex-shrink-0" />
+            <img src={platform.icon} className="w-3.5 h-3.5 flex-shrink-0" alt="" />
             <span>{platform.label}</span>
           </button>
         ))}
@@ -863,7 +862,7 @@ function PlatformPicker({ currentPlatform, onSelect, accountDefault }: PlatformP
         }}
         className="flex items-center gap-1.5 h-6 px-1.5 rounded text-xs text-kol-text-muted hover:text-white hover:bg-kol-surface-elevated transition-colors"
       >
-        {selectedPlatform && <selectedPlatform.Icon className="w-3.5 h-3.5 flex-shrink-0" />}
+        {selectedPlatform && <img src={selectedPlatform.icon} className="w-3.5 h-3.5 flex-shrink-0" alt="" />}
         <span className="max-w-[60px] truncate">{displayLabel}</span>
         <i className={`ri-arrow-down-s-line text-[10px] ${isOpen ? 'rotate-180' : ''} transition-transform`} />
       </button>
@@ -1330,7 +1329,7 @@ function PlatformSelect({ value, onChange, disabled, showDefault, defaultLabel }
               }
             `}
           >
-            <platform.Icon className="w-4 h-4 flex-shrink-0" />
+            <img src={platform.icon} className="w-4 h-4 flex-shrink-0" alt="" />
             <span>{platform.label}</span>
           </button>
         ))}
@@ -1354,7 +1353,7 @@ function PlatformSelect({ value, onChange, disabled, showDefault, defaultLabel }
         `}
       >
         <div className="flex items-center gap-2">
-          <selectedOption.Icon className="w-4 h-4 flex-shrink-0" />
+          <img src={selectedOption.icon} className="w-4 h-4 flex-shrink-0" alt="" />
           <span className="text-white">{selectedOption.label}</span>
         </div>
         <i className={`ri-arrow-down-s-line text-kol-text-muted transition-transform ${isOpen ? 'rotate-180' : ''}`} />
