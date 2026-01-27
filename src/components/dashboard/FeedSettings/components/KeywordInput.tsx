@@ -54,6 +54,7 @@ export function KeywordInput({
       <div className="flex items-start justify-between gap-2 mb-2">
         <div className="flex-1">
           <div className="flex items-center gap-1.5">
+            <i className="ri-search-eye-line text-kol-text-muted" />
             <p className="text-sm font-medium text-white">{title}</p>
           </div>
           {description && (
