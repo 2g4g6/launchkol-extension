@@ -65,7 +65,7 @@ export function ColorPicker({ currentColor, onSelect }: ColorPickerProps) {
 
     // Position ABOVE the trigger, centered horizontally
     let left = triggerRect.left + triggerRect.width / 2 - PICKER_WIDTH / 2
-    let top = triggerRect.top - estimatedHeight - 8
+    let top = triggerRect.top - estimatedHeight - 16
 
     // Clamp to viewport bounds (8px padding)
     if (left < 8) {
