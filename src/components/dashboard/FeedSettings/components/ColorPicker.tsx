@@ -61,15 +61,18 @@ export function ColorPicker({ currentColor, onSelect }: ColorPickerProps) {
     if (!triggerRef.current) return
 
     const triggerRect = triggerRef.current.getBoundingClientRect()
-    const popupWidth = 380 // Extension popup width
     const estimatedHeight = 340 // Approximate picker height
 
     // Position ABOVE the trigger, centered horizontally
     let left = triggerRect.left + triggerRect.width / 2 - PICKER_WIDTH / 2
     let top = triggerRect.top - estimatedHeight - 8
 
-    // Clamp left to not overflow popup (8px padding)
-    left = Math.max(8, Math.min(left, popupWidth - PICKER_WIDTH - 8))
+    // Clamp to viewport bounds (8px padding)
+    if (left < 8) {
+      left = 8
+    } else if (left + PICKER_WIDTH > window.innerWidth - 8) {
+      left = window.innerWidth - PICKER_WIDTH - 8
+    }
 
     // If not enough room above, position below instead
     if (top < 8) {
