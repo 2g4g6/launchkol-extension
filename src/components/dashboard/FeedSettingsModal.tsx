@@ -18,6 +18,8 @@ interface Account {
 interface FeedGroupSettings {
   useGlobalSettings: boolean
   autoTranslate: boolean
+  translateFrom: string
+  translateTo: string
   pauseOnHover: boolean
   notifications: boolean
   tweetTypes: {
@@ -25,6 +27,8 @@ interface FeedGroupSettings {
     replies: boolean
     quotes: boolean
     reposts: boolean
+    deletedTweets: boolean
+    followingUpdates: boolean
   }
 }
 
@@ -38,6 +42,8 @@ interface FeedGroup {
 
 interface GlobalFeedSettings {
   autoTranslate: boolean
+  translateFrom: string
+  translateTo: string
   pauseOnHover: boolean
   notifications: boolean
   tweetTypes: {
@@ -45,6 +51,8 @@ interface GlobalFeedSettings {
     replies: boolean
     quotes: boolean
     reposts: boolean
+    deletedTweets: boolean
+    followingUpdates: boolean
   }
 }
 
@@ -64,26 +72,34 @@ const STORAGE_KEYS = {
 
 const DEFAULT_GLOBAL_SETTINGS: GlobalFeedSettings = {
   autoTranslate: false,
+  translateFrom: 'auto',
+  translateTo: 'en',
   pauseOnHover: false,
   notifications: true,
   tweetTypes: {
     posts: true,
     replies: true,
     quotes: true,
-    reposts: true
+    reposts: true,
+    deletedTweets: false,
+    followingUpdates: false
   }
 }
 
 const DEFAULT_GROUP_SETTINGS: FeedGroupSettings = {
   useGlobalSettings: true,
   autoTranslate: false,
+  translateFrom: 'auto',
+  translateTo: 'en',
   pauseOnHover: false,
   notifications: true,
   tweetTypes: {
     posts: true,
     replies: true,
     quotes: true,
-    reposts: true
+    reposts: true,
+    deletedTweets: false,
+    followingUpdates: false
   }
 }
 
@@ -99,6 +115,22 @@ const GROUP_ICONS = [
   'ri-heart-line',
   'ri-bookmark-line'
 ]
+
+const LANGUAGES = [
+  { code: 'auto', label: 'Any language' },
+  { code: 'en', label: 'English' },
+  { code: 'es', label: 'Spanish' },
+  { code: 'zh', label: 'Chinese' },
+  { code: 'ja', label: 'Japanese' },
+  { code: 'ko', label: 'Korean' },
+  { code: 'fr', label: 'French' },
+  { code: 'de', label: 'German' },
+  { code: 'pt', label: 'Portuguese' },
+  { code: 'ru', label: 'Russian' },
+  { code: 'ar', label: 'Arabic' },
+]
+
+const TARGET_LANGUAGES = LANGUAGES.filter(l => l.code !== 'auto')
 
 // ============================================================================
 // Helper Components
@@ -156,6 +188,121 @@ function TweetTypePill({ label, enabled, onChange, disabled }: TweetTypePillProp
     >
       {label}
     </button>
+  )
+}
+
+interface LanguageSelectProps {
+  value: string
+  onChange: (value: string) => void
+  options: { code: string; label: string }[]
+  disabled?: boolean
+}
+
+function LanguageSelect({ value, onChange, options, disabled }: LanguageSelectProps) {
+  const [isOpen, setIsOpen] = useState(false)
+  const [mounted, setMounted] = useState(false)
+  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0, width: 0 })
+  const triggerRef = useRef<HTMLButtonElement>(null)
+  const dropdownRef = useRef<HTMLDivElement>(null)
+
+  const selectedOption = options.find(o => o.code === value) || options[0]
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  const updatePosition = useCallback(() => {
+    if (!triggerRef.current) return
+    const rect = triggerRef.current.getBoundingClientRect()
+    setDropdownPosition({
+      top: rect.bottom + 4,
+      left: rect.left,
+      width: rect.width,
+    })
+  }, [])
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      const target = event.target as Node
+      if (
+        triggerRef.current && !triggerRef.current.contains(target) &&
+        dropdownRef.current && !dropdownRef.current.contains(target)
+      ) {
+        setIsOpen(false)
+      }
+    }
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+      return () => document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [isOpen])
+
+  useEffect(() => {
+    if (isOpen) {
+      updatePosition()
+      window.addEventListener('scroll', updatePosition, true)
+      window.addEventListener('resize', updatePosition)
+      return () => {
+        window.removeEventListener('scroll', updatePosition, true)
+        window.removeEventListener('resize', updatePosition)
+      }
+    }
+  }, [isOpen, updatePosition])
+
+  const dropdown = mounted && isOpen && (
+    <AnimatePresence>
+      <motion.div
+        ref={dropdownRef}
+        initial={{ opacity: 0, y: -4 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -4 }}
+        transition={{ duration: 0.15 }}
+        className="fixed bg-kol-bg border border-kol-border rounded-lg shadow-[0_4px_24px_rgba(0,0,0,0.4)] z-[9999] py-1 max-h-[200px] overflow-y-auto scrollbar-styled"
+        style={{ top: dropdownPosition.top, left: dropdownPosition.left, width: dropdownPosition.width }}
+      >
+        {options.map(option => (
+          <button
+            key={option.code}
+            onClick={(e) => {
+              e.stopPropagation()
+              onChange(option.code)
+              setIsOpen(false)
+            }}
+            className={`
+              w-full px-3 py-2 text-left text-xs transition-colors
+              ${option.code === value
+                ? 'bg-kol-blue/15 text-kol-blue'
+                : 'text-kol-text-muted hover:bg-kol-surface-elevated hover:text-white'
+              }
+            `}
+          >
+            {option.label}
+          </button>
+        ))}
+      </motion.div>
+    </AnimatePresence>
+  )
+
+  return (
+    <>
+      <button
+        ref={triggerRef}
+        onClick={(e) => {
+          e.stopPropagation()
+          if (!disabled) setIsOpen(!isOpen)
+        }}
+        disabled={disabled}
+        className={`
+          flex items-center justify-between w-full h-8 px-3 rounded-lg bg-kol-surface/50 border text-xs transition-colors
+          ${isOpen ? 'border-kol-blue/50' : 'border-kol-border/50'}
+          ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:border-kol-border'}
+        `}
+      >
+        <span className="text-white">{selectedOption.label}</span>
+        <i className={`ri-arrow-down-s-line text-kol-text-muted transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+      </button>
+      {mounted && createPortal(dropdown, document.body)}
+    </>
   )
 }
 
@@ -548,7 +695,7 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
           <Tooltip content="Create new feed group" position="right">
             <button
               onClick={createGroup}
-              className="flex items-center gap-2.5 px-3 py-2.5 text-kol-text-muted hover:text-white hover:bg-kol-surface-elevated/50 transition-colors border-t border-kol-border/30 w-full"
+              className="flex items-center justify-center gap-2.5 px-3 py-2.5 text-kol-text-muted hover:text-white hover:bg-kol-surface-elevated/50 transition-colors border-t border-kol-border/30 w-full"
             >
               <i className="ri-add-line text-sm" />
               <span className="text-xs font-medium">New Group</span>
@@ -616,13 +763,45 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                   <div className="flex items-center justify-between py-1">
                     <div className="flex-1">
                       <p className="text-sm font-medium text-white">Auto-translate tweets</p>
-                      <p className="text-xs text-kol-text-muted mt-0.5">Translate non-English tweets</p>
+                      <p className="text-xs text-kol-text-muted mt-0.5">Translate tweets to your preferred language</p>
                     </div>
                     <ToggleSwitch
                       enabled={globalSettings.autoTranslate}
                       onChange={(v) => setGlobalSettings({ ...globalSettings, autoTranslate: v })}
                     />
                   </div>
+
+                  {/* Language Selection - shown when auto-translate is enabled */}
+                  <AnimatePresence>
+                    {globalSettings.autoTranslate && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.2 }}
+                        className="overflow-hidden"
+                      >
+                        <div className="flex gap-4 pl-0 py-2">
+                          <div className="flex-1">
+                            <label className="text-[10px] text-kol-text-muted uppercase tracking-wide font-medium mb-1.5 block">From</label>
+                            <LanguageSelect
+                              value={globalSettings.translateFrom}
+                              onChange={(v) => setGlobalSettings({ ...globalSettings, translateFrom: v })}
+                              options={LANGUAGES}
+                            />
+                          </div>
+                          <div className="flex-1">
+                            <label className="text-[10px] text-kol-text-muted uppercase tracking-wide font-medium mb-1.5 block">To</label>
+                            <LanguageSelect
+                              value={globalSettings.translateTo}
+                              onChange={(v) => setGlobalSettings({ ...globalSettings, translateTo: v })}
+                              options={TARGET_LANGUAGES}
+                            />
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
 
                   <div className="flex items-center justify-between py-1">
                     <div className="flex-1">
@@ -672,6 +851,16 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                       label="Reposts"
                       enabled={globalSettings.tweetTypes.reposts}
                       onChange={(v) => updateGlobalTweetTypes('reposts', v)}
+                    />
+                    <TweetTypePill
+                      label="Deleted"
+                      enabled={globalSettings.tweetTypes.deletedTweets}
+                      onChange={(v) => updateGlobalTweetTypes('deletedTweets', v)}
+                    />
+                    <TweetTypePill
+                      label="Following"
+                      enabled={globalSettings.tweetTypes.followingUpdates}
+                      onChange={(v) => updateGlobalTweetTypes('followingUpdates', v)}
                     />
                   </div>
                 </div>
@@ -868,7 +1057,7 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                     <div className="flex items-center justify-between py-1">
                       <div className="flex-1">
                         <p className="text-sm font-medium text-white">Auto-translate tweets</p>
-                        <p className="text-xs text-kol-text-muted mt-0.5">Translate non-English tweets</p>
+                        <p className="text-xs text-kol-text-muted mt-0.5">Translate tweets to your preferred language</p>
                       </div>
                       <ToggleSwitch
                         enabled={getEffectiveSettings(selectedGroup).autoTranslate}
@@ -876,6 +1065,40 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                         disabled={selectedGroup.settings.useGlobalSettings}
                       />
                     </div>
+
+                    {/* Language Selection - shown when auto-translate is enabled */}
+                    <AnimatePresence>
+                      {getEffectiveSettings(selectedGroup).autoTranslate && !selectedGroup.settings.useGlobalSettings && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          exit={{ opacity: 0, height: 0 }}
+                          transition={{ duration: 0.2 }}
+                          className="overflow-hidden"
+                        >
+                          <div className="flex gap-4 pl-0 py-2">
+                            <div className="flex-1">
+                              <label className="text-[10px] text-kol-text-muted uppercase tracking-wide font-medium mb-1.5 block">From</label>
+                              <LanguageSelect
+                                value={selectedGroup.settings.translateFrom}
+                                onChange={(v) => updateGroupSettings(selectedGroupId, { translateFrom: v })}
+                                options={LANGUAGES}
+                                disabled={selectedGroup.settings.useGlobalSettings}
+                              />
+                            </div>
+                            <div className="flex-1">
+                              <label className="text-[10px] text-kol-text-muted uppercase tracking-wide font-medium mb-1.5 block">To</label>
+                              <LanguageSelect
+                                value={selectedGroup.settings.translateTo}
+                                onChange={(v) => updateGroupSettings(selectedGroupId, { translateTo: v })}
+                                options={TARGET_LANGUAGES}
+                                disabled={selectedGroup.settings.useGlobalSettings}
+                              />
+                            </div>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
 
                     <div className="flex items-center justify-between py-1">
                       <div className="flex-1">
@@ -930,6 +1153,18 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                         label="Reposts"
                         enabled={getEffectiveSettings(selectedGroup).tweetTypes.reposts}
                         onChange={(v) => updateGroupTweetTypes(selectedGroupId, 'reposts', v)}
+                        disabled={selectedGroup.settings.useGlobalSettings}
+                      />
+                      <TweetTypePill
+                        label="Deleted"
+                        enabled={getEffectiveSettings(selectedGroup).tweetTypes.deletedTweets}
+                        onChange={(v) => updateGroupTweetTypes(selectedGroupId, 'deletedTweets', v)}
+                        disabled={selectedGroup.settings.useGlobalSettings}
+                      />
+                      <TweetTypePill
+                        label="Following"
+                        enabled={getEffectiveSettings(selectedGroup).tweetTypes.followingUpdates}
+                        onChange={(v) => updateGroupTweetTypes(selectedGroupId, 'followingUpdates', v)}
                         disabled={selectedGroup.settings.useGlobalSettings}
                       />
                     </div>
