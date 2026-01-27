@@ -597,7 +597,7 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
               setSelectedTab('settings')
             }}
             className={`
-              w-full flex items-center gap-2.5 px-3 py-2.5 text-left transition-all mt-1
+              w-full flex items-center justify-center gap-2.5 px-3 py-2.5 text-left transition-all mt-1
               ${selectedGroupId === null
                 ? 'bg-kol-blue/10 text-white border-l-2 border-kol-blue'
                 : 'text-kol-text-muted hover:bg-kol-surface-elevated/50 hover:text-white border-l-2 border-transparent'
@@ -605,7 +605,7 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
             `}
           >
             <i className="ri-global-line text-sm" />
-            <span className="text-xs font-medium truncate">All Feeds</span>
+            <span className="text-xs font-medium">All Feeds</span>
           </button>
 
           {/* Divider */}
