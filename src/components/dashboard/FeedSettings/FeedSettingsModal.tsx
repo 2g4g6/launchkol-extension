@@ -592,24 +592,18 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                         })}
                       />
                     </div>
-                    <div className="py-1">
-                      <div className="mb-2">
-                        <p className="text-sm font-medium text-white">Keywords</p>
-                        <p className="text-xs text-kol-text-muted mt-0.5">Highlight tweets containing these keywords</p>
-                      </div>
-                      <KeywordInput
-                        keywords={globalSettings.filters?.keywords ?? []}
-                        onChange={(v) => setGlobalSettings({
-                          ...globalSettings,
-                          filters: {
-                            ...globalSettings.filters,
-                            filterTokenSymbols: globalSettings.filters?.filterTokenSymbols ?? false,
-                            filterMintAddresses: globalSettings.filters?.filterMintAddresses ?? false,
-                            keywords: v,
-                          }
-                        })}
-                      />
-                    </div>
+                    <KeywordInput
+                      keywords={globalSettings.filters?.keywords ?? []}
+                      onChange={(v) => setGlobalSettings({
+                        ...globalSettings,
+                        filters: {
+                          ...globalSettings.filters,
+                          filterTokenSymbols: globalSettings.filters?.filterTokenSymbols ?? false,
+                          filterMintAddresses: globalSettings.filters?.filterMintAddresses ?? false,
+                          keywords: v,
+                        }
+                      })}
+                    />
                   </div>
                 </div>
 
@@ -920,21 +914,16 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                                             })}
                                           />
                                         </div>
-                                        <div>
-                                          <div className="flex items-center gap-1.5 mb-1.5">
-                                            <p className="text-xs font-medium text-white">Keywords</p>
-                                            <InheritedIndicator show={account.settings?.filters?.keywords === undefined} />
-                                          </div>
-                                          <KeywordInput
-                                            keywords={account.settings?.filters?.keywords ?? groupSettings.filters?.keywords ?? []}
-                                            onChange={(v) => updateAccountFilters(selectedGroupId, account.id, {
-                                              ...account.settings?.filters,
-                                              filterTokenSymbols: account.settings?.filters?.filterTokenSymbols ?? false,
-                                              filterMintAddresses: account.settings?.filters?.filterMintAddresses ?? false,
-                                              keywords: v,
-                                            })}
-                                          />
-                                        </div>
+                                        <KeywordInput
+                                          keywords={account.settings?.filters?.keywords ?? groupSettings.filters?.keywords ?? []}
+                                          onChange={(v) => updateAccountFilters(selectedGroupId, account.id, {
+                                            ...account.settings?.filters,
+                                            filterTokenSymbols: account.settings?.filters?.filterTokenSymbols ?? false,
+                                            filterMintAddresses: account.settings?.filters?.filterMintAddresses ?? false,
+                                            keywords: v,
+                                          })}
+                                          inheritedIndicator={<InheritedIndicator show={account.settings?.filters?.keywords === undefined} />}
+                                        />
                                       </div>
                                     </div>
 
@@ -1165,22 +1154,16 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                           disabled={selectedGroup.settings.useGlobalSettings}
                         />
                       </div>
-                      <div className="py-1">
-                        <div className="mb-2">
-                          <p className="text-sm font-medium text-white">Keywords</p>
-                          <p className="text-xs text-kol-text-muted mt-0.5">Highlight tweets containing these keywords</p>
-                        </div>
-                        <KeywordInput
-                          keywords={selectedGroup.settings.filters?.keywords ?? []}
-                          onChange={(v) => updateGroupFilters(selectedGroupId, {
-                            ...selectedGroup.settings.filters,
-                            filterTokenSymbols: selectedGroup.settings.filters?.filterTokenSymbols ?? false,
-                            filterMintAddresses: selectedGroup.settings.filters?.filterMintAddresses ?? false,
-                            keywords: v,
-                          })}
-                          disabled={selectedGroup.settings.useGlobalSettings}
-                        />
-                      </div>
+                      <KeywordInput
+                        keywords={selectedGroup.settings.filters?.keywords ?? []}
+                        onChange={(v) => updateGroupFilters(selectedGroupId, {
+                          ...selectedGroup.settings.filters,
+                          filterTokenSymbols: selectedGroup.settings.filters?.filterTokenSymbols ?? false,
+                          filterMintAddresses: selectedGroup.settings.filters?.filterMintAddresses ?? false,
+                          keywords: v,
+                        })}
+                        disabled={selectedGroup.settings.useGlobalSettings}
+                      />
                     </div>
                   </div>
 

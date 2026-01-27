@@ -7,6 +7,9 @@ export interface KeywordInputProps {
   keywords: Keyword[]
   onChange: (keywords: Keyword[]) => void
   disabled?: boolean
+  title?: string
+  description?: string
+  inheritedIndicator?: React.ReactNode
 }
 
 // Generate a unique ID for keywords
@@ -14,7 +17,14 @@ function generateKeywordId(): string {
   return `kw_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`
 }
 
-export function KeywordInput({ keywords, onChange, disabled }: KeywordInputProps) {
+export function KeywordInput({
+  keywords,
+  onChange,
+  disabled,
+  title = 'Keywords',
+  description = 'Highlight tweets containing these keywords',
+  inheritedIndicator
+}: KeywordInputProps) {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false)
   const addButtonRef = useRef<HTMLButtonElement>(null)
 
@@ -41,23 +51,36 @@ export function KeywordInput({ keywords, onChange, disabled }: KeywordInputProps
   }
 
   return (
-    <div className="space-y-2">
-      {/* Add Keyword Button */}
-      <button
-        ref={addButtonRef}
-        onClick={() => setIsPopoverOpen(true)}
-        disabled={disabled}
-        className={`
-          inline-flex items-center gap-1 px-2 py-1 text-xs
-          text-kol-blue hover:text-kol-blue-hover
-          border border-kol-blue/30 hover:border-kol-blue/50
-          rounded-lg transition-colors
-          ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
-        `}
-      >
-        <i className="ri-add-line" />
-        Add Keyword
-      </button>
+    <div className="rounded-lg bg-kol-surface/20 border border-kol-border/30 p-3">
+      {/* Header with title and add button */}
+      <div className="flex items-start justify-between gap-2 mb-2">
+        <div className="flex-1">
+          <div className="flex items-center gap-1.5">
+            <p className="text-sm font-medium text-white">{title}</p>
+            {inheritedIndicator}
+          </div>
+          {description && (
+            <p className="text-xs text-kol-text-muted mt-0.5">{description}</p>
+          )}
+        </div>
+
+        {/* Add Keyword Button */}
+        <button
+          ref={addButtonRef}
+          onClick={() => setIsPopoverOpen(true)}
+          disabled={disabled}
+          className={`
+            inline-flex items-center gap-1 px-2 py-1 text-xs
+            text-kol-blue hover:text-kol-blue-hover
+            border border-kol-blue/30 hover:border-kol-blue/50
+            rounded-lg transition-colors flex-shrink-0
+            ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
+          `}
+        >
+          <i className="ri-add-line" />
+          Add
+        </button>
+      </div>
 
       {/* Keywords List - Row format */}
       {keywords.length > 0 && (
@@ -75,9 +98,9 @@ export function KeywordInput({ keywords, onChange, disabled }: KeywordInputProps
       )}
 
       {/* Empty State */}
-      {keywords.length === 0 && !disabled && (
-        <p className="text-xs text-kol-text-muted/60">
-          No keywords added yet. Click "Add Keyword" to start.
+      {keywords.length === 0 && (
+        <p className="text-xs text-kol-text-muted/60 text-center py-2">
+          No keywords added yet
         </p>
       )}
 
