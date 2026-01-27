@@ -816,7 +816,8 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                                     {/* General Settings Section */}
                                     <div>
                                       <div className="mb-2">
-                                        <span className="text-[9px] text-kol-text-muted uppercase tracking-wide font-medium">
+                                        <span className="text-[9px] text-kol-text-muted uppercase tracking-wide font-medium flex items-center gap-1">
+                                          <i className="ri-settings-3-line" />
                                           General Settings
                                         </span>
                                       </div>
@@ -825,6 +826,7 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                                         {/* Auto-translate */}
                                         <div className="flex items-center justify-between">
                                           <div className="flex items-center gap-1.5">
+                                            <i className="ri-translate-2 text-kol-text-muted text-xs" />
                                             <p className="text-xs font-medium text-white">Auto-translate</p>
                                           </div>
                                           <ToggleSwitch
@@ -868,6 +870,7 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                                         {/* Default Launch Platform */}
                                         <div className="flex items-center justify-between">
                                           <div className="flex items-center gap-1.5">
+                                            <i className="ri-rocket-line text-kol-text-muted text-xs" />
                                             <p className="text-xs font-medium text-white">Default Launch Platform</p>
                                           </div>
                                           <PlatformPicker
@@ -882,6 +885,7 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                                         {/* Sound Volume */}
                                         <div className="flex items-center justify-between gap-4">
                                           <div className="flex items-center gap-1.5">
+                                            <i className="ri-volume-up-line text-kol-text-muted text-xs" />
                                             <p className="text-xs font-medium text-white">Sound Volume</p>
                                           </div>
                                           <VolumeSlider
@@ -895,7 +899,8 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                                     {/* Filters Section */}
                                     <div>
                                       <div className="mb-2">
-                                        <span className="text-[9px] text-kol-text-muted uppercase tracking-wide font-medium">
+                                        <span className="text-[9px] text-kol-text-muted uppercase tracking-wide font-medium flex items-center gap-1">
+                                          <i className="ri-filter-3-line" />
                                           Highlight Filters
                                         </span>
                                       </div>
@@ -903,6 +908,7 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                                       <div className="space-y-2">
                                         <div className="flex items-center justify-between">
                                           <div className="flex items-center gap-1.5">
+                                            <i className="ri-coin-line text-kol-text-muted text-xs" />
                                             <p className="text-xs font-medium text-white">Token Symbols</p>
                                           </div>
                                           <ToggleSwitch
@@ -917,6 +923,7 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                                         </div>
                                         <div className="flex items-center justify-between">
                                           <div className="flex items-center gap-1.5">
+                                            <i className="ri-file-code-line text-kol-text-muted text-xs" />
                                             <p className="text-xs font-medium text-white">Mint Addresses</p>
                                           </div>
                                           <ToggleSwitch
@@ -944,7 +951,8 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                                     {/* Tweet Types Section */}
                                     <div>
                                       <div className="mb-2">
-                                        <span className="text-[9px] text-kol-text-muted uppercase tracking-wide font-medium">
+                                        <span className="text-[9px] text-kol-text-muted uppercase tracking-wide font-medium flex items-center gap-1">
+                                          <i className="ri-chat-3-line" />
                                           Tweet Types
                                         </span>
                                       </div>
@@ -1024,7 +1032,10 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                 {/* Use Global Settings Toggle */}
                 <div className="flex items-center justify-between p-3 rounded-lg bg-kol-surface/30 border border-kol-border/30">
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-white">Use global settings</p>
+                    <p className="text-sm font-medium text-white flex items-center gap-1.5">
+                      <i className="ri-global-line text-kol-text-muted" />
+                      Use global settings
+                    </p>
                     <p className="text-xs text-kol-text-muted mt-0.5">Override with group-specific settings when disabled</p>
                   </div>
                   <ToggleSwitch
@@ -1038,7 +1049,8 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                   {/* General Settings Section */}
                   <div className="mb-4">
                     <div className="mb-3">
-                      <span className="text-[10px] text-kol-text-muted uppercase tracking-wide font-medium">
+                      <span className="text-[10px] text-kol-text-muted uppercase tracking-wide font-medium flex items-center gap-1.5">
+                        <i className="ri-settings-3-line" />
                         General Settings
                       </span>
                     </div>
@@ -1046,7 +1058,10 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                     <div className="space-y-4">
                       <div className="flex items-center justify-between py-1">
                         <div className="flex-1">
-                          <p className="text-sm font-medium text-white">Auto-translate tweets</p>
+                          <p className="text-sm font-medium text-white flex items-center gap-1.5">
+                            <i className="ri-translate-2 text-kol-text-muted" />
+                            Auto-translate tweets
+                          </p>
                           <p className="text-xs text-kol-text-muted mt-0.5">Translate tweets to your preferred language</p>
                         </div>
                         <ToggleSwitch
@@ -1092,7 +1107,10 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
 
                       <div className="flex items-center justify-between py-1">
                         <div className="flex-1">
-                          <p className="text-sm font-medium text-white">Pause feed on hover</p>
+                          <p className="text-sm font-medium text-white flex items-center gap-1.5">
+                            <i className="ri-pause-circle-line text-kol-text-muted" />
+                            Pause feed on hover
+                          </p>
                           <p className="text-xs text-kol-text-muted mt-0.5">Stop auto-scrolling when hovering</p>
                         </div>
                         <ToggleSwitch
@@ -1104,7 +1122,10 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
 
                       <div className="flex items-center justify-between py-1">
                         <div className="flex-1">
-                          <p className="text-sm font-medium text-white">Default Launch Platform</p>
+                          <p className="text-sm font-medium text-white flex items-center gap-1.5">
+                            <i className="ri-rocket-line text-kol-text-muted" />
+                            Default Launch Platform
+                          </p>
                           <p className="text-xs text-kol-text-muted mt-0.5">Platform to open coins on</p>
                         </div>
                         <PlatformSelect
@@ -1116,7 +1137,10 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
 
                       <div className="flex items-center justify-between gap-4 py-1">
                         <div>
-                          <p className="text-sm font-medium text-white">Sound Volume</p>
+                          <p className="text-sm font-medium text-white flex items-center gap-1.5">
+                            <i className="ri-volume-up-line text-kol-text-muted" />
+                            Sound Volume
+                          </p>
                           <p className="text-xs text-kol-text-muted mt-0.5">Volume for notification sounds</p>
                         </div>
                         <VolumeSlider
@@ -1130,7 +1154,8 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                   {/* Filters Section */}
                   <div className="mb-4 pt-2 border-t border-kol-border/20">
                     <div className="mb-3">
-                      <span className="text-[10px] text-kol-text-muted uppercase tracking-wide font-medium">
+                      <span className="text-[10px] text-kol-text-muted uppercase tracking-wide font-medium flex items-center gap-1.5">
+                        <i className="ri-filter-3-line" />
                         Highlight Filters
                       </span>
                     </div>
@@ -1138,7 +1163,10 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                     <div className="space-y-3">
                       <div className="flex items-center justify-between py-1">
                         <div className="flex-1">
-                          <p className="text-sm font-medium text-white">Token Symbols</p>
+                          <p className="text-sm font-medium text-white flex items-center gap-1.5">
+                            <i className="ri-coin-line text-kol-text-muted" />
+                            Token Symbols
+                          </p>
                           <p className="text-xs text-kol-text-muted mt-0.5">Highlight tweets with $TOKEN mentions</p>
                         </div>
                         <ToggleSwitch
@@ -1154,7 +1182,10 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                       </div>
                       <div className="flex items-center justify-between py-1">
                         <div className="flex-1">
-                          <p className="text-sm font-medium text-white">Mint Addresses</p>
+                          <p className="text-sm font-medium text-white flex items-center gap-1.5">
+                            <i className="ri-file-code-line text-kol-text-muted" />
+                            Mint Addresses
+                          </p>
                           <p className="text-xs text-kol-text-muted mt-0.5">Highlight tweets with contract addresses</p>
                         </div>
                         <ToggleSwitch
@@ -1184,7 +1215,8 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                   {/* Tweet Types Section */}
                   <div className="pt-2 border-t border-kol-border/20">
                     <div className="mb-2">
-                      <span className="text-[10px] text-kol-text-muted uppercase tracking-wide font-medium">
+                      <span className="text-[10px] text-kol-text-muted uppercase tracking-wide font-medium flex items-center gap-1.5">
+                        <i className="ri-chat-3-line" />
                         Tweet Types
                       </span>
                     </div>
