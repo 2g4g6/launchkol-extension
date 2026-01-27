@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { CoinCard, CoinData } from './CoinCard'
-import { Tooltip } from '../ui/Tooltip'
+import { ExpandableButton } from '../ui/ExpandableButton'
 
 // Mock data with new fields - showcasing all tweet types
 const MOCK_COINS: CoinData[] = [
@@ -418,33 +418,30 @@ export function CoinsPanel({}: CoinsPanelProps) {
               {/* Divider */}
               <div className="w-px h-4 bg-kol-border/40 mx-1" />
 
-              {/* Filter Button */}
-              <Tooltip content="Filter & Sort">
-                <button className="w-7 h-7 rounded-lg flex items-center justify-center text-kol-text-muted hover:text-white hover:bg-white/5 transition-colors">
-                  <i className="ri-filter-3-line text-sm" />
-                </button>
-              </Tooltip>
+              {/* Action buttons - all expandable */}
+              <ExpandableButton
+                icon="ri-filter-3-line"
+                label="Filter"
+                variant="subtle"
+              />
 
-              {/* Refresh Button */}
-              <Tooltip content="Refresh">
-                <button className="w-7 h-7 rounded-lg flex items-center justify-center text-kol-text-muted hover:text-white hover:bg-white/5 transition-colors">
-                  <i className="ri-refresh-line text-sm" />
-                </button>
-              </Tooltip>
+              <ExpandableButton
+                icon="ri-refresh-line"
+                label="Refresh"
+                variant="subtle"
+              />
 
-              {/* Clone Button */}
-              <Tooltip content="Clone">
-                <button className="w-7 h-7 rounded-lg flex items-center justify-center text-kol-text-muted hover:text-white hover:bg-white/5 transition-colors">
-                  <i className="ri-file-copy-line text-sm" />
-                </button>
-              </Tooltip>
+              <ExpandableButton
+                icon="ri-file-copy-line"
+                label="Clone"
+                variant="subtle"
+              />
 
-              {/* Create Button */}
-              <Tooltip content="Create">
-                <button className="w-7 h-7 rounded-lg flex items-center justify-center text-kol-text-muted hover:text-white hover:bg-white/5 transition-colors">
-                  <i className="ri-add-line text-sm" />
-                </button>
-              </Tooltip>
+              <ExpandableButton
+                icon="ri-pencil-line"
+                label="Create"
+                variant="subtle"
+              />
             </div>
           </div>
         </div>
@@ -517,33 +514,30 @@ export function CoinsPanel({}: CoinsPanelProps) {
               {/* Divider */}
               <div className="w-px h-4 bg-kol-border/40 mx-1" />
 
-              {/* Filter Button */}
-              <Tooltip content="Filter & Sort">
-                <button className="w-7 h-7 rounded-lg flex items-center justify-center text-kol-text-muted hover:text-white hover:bg-white/5 transition-colors">
-                  <i className="ri-filter-3-line text-sm" />
-                </button>
-              </Tooltip>
+              {/* Action buttons - all expandable */}
+              <ExpandableButton
+                icon="ri-filter-3-line"
+                label="Filter"
+                variant="subtle"
+              />
 
-              {/* Refresh Button */}
-              <Tooltip content="Refresh">
-                <button className="w-7 h-7 rounded-lg flex items-center justify-center text-kol-text-muted hover:text-white hover:bg-white/5 transition-colors">
-                  <i className="ri-refresh-line text-sm" />
-                </button>
-              </Tooltip>
+              <ExpandableButton
+                icon="ri-refresh-line"
+                label="Refresh"
+                variant="subtle"
+              />
 
-              {/* Clone Button */}
-              <Tooltip content="Clone">
-                <button className="w-7 h-7 rounded-lg flex items-center justify-center text-kol-text-muted hover:text-white hover:bg-white/5 transition-colors">
-                  <i className="ri-file-copy-line text-sm" />
-                </button>
-              </Tooltip>
+              <ExpandableButton
+                icon="ri-file-copy-line"
+                label="Clone"
+                variant="subtle"
+              />
 
-              {/* Create Button */}
-              <Tooltip content="Create">
-                <button className="w-7 h-7 rounded-lg flex items-center justify-center text-kol-text-muted hover:text-white hover:bg-white/5 transition-colors">
-                  <i className="ri-add-line text-sm" />
-                </button>
-              </Tooltip>
+              <ExpandableButton
+                icon="ri-pencil-line"
+                label="Create"
+                variant="subtle"
+              />
             </div>
           </div>
         </div>
