@@ -99,9 +99,15 @@ export function KeywordInput({
 
       {/* Empty State */}
       {keywords.length === 0 && (
-        <p className="text-xs text-kol-text-muted/60 text-center py-2">
-          No keywords added yet
-        </p>
+        <div className="flex flex-col items-center justify-center py-6 px-4 rounded-lg border border-dashed border-kol-border/60 bg-kol-surface/30">
+          <div className="w-10 h-10 rounded-full bg-kol-blue/10 flex items-center justify-center mb-3">
+            <i className="ri-search-eye-line text-lg text-kol-blue/60" />
+          </div>
+          <p className="text-sm text-kol-text-muted mb-1">No keywords yet</p>
+          <p className="text-xs text-kol-text-muted/50 text-center">
+            Add keywords to highlight matching tweets in your feed
+          </p>
+        </div>
       )}
 
       {/* Add Keyword Popover */}
