@@ -84,7 +84,7 @@ export function SoundPicker({ currentSound, onSelect, enabled }: SoundPickerProp
               }
             `}
           >
-            <i className={sound.id === 'silent' ? 'ri-volume-mute-line' : 'ri-volume-up-line'} />
+            <i className={sound.icon} />
             {sound.label}
           </button>
         ))}
@@ -109,7 +109,7 @@ export function SoundPicker({ currentSound, onSelect, enabled }: SoundPickerProp
           }
         `}
       >
-        <i className={currentSound === 'silent' ? 'ri-volume-mute-line' : 'ri-volume-up-line'} />
+        <i className={NOTIFICATION_SOUNDS.find(s => s.id === currentSound)?.icon || 'ri-volume-up-line'} />
         <i className={`ri-arrow-down-s-line text-[10px] ${isOpen ? 'rotate-180' : ''} transition-transform`} />
       </button>
       {mounted && createPortal(dropdown, document.body)}

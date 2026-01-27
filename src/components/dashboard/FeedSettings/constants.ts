@@ -7,14 +7,14 @@ export const STORAGE_KEYS = {
 }
 
 export const NOTIFICATION_SOUNDS = [
-  { id: 'default', label: 'Default' },
-  { id: 'buzz', label: 'Buzz' },
-  { id: 'ching', label: 'Ching' },
-  { id: 'ring', label: 'Ring' },
-  { id: 'chime', label: 'Chime' },
-  { id: 'alert', label: 'Alert' },
-  { id: 'coin', label: 'Coin Drop' },
-  { id: 'silent', label: 'Silent' },
+  { id: 'default', label: 'Default', icon: 'ri-volume-up-line' },
+  { id: 'buzz', label: 'Buzz', icon: 'ri-notification-badge-line' },
+  { id: 'ching', label: 'Ching', icon: 'ri-money-dollar-circle-line' },
+  { id: 'ring', label: 'Ring', icon: 'ri-notification-2-line' },
+  { id: 'chime', label: 'Chime', icon: 'ri-door-open-line' },
+  { id: 'alert', label: 'Alert', icon: 'ri-alarm-warning-line' },
+  { id: 'coin', label: 'Coin Drop', icon: 'ri-coin-line' },
+  { id: 'silent', label: 'Silent', icon: 'ri-volume-mute-line' },
 ]
 
 export const TWEET_TYPE_LABELS: Record<TweetTypeKey, string> = {
