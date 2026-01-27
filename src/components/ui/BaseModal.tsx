@@ -12,6 +12,7 @@ export interface BaseModalProps {
   title: string
   children: ReactNode
   width?: string
+  fullScreenMobile?: boolean
 }
 
 // ============================================================================
@@ -29,7 +30,8 @@ export function BaseModal({
   onClose,
   title,
   children,
-  width = 'w-[390px]'
+  width = 'w-[390px]',
+  fullScreenMobile = false
 }: BaseModalProps) {
   const [mounted, setMounted] = useState(false)
 
@@ -79,10 +81,10 @@ export function BaseModal({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ duration: 0.25, ease: CUSTOM_EASE }}
-            className={`${width} max-w-[95vw]`}
+            className={`${width} ${fullScreenMobile ? 'max-sm:w-full max-sm:h-full max-sm:max-w-full' : 'max-w-[95vw]'}`}
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="bg-kol-bg rounded-lg overflow-hidden border border-kol-border">
+            <div className={`bg-kol-bg overflow-hidden border border-kol-border ${fullScreenMobile ? 'max-sm:h-full max-sm:rounded-none max-sm:border-0 rounded-lg' : 'rounded-lg'}`}>
               {/* Header */}
               <div className="flex items-center justify-between px-4 py-3 border-b border-kol-border">
                 <h2 className="font-medium text-white text-sm">{title}</h2>

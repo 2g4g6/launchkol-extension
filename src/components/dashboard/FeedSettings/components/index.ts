@@ -36,3 +36,9 @@ export type { KeywordFormPopoverProps } from './KeywordFormPopover'
 
 export { TweetTypeRow } from './TweetTypeRow'
 export type { TweetTypeRowProps } from './TweetTypeRow'
+
+export { MobileGroupTrigger } from './MobileGroupTrigger'
+export type { MobileGroupTriggerProps } from './MobileGroupTrigger'
+
+export { GroupsBottomSheet } from './GroupsBottomSheet'
+export type { GroupsBottomSheetProps } from './GroupsBottomSheet'
