@@ -40,5 +40,5 @@ export type { TweetTypeRowProps } from './TweetTypeRow'
 export { MobileGroupTrigger } from './MobileGroupTrigger'
 export type { MobileGroupTriggerProps } from './MobileGroupTrigger'
 
-export { GroupsBottomSheet } from './GroupsBottomSheet'
-export type { GroupsBottomSheetProps } from './GroupsBottomSheet'
+export { GroupsDropdown } from './GroupsDropdown'
+export type { GroupsDropdownProps } from './GroupsDropdown'

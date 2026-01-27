@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { BaseModal } from '../../ui/BaseModal'
 import { Tooltip } from '../../ui/Tooltip'
@@ -43,7 +43,7 @@ import {
   TweetTypeRow,
   PlatformPicker,
   MobileGroupTrigger,
-  GroupsBottomSheet,
+  GroupsDropdown,
 } from './components'
 
 export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
@@ -59,7 +59,8 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
   const [isNewAccountFocused, setIsNewAccountFocused] = useState(false)
   const [expandedAccountId, setExpandedAccountId] = useState<string | null>(null)
   const [isMobile, setIsMobile] = useState(false)
-  const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false)
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const triggerRef = useRef<HTMLButtonElement>(null)
 
   // Mobile detection
   useEffect(() => {
@@ -313,10 +314,28 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
       <div className="flex h-[460px] max-sm:h-[calc(100vh-56px)] -mx-4 -mt-4 -mb-4 max-sm:flex-col">
         {/* Mobile Group Trigger */}
         {isMobile && (
-          <div className="p-3 border-b border-kol-border/50 flex-shrink-0">
+          <div className="p-3 border-b border-kol-border/50 flex-shrink-0 relative">
             <MobileGroupTrigger
+              ref={triggerRef}
               selectedGroup={selectedGroup || null}
-              onClick={() => setIsBottomSheetOpen(true)}
+              isOpen={isDropdownOpen}
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            />
+            <GroupsDropdown
+              isOpen={isDropdownOpen}
+              onClose={() => setIsDropdownOpen(false)}
+              groups={groups}
+              selectedGroupId={selectedGroupId}
+              onSelectGroup={(groupId) => {
+                setSelectedGroupId(groupId)
+                if (groupId === null) {
+                  setSelectedTab('settings')
+                } else {
+                  setSelectedTab('accounts')
+                }
+              }}
+              onCreateGroup={createGroup}
+              triggerRef={triggerRef}
             />
           </div>
         )}
@@ -437,7 +456,7 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
         </div>
 
         {/* Right Column - Tab Content */}
-        <div className="flex-1 flex flex-col p-4 min-w-0">
+        <div className="flex-1 flex flex-col p-4 min-w-0 max-sm:min-h-0 max-sm:overflow-hidden">
           {/* Tab Bar (only show for groups, not global) */}
           {selectedGroupId !== null && (
             <div className="pb-3 mb-3 border-b border-kol-border/30">
@@ -1264,22 +1283,6 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
         </div>
       </div>
 
-      {/* Mobile Groups Bottom Sheet */}
-      <GroupsBottomSheet
-        isOpen={isBottomSheetOpen}
-        onClose={() => setIsBottomSheetOpen(false)}
-        groups={groups}
-        selectedGroupId={selectedGroupId}
-        onSelectGroup={(groupId) => {
-          setSelectedGroupId(groupId)
-          if (groupId === null) {
-            setSelectedTab('settings')
-          } else {
-            setSelectedTab('accounts')
-          }
-        }}
-        onCreateGroup={createGroup}
-      />
     </BaseModal>
   )
 }

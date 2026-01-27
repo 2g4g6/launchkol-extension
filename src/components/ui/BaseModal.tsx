@@ -86,13 +86,13 @@ export function BaseModal({
           >
             <div className={`bg-kol-bg overflow-hidden border border-kol-border ${fullScreenMobile ? 'max-sm:h-full max-sm:rounded-none max-sm:border-0 rounded-lg' : 'rounded-lg'}`}>
               {/* Header */}
-              <div className="flex items-center justify-between px-4 py-3 border-b border-kol-border">
-                <h2 className="font-medium text-white text-sm">{title}</h2>
+              <div className={`flex items-center justify-between px-4 py-3 border-b border-kol-border ${fullScreenMobile ? 'max-sm:py-4 max-sm:px-4' : ''}`}>
+                <h2 className={`font-medium text-white text-sm ${fullScreenMobile ? 'max-sm:text-base' : ''}`}>{title}</h2>
                 <button
                   onClick={onClose}
-                  className="rounded opacity-50 transition-opacity hover:opacity-100"
+                  className={`rounded opacity-50 transition-opacity hover:opacity-100 ${fullScreenMobile ? 'max-sm:w-10 max-sm:h-10 max-sm:flex max-sm:items-center max-sm:justify-center max-sm:-mr-2' : ''}`}
                 >
-                  <i className="ri-close-line text-base" />
+                  <i className={`ri-close-line text-base ${fullScreenMobile ? 'max-sm:text-xl' : ''}`} />
                 </button>
               </div>
 
