@@ -25,6 +25,15 @@ export const TWEET_TYPE_LABELS: Record<TweetTypeKey, string> = {
   followingUpdates: 'Following',
 }
 
+export const TWEET_TYPE_ICONS: Record<TweetTypeKey, string> = {
+  posts: 'ri-quill-pen-line',
+  replies: 'ri-reply-line',
+  quotes: 'ri-chat-quote-line',
+  reposts: 'ri-repeat-2-line',
+  deletedTweets: 'ri-delete-bin-line',
+  followingUpdates: 'ri-user-add-line',
+}
+
 export const PLATFORM_OPTIONS: { id: PlatformType; label: string; icon: string }[] = [
   { id: 'pump', label: 'Pump.fun', icon: '/images/pump.svg' },
   { id: 'bonk', label: 'Bonk.fun', icon: '/images/bonk.svg' },
