@@ -279,12 +279,13 @@ export function IconPicker({ currentIcon, onSelect }: IconPickerProps) {
               setActiveCategory('all')
               setFocusedIndex(-1)
             }}
-            className={`px-2 py-1 text-xs rounded whitespace-nowrap transition-colors ${
+            className={`px-2 py-1 text-xs rounded whitespace-nowrap transition-colors flex items-center gap-1 ${
               activeCategory === 'all'
                 ? 'bg-kol-blue/15 text-kol-blue'
                 : 'text-kol-text-muted hover:text-white hover:bg-kol-surface-elevated'
             }`}
           >
+            <i className="ri-apps-2-line text-[10px]" />
             All
           </button>
           {ICON_CATEGORIES.map(cat => (
