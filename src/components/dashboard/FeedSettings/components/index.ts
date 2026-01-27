@@ -28,5 +28,11 @@ export type { VolumeSliderProps } from './VolumeSlider'
 export { KeywordInput } from './KeywordInput'
 export type { KeywordInputProps } from './KeywordInput'
 
+export { KeywordBadge } from './KeywordBadge'
+export type { KeywordBadgeProps } from './KeywordBadge'
+
+export { KeywordFormPopover } from './KeywordFormPopover'
+export type { KeywordFormPopoverProps } from './KeywordFormPopover'
+
 export { TweetTypeRow } from './TweetTypeRow'
 export type { TweetTypeRowProps } from './TweetTypeRow'

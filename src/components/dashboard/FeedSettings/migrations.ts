@@ -1,4 +1,47 @@
-import type { ContentFilters, PlatformType, FeedGroupSettings, AccountSettings, GlobalFeedSettings } from './types'
+import type { ContentFilters, PlatformType, FeedGroupSettings, AccountSettings, GlobalFeedSettings, Keyword } from './types'
+import { DEFAULT_KEYWORD_COLOR } from './constants'
+
+// Generate a unique ID for keywords
+function generateKeywordId(): string {
+  return `kw_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`
+}
+
+// Migrate old string[] keywords to new Keyword[] format
+export function migrateKeywords(keywords: unknown): Keyword[] {
+  if (!keywords || !Array.isArray(keywords)) {
+    return []
+  }
+
+  return keywords.map((kw): Keyword => {
+    // Already in new format (has text property)
+    if (typeof kw === 'object' && kw !== null && 'text' in kw) {
+      const existing = kw as Partial<Keyword>
+      return {
+        id: existing.id || generateKeywordId(),
+        text: existing.text || '',
+        color: existing.color || DEFAULT_KEYWORD_COLOR,
+        caseSensitive: existing.caseSensitive ?? false,
+        wholeWord: existing.wholeWord ?? false,
+        enabled: existing.enabled ?? true,
+      }
+    }
+
+    // Old format: plain string
+    if (typeof kw === 'string') {
+      return {
+        id: generateKeywordId(),
+        text: kw,
+        color: DEFAULT_KEYWORD_COLOR,
+        caseSensitive: false,
+        wholeWord: false,
+        enabled: true,
+      }
+    }
+
+    // Unknown format, skip
+    return null as unknown as Keyword
+  }).filter(Boolean)
+}
 
 // Migrate old array-based filters to new boolean-based filters
 export function migrateFilters(oldFilters: Record<string, unknown> | undefined): ContentFilters | undefined {
@@ -6,18 +49,23 @@ export function migrateFilters(oldFilters: Record<string, unknown> | undefined):
 
   // If already in new format (has boolean fields)
   if (typeof oldFilters.filterTokenSymbols === 'boolean') {
-    return oldFilters as unknown as ContentFilters
+    // Still need to migrate keywords if they're in old string[] format
+    const existingFilters = oldFilters as unknown as ContentFilters
+    return {
+      ...existingFilters,
+      keywords: migrateKeywords(existingFilters.keywords),
+    }
   }
 
   // Old format had arrays - convert to booleans based on whether arrays had values
   const oldTokenSymbols = oldFilters.tokenSymbols as string[] | undefined
   const oldMintAddresses = oldFilters.mintAddresses as string[] | undefined
-  const oldKeywords = oldFilters.keywords as string[] | undefined
+  const oldKeywords = oldFilters.keywords as unknown
 
   return {
     filterTokenSymbols: Boolean(oldTokenSymbols && oldTokenSymbols.length > 0),
     filterMintAddresses: Boolean(oldMintAddresses && oldMintAddresses.length > 0),
-    keywords: oldKeywords ?? [],
+    keywords: migrateKeywords(oldKeywords),
   }
 }
 
@@ -25,7 +73,15 @@ export function migrateFilters(oldFilters: Record<string, unknown> | undefined):
 export function migrateGroupSettings(oldSettings: Record<string, unknown>): FeedGroupSettings {
   // Check if already in new format (has tweetTypes as object with TweetTypeSettings)
   if (oldSettings.tweetTypes && typeof (oldSettings.tweetTypes as Record<string, unknown>).posts === 'object') {
-    return oldSettings as unknown as FeedGroupSettings
+    // Still need to migrate filters (for keywords migration)
+    const existingSettings = oldSettings as unknown as FeedGroupSettings
+    return {
+      ...existingSettings,
+      filters: existingSettings.filters ? {
+        ...existingSettings.filters,
+        keywords: migrateKeywords(existingSettings.filters.keywords),
+      } : undefined,
+    }
   }
 
   // Old format had tweetTypes as Record<string, boolean>
@@ -94,7 +150,18 @@ export function migrateAccountSettings(oldSettings: Record<string, unknown> | un
 
   // Check if already in new format (no useGroupSettings field or has new tweetTypes structure)
   if (!('useGroupSettings' in oldSettings) && !('highlightTweets' in oldSettings)) {
-    return oldSettings as AccountSettings
+    // Still need to migrate filters (for keywords migration)
+    const existingSettings = oldSettings as AccountSettings
+    if (existingSettings.filters) {
+      return {
+        ...existingSettings,
+        filters: {
+          ...existingSettings.filters,
+          keywords: migrateKeywords(existingSettings.filters.keywords),
+        },
+      }
+    }
+    return existingSettings
   }
 
   // Migrate old format
@@ -133,7 +200,15 @@ export function migrateAccountSettings(oldSettings: Record<string, unknown> | un
 export function migrateGlobalSettings(oldSettings: Record<string, unknown>): GlobalFeedSettings {
   // Check if already in new format
   if (oldSettings.tweetTypes && typeof (oldSettings.tweetTypes as Record<string, unknown>).posts === 'object') {
-    return oldSettings as unknown as GlobalFeedSettings
+    // Still need to migrate filters (for keywords migration)
+    const existingSettings = oldSettings as unknown as GlobalFeedSettings
+    return {
+      ...existingSettings,
+      filters: existingSettings.filters ? {
+        ...existingSettings.filters,
+        keywords: migrateKeywords(existingSettings.filters.keywords),
+      } : undefined,
+    }
   }
 
   const oldTweetTypes = (oldSettings.tweetTypes || {}) as Record<string, boolean>

@@ -141,3 +141,5 @@ export const HIGHLIGHT_COLORS = [
   { color: '#06b6d4', label: 'Cyan' },
   { color: '#fbbf24', label: 'Yellow' },
 ]
+
+export const DEFAULT_KEYWORD_COLOR = '#007bff'

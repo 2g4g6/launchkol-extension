@@ -1,6 +1,16 @@
 // Platform types for launch platforms
 export type PlatformType = 'pump' | 'bonk' | 'bags' | 'mayhem' | 'fourmeme'
 
+// Keyword type for rich keyword management
+export interface Keyword {
+  id: string              // Unique ID for React keys and editing
+  text: string            // The keyword text
+  color: string           // Hex color from HIGHLIGHT_COLORS
+  caseSensitive: boolean  // Match case exactly
+  wholeWord: boolean      // Match whole words only
+  enabled: boolean        // Toggle without deleting
+}
+
 // Per tweet type notification settings
 export interface TweetTypeNotificationSettings {
   desktop: boolean     // Desktop notification enabled
@@ -12,7 +22,7 @@ export interface TweetTypeNotificationSettings {
 export interface ContentFilters {
   filterTokenSymbols: boolean    // Highlight tweets containing token symbols ($XXX)
   filterMintAddresses: boolean   // Highlight tweets containing mint addresses
-  keywords: string[]             // Custom keywords to highlight (empty array = disabled)
+  keywords: Keyword[]            // Custom keywords to highlight with rich options
 }
 
 // Per tweet type settings
