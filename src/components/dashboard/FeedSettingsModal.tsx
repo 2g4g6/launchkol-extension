@@ -620,7 +620,7 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
               >
                 <div
                   className={`
-                    w-full flex items-center gap-2.5 px-3 py-2.5 transition-all
+                    w-full flex items-center gap-2.5 px-3 py-2.5 transition-all group-hover:pr-12
                     ${selectedGroupId === group.id
                       ? 'bg-kol-blue/10 text-white border-l-2 border-kol-blue'
                       : 'text-kol-text-muted hover:bg-kol-surface-elevated/50 hover:text-white border-l-2 border-transparent'
