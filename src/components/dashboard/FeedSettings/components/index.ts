@@ -10,9 +10,6 @@ export type { IconPickerProps } from './IconPicker'
 export { ColorPicker } from './ColorPicker'
 export type { ColorPickerProps } from './ColorPicker'
 
-export { InheritedIndicator } from './InheritedIndicator'
-export type { InheritedIndicatorProps } from './InheritedIndicator'
-
 export { SoundPicker } from './SoundPicker'
 export type { SoundPickerProps } from './SoundPicker'
 

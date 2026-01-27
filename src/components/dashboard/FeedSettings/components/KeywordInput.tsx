@@ -9,7 +9,6 @@ export interface KeywordInputProps {
   disabled?: boolean
   title?: string
   description?: string
-  inheritedIndicator?: React.ReactNode
 }
 
 // Generate a unique ID for keywords
@@ -23,7 +22,6 @@ export function KeywordInput({
   disabled,
   title = 'Keywords',
   description = 'Highlight tweets containing these keywords',
-  inheritedIndicator
 }: KeywordInputProps) {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false)
   const addButtonRef = useRef<HTMLButtonElement>(null)
@@ -57,7 +55,6 @@ export function KeywordInput({
         <div className="flex-1">
           <div className="flex items-center gap-1.5">
             <p className="text-sm font-medium text-white">{title}</p>
-            {inheritedIndicator}
           </div>
           {description && (
             <p className="text-xs text-kol-text-muted mt-0.5">{description}</p>

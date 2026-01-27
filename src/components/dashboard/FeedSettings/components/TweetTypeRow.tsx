@@ -2,7 +2,6 @@ import { Tooltip } from '../../../ui/Tooltip'
 import type { TweetTypeKey, TweetTypeSettings } from '../types'
 import { TWEET_TYPE_ICONS } from '../constants'
 import { ColorPicker } from './ColorPicker'
-import { InheritedIndicator } from './InheritedIndicator'
 import { SoundPicker } from './SoundPicker'
 import { PlatformPicker } from './PlatformPicker'
 
@@ -29,13 +28,6 @@ export function TweetTypeRow({ typeKey, label, settings, groupDefaults, onChange
     launchPlatform: settings?.launchPlatform ?? groupDefaults.launchPlatform,
   }
 
-  // Check if values are inherited (undefined in settings)
-  const isEnabledInherited = settings?.enabled === undefined
-  const isDesktopInherited = settings?.notification?.desktop === undefined
-  const isSoundInherited = settings?.notification?.sound === undefined
-  const isColorInherited = settings?.highlightColor === undefined
-  const isPlatformInherited = settings?.launchPlatform === undefined
-
   return (
     <div className="flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-kol-surface/30 transition-colors">
       {/* Enable pill */}
@@ -54,9 +46,6 @@ export function TweetTypeRow({ typeKey, label, settings, groupDefaults, onChange
         <i className={TWEET_TYPE_ICONS[typeKey]} />
         {label}
       </button>
-
-      {/* Inherited indicator */}
-      <InheritedIndicator show={isEnabledInherited} />
 
       {/* Spacer */}
       <div className="flex-1" />
@@ -78,7 +67,6 @@ export function TweetTypeRow({ typeKey, label, settings, groupDefaults, onChange
           <i className={effective.notification.desktop ? 'ri-notification-3-fill' : 'ri-notification-3-line'} />
         </button>
       </Tooltip>
-      <InheritedIndicator show={isDesktopInherited} />
 
       {/* Sound picker */}
       <Tooltip content="Sound notification" position="top">
@@ -104,7 +92,6 @@ export function TweetTypeRow({ typeKey, label, settings, groupDefaults, onChange
         })}
         enabled={effective.notification.sound}
       />
-      <InheritedIndicator show={isSoundInherited} />
 
       {/* Highlight toggle */}
       <Tooltip content="Highlight tweets" position="top">
@@ -129,7 +116,6 @@ export function TweetTypeRow({ typeKey, label, settings, groupDefaults, onChange
           onSelect={(color) => onChange({ highlightColor: color })}
         />
       )}
-      <InheritedIndicator show={isColorInherited} />
 
       {/* Platform override */}
       <PlatformPicker
@@ -137,7 +123,6 @@ export function TweetTypeRow({ typeKey, label, settings, groupDefaults, onChange
         onSelect={(platform) => onChange({ launchPlatform: platform })}
         accountDefault={accountDefaultPlatform}
       />
-      <InheritedIndicator show={isPlatformInherited} />
     </div>
   )
 }
