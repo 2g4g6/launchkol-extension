@@ -8,23 +8,53 @@ import { Tooltip } from '../ui/Tooltip'
 // Types
 // ============================================================================
 
+// Platform types for launch platforms
+type PlatformType = 'pump' | 'bonk' | 'bags' | 'mayhem' | 'fourmeme'
+
+// Per tweet type notification settings
+interface TweetTypeNotificationSettings {
+  desktop: boolean     // Desktop notification enabled
+  sound: boolean       // Sound notification enabled
+  soundId: string      // 'default' | 'buzz' | 'ching' | 'ring' | 'chime' | 'alert' | 'coin' | 'silent'
+}
+
+// Filters for highlighting/notifications (simple toggles)
+interface ContentFilters {
+  filterTokenSymbols: boolean    // Highlight tweets containing token symbols ($XXX)
+  filterMintAddresses: boolean   // Highlight tweets containing mint addresses
+  filterKeywords: boolean        // Highlight tweets containing keywords
+}
+
+// Per tweet type settings
+interface TweetTypeSettings {
+  enabled: boolean                           // Show this tweet type in feed
+  notification: TweetTypeNotificationSettings
+  highlightEnabled: boolean
+  highlightColor: string                     // Hex color
+  launchPlatform: string | null              // null = use account default
+}
+
+// Tweet type keys for type safety
+type TweetTypeKey = 'posts' | 'replies' | 'quotes' | 'reposts' | 'deletedTweets' | 'followingUpdates'
+
+// Updated AccountSettings (all optional for inheritance)
 interface AccountSettings {
-  useGroupSettings: boolean  // When true, inherit from parent group
-  autoTranslate: boolean
-  translateFrom: string
-  translateTo: string
-  notifications: boolean
-  tweetTypes: {
-    posts: boolean
-    replies: boolean
-    quotes: boolean
-    reposts: boolean
-    deletedTweets: boolean
-    followingUpdates: boolean
-  }
-  // Account-specific settings:
-  highlightTweets: boolean   // Visually highlight this account's tweets in feed
-  highlightColor: string     // Hex color for highlight (e.g., "#007bff")
+  // Translation (optional = inherit from group)
+  autoTranslate?: boolean
+  translateFrom?: string
+  translateTo?: string
+
+  // Default launch platform for this account
+  defaultLaunchPlatform?: PlatformType
+
+  // Sound volume for notifications (0-100)
+  soundVolume?: number
+
+  // Content filters for this account
+  filters?: ContentFilters
+
+  // Per-tweet-type settings (partial = inherit missing fields)
+  tweetTypes?: Partial<Record<TweetTypeKey, Partial<TweetTypeSettings>>>
 }
 
 interface Account {
@@ -32,7 +62,7 @@ interface Account {
   handle: string
   name: string
   avatar?: string
-  settings?: AccountSettings  // Optional - undefined = use group settings
+  settings?: AccountSettings  // Optional - undefined = inherit all from group
 }
 
 interface FeedGroupSettings {
@@ -42,14 +72,10 @@ interface FeedGroupSettings {
   translateTo: string
   pauseOnHover: boolean
   notifications: boolean
-  tweetTypes: {
-    posts: boolean
-    replies: boolean
-    quotes: boolean
-    reposts: boolean
-    deletedTweets: boolean
-    followingUpdates: boolean
-  }
+  soundVolume: number
+  defaultLaunchPlatform: PlatformType
+  filters?: ContentFilters
+  tweetTypes: Record<TweetTypeKey, TweetTypeSettings>
 }
 
 interface FeedGroup {
@@ -66,14 +92,10 @@ interface GlobalFeedSettings {
   translateTo: string
   pauseOnHover: boolean
   notifications: boolean
-  tweetTypes: {
-    posts: boolean
-    replies: boolean
-    quotes: boolean
-    reposts: boolean
-    deletedTweets: boolean
-    followingUpdates: boolean
-  }
+  soundVolume: number
+  defaultLaunchPlatform: PlatformType
+  filters?: ContentFilters
+  tweetTypes: Record<TweetTypeKey, TweetTypeSettings>
 }
 
 export interface FeedSettingsModalProps {
@@ -90,20 +112,89 @@ const STORAGE_KEYS = {
   globalSettings: 'launchkol_global_feed_settings'
 }
 
+const NOTIFICATION_SOUNDS = [
+  { id: 'default', label: 'Default' },
+  { id: 'buzz', label: 'Buzz' },
+  { id: 'ching', label: 'Ching' },
+  { id: 'ring', label: 'Ring' },
+  { id: 'chime', label: 'Chime' },
+  { id: 'alert', label: 'Alert' },
+  { id: 'coin', label: 'Coin Drop' },
+  { id: 'silent', label: 'Silent' },
+]
+
+const TWEET_TYPE_LABELS: Record<TweetTypeKey, string> = {
+  posts: 'Posts',
+  replies: 'Replies',
+  quotes: 'Quotes',
+  reposts: 'Reposts',
+  deletedTweets: 'Deleted',
+  followingUpdates: 'Following',
+}
+
+const PLATFORM_OPTIONS: { id: PlatformType; label: string }[] = [
+  { id: 'pump', label: 'Pump.fun' },
+  { id: 'bonk', label: 'Bonk.fun' },
+  { id: 'bags', label: 'Bags' },
+  { id: 'mayhem', label: 'Mayhem' },
+  { id: 'fourmeme', label: '4Meme' },
+]
+
+// Create default tweet type settings
+const createDefaultTweetTypeSettings = (): Record<TweetTypeKey, TweetTypeSettings> => ({
+  posts: {
+    enabled: true,
+    notification: { desktop: true, sound: true, soundId: 'default' },
+    highlightEnabled: false,
+    highlightColor: '#007bff',
+    launchPlatform: null,
+  },
+  replies: {
+    enabled: true,
+    notification: { desktop: true, sound: true, soundId: 'default' },
+    highlightEnabled: false,
+    highlightColor: '#00c46b',
+    launchPlatform: null,
+  },
+  quotes: {
+    enabled: true,
+    notification: { desktop: true, sound: true, soundId: 'default' },
+    highlightEnabled: false,
+    highlightColor: '#8b5cf6',
+    launchPlatform: null,
+  },
+  reposts: {
+    enabled: true,
+    notification: { desktop: true, sound: true, soundId: 'default' },
+    highlightEnabled: false,
+    highlightColor: '#06b6d4',
+    launchPlatform: null,
+  },
+  deletedTweets: {
+    enabled: false,
+    notification: { desktop: true, sound: true, soundId: 'alert' },
+    highlightEnabled: false,
+    highlightColor: '#ff4d4f',
+    launchPlatform: null,
+  },
+  followingUpdates: {
+    enabled: false,
+    notification: { desktop: true, sound: true, soundId: 'chime' },
+    highlightEnabled: false,
+    highlightColor: '#f59e0b',
+    launchPlatform: null,
+  },
+})
+
 const DEFAULT_GLOBAL_SETTINGS: GlobalFeedSettings = {
   autoTranslate: false,
   translateFrom: 'auto',
   translateTo: 'en',
   pauseOnHover: false,
   notifications: true,
-  tweetTypes: {
-    posts: true,
-    replies: true,
-    quotes: true,
-    reposts: true,
-    deletedTweets: false,
-    followingUpdates: false
-  }
+  soundVolume: 75,
+  defaultLaunchPlatform: 'pump',
+  tweetTypes: createDefaultTweetTypeSettings(),
 }
 
 const DEFAULT_GROUP_SETTINGS: FeedGroupSettings = {
@@ -113,32 +204,9 @@ const DEFAULT_GROUP_SETTINGS: FeedGroupSettings = {
   translateTo: 'en',
   pauseOnHover: false,
   notifications: true,
-  tweetTypes: {
-    posts: true,
-    replies: true,
-    quotes: true,
-    reposts: true,
-    deletedTweets: false,
-    followingUpdates: false
-  }
-}
-
-const DEFAULT_ACCOUNT_SETTINGS: AccountSettings = {
-  useGroupSettings: true,
-  autoTranslate: false,
-  translateFrom: 'auto',
-  translateTo: 'en',
-  notifications: true,
-  tweetTypes: {
-    posts: true,
-    replies: true,
-    quotes: true,
-    reposts: true,
-    deletedTweets: false,
-    followingUpdates: false
-  },
-  highlightTweets: false,
-  highlightColor: '#007bff'  // Default to kol-blue
+  soundVolume: 75,
+  defaultLaunchPlatform: 'pump',
+  tweetTypes: createDefaultTweetTypeSettings(),
 }
 
 const GROUP_ICONS = [
@@ -210,32 +278,6 @@ function ToggleSwitch({ enabled, onChange, disabled }: ToggleSwitchProps) {
         animate={{ left: enabled ? 21 : 3 }}
         transition={{ type: "spring", stiffness: 500, damping: 30 }}
       />
-    </button>
-  )
-}
-
-interface TweetTypePillProps {
-  label: string
-  enabled: boolean
-  onChange: (enabled: boolean) => void
-  disabled?: boolean
-}
-
-function TweetTypePill({ label, enabled, onChange, disabled }: TweetTypePillProps) {
-  return (
-    <button
-      onClick={() => !disabled && onChange(!enabled)}
-      disabled={disabled}
-      className={`
-        h-6 px-2.5 rounded text-xs font-medium transition-colors border
-        ${enabled
-          ? 'bg-kol-blue/15 text-kol-blue border-kol-blue/50'
-          : 'bg-kol-surface/45 border-kol-border text-kol-text-muted hover:bg-kol-surface-elevated'
-        }
-        ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
-      `}
-    >
-      {label}
     </button>
   )
 }
@@ -572,6 +614,621 @@ function ColorPicker({ currentColor, onSelect }: ColorPickerProps) {
   )
 }
 
+// Inherited indicator dot
+function InheritedIndicator({ show }: { show: boolean }) {
+  if (!show) return null
+  return (
+    <Tooltip content="Inherited from group" position="top">
+      <span className="w-1.5 h-1.5 rounded-full bg-kol-text-muted/50 flex-shrink-0" />
+    </Tooltip>
+  )
+}
+
+// Sound Picker dropdown
+interface SoundPickerProps {
+  currentSound: string
+  onSelect: (soundId: string) => void
+  enabled: boolean
+}
+
+function SoundPicker({ currentSound, onSelect, enabled }: SoundPickerProps) {
+  const [isOpen, setIsOpen] = useState(false)
+  const [mounted, setMounted] = useState(false)
+  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 })
+  const triggerRef = useRef<HTMLButtonElement>(null)
+  const dropdownRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  const updatePosition = useCallback(() => {
+    if (!triggerRef.current) return
+    const rect = triggerRef.current.getBoundingClientRect()
+    setDropdownPosition({
+      top: rect.bottom + 4,
+      left: rect.left,
+    })
+  }, [])
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      const target = event.target as Node
+      if (
+        triggerRef.current && !triggerRef.current.contains(target) &&
+        dropdownRef.current && !dropdownRef.current.contains(target)
+      ) {
+        setIsOpen(false)
+      }
+    }
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+      return () => document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [isOpen])
+
+  useEffect(() => {
+    if (isOpen) {
+      updatePosition()
+      window.addEventListener('scroll', updatePosition, true)
+      window.addEventListener('resize', updatePosition)
+      return () => {
+        window.removeEventListener('scroll', updatePosition, true)
+        window.removeEventListener('resize', updatePosition)
+      }
+    }
+  }, [isOpen, updatePosition])
+
+  const dropdown = mounted && isOpen && (
+    <AnimatePresence>
+      <motion.div
+        ref={dropdownRef}
+        initial={{ opacity: 0, y: -4 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -4 }}
+        transition={{ duration: 0.15 }}
+        className="fixed bg-kol-bg border border-kol-border rounded-lg shadow-[0_4px_24px_rgba(0,0,0,0.4)] z-[9999] py-1 min-w-[120px]"
+        style={{ top: dropdownPosition.top, left: dropdownPosition.left }}
+      >
+        {NOTIFICATION_SOUNDS.map(sound => (
+          <button
+            key={sound.id}
+            onClick={(e) => {
+              e.stopPropagation()
+              onSelect(sound.id)
+              setIsOpen(false)
+            }}
+            className={`
+              w-full px-3 py-1.5 text-left text-xs transition-colors flex items-center gap-2
+              ${sound.id === currentSound
+                ? 'bg-kol-blue/15 text-kol-blue'
+                : 'text-kol-text-muted hover:bg-kol-surface-elevated hover:text-white'
+              }
+            `}
+          >
+            <i className={sound.id === 'silent' ? 'ri-volume-mute-line' : 'ri-volume-up-line'} />
+            {sound.label}
+          </button>
+        ))}
+      </motion.div>
+    </AnimatePresence>
+  )
+
+  return (
+    <>
+      <button
+        ref={triggerRef}
+        onClick={(e) => {
+          e.stopPropagation()
+          if (enabled) setIsOpen(!isOpen)
+        }}
+        disabled={!enabled}
+        className={`
+          flex items-center gap-1 h-6 px-1.5 rounded text-xs transition-colors
+          ${enabled
+            ? 'text-kol-text-muted hover:text-white hover:bg-kol-surface-elevated'
+            : 'text-kol-text-muted/40 cursor-not-allowed'
+          }
+        `}
+      >
+        <i className={currentSound === 'silent' ? 'ri-volume-mute-line' : 'ri-volume-up-line'} />
+        <i className={`ri-arrow-down-s-line text-[10px] ${isOpen ? 'rotate-180' : ''} transition-transform`} />
+      </button>
+      {mounted && createPortal(dropdown, document.body)}
+    </>
+  )
+}
+
+// Platform Picker dropdown
+interface PlatformPickerProps {
+  currentPlatform: string | null
+  onSelect: (platform: string | null) => void
+  accountDefault?: string
+}
+
+function PlatformPicker({ currentPlatform, onSelect, accountDefault }: PlatformPickerProps) {
+  const [isOpen, setIsOpen] = useState(false)
+  const [mounted, setMounted] = useState(false)
+  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 })
+  const triggerRef = useRef<HTMLButtonElement>(null)
+  const dropdownRef = useRef<HTMLDivElement>(null)
+
+  const selectedPlatform = currentPlatform
+    ? PLATFORM_OPTIONS.find(p => p.id === currentPlatform)
+    : null
+
+  const displayLabel = selectedPlatform?.label || 'Default'
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  const updatePosition = useCallback(() => {
+    if (!triggerRef.current) return
+    const rect = triggerRef.current.getBoundingClientRect()
+    setDropdownPosition({
+      top: rect.bottom + 4,
+      left: rect.left,
+    })
+  }, [])
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      const target = event.target as Node
+      if (
+        triggerRef.current && !triggerRef.current.contains(target) &&
+        dropdownRef.current && !dropdownRef.current.contains(target)
+      ) {
+        setIsOpen(false)
+      }
+    }
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+      return () => document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [isOpen])
+
+  useEffect(() => {
+    if (isOpen) {
+      updatePosition()
+      window.addEventListener('scroll', updatePosition, true)
+      window.addEventListener('resize', updatePosition)
+      return () => {
+        window.removeEventListener('scroll', updatePosition, true)
+        window.removeEventListener('resize', updatePosition)
+      }
+    }
+  }, [isOpen, updatePosition])
+
+  const dropdown = mounted && isOpen && (
+    <AnimatePresence>
+      <motion.div
+        ref={dropdownRef}
+        initial={{ opacity: 0, y: -4 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -4 }}
+        transition={{ duration: 0.15 }}
+        className="fixed bg-kol-bg border border-kol-border rounded-lg shadow-[0_4px_24px_rgba(0,0,0,0.4)] z-[9999] py-1 min-w-[100px]"
+        style={{ top: dropdownPosition.top, left: dropdownPosition.left }}
+      >
+        {/* Default option */}
+        <button
+          onClick={(e) => {
+            e.stopPropagation()
+            onSelect(null)
+            setIsOpen(false)
+          }}
+          className={`
+            w-full px-3 py-1.5 text-left text-xs transition-colors
+            ${currentPlatform === null
+              ? 'bg-kol-blue/15 text-kol-blue'
+              : 'text-kol-text-muted hover:bg-kol-surface-elevated hover:text-white'
+            }
+          `}
+        >
+          Default {accountDefault && <span className="text-kol-text-muted/60">({accountDefault})</span>}
+        </button>
+        {PLATFORM_OPTIONS.map(platform => (
+          <button
+            key={platform.id}
+            onClick={(e) => {
+              e.stopPropagation()
+              onSelect(platform.id)
+              setIsOpen(false)
+            }}
+            className={`
+              w-full px-3 py-1.5 text-left text-xs transition-colors
+              ${platform.id === currentPlatform
+                ? 'bg-kol-blue/15 text-kol-blue'
+                : 'text-kol-text-muted hover:bg-kol-surface-elevated hover:text-white'
+              }
+            `}
+          >
+            {platform.label}
+          </button>
+        ))}
+      </motion.div>
+    </AnimatePresence>
+  )
+
+  return (
+    <>
+      <button
+        ref={triggerRef}
+        onClick={(e) => {
+          e.stopPropagation()
+          setIsOpen(!isOpen)
+        }}
+        className="flex items-center gap-1 h-6 px-1.5 rounded text-xs text-kol-text-muted hover:text-white hover:bg-kol-surface-elevated transition-colors"
+      >
+        <span className="max-w-[60px] truncate">{displayLabel}</span>
+        <i className={`ri-arrow-down-s-line text-[10px] ${isOpen ? 'rotate-180' : ''} transition-transform`} />
+      </button>
+      {mounted && createPortal(dropdown, document.body)}
+    </>
+  )
+}
+
+// Volume Slider
+interface VolumeSliderProps {
+  value: number
+  onChange: (volume: number) => void
+}
+
+function VolumeSlider({ value, onChange }: VolumeSliderProps) {
+  return (
+    <div className="flex items-center gap-3 flex-1">
+      <i className={`ri-volume-${value === 0 ? 'mute' : value < 50 ? 'down' : 'up'}-line text-kol-text-muted`} />
+      <input
+        type="range"
+        min="0"
+        max="100"
+        value={value}
+        onChange={(e) => onChange(parseInt(e.target.value))}
+        className="flex-1 h-1.5 bg-kol-surface-elevated rounded-full appearance-none cursor-pointer
+          [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3
+          [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-kol-blue [&::-webkit-slider-thumb]:cursor-pointer
+          [&::-webkit-slider-thumb]:shadow-[0_0_6px_rgba(0,123,255,0.4)]
+          [&::-moz-range-thumb]:w-3 [&::-moz-range-thumb]:h-3 [&::-moz-range-thumb]:rounded-full
+          [&::-moz-range-thumb]:bg-kol-blue [&::-moz-range-thumb]:border-0"
+        style={{
+          background: `linear-gradient(to right, #007bff ${value}%, #1a1a1a ${value}%)`
+        }}
+      />
+      <span className="text-xs text-kol-text-muted w-8 text-right">{value}%</span>
+    </div>
+  )
+}
+
+// Tweet Type Row - compact inline controls for each tweet type
+interface TweetTypeRowProps {
+  typeKey: TweetTypeKey
+  label: string
+  settings: Partial<TweetTypeSettings> | undefined
+  groupDefaults: TweetTypeSettings
+  onChange: (updates: Partial<TweetTypeSettings>) => void
+  accountDefaultPlatform?: string
+}
+
+function TweetTypeRow({ label, settings, groupDefaults, onChange, accountDefaultPlatform }: TweetTypeRowProps) {
+  // Merge with defaults to get effective values
+  const effective: TweetTypeSettings = {
+    enabled: settings?.enabled ?? groupDefaults.enabled,
+    notification: {
+      desktop: settings?.notification?.desktop ?? groupDefaults.notification.desktop,
+      sound: settings?.notification?.sound ?? groupDefaults.notification.sound,
+      soundId: settings?.notification?.soundId ?? groupDefaults.notification.soundId,
+    },
+    highlightEnabled: settings?.highlightEnabled ?? groupDefaults.highlightEnabled,
+    highlightColor: settings?.highlightColor ?? groupDefaults.highlightColor,
+    launchPlatform: settings?.launchPlatform ?? groupDefaults.launchPlatform,
+  }
+
+  // Check if values are inherited (undefined in settings)
+  const isEnabledInherited = settings?.enabled === undefined
+  const isDesktopInherited = settings?.notification?.desktop === undefined
+  const isSoundInherited = settings?.notification?.sound === undefined
+  const isColorInherited = settings?.highlightColor === undefined
+  const isPlatformInherited = settings?.launchPlatform === undefined
+
+  return (
+    <div className="flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-kol-surface/30 transition-colors">
+      {/* Enable pill */}
+      <button
+        onClick={() => onChange({ enabled: !effective.enabled })}
+        className={`
+          h-5 px-2 rounded text-[10px] font-medium transition-colors border min-w-[60px]
+          ${effective.enabled
+            ? 'bg-kol-blue/15 text-kol-blue border-kol-blue/50'
+            : 'bg-kol-surface/45 border-kol-border text-kol-text-muted hover:bg-kol-surface-elevated'
+          }
+        `}
+      >
+        {label}
+      </button>
+
+      {/* Inherited indicator */}
+      <InheritedIndicator show={isEnabledInherited} />
+
+      {/* Spacer */}
+      <div className="flex-1" />
+
+      {/* Desktop notification toggle */}
+      <Tooltip content="Desktop notification" position="top">
+        <button
+          onClick={() => onChange({
+            notification: { ...effective.notification, desktop: !effective.notification.desktop }
+          })}
+          className={`
+            w-6 h-6 rounded flex items-center justify-center transition-colors
+            ${effective.notification.desktop
+              ? 'text-kol-blue bg-kol-blue/10'
+              : 'text-kol-text-muted/40 hover:text-kol-text-muted'
+            }
+          `}
+        >
+          <i className={effective.notification.desktop ? 'ri-notification-3-fill' : 'ri-notification-3-line'} />
+        </button>
+      </Tooltip>
+      <InheritedIndicator show={isDesktopInherited} />
+
+      {/* Sound picker */}
+      <Tooltip content="Sound notification" position="top">
+        <button
+          onClick={() => onChange({
+            notification: { ...effective.notification, sound: !effective.notification.sound }
+          })}
+          className={`
+            w-6 h-6 rounded flex items-center justify-center transition-colors
+            ${effective.notification.sound
+              ? 'text-kol-blue bg-kol-blue/10'
+              : 'text-kol-text-muted/40 hover:text-kol-text-muted'
+            }
+          `}
+        >
+          <i className={effective.notification.sound ? 'ri-volume-up-fill' : 'ri-volume-mute-line'} />
+        </button>
+      </Tooltip>
+      <SoundPicker
+        currentSound={effective.notification.soundId}
+        onSelect={(soundId) => onChange({
+          notification: { ...effective.notification, soundId }
+        })}
+        enabled={effective.notification.sound}
+      />
+      <InheritedIndicator show={isSoundInherited} />
+
+      {/* Color swatch */}
+      <Tooltip content="Highlight color" position="top">
+        <div className="flex items-center gap-1">
+          <button
+            onClick={() => onChange({ highlightEnabled: !effective.highlightEnabled })}
+            className={`
+              w-5 h-5 rounded-md transition-all ring-1
+              ${effective.highlightEnabled
+                ? 'ring-white/50 scale-100'
+                : 'ring-kol-border/30 opacity-40 scale-90'
+              }
+            `}
+            style={{ backgroundColor: effective.highlightColor }}
+          />
+        </div>
+      </Tooltip>
+      <ColorPicker
+        currentColor={effective.highlightColor}
+        onSelect={(color) => onChange({ highlightColor: color, highlightEnabled: true })}
+      />
+      <InheritedIndicator show={isColorInherited} />
+
+      {/* Platform override */}
+      <PlatformPicker
+        currentPlatform={effective.launchPlatform}
+        onSelect={(platform) => onChange({ launchPlatform: platform })}
+        accountDefault={accountDefaultPlatform}
+      />
+      <InheritedIndicator show={isPlatformInherited} />
+    </div>
+  )
+}
+
+// ============================================================================
+// Migration Helpers
+// ============================================================================
+
+// Migrate old array-based filters to new boolean-based filters
+function migrateFilters(oldFilters: Record<string, unknown> | undefined): ContentFilters | undefined {
+  if (!oldFilters) return undefined
+
+  // If already in new format (has boolean fields)
+  if (typeof oldFilters.filterTokenSymbols === 'boolean') {
+    return oldFilters as unknown as ContentFilters
+  }
+
+  // Old format had arrays - convert to booleans based on whether arrays had values
+  const oldTokenSymbols = oldFilters.tokenSymbols as string[] | undefined
+  const oldMintAddresses = oldFilters.mintAddresses as string[] | undefined
+  const oldKeywords = oldFilters.keywords as string[] | undefined
+
+  return {
+    filterTokenSymbols: Boolean(oldTokenSymbols && oldTokenSymbols.length > 0),
+    filterMintAddresses: Boolean(oldMintAddresses && oldMintAddresses.length > 0),
+    filterKeywords: Boolean(oldKeywords && oldKeywords.length > 0),
+  }
+}
+
+// Migrate old group settings format to new format
+function migrateGroupSettings(oldSettings: Record<string, unknown>): FeedGroupSettings {
+  // Check if already in new format (has tweetTypes as object with TweetTypeSettings)
+  if (oldSettings.tweetTypes && typeof (oldSettings.tweetTypes as Record<string, unknown>).posts === 'object') {
+    return oldSettings as unknown as FeedGroupSettings
+  }
+
+  // Old format had tweetTypes as Record<string, boolean>
+  const oldTweetTypes = (oldSettings.tweetTypes || {}) as Record<string, boolean>
+
+  return {
+    useGlobalSettings: Boolean(oldSettings.useGlobalSettings),
+    autoTranslate: Boolean(oldSettings.autoTranslate),
+    translateFrom: String(oldSettings.translateFrom || 'auto'),
+    translateTo: String(oldSettings.translateTo || 'en'),
+    pauseOnHover: Boolean(oldSettings.pauseOnHover),
+    notifications: Boolean(oldSettings.notifications ?? true),
+    soundVolume: Number(oldSettings.soundVolume ?? 75),
+    defaultLaunchPlatform: (oldSettings.defaultLaunchPlatform as PlatformType) || 'pump',
+    filters: migrateFilters(oldSettings.filters as Record<string, unknown> | undefined),
+    tweetTypes: {
+      posts: {
+        enabled: oldTweetTypes.posts ?? true,
+        notification: { desktop: true, sound: true, soundId: 'default' },
+        highlightEnabled: false,
+        highlightColor: '#007bff',
+        launchPlatform: null,
+      },
+      replies: {
+        enabled: oldTweetTypes.replies ?? true,
+        notification: { desktop: true, sound: true, soundId: 'default' },
+        highlightEnabled: false,
+        highlightColor: '#00c46b',
+        launchPlatform: null,
+      },
+      quotes: {
+        enabled: oldTweetTypes.quotes ?? true,
+        notification: { desktop: true, sound: true, soundId: 'default' },
+        highlightEnabled: false,
+        highlightColor: '#8b5cf6',
+        launchPlatform: null,
+      },
+      reposts: {
+        enabled: oldTweetTypes.reposts ?? true,
+        notification: { desktop: true, sound: true, soundId: 'default' },
+        highlightEnabled: false,
+        highlightColor: '#06b6d4',
+        launchPlatform: null,
+      },
+      deletedTweets: {
+        enabled: oldTweetTypes.deletedTweets ?? false,
+        notification: { desktop: true, sound: true, soundId: 'alert' },
+        highlightEnabled: false,
+        highlightColor: '#ff4d4f',
+        launchPlatform: null,
+      },
+      followingUpdates: {
+        enabled: oldTweetTypes.followingUpdates ?? false,
+        notification: { desktop: true, sound: true, soundId: 'chime' },
+        highlightEnabled: false,
+        highlightColor: '#f59e0b',
+        launchPlatform: null,
+      },
+    },
+  }
+}
+
+// Migrate old account settings format to new format
+function migrateAccountSettings(oldSettings: Record<string, unknown> | undefined): AccountSettings | undefined {
+  if (!oldSettings) return undefined
+
+  // Check if already in new format (no useGroupSettings field or has new tweetTypes structure)
+  if (!('useGroupSettings' in oldSettings) && !('highlightTweets' in oldSettings)) {
+    return oldSettings as AccountSettings
+  }
+
+  // Migrate old format
+  const newSettings: AccountSettings = {}
+
+  // Migrate translation settings (only if not using group settings)
+  if (oldSettings.useGroupSettings === false) {
+    if (oldSettings.autoTranslate !== undefined) {
+      newSettings.autoTranslate = Boolean(oldSettings.autoTranslate)
+    }
+    if (oldSettings.translateFrom) {
+      newSettings.translateFrom = String(oldSettings.translateFrom)
+    }
+    if (oldSettings.translateTo) {
+      newSettings.translateTo = String(oldSettings.translateTo)
+    }
+  }
+
+  // Migrate old highlightTweets to per-type settings
+  if (oldSettings.highlightTweets) {
+    const color = String(oldSettings.highlightColor || '#007bff')
+    newSettings.tweetTypes = {
+      posts: { highlightEnabled: true, highlightColor: color },
+      replies: { highlightEnabled: true, highlightColor: color },
+      quotes: { highlightEnabled: true, highlightColor: color },
+      reposts: { highlightEnabled: true, highlightColor: color },
+      deletedTweets: { highlightEnabled: true, highlightColor: color },
+      followingUpdates: { highlightEnabled: true, highlightColor: color },
+    }
+  }
+
+  return Object.keys(newSettings).length > 0 ? newSettings : undefined
+}
+
+// Migrate global settings
+function migrateGlobalSettings(oldSettings: Record<string, unknown>): GlobalFeedSettings {
+  // Check if already in new format
+  if (oldSettings.tweetTypes && typeof (oldSettings.tweetTypes as Record<string, unknown>).posts === 'object') {
+    return oldSettings as unknown as GlobalFeedSettings
+  }
+
+  const oldTweetTypes = (oldSettings.tweetTypes || {}) as Record<string, boolean>
+
+  return {
+    autoTranslate: Boolean(oldSettings.autoTranslate),
+    translateFrom: String(oldSettings.translateFrom || 'auto'),
+    translateTo: String(oldSettings.translateTo || 'en'),
+    pauseOnHover: Boolean(oldSettings.pauseOnHover),
+    notifications: Boolean(oldSettings.notifications ?? true),
+    soundVolume: Number(oldSettings.soundVolume ?? 75),
+    defaultLaunchPlatform: (oldSettings.defaultLaunchPlatform as PlatformType) || 'pump',
+    filters: migrateFilters(oldSettings.filters as Record<string, unknown> | undefined),
+    tweetTypes: {
+      posts: {
+        enabled: oldTweetTypes.posts ?? true,
+        notification: { desktop: true, sound: true, soundId: 'default' },
+        highlightEnabled: false,
+        highlightColor: '#007bff',
+        launchPlatform: null,
+      },
+      replies: {
+        enabled: oldTweetTypes.replies ?? true,
+        notification: { desktop: true, sound: true, soundId: 'default' },
+        highlightEnabled: false,
+        highlightColor: '#00c46b',
+        launchPlatform: null,
+      },
+      quotes: {
+        enabled: oldTweetTypes.quotes ?? true,
+        notification: { desktop: true, sound: true, soundId: 'default' },
+        highlightEnabled: false,
+        highlightColor: '#8b5cf6',
+        launchPlatform: null,
+      },
+      reposts: {
+        enabled: oldTweetTypes.reposts ?? true,
+        notification: { desktop: true, sound: true, soundId: 'default' },
+        highlightEnabled: false,
+        highlightColor: '#06b6d4',
+        launchPlatform: null,
+      },
+      deletedTweets: {
+        enabled: oldTweetTypes.deletedTweets ?? false,
+        notification: { desktop: true, sound: true, soundId: 'alert' },
+        highlightEnabled: false,
+        highlightColor: '#ff4d4f',
+        launchPlatform: null,
+      },
+      followingUpdates: {
+        enabled: oldTweetTypes.followingUpdates ?? false,
+        notification: { desktop: true, sound: true, soundId: 'chime' },
+        highlightEnabled: false,
+        highlightColor: '#f59e0b',
+        launchPlatform: null,
+      },
+    },
+  }
+}
+
 // ============================================================================
 // Main Component
 // ============================================================================
@@ -589,15 +1246,26 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
   const [isNewAccountFocused, setIsNewAccountFocused] = useState(false)
   const [expandedAccountId, setExpandedAccountId] = useState<string | null>(null)
 
-  // Load from storage on mount
+  // Load from storage on mount and migrate old data
   useEffect(() => {
     if (typeof chrome !== 'undefined' && chrome.storage) {
       chrome.storage.local.get([STORAGE_KEYS.groups, STORAGE_KEYS.globalSettings], (result) => {
         if (result[STORAGE_KEYS.groups]) {
-          setGroups(result[STORAGE_KEYS.groups])
+          // Migrate groups and their accounts
+          const loadedGroups = result[STORAGE_KEYS.groups] as FeedGroup[]
+          const migratedGroups = loadedGroups.map(group => ({
+            ...group,
+            settings: migrateGroupSettings(group.settings as unknown as Record<string, unknown>),
+            accounts: group.accounts.map(account => ({
+              ...account,
+              settings: migrateAccountSettings(account.settings as unknown as Record<string, unknown> | undefined),
+            })),
+          }))
+          setGroups(migratedGroups)
         }
         if (result[STORAGE_KEYS.globalSettings]) {
-          setGlobalSettings(result[STORAGE_KEYS.globalSettings])
+          const migratedGlobal = migrateGlobalSettings(result[STORAGE_KEYS.globalSettings] as Record<string, unknown>)
+          setGlobalSettings(migratedGlobal)
         }
       })
     }
@@ -639,7 +1307,10 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
       name: 'New Group',
       icon: 'ri-star-line',
       accounts: [],
-      settings: { ...DEFAULT_GROUP_SETTINGS }
+      settings: {
+        ...DEFAULT_GROUP_SETTINGS,
+        tweetTypes: createDefaultTweetTypeSettings(),
+      }
     }
     setGroups([...groups, newGroup])
     setSelectedGroupId(newGroup.id)
@@ -702,52 +1373,50 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
     ))
   }
 
-  const updateGroupTweetTypes = (groupId: string, type: keyof FeedGroupSettings['tweetTypes'], value: boolean) => {
+  // Update a specific tweet type setting for a group
+  const updateGroupTweetType = (groupId: string, typeKey: TweetTypeKey, updates: Partial<TweetTypeSettings>) => {
     setGroups(groups.map(g =>
       g.id === groupId
         ? {
             ...g,
             settings: {
               ...g.settings,
-              tweetTypes: { ...g.settings.tweetTypes, [type]: value }
+              tweetTypes: {
+                ...g.settings.tweetTypes,
+                [typeKey]: { ...g.settings.tweetTypes[typeKey], ...updates }
+              }
             }
           }
         : g
     ))
   }
 
-  const updateGlobalTweetTypes = (type: keyof GlobalFeedSettings['tweetTypes'], value: boolean) => {
+  // Update a specific tweet type setting for global
+  const updateGlobalTweetType = (typeKey: TweetTypeKey, updates: Partial<TweetTypeSettings>) => {
     setGlobalSettings({
       ...globalSettings,
-      tweetTypes: { ...globalSettings.tweetTypes, [type]: value }
+      tweetTypes: {
+        ...globalSettings.tweetTypes,
+        [typeKey]: { ...globalSettings.tweetTypes[typeKey], ...updates }
+      }
     })
   }
 
+  // Update group filters
+  const updateGroupFilters = (groupId: string, filters: ContentFilters) => {
+    setGroups(groups.map(g =>
+      g.id === groupId
+        ? { ...g, settings: { ...g.settings, filters } }
+        : g
+    ))
+  }
+
   // Get effective settings for a group (respecting useGlobalSettings)
-  const getEffectiveSettings = (group: FeedGroup) => {
+  const getEffectiveSettings = (group: FeedGroup): FeedGroupSettings | GlobalFeedSettings => {
     if (group.settings.useGlobalSettings) {
       return globalSettings
     }
     return group.settings
-  }
-
-  // Get effective settings for an account (respecting inheritance chain)
-  const getEffectiveAccountSettings = (account: Account, group: FeedGroup): AccountSettings => {
-    // If account has no settings or is using group settings, inherit from group
-    if (!account.settings || account.settings.useGroupSettings) {
-      const groupSettings = getEffectiveSettings(group)
-      return {
-        useGroupSettings: true,
-        autoTranslate: groupSettings.autoTranslate,
-        translateFrom: groupSettings.translateFrom,
-        translateTo: groupSettings.translateTo,
-        notifications: groupSettings.notifications,
-        tweetTypes: { ...groupSettings.tweetTypes },
-        highlightTweets: account.settings?.highlightTweets ?? false,
-        highlightColor: account.settings?.highlightColor ?? '#007bff'
-      }
-    }
-    return account.settings
   }
 
   // Update settings for a specific account
@@ -758,35 +1427,48 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
         ...g,
         accounts: g.accounts.map(a => {
           if (a.id !== accountId) return a
-          const currentSettings = a.settings || { ...DEFAULT_ACCOUNT_SETTINGS }
           return {
             ...a,
-            settings: { ...currentSettings, ...updates }
+            settings: { ...a.settings, ...updates }
           }
         })
       }
     }))
   }
 
-  // Update tweet types for a specific account
-  const updateAccountTweetTypes = (groupId: string, accountId: string, type: keyof AccountSettings['tweetTypes'], value: boolean) => {
+  // Update a specific tweet type for an account
+  const updateAccountTweetType = (
+    groupId: string,
+    accountId: string,
+    typeKey: TweetTypeKey,
+    updates: Partial<TweetTypeSettings>
+  ) => {
     setGroups(groups.map(g => {
       if (g.id !== groupId) return g
       return {
         ...g,
         accounts: g.accounts.map(a => {
           if (a.id !== accountId) return a
-          const currentSettings = a.settings || { ...DEFAULT_ACCOUNT_SETTINGS }
+          const currentTweetTypes = a.settings?.tweetTypes || {}
+          const currentTypeSettings = currentTweetTypes[typeKey] || {}
           return {
             ...a,
             settings: {
-              ...currentSettings,
-              tweetTypes: { ...currentSettings.tweetTypes, [type]: value }
+              ...a.settings,
+              tweetTypes: {
+                ...currentTweetTypes,
+                [typeKey]: { ...currentTypeSettings, ...updates }
+              }
             }
           }
         })
       }
     }))
+  }
+
+  // Update account filters
+  const updateAccountFilters = (groupId: string, accountId: string, filters: ContentFilters) => {
+    updateAccountSettings(groupId, accountId, { filters })
   }
 
   // Filter accounts by search
@@ -968,10 +1650,10 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                   </p>
                 </div>
 
-                {/* Section Label */}
+                {/* General Settings Section */}
                 <div>
                   <span className="text-[10px] text-kol-text-muted uppercase tracking-wide font-medium">
-                    Feed Behavior
+                    General Settings
                   </span>
                 </div>
 
@@ -1033,52 +1715,116 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
 
                   <div className="flex items-center justify-between py-1">
                     <div className="flex-1">
-                      <p className="text-sm font-medium text-white">Desktop notifications</p>
-                      <p className="text-xs text-kol-text-muted mt-0.5">Get notified about new tweets</p>
+                      <p className="text-sm font-medium text-white">Default Launch Platform</p>
+                      <p className="text-xs text-kol-text-muted mt-0.5">Platform to open coins on</p>
                     </div>
-                    <ToggleSwitch
-                      enabled={globalSettings.notifications}
-                      onChange={(v) => setGlobalSettings({ ...globalSettings, notifications: v })}
+                    <select
+                      value={globalSettings.defaultLaunchPlatform}
+                      onChange={(e) => setGlobalSettings({ ...globalSettings, defaultLaunchPlatform: e.target.value as PlatformType })}
+                      className="h-8 px-2 rounded bg-kol-surface border border-kol-border/50 text-xs text-white focus:outline-none focus:border-kol-blue/50"
+                    >
+                      {PLATFORM_OPTIONS.map(p => (
+                        <option key={p.id} value={p.id}>{p.label}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="flex items-center justify-between gap-4 py-1">
+                    <div>
+                      <p className="text-sm font-medium text-white">Sound Volume</p>
+                      <p className="text-xs text-kol-text-muted mt-0.5">Volume for notification sounds</p>
+                    </div>
+                    <VolumeSlider
+                      value={globalSettings.soundVolume}
+                      onChange={(v) => setGlobalSettings({ ...globalSettings, soundVolume: v })}
                     />
                   </div>
                 </div>
 
+                {/* Filters Section */}
+                <div className="pt-2 border-t border-kol-border/20">
+                  <div className="mb-3">
+                    <span className="text-[10px] text-kol-text-muted uppercase tracking-wide font-medium">
+                      Highlight Filters
+                    </span>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between py-1">
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-white">Token Symbols</p>
+                        <p className="text-xs text-kol-text-muted mt-0.5">Highlight tweets with $TOKEN mentions</p>
+                      </div>
+                      <ToggleSwitch
+                        enabled={globalSettings.filters?.filterTokenSymbols ?? false}
+                        onChange={(v) => setGlobalSettings({
+                          ...globalSettings,
+                          filters: {
+                            ...globalSettings.filters,
+                            filterTokenSymbols: v,
+                            filterMintAddresses: globalSettings.filters?.filterMintAddresses ?? false,
+                            filterKeywords: globalSettings.filters?.filterKeywords ?? false,
+                          }
+                        })}
+                      />
+                    </div>
+                    <div className="flex items-center justify-between py-1">
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-white">Mint Addresses</p>
+                        <p className="text-xs text-kol-text-muted mt-0.5">Highlight tweets with contract addresses</p>
+                      </div>
+                      <ToggleSwitch
+                        enabled={globalSettings.filters?.filterMintAddresses ?? false}
+                        onChange={(v) => setGlobalSettings({
+                          ...globalSettings,
+                          filters: {
+                            ...globalSettings.filters,
+                            filterTokenSymbols: globalSettings.filters?.filterTokenSymbols ?? false,
+                            filterMintAddresses: v,
+                            filterKeywords: globalSettings.filters?.filterKeywords ?? false,
+                          }
+                        })}
+                      />
+                    </div>
+                    <div className="flex items-center justify-between py-1">
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-white">Keywords</p>
+                        <p className="text-xs text-kol-text-muted mt-0.5">Highlight tweets with crypto keywords</p>
+                      </div>
+                      <ToggleSwitch
+                        enabled={globalSettings.filters?.filterKeywords ?? false}
+                        onChange={(v) => setGlobalSettings({
+                          ...globalSettings,
+                          filters: {
+                            ...globalSettings.filters,
+                            filterTokenSymbols: globalSettings.filters?.filterTokenSymbols ?? false,
+                            filterMintAddresses: globalSettings.filters?.filterMintAddresses ?? false,
+                            filterKeywords: v,
+                          }
+                        })}
+                      />
+                    </div>
+                  </div>
+                </div>
+
                 {/* Tweet Types Section */}
-                <div className="pt-2">
-                  <span className="text-[10px] text-kol-text-muted uppercase tracking-wide font-medium">
-                    Tweet Types
-                  </span>
-                  <div className="flex flex-wrap gap-2 mt-3">
-                    <TweetTypePill
-                      label="Posts"
-                      enabled={globalSettings.tweetTypes.posts}
-                      onChange={(v) => updateGlobalTweetTypes('posts', v)}
-                    />
-                    <TweetTypePill
-                      label="Replies"
-                      enabled={globalSettings.tweetTypes.replies}
-                      onChange={(v) => updateGlobalTweetTypes('replies', v)}
-                    />
-                    <TweetTypePill
-                      label="Quotes"
-                      enabled={globalSettings.tweetTypes.quotes}
-                      onChange={(v) => updateGlobalTweetTypes('quotes', v)}
-                    />
-                    <TweetTypePill
-                      label="Reposts"
-                      enabled={globalSettings.tweetTypes.reposts}
-                      onChange={(v) => updateGlobalTweetTypes('reposts', v)}
-                    />
-                    <TweetTypePill
-                      label="Deleted"
-                      enabled={globalSettings.tweetTypes.deletedTweets}
-                      onChange={(v) => updateGlobalTweetTypes('deletedTweets', v)}
-                    />
-                    <TweetTypePill
-                      label="Following"
-                      enabled={globalSettings.tweetTypes.followingUpdates}
-                      onChange={(v) => updateGlobalTweetTypes('followingUpdates', v)}
-                    />
+                <div className="pt-2 border-t border-kol-border/20">
+                  <div className="mb-2">
+                    <span className="text-[10px] text-kol-text-muted uppercase tracking-wide font-medium">
+                      Tweet Types
+                    </span>
+                  </div>
+                  <div className="space-y-0.5">
+                    {(Object.keys(TWEET_TYPE_LABELS) as TweetTypeKey[]).map(typeKey => (
+                      <TweetTypeRow
+                        key={typeKey}
+                        typeKey={typeKey}
+                        label={TWEET_TYPE_LABELS[typeKey]}
+                        settings={globalSettings.tweetTypes[typeKey]}
+                        groupDefaults={globalSettings.tweetTypes[typeKey]}
+                        onChange={(updates) => updateGlobalTweetType(typeKey, updates)}
+                        accountDefaultPlatform={PLATFORM_OPTIONS.find(p => p.id === globalSettings.defaultLaunchPlatform)?.label}
+                      />
+                    ))}
                   </div>
                 </div>
               </div>
@@ -1171,8 +1917,9 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                     ) : (
                       filteredAccounts.map(account => {
                         const isExpanded = expandedAccountId === account.id
-                        const hasCustomSettings = account.settings && !account.settings.useGroupSettings
-                        const effectiveSettings = getEffectiveAccountSettings(account, selectedGroup)
+                        const hasCustomSettings = account.settings && Object.keys(account.settings).length > 0
+                        const groupSettings = getEffectiveSettings(selectedGroup)
+                        const accountDefaultPlatform = account.settings?.defaultLaunchPlatform || groupSettings.defaultLaunchPlatform
 
                         return (
                           <div
@@ -1245,48 +1992,30 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                                     {/* Divider */}
                                     <div className="h-px bg-kol-border/30" />
 
-                                    {/* Use Group Settings Toggle */}
-                                    <div className="flex items-center justify-between p-2.5 rounded-lg bg-kol-bg/50 border border-kol-border/30">
-                                      <div className="flex-1">
-                                        <p className="text-xs font-medium text-white">Use group settings</p>
-                                        <p className="text-[10px] text-kol-text-muted mt-0.5">
-                                          Inheriting from: {selectedGroup.name}
-                                        </p>
-                                      </div>
-                                      <ToggleSwitch
-                                        enabled={account.settings?.useGroupSettings ?? true}
-                                        onChange={(v) => updateAccountSettings(selectedGroupId, account.id, {
-                                          ...DEFAULT_ACCOUNT_SETTINGS,
-                                          ...account.settings,
-                                          useGroupSettings: v
-                                        })}
-                                      />
-                                    </div>
-
-                                    {/* Account Settings (dimmed when using group settings) */}
-                                    <div className={account.settings?.useGroupSettings !== false ? 'opacity-40 pointer-events-none' : ''}>
-                                      {/* Settings Section */}
+                                    {/* General Settings Section */}
+                                    <div>
                                       <div className="mb-2">
                                         <span className="text-[9px] text-kol-text-muted uppercase tracking-wide font-medium">
-                                          Settings
+                                          General Settings
                                         </span>
                                       </div>
 
                                       <div className="space-y-3">
+                                        {/* Auto-translate */}
                                         <div className="flex items-center justify-between">
-                                          <div className="flex-1">
+                                          <div className="flex items-center gap-1.5">
                                             <p className="text-xs font-medium text-white">Auto-translate</p>
+                                            <InheritedIndicator show={account.settings?.autoTranslate === undefined} />
                                           </div>
                                           <ToggleSwitch
-                                            enabled={effectiveSettings.autoTranslate}
+                                            enabled={account.settings?.autoTranslate ?? groupSettings.autoTranslate}
                                             onChange={(v) => updateAccountSettings(selectedGroupId, account.id, { autoTranslate: v })}
-                                            disabled={account.settings?.useGroupSettings !== false}
                                           />
                                         </div>
 
                                         {/* Language Selection - shown when auto-translate is enabled */}
                                         <AnimatePresence>
-                                          {effectiveSettings.autoTranslate && account.settings?.useGroupSettings === false && (
+                                          {(account.settings?.autoTranslate ?? groupSettings.autoTranslate) && (
                                             <motion.div
                                               initial={{ opacity: 0, height: 0 }}
                                               animate={{ opacity: 1, height: 'auto' }}
@@ -1298,19 +2027,17 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                                                 <div className="flex-1">
                                                   <label className="text-[9px] text-kol-text-muted uppercase tracking-wide font-medium mb-1 block">From</label>
                                                   <LanguageSelect
-                                                    value={effectiveSettings.translateFrom}
+                                                    value={account.settings?.translateFrom ?? groupSettings.translateFrom}
                                                     onChange={(v) => updateAccountSettings(selectedGroupId, account.id, { translateFrom: v })}
                                                     options={LANGUAGES}
-                                                    disabled={account.settings?.useGroupSettings !== false}
                                                   />
                                                 </div>
                                                 <div className="flex-1">
                                                   <label className="text-[9px] text-kol-text-muted uppercase tracking-wide font-medium mb-1 block">To</label>
                                                   <LanguageSelect
-                                                    value={effectiveSettings.translateTo}
+                                                    value={account.settings?.translateTo ?? groupSettings.translateTo}
                                                     onChange={(v) => updateAccountSettings(selectedGroupId, account.id, { translateTo: v })}
                                                     options={TARGET_LANGUAGES}
-                                                    disabled={account.settings?.useGroupSettings !== false}
                                                   />
                                                 </div>
                                               </div>
@@ -1318,105 +2045,119 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                                           )}
                                         </AnimatePresence>
 
+                                        {/* Default Launch Platform */}
                                         <div className="flex items-center justify-between">
-                                          <div className="flex-1">
-                                            <p className="text-xs font-medium text-white">Notifications</p>
+                                          <div className="flex items-center gap-1.5">
+                                            <p className="text-xs font-medium text-white">Default Launch Platform</p>
+                                            <InheritedIndicator show={account.settings?.defaultLaunchPlatform === undefined} />
                                           </div>
-                                          <ToggleSwitch
-                                            enabled={effectiveSettings.notifications}
-                                            onChange={(v) => updateAccountSettings(selectedGroupId, account.id, { notifications: v })}
-                                            disabled={account.settings?.useGroupSettings !== false}
-                                          />
+                                          <div className="flex items-center gap-1">
+                                            <select
+                                              value={account.settings?.defaultLaunchPlatform || ''}
+                                              onChange={(e) => updateAccountSettings(selectedGroupId, account.id, {
+                                                defaultLaunchPlatform: e.target.value ? e.target.value as PlatformType : undefined
+                                              })}
+                                              className="h-7 px-2 rounded bg-kol-surface border border-kol-border/50 text-xs text-white focus:outline-none focus:border-kol-blue/50"
+                                            >
+                                              <option value="">Default ({PLATFORM_OPTIONS.find(p => p.id === groupSettings.defaultLaunchPlatform)?.label})</option>
+                                              {PLATFORM_OPTIONS.map(p => (
+                                                <option key={p.id} value={p.id}>{p.label}</option>
+                                              ))}
+                                            </select>
+                                          </div>
                                         </div>
 
-                                        {/* Tweet Types */}
-                                        <div className="pt-1">
-                                          <span className="text-[9px] text-kol-text-muted uppercase tracking-wide font-medium">
-                                            Tweet Types
-                                          </span>
-                                          <div className="flex flex-wrap gap-1.5 mt-2">
-                                            <TweetTypePill
-                                              label="Posts"
-                                              enabled={effectiveSettings.tweetTypes.posts}
-                                              onChange={(v) => updateAccountTweetTypes(selectedGroupId, account.id, 'posts', v)}
-                                              disabled={account.settings?.useGroupSettings !== false}
-                                            />
-                                            <TweetTypePill
-                                              label="Replies"
-                                              enabled={effectiveSettings.tweetTypes.replies}
-                                              onChange={(v) => updateAccountTweetTypes(selectedGroupId, account.id, 'replies', v)}
-                                              disabled={account.settings?.useGroupSettings !== false}
-                                            />
-                                            <TweetTypePill
-                                              label="Quotes"
-                                              enabled={effectiveSettings.tweetTypes.quotes}
-                                              onChange={(v) => updateAccountTweetTypes(selectedGroupId, account.id, 'quotes', v)}
-                                              disabled={account.settings?.useGroupSettings !== false}
-                                            />
-                                            <TweetTypePill
-                                              label="Reposts"
-                                              enabled={effectiveSettings.tweetTypes.reposts}
-                                              onChange={(v) => updateAccountTweetTypes(selectedGroupId, account.id, 'reposts', v)}
-                                              disabled={account.settings?.useGroupSettings !== false}
-                                            />
-                                            <TweetTypePill
-                                              label="Deleted"
-                                              enabled={effectiveSettings.tweetTypes.deletedTweets}
-                                              onChange={(v) => updateAccountTweetTypes(selectedGroupId, account.id, 'deletedTweets', v)}
-                                              disabled={account.settings?.useGroupSettings !== false}
-                                            />
-                                            <TweetTypePill
-                                              label="Following"
-                                              enabled={effectiveSettings.tweetTypes.followingUpdates}
-                                              onChange={(v) => updateAccountTweetTypes(selectedGroupId, account.id, 'followingUpdates', v)}
-                                              disabled={account.settings?.useGroupSettings !== false}
-                                            />
+                                        {/* Sound Volume */}
+                                        <div className="flex items-center justify-between gap-4">
+                                          <div className="flex items-center gap-1.5">
+                                            <p className="text-xs font-medium text-white">Sound Volume</p>
+                                            <InheritedIndicator show={account.settings?.soundVolume === undefined} />
                                           </div>
+                                          <VolumeSlider
+                                            value={account.settings?.soundVolume ?? groupSettings.soundVolume}
+                                            onChange={(v) => updateAccountSettings(selectedGroupId, account.id, { soundVolume: v })}
+                                          />
                                         </div>
                                       </div>
                                     </div>
 
-                                    {/* Account-Specific Settings (always editable) */}
-                                    <div className="pt-2">
+                                    {/* Filters Section */}
+                                    <div>
                                       <div className="mb-2">
                                         <span className="text-[9px] text-kol-text-muted uppercase tracking-wide font-medium">
-                                          Account-Specific
+                                          Highlight Filters
                                         </span>
                                       </div>
-                                      <div className="flex items-center justify-between">
-                                        <div className="flex-1">
-                                          <p className="text-xs font-medium text-white">Highlight tweets</p>
-                                          <p className="text-[10px] text-kol-text-muted mt-0.5">Visually mark tweets from this account</p>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                          <AnimatePresence>
-                                            {(account.settings?.highlightTweets ?? false) && (
-                                              <motion.div
-                                                initial={{ opacity: 0, scale: 0.8 }}
-                                                animate={{ opacity: 1, scale: 1 }}
-                                                exit={{ opacity: 0, scale: 0.8 }}
-                                                transition={{ duration: 0.15 }}
-                                              >
-                                                <ColorPicker
-                                                  currentColor={account.settings?.highlightColor ?? '#007bff'}
-                                                  onSelect={(color) => updateAccountSettings(selectedGroupId, account.id, {
-                                                    ...DEFAULT_ACCOUNT_SETTINGS,
-                                                    ...account.settings,
-                                                    highlightColor: color
-                                                  })}
-                                                />
-                                              </motion.div>
-                                            )}
-                                          </AnimatePresence>
+
+                                      <div className="space-y-2">
+                                        <div className="flex items-center justify-between">
+                                          <div className="flex items-center gap-1.5">
+                                            <p className="text-xs font-medium text-white">Token Symbols</p>
+                                            <InheritedIndicator show={account.settings?.filters?.filterTokenSymbols === undefined} />
+                                          </div>
                                           <ToggleSwitch
-                                            enabled={account.settings?.highlightTweets ?? false}
-                                            onChange={(v) => updateAccountSettings(selectedGroupId, account.id, {
-                                              ...DEFAULT_ACCOUNT_SETTINGS,
-                                              ...account.settings,
-                                              highlightTweets: v
+                                            enabled={account.settings?.filters?.filterTokenSymbols ?? groupSettings.filters?.filterTokenSymbols ?? false}
+                                            onChange={(v) => updateAccountFilters(selectedGroupId, account.id, {
+                                              ...account.settings?.filters,
+                                              filterTokenSymbols: v,
+                                              filterMintAddresses: account.settings?.filters?.filterMintAddresses ?? false,
+                                              filterKeywords: account.settings?.filters?.filterKeywords ?? false,
                                             })}
                                           />
                                         </div>
+                                        <div className="flex items-center justify-between">
+                                          <div className="flex items-center gap-1.5">
+                                            <p className="text-xs font-medium text-white">Mint Addresses</p>
+                                            <InheritedIndicator show={account.settings?.filters?.filterMintAddresses === undefined} />
+                                          </div>
+                                          <ToggleSwitch
+                                            enabled={account.settings?.filters?.filterMintAddresses ?? groupSettings.filters?.filterMintAddresses ?? false}
+                                            onChange={(v) => updateAccountFilters(selectedGroupId, account.id, {
+                                              ...account.settings?.filters,
+                                              filterTokenSymbols: account.settings?.filters?.filterTokenSymbols ?? false,
+                                              filterMintAddresses: v,
+                                              filterKeywords: account.settings?.filters?.filterKeywords ?? false,
+                                            })}
+                                          />
+                                        </div>
+                                        <div className="flex items-center justify-between">
+                                          <div className="flex items-center gap-1.5">
+                                            <p className="text-xs font-medium text-white">Keywords</p>
+                                            <InheritedIndicator show={account.settings?.filters?.filterKeywords === undefined} />
+                                          </div>
+                                          <ToggleSwitch
+                                            enabled={account.settings?.filters?.filterKeywords ?? groupSettings.filters?.filterKeywords ?? false}
+                                            onChange={(v) => updateAccountFilters(selectedGroupId, account.id, {
+                                              ...account.settings?.filters,
+                                              filterTokenSymbols: account.settings?.filters?.filterTokenSymbols ?? false,
+                                              filterMintAddresses: account.settings?.filters?.filterMintAddresses ?? false,
+                                              filterKeywords: v,
+                                            })}
+                                          />
+                                        </div>
+                                      </div>
+                                    </div>
+
+                                    {/* Tweet Types Section */}
+                                    <div>
+                                      <div className="mb-2">
+                                        <span className="text-[9px] text-kol-text-muted uppercase tracking-wide font-medium">
+                                          Tweet Types
+                                        </span>
+                                      </div>
+
+                                      <div className="space-y-0.5">
+                                        {(Object.keys(TWEET_TYPE_LABELS) as TweetTypeKey[]).map(typeKey => (
+                                          <TweetTypeRow
+                                            key={typeKey}
+                                            typeKey={typeKey}
+                                            label={TWEET_TYPE_LABELS[typeKey]}
+                                            settings={account.settings?.tweetTypes?.[typeKey]}
+                                            groupDefaults={groupSettings.tweetTypes[typeKey]}
+                                            onChange={(updates) => updateAccountTweetType(selectedGroupId, account.id, typeKey, updates)}
+                                            accountDefaultPlatform={PLATFORM_OPTIONS.find(p => p.id === accountDefaultPlatform)?.label}
+                                          />
+                                        ))}
                                       </div>
                                     </div>
                                   </div>
@@ -1491,127 +2232,182 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
 
                 {/* Group-specific Settings */}
                 <div className={selectedGroup.settings.useGlobalSettings ? 'opacity-40 pointer-events-none' : ''}>
-                  {/* Section Label */}
-                  <div className="mb-3">
-                    <span className="text-[10px] text-kol-text-muted uppercase tracking-wide font-medium">
-                      Feed Behavior
-                    </span>
+                  {/* General Settings Section */}
+                  <div className="mb-4">
+                    <div className="mb-3">
+                      <span className="text-[10px] text-kol-text-muted uppercase tracking-wide font-medium">
+                        General Settings
+                      </span>
+                    </div>
+
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between py-1">
+                        <div className="flex-1">
+                          <p className="text-sm font-medium text-white">Auto-translate tweets</p>
+                          <p className="text-xs text-kol-text-muted mt-0.5">Translate tweets to your preferred language</p>
+                        </div>
+                        <ToggleSwitch
+                          enabled={selectedGroup.settings.autoTranslate}
+                          onChange={(v) => updateGroupSettings(selectedGroupId, { autoTranslate: v })}
+                          disabled={selectedGroup.settings.useGlobalSettings}
+                        />
+                      </div>
+
+                      {/* Language Selection - shown when auto-translate is enabled */}
+                      <AnimatePresence>
+                        {selectedGroup.settings.autoTranslate && !selectedGroup.settings.useGlobalSettings && (
+                          <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            exit={{ opacity: 0, height: 0 }}
+                            transition={{ duration: 0.2 }}
+                            className="overflow-hidden"
+                          >
+                            <div className="flex gap-4 pl-0 py-2">
+                              <div className="flex-1">
+                                <label className="text-[10px] text-kol-text-muted uppercase tracking-wide font-medium mb-1.5 block">From</label>
+                                <LanguageSelect
+                                  value={selectedGroup.settings.translateFrom}
+                                  onChange={(v) => updateGroupSettings(selectedGroupId, { translateFrom: v })}
+                                  options={LANGUAGES}
+                                  disabled={selectedGroup.settings.useGlobalSettings}
+                                />
+                              </div>
+                              <div className="flex-1">
+                                <label className="text-[10px] text-kol-text-muted uppercase tracking-wide font-medium mb-1.5 block">To</label>
+                                <LanguageSelect
+                                  value={selectedGroup.settings.translateTo}
+                                  onChange={(v) => updateGroupSettings(selectedGroupId, { translateTo: v })}
+                                  options={TARGET_LANGUAGES}
+                                  disabled={selectedGroup.settings.useGlobalSettings}
+                                />
+                              </div>
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+
+                      <div className="flex items-center justify-between py-1">
+                        <div className="flex-1">
+                          <p className="text-sm font-medium text-white">Pause feed on hover</p>
+                          <p className="text-xs text-kol-text-muted mt-0.5">Stop auto-scrolling when hovering</p>
+                        </div>
+                        <ToggleSwitch
+                          enabled={selectedGroup.settings.pauseOnHover}
+                          onChange={(v) => updateGroupSettings(selectedGroupId, { pauseOnHover: v })}
+                          disabled={selectedGroup.settings.useGlobalSettings}
+                        />
+                      </div>
+
+                      <div className="flex items-center justify-between py-1">
+                        <div className="flex-1">
+                          <p className="text-sm font-medium text-white">Default Launch Platform</p>
+                          <p className="text-xs text-kol-text-muted mt-0.5">Platform to open coins on</p>
+                        </div>
+                        <select
+                          value={selectedGroup.settings.defaultLaunchPlatform}
+                          onChange={(e) => updateGroupSettings(selectedGroupId, { defaultLaunchPlatform: e.target.value as PlatformType })}
+                          disabled={selectedGroup.settings.useGlobalSettings}
+                          className="h-8 px-2 rounded bg-kol-surface border border-kol-border/50 text-xs text-white focus:outline-none focus:border-kol-blue/50"
+                        >
+                          {PLATFORM_OPTIONS.map(p => (
+                            <option key={p.id} value={p.id}>{p.label}</option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div className="flex items-center justify-between gap-4 py-1">
+                        <div>
+                          <p className="text-sm font-medium text-white">Sound Volume</p>
+                          <p className="text-xs text-kol-text-muted mt-0.5">Volume for notification sounds</p>
+                        </div>
+                        <VolumeSlider
+                          value={selectedGroup.settings.soundVolume}
+                          onChange={(v) => updateGroupSettings(selectedGroupId, { soundVolume: v })}
+                        />
+                      </div>
+                    </div>
                   </div>
 
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between py-1">
-                      <div className="flex-1">
-                        <p className="text-sm font-medium text-white">Auto-translate tweets</p>
-                        <p className="text-xs text-kol-text-muted mt-0.5">Translate tweets to your preferred language</p>
-                      </div>
-                      <ToggleSwitch
-                        enabled={getEffectiveSettings(selectedGroup).autoTranslate}
-                        onChange={(v) => updateGroupSettings(selectedGroupId, { autoTranslate: v })}
-                        disabled={selectedGroup.settings.useGlobalSettings}
-                      />
+                  {/* Filters Section */}
+                  <div className="mb-4 pt-2 border-t border-kol-border/20">
+                    <div className="mb-3">
+                      <span className="text-[10px] text-kol-text-muted uppercase tracking-wide font-medium">
+                        Highlight Filters
+                      </span>
                     </div>
 
-                    {/* Language Selection - shown when auto-translate is enabled */}
-                    <AnimatePresence>
-                      {getEffectiveSettings(selectedGroup).autoTranslate && !selectedGroup.settings.useGlobalSettings && (
-                        <motion.div
-                          initial={{ opacity: 0, height: 0 }}
-                          animate={{ opacity: 1, height: 'auto' }}
-                          exit={{ opacity: 0, height: 0 }}
-                          transition={{ duration: 0.2 }}
-                          className="overflow-hidden"
-                        >
-                          <div className="flex gap-4 pl-0 py-2">
-                            <div className="flex-1">
-                              <label className="text-[10px] text-kol-text-muted uppercase tracking-wide font-medium mb-1.5 block">From</label>
-                              <LanguageSelect
-                                value={selectedGroup.settings.translateFrom}
-                                onChange={(v) => updateGroupSettings(selectedGroupId, { translateFrom: v })}
-                                options={LANGUAGES}
-                                disabled={selectedGroup.settings.useGlobalSettings}
-                              />
-                            </div>
-                            <div className="flex-1">
-                              <label className="text-[10px] text-kol-text-muted uppercase tracking-wide font-medium mb-1.5 block">To</label>
-                              <LanguageSelect
-                                value={selectedGroup.settings.translateTo}
-                                onChange={(v) => updateGroupSettings(selectedGroupId, { translateTo: v })}
-                                options={TARGET_LANGUAGES}
-                                disabled={selectedGroup.settings.useGlobalSettings}
-                              />
-                            </div>
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-
-                    <div className="flex items-center justify-between py-1">
-                      <div className="flex-1">
-                        <p className="text-sm font-medium text-white">Pause feed on hover</p>
-                        <p className="text-xs text-kol-text-muted mt-0.5">Stop auto-scrolling when hovering</p>
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between py-1">
+                        <div className="flex-1">
+                          <p className="text-sm font-medium text-white">Token Symbols</p>
+                          <p className="text-xs text-kol-text-muted mt-0.5">Highlight tweets with $TOKEN mentions</p>
+                        </div>
+                        <ToggleSwitch
+                          enabled={selectedGroup.settings.filters?.filterTokenSymbols ?? false}
+                          onChange={(v) => updateGroupFilters(selectedGroupId, {
+                            ...selectedGroup.settings.filters,
+                            filterTokenSymbols: v,
+                            filterMintAddresses: selectedGroup.settings.filters?.filterMintAddresses ?? false,
+                            filterKeywords: selectedGroup.settings.filters?.filterKeywords ?? false,
+                          })}
+                          disabled={selectedGroup.settings.useGlobalSettings}
+                        />
                       </div>
-                      <ToggleSwitch
-                        enabled={getEffectiveSettings(selectedGroup).pauseOnHover}
-                        onChange={(v) => updateGroupSettings(selectedGroupId, { pauseOnHover: v })}
-                        disabled={selectedGroup.settings.useGlobalSettings}
-                      />
-                    </div>
-
-                    <div className="flex items-center justify-between py-1">
-                      <div className="flex-1">
-                        <p className="text-sm font-medium text-white">Desktop notifications</p>
-                        <p className="text-xs text-kol-text-muted mt-0.5">Get notified about new tweets</p>
+                      <div className="flex items-center justify-between py-1">
+                        <div className="flex-1">
+                          <p className="text-sm font-medium text-white">Mint Addresses</p>
+                          <p className="text-xs text-kol-text-muted mt-0.5">Highlight tweets with contract addresses</p>
+                        </div>
+                        <ToggleSwitch
+                          enabled={selectedGroup.settings.filters?.filterMintAddresses ?? false}
+                          onChange={(v) => updateGroupFilters(selectedGroupId, {
+                            ...selectedGroup.settings.filters,
+                            filterTokenSymbols: selectedGroup.settings.filters?.filterTokenSymbols ?? false,
+                            filterMintAddresses: v,
+                            filterKeywords: selectedGroup.settings.filters?.filterKeywords ?? false,
+                          })}
+                          disabled={selectedGroup.settings.useGlobalSettings}
+                        />
                       </div>
-                      <ToggleSwitch
-                        enabled={getEffectiveSettings(selectedGroup).notifications}
-                        onChange={(v) => updateGroupSettings(selectedGroupId, { notifications: v })}
-                        disabled={selectedGroup.settings.useGlobalSettings}
-                      />
+                      <div className="flex items-center justify-between py-1">
+                        <div className="flex-1">
+                          <p className="text-sm font-medium text-white">Keywords</p>
+                          <p className="text-xs text-kol-text-muted mt-0.5">Highlight tweets with crypto keywords</p>
+                        </div>
+                        <ToggleSwitch
+                          enabled={selectedGroup.settings.filters?.filterKeywords ?? false}
+                          onChange={(v) => updateGroupFilters(selectedGroupId, {
+                            ...selectedGroup.settings.filters,
+                            filterTokenSymbols: selectedGroup.settings.filters?.filterTokenSymbols ?? false,
+                            filterMintAddresses: selectedGroup.settings.filters?.filterMintAddresses ?? false,
+                            filterKeywords: v,
+                          })}
+                          disabled={selectedGroup.settings.useGlobalSettings}
+                        />
+                      </div>
                     </div>
                   </div>
 
                   {/* Tweet Types Section */}
-                  <div className="pt-4">
-                    <span className="text-[10px] text-kol-text-muted uppercase tracking-wide font-medium">
-                      Tweet Types
-                    </span>
-                    <div className="flex flex-wrap gap-2 mt-3">
-                      <TweetTypePill
-                        label="Posts"
-                        enabled={getEffectiveSettings(selectedGroup).tweetTypes.posts}
-                        onChange={(v) => updateGroupTweetTypes(selectedGroupId, 'posts', v)}
-                        disabled={selectedGroup.settings.useGlobalSettings}
-                      />
-                      <TweetTypePill
-                        label="Replies"
-                        enabled={getEffectiveSettings(selectedGroup).tweetTypes.replies}
-                        onChange={(v) => updateGroupTweetTypes(selectedGroupId, 'replies', v)}
-                        disabled={selectedGroup.settings.useGlobalSettings}
-                      />
-                      <TweetTypePill
-                        label="Quotes"
-                        enabled={getEffectiveSettings(selectedGroup).tweetTypes.quotes}
-                        onChange={(v) => updateGroupTweetTypes(selectedGroupId, 'quotes', v)}
-                        disabled={selectedGroup.settings.useGlobalSettings}
-                      />
-                      <TweetTypePill
-                        label="Reposts"
-                        enabled={getEffectiveSettings(selectedGroup).tweetTypes.reposts}
-                        onChange={(v) => updateGroupTweetTypes(selectedGroupId, 'reposts', v)}
-                        disabled={selectedGroup.settings.useGlobalSettings}
-                      />
-                      <TweetTypePill
-                        label="Deleted"
-                        enabled={getEffectiveSettings(selectedGroup).tweetTypes.deletedTweets}
-                        onChange={(v) => updateGroupTweetTypes(selectedGroupId, 'deletedTweets', v)}
-                        disabled={selectedGroup.settings.useGlobalSettings}
-                      />
-                      <TweetTypePill
-                        label="Following"
-                        enabled={getEffectiveSettings(selectedGroup).tweetTypes.followingUpdates}
-                        onChange={(v) => updateGroupTweetTypes(selectedGroupId, 'followingUpdates', v)}
-                        disabled={selectedGroup.settings.useGlobalSettings}
-                      />
+                  <div className="pt-2 border-t border-kol-border/20">
+                    <div className="mb-2">
+                      <span className="text-[10px] text-kol-text-muted uppercase tracking-wide font-medium">
+                        Tweet Types
+                      </span>
+                    </div>
+                    <div className="space-y-0.5">
+                      {(Object.keys(TWEET_TYPE_LABELS) as TweetTypeKey[]).map(typeKey => (
+                        <TweetTypeRow
+                          key={typeKey}
+                          typeKey={typeKey}
+                          label={TWEET_TYPE_LABELS[typeKey]}
+                          settings={selectedGroup.settings.tweetTypes[typeKey]}
+                          groupDefaults={globalSettings.tweetTypes[typeKey]}
+                          onChange={(updates) => updateGroupTweetType(selectedGroupId, typeKey, updates)}
+                          accountDefaultPlatform={PLATFORM_OPTIONS.find(p => p.id === selectedGroup.settings.defaultLaunchPlatform)?.label}
+                        />
+                      ))}
                     </div>
                   </div>
                 </div>
