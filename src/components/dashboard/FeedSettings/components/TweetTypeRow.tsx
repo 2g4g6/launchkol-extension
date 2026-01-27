@@ -29,12 +29,12 @@ export function TweetTypeRow({ typeKey, label, settings, groupDefaults, onChange
   }
 
   return (
-    <div className="flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-kol-surface/30 transition-colors">
+    <div className="flex items-center gap-2 py-1.5 px-2 max-sm:py-2.5 max-sm:px-3 rounded-lg hover:bg-kol-surface/30 transition-colors">
       {/* Enable pill */}
       <button
         onClick={() => onChange({ enabled: !effective.enabled })}
         className={`
-          h-5 px-2 rounded text-[10px] font-medium transition-colors border min-w-[60px] flex items-center gap-1
+          h-5 px-2 max-sm:h-7 max-sm:min-w-[72px] rounded text-[10px] max-sm:text-xs font-medium transition-colors border min-w-[60px] flex items-center gap-1
           ${!effective.enabled && 'bg-kol-surface/45 border-kol-border text-kol-text-muted hover:bg-kol-surface-elevated'}
         `}
         style={effective.enabled ? {
@@ -57,7 +57,7 @@ export function TweetTypeRow({ typeKey, label, settings, groupDefaults, onChange
             notification: { ...effective.notification, desktop: !effective.notification.desktop }
           })}
           className={`
-            w-6 h-6 rounded flex items-center justify-center transition-colors
+            w-6 h-6 max-sm:w-9 max-sm:h-9 rounded flex items-center justify-center transition-colors
             ${effective.notification.desktop
               ? 'text-kol-blue bg-kol-blue/10'
               : 'text-kol-text-muted/40 hover:text-kol-text-muted'
@@ -75,7 +75,7 @@ export function TweetTypeRow({ typeKey, label, settings, groupDefaults, onChange
             notification: { ...effective.notification, sound: !effective.notification.sound }
           })}
           className={`
-            w-6 h-6 rounded flex items-center justify-center transition-colors
+            w-6 h-6 max-sm:w-9 max-sm:h-9 rounded flex items-center justify-center transition-colors
             ${effective.notification.sound
               ? 'text-kol-blue bg-kol-blue/10'
               : 'text-kol-text-muted/40 hover:text-kol-text-muted'
@@ -98,7 +98,7 @@ export function TweetTypeRow({ typeKey, label, settings, groupDefaults, onChange
         <button
           onClick={() => onChange({ highlightEnabled: !effective.highlightEnabled })}
           className={`
-            w-6 h-6 rounded flex items-center justify-center transition-colors
+            w-6 h-6 max-sm:w-9 max-sm:h-9 rounded flex items-center justify-center transition-colors
             ${effective.highlightEnabled
               ? 'text-kol-blue bg-kol-blue/10'
               : 'text-kol-text-muted/40 hover:text-kol-text-muted'

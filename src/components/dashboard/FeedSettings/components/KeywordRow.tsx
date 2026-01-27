@@ -14,7 +14,7 @@ export function KeywordRow({ keyword, onChange, onDelete, disabled }: KeywordRow
   return (
     <div
       className={`
-        flex items-center gap-2 px-2 py-1.5 rounded-lg
+        flex items-center gap-2 px-2 py-1.5 max-sm:px-3 max-sm:py-2.5 rounded-lg
         bg-kol-surface/30 border border-kol-border/30
         transition-opacity
         ${!keyword.enabled ? 'opacity-50' : ''}
@@ -30,7 +30,7 @@ export function KeywordRow({ keyword, onChange, onDelete, disabled }: KeywordRow
       {/* Keyword text */}
       <span
         className={`
-          flex-1 text-xs font-medium text-white truncate
+          flex-1 text-xs max-sm:text-sm font-medium text-white truncate
           ${!keyword.enabled ? 'line-through text-kol-text-muted' : ''}
         `}
         style={{ color: keyword.enabled ? keyword.color : undefined }}
@@ -43,7 +43,7 @@ export function KeywordRow({ keyword, onChange, onDelete, disabled }: KeywordRow
         {/* Case sensitive */}
         <Tooltip content="Match case exactly" position="top">
           <div className="flex items-center gap-1.5">
-            <span className="text-[10px] text-kol-text-muted">Aa</span>
+            <span className="text-[10px] max-sm:text-xs text-kol-text-muted">Aa</span>
             <ToggleSwitch
               enabled={keyword.caseSensitive}
               onChange={(v) => onChange({ caseSensitive: v })}
@@ -54,7 +54,7 @@ export function KeywordRow({ keyword, onChange, onDelete, disabled }: KeywordRow
         {/* Whole word */}
         <Tooltip content="Match whole words only" position="top">
           <div className="flex items-center gap-1.5">
-            <span className="text-[10px] text-kol-text-muted">[w]</span>
+            <span className="text-[10px] max-sm:text-xs text-kol-text-muted">[w]</span>
             <ToggleSwitch
               enabled={keyword.wholeWord}
               onChange={(v) => onChange({ wholeWord: v })}
@@ -67,7 +67,7 @@ export function KeywordRow({ keyword, onChange, onDelete, disabled }: KeywordRow
           <button
             onClick={() => onChange({ enabled: !keyword.enabled })}
             className={`
-              w-6 h-6 rounded flex items-center justify-center transition-colors
+              w-6 h-6 max-sm:w-9 max-sm:h-9 rounded flex items-center justify-center transition-colors
               ${keyword.enabled
                 ? 'text-kol-green hover:bg-kol-green/10'
                 : 'text-kol-text-muted hover:bg-kol-surface-elevated'
@@ -82,7 +82,7 @@ export function KeywordRow({ keyword, onChange, onDelete, disabled }: KeywordRow
         <Tooltip content="Delete keyword" position="top">
           <button
             onClick={onDelete}
-            className="w-6 h-6 rounded flex items-center justify-center text-kol-text-muted hover:text-kol-red hover:bg-kol-red/10 transition-colors"
+            className="w-6 h-6 max-sm:w-9 max-sm:h-9 rounded flex items-center justify-center text-kol-text-muted hover:text-kol-red hover:bg-kol-red/10 transition-colors"
           >
             <i className="ri-delete-bin-line text-sm" />
           </button>

@@ -1,6 +1,7 @@
-import { useEffect, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { FeedGroup } from '../types'
+import { IconPicker } from './IconPicker'
 
 export interface GroupsDropdownProps {
   isOpen: boolean
@@ -9,6 +10,9 @@ export interface GroupsDropdownProps {
   selectedGroupId: string | null
   onSelectGroup: (groupId: string | null) => void
   onCreateGroup: () => void
+  onRenameGroup?: (groupId: string, newName: string) => void
+  onDeleteGroup?: (groupId: string) => void
+  onUpdateGroupIcon?: (groupId: string, icon: string) => void
   triggerRef: React.RefObject<HTMLButtonElement>
 }
 
@@ -19,9 +23,31 @@ export function GroupsDropdown({
   selectedGroupId,
   onSelectGroup,
   onCreateGroup,
+  onRenameGroup,
+  onDeleteGroup,
+  onUpdateGroupIcon,
   triggerRef,
 }: GroupsDropdownProps) {
   const dropdownRef = useRef<HTMLDivElement>(null)
+  const [editingGroupId, setEditingGroupId] = useState<string | null>(null)
+  const [editingGroupName, setEditingGroupName] = useState('')
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  // Focus input when editing
+  useEffect(() => {
+    if (editingGroupId && inputRef.current) {
+      inputRef.current.focus()
+      inputRef.current.select()
+    }
+  }, [editingGroupId])
+
+  // Reset editing state when dropdown closes
+  useEffect(() => {
+    if (!isOpen) {
+      setEditingGroupId(null)
+      setEditingGroupName('')
+    }
+  }, [isOpen])
 
   // Handle click outside
   useEffect(() => {
@@ -44,14 +70,20 @@ export function GroupsDropdown({
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isOpen) {
-        onClose()
+        if (editingGroupId) {
+          setEditingGroupId(null)
+          setEditingGroupName('')
+        } else {
+          onClose()
+        }
       }
     }
     document.addEventListener('keydown', handleEscape)
     return () => document.removeEventListener('keydown', handleEscape)
-  }, [isOpen, onClose])
+  }, [isOpen, onClose, editingGroupId])
 
   const handleSelectGroup = (groupId: string | null) => {
+    if (editingGroupId) return // Don't select while editing
     onSelectGroup(groupId)
     onClose()
   }
@@ -59,6 +91,33 @@ export function GroupsDropdown({
   const handleCreateGroup = () => {
     onCreateGroup()
     onClose()
+  }
+
+  const handleStartEdit = (e: React.MouseEvent, groupId: string, currentName: string) => {
+    e.stopPropagation()
+    setEditingGroupId(groupId)
+    setEditingGroupName(currentName)
+  }
+
+  const handleSaveEdit = (groupId: string) => {
+    if (editingGroupName.trim() && onRenameGroup) {
+      onRenameGroup(groupId, editingGroupName.trim())
+    }
+    setEditingGroupId(null)
+    setEditingGroupName('')
+  }
+
+  const handleDelete = (e: React.MouseEvent, groupId: string) => {
+    e.stopPropagation()
+    if (onDeleteGroup) {
+      onDeleteGroup(groupId)
+    }
+  }
+
+  const handleIconChange = (groupId: string, icon: string) => {
+    if (onUpdateGroupIcon) {
+      onUpdateGroupIcon(groupId, icon)
+    }
   }
 
   return (
@@ -78,18 +137,18 @@ export function GroupsDropdown({
             <button
               onClick={() => handleSelectGroup(null)}
               className={`
-                w-full flex items-center gap-3 px-3 py-2.5 transition-colors
+                w-full flex items-center gap-3 px-3 py-2.5 max-sm:py-3 transition-colors
                 ${selectedGroupId === null
                   ? 'bg-kol-blue/10'
                   : 'hover:bg-kol-surface-elevated/50'
                 }
               `}
             >
-              <div className="w-8 h-8 rounded-lg bg-kol-surface-elevated flex items-center justify-center flex-shrink-0">
+              <div className="w-8 h-8 max-sm:w-10 max-sm:h-10 rounded-lg bg-kol-surface-elevated flex items-center justify-center flex-shrink-0">
                 <i className="ri-global-line text-sm text-kol-text-muted" />
               </div>
               <div className="flex-1 text-left min-w-0">
-                <p className="text-sm font-medium text-white">All Feeds</p>
+                <p className="text-sm max-sm:text-base font-medium text-white">All Feeds</p>
                 <p className="text-[10px] text-kol-text-muted">Global settings</p>
               </div>
               {selectedGroupId === null && (
@@ -104,30 +163,91 @@ export function GroupsDropdown({
 
             {/* Group Items */}
             {groups.map((group) => (
-              <button
+              <div
                 key={group.id}
                 onClick={() => handleSelectGroup(group.id)}
                 className={`
-                  w-full flex items-center gap-3 px-3 py-2.5 transition-colors
+                  w-full flex items-center gap-3 px-3 py-2.5 max-sm:py-3 transition-colors cursor-pointer
                   ${selectedGroupId === group.id
                     ? 'bg-kol-blue/10'
                     : 'hover:bg-kol-surface-elevated/50'
                   }
                 `}
               >
-                <div className="w-8 h-8 rounded-lg bg-kol-surface-elevated flex items-center justify-center flex-shrink-0">
-                  <i className={`${group.icon} text-sm text-kol-text-muted`} />
+                {/* Icon picker */}
+                <div
+                  className="w-8 h-8 max-sm:w-10 max-sm:h-10 rounded-lg bg-kol-surface-elevated flex items-center justify-center flex-shrink-0"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {onUpdateGroupIcon ? (
+                    <IconPicker
+                      currentIcon={group.icon}
+                      onSelect={(icon) => handleIconChange(group.id, icon)}
+                    />
+                  ) : (
+                    <i className={`${group.icon} text-sm text-kol-text-muted`} />
+                  )}
                 </div>
+
+                {/* Name / Edit input */}
                 <div className="flex-1 text-left min-w-0">
-                  <p className="text-sm font-medium text-white truncate">{group.name}</p>
+                  {editingGroupId === group.id ? (
+                    <input
+                      ref={inputRef}
+                      type="text"
+                      value={editingGroupName}
+                      onChange={(e) => setEditingGroupName(e.target.value)}
+                      onBlur={() => handleSaveEdit(group.id)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          handleSaveEdit(group.id)
+                        } else if (e.key === 'Escape') {
+                          setEditingGroupId(null)
+                          setEditingGroupName('')
+                        }
+                      }}
+                      onClick={(e) => e.stopPropagation()}
+                      className="w-full bg-transparent text-sm max-sm:text-base font-medium text-white outline-none border-b border-kol-blue"
+                    />
+                  ) : (
+                    <p className="text-sm max-sm:text-base font-medium text-white truncate">{group.name}</p>
+                  )}
                 </div>
-                <span className="text-[10px] text-kol-text-muted flex-shrink-0">
-                  {group.accounts.length}
-                </span>
-                {selectedGroupId === group.id && (
+
+                {/* Account count - only show when not editing */}
+                {editingGroupId !== group.id && (
+                  <span className="text-[10px] text-kol-text-muted flex-shrink-0">
+                    {group.accounts.length}
+                  </span>
+                )}
+
+                {/* Edit/Delete buttons */}
+                {(onRenameGroup || onDeleteGroup) && editingGroupId !== group.id && (
+                  <div className="flex items-center gap-1 flex-shrink-0">
+                    {onRenameGroup && (
+                      <button
+                        onClick={(e) => handleStartEdit(e, group.id, group.name)}
+                        className="w-8 h-8 rounded flex items-center justify-center text-kol-text-muted hover:text-white hover:bg-kol-surface transition-colors"
+                      >
+                        <i className="ri-pencil-line text-sm" />
+                      </button>
+                    )}
+                    {onDeleteGroup && (
+                      <button
+                        onClick={(e) => handleDelete(e, group.id)}
+                        className="w-8 h-8 rounded flex items-center justify-center text-kol-text-muted hover:text-kol-red hover:bg-kol-red/10 transition-colors"
+                      >
+                        <i className="ri-delete-bin-line text-sm" />
+                      </button>
+                    )}
+                  </div>
+                )}
+
+                {/* Selected check */}
+                {selectedGroupId === group.id && editingGroupId !== group.id && (
                   <i className="ri-check-line text-kol-blue flex-shrink-0" />
                 )}
-              </button>
+              </div>
             ))}
           </div>
 

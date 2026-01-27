@@ -80,7 +80,7 @@ export function PlatformSelect({ value, onChange, disabled, showDefault, default
               e.stopPropagation()
               setIsOpen(false)
             }}
-            className="w-full px-3 py-2 text-left text-xs text-kol-text-muted hover:bg-kol-surface-elevated hover:text-white transition-colors"
+            className="w-full px-3 py-2 max-sm:py-3 text-left text-xs max-sm:text-sm text-kol-text-muted hover:bg-kol-surface-elevated hover:text-white transition-colors"
           >
             Default {defaultLabel && <span className="text-kol-text-muted/60">({defaultLabel})</span>}
           </button>
@@ -94,14 +94,14 @@ export function PlatformSelect({ value, onChange, disabled, showDefault, default
               setIsOpen(false)
             }}
             className={`
-              w-full px-3 py-2 text-left text-xs transition-colors flex items-center gap-2
+              w-full px-3 py-2 max-sm:py-3 text-left text-xs max-sm:text-sm transition-colors flex items-center gap-2
               ${platform.id === value
                 ? 'bg-kol-blue/15 text-kol-blue'
                 : 'text-kol-text-muted hover:bg-kol-surface-elevated hover:text-white'
               }
             `}
           >
-            <img src={platform.icon} className="w-4 h-4 flex-shrink-0" alt="" />
+            <img src={platform.icon} className="w-4 h-4 max-sm:w-5 max-sm:h-5 flex-shrink-0" alt="" />
             <span>{platform.label}</span>
           </button>
         ))}
@@ -119,13 +119,13 @@ export function PlatformSelect({ value, onChange, disabled, showDefault, default
         }}
         disabled={disabled}
         className={`
-          flex items-center justify-between gap-2 h-8 px-3 rounded-lg bg-kol-surface/50 border text-xs transition-colors
+          flex items-center justify-between gap-2 h-8 max-sm:h-11 px-3 rounded-lg bg-kol-surface/50 border text-xs max-sm:text-sm transition-colors
           ${isOpen ? 'border-kol-blue/50' : 'border-kol-border/50'}
           ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:border-kol-border'}
         `}
       >
         <div className="flex items-center gap-2">
-          <img src={selectedOption.icon} className="w-4 h-4 flex-shrink-0" alt="" />
+          <img src={selectedOption.icon} className="w-4 h-4 max-sm:w-5 max-sm:h-5 flex-shrink-0" alt="" />
           <span className="text-white">{selectedOption.label}</span>
         </div>
         <i className={`ri-arrow-down-s-line text-kol-text-muted transition-transform ${isOpen ? 'rotate-180' : ''}`} />

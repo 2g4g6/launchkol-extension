@@ -80,7 +80,7 @@ export function LanguageSelect({ value, onChange, options, disabled }: LanguageS
               setIsOpen(false)
             }}
             className={`
-              w-full px-3 py-2 text-left text-xs transition-colors
+              w-full px-3 py-2 max-sm:py-3 text-left text-xs max-sm:text-sm transition-colors
               ${option.code === value
                 ? 'bg-kol-blue/15 text-kol-blue'
                 : 'text-kol-text-muted hover:bg-kol-surface-elevated hover:text-white'
@@ -104,7 +104,7 @@ export function LanguageSelect({ value, onChange, options, disabled }: LanguageS
         }}
         disabled={disabled}
         className={`
-          flex items-center justify-between w-full h-8 px-3 rounded-lg bg-kol-surface/50 border text-xs transition-colors
+          flex items-center justify-between w-full h-8 max-sm:h-11 px-3 rounded-lg bg-kol-surface/50 border text-xs max-sm:text-sm transition-colors
           ${isOpen ? 'border-kol-blue/50' : 'border-kol-border/50'}
           ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:border-kol-border'}
         `}

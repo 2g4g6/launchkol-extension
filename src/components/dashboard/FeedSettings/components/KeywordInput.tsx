@@ -55,10 +55,10 @@ export function KeywordInput({
         <div className="flex-1">
           <div className="flex items-center gap-1.5">
             <i className="ri-search-eye-line text-kol-text-muted" />
-            <p className="text-sm font-medium text-white">{title}</p>
+            <p className="text-sm max-sm:text-base font-medium text-white">{title}</p>
           </div>
           {description && (
-            <p className="text-xs text-kol-text-muted mt-0.5">{description}</p>
+            <p className="text-xs max-sm:text-sm text-kol-text-muted mt-0.5">{description}</p>
           )}
         </div>
 
@@ -68,7 +68,7 @@ export function KeywordInput({
           onClick={() => setIsPopoverOpen(true)}
           disabled={disabled}
           className={`
-            inline-flex items-center gap-1 px-2 py-1 text-xs
+            inline-flex items-center gap-1 px-2 py-1 max-sm:px-3 max-sm:py-2 text-xs max-sm:text-sm
             text-kol-blue hover:text-kol-blue-hover
             border border-kol-blue/30 hover:border-kol-blue/50
             rounded-lg transition-colors flex-shrink-0
@@ -98,7 +98,7 @@ export function KeywordInput({
       {/* Empty State */}
       {keywords.length === 0 && (
         <div className="flex flex-col items-center justify-center py-6 px-4 rounded-lg border border-dashed border-kol-border/60 bg-kol-surface/30">
-          <div className="w-10 h-10 rounded-full bg-kol-blue/10 flex items-center justify-center mb-3">
+          <div className="w-10 h-10 max-sm:w-12 max-sm:h-12 rounded-full bg-kol-blue/10 flex items-center justify-center mb-3">
             <i className="ri-search-eye-line text-lg text-kol-blue/60" />
           </div>
           <p className="text-sm text-kol-text-muted mb-1">No keywords yet</p>
