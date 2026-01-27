@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { SocialPost, SocialPostData } from './SocialPost'
 import { Tooltip } from '../ui/Tooltip'
-import { FeedSettingsModal } from './FeedSettingsModal'
+import { FeedSettingsModal } from './FeedSettings'
 
 // Mock data - tweets with different types (normal, reply, repost, quote) and media
 const MOCK_POSTS: SocialPostData[] = [
