@@ -8,11 +8,30 @@ import { Tooltip } from '../ui/Tooltip'
 // Types
 // ============================================================================
 
+interface AccountSettings {
+  useGroupSettings: boolean  // When true, inherit from parent group
+  autoTranslate: boolean
+  translateFrom: string
+  translateTo: string
+  notifications: boolean
+  tweetTypes: {
+    posts: boolean
+    replies: boolean
+    quotes: boolean
+    reposts: boolean
+    deletedTweets: boolean
+    followingUpdates: boolean
+  }
+  // Account-specific setting:
+  highlightTweets: boolean   // Visually highlight this account's tweets in feed
+}
+
 interface Account {
   id: string
   handle: string
   name: string
   avatar?: string
+  settings?: AccountSettings  // Optional - undefined = use group settings
 }
 
 interface FeedGroupSettings {
@@ -101,6 +120,23 @@ const DEFAULT_GROUP_SETTINGS: FeedGroupSettings = {
     deletedTweets: false,
     followingUpdates: false
   }
+}
+
+const DEFAULT_ACCOUNT_SETTINGS: AccountSettings = {
+  useGroupSettings: true,
+  autoTranslate: false,
+  translateFrom: 'auto',
+  translateTo: 'en',
+  notifications: true,
+  tweetTypes: {
+    posts: true,
+    replies: true,
+    quotes: true,
+    reposts: true,
+    deletedTweets: false,
+    followingUpdates: false
+  },
+  highlightTweets: false
 }
 
 const GROUP_ICONS = [
@@ -430,6 +466,7 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
   const [editingGroupName, setEditingGroupName] = useState('')
   const [isAccountSearchFocused, setIsAccountSearchFocused] = useState(false)
   const [isNewAccountFocused, setIsNewAccountFocused] = useState(false)
+  const [expandedAccountId, setExpandedAccountId] = useState<string | null>(null)
 
   // Load from storage on mount
   useEffect(() => {
@@ -467,6 +504,7 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
       setAccountSearchQuery('')
       setNewAccountHandle('')
       setEditingGroupId(null)
+      setExpandedAccountId(null)
     }
   }, [isOpen])
 
@@ -570,6 +608,63 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
       return globalSettings
     }
     return group.settings
+  }
+
+  // Get effective settings for an account (respecting inheritance chain)
+  const getEffectiveAccountSettings = (account: Account, group: FeedGroup): AccountSettings => {
+    // If account has no settings or is using group settings, inherit from group
+    if (!account.settings || account.settings.useGroupSettings) {
+      const groupSettings = getEffectiveSettings(group)
+      return {
+        useGroupSettings: true,
+        autoTranslate: groupSettings.autoTranslate,
+        translateFrom: groupSettings.translateFrom,
+        translateTo: groupSettings.translateTo,
+        notifications: groupSettings.notifications,
+        tweetTypes: { ...groupSettings.tweetTypes },
+        highlightTweets: account.settings?.highlightTweets ?? false
+      }
+    }
+    return account.settings
+  }
+
+  // Update settings for a specific account
+  const updateAccountSettings = (groupId: string, accountId: string, updates: Partial<AccountSettings>) => {
+    setGroups(groups.map(g => {
+      if (g.id !== groupId) return g
+      return {
+        ...g,
+        accounts: g.accounts.map(a => {
+          if (a.id !== accountId) return a
+          const currentSettings = a.settings || { ...DEFAULT_ACCOUNT_SETTINGS }
+          return {
+            ...a,
+            settings: { ...currentSettings, ...updates }
+          }
+        })
+      }
+    }))
+  }
+
+  // Update tweet types for a specific account
+  const updateAccountTweetTypes = (groupId: string, accountId: string, type: keyof AccountSettings['tweetTypes'], value: boolean) => {
+    setGroups(groups.map(g => {
+      if (g.id !== groupId) return g
+      return {
+        ...g,
+        accounts: g.accounts.map(a => {
+          if (a.id !== accountId) return a
+          const currentSettings = a.settings || { ...DEFAULT_ACCOUNT_SETTINGS }
+          return {
+            ...a,
+            settings: {
+              ...currentSettings,
+              tweetTypes: { ...currentSettings.tweetTypes, [type]: value }
+            }
+          }
+        })
+      }
+    }))
   }
 
   // Filter accounts by search
@@ -952,35 +1047,242 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                         <p className="text-sm text-kol-text-muted">No accounts match "<span className="text-white">{accountSearchQuery}</span>"</p>
                       </motion.div>
                     ) : (
-                      filteredAccounts.map(account => (
-                        <div
-                          key={account.id}
-                          className="group flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-kol-surface-elevated/50 transition-colors"
-                        >
-                          {/* Avatar */}
-                          <div className="w-8 h-8 rounded-full bg-kol-surface-elevated flex items-center justify-center overflow-hidden ring-1 ring-kol-border/50">
-                            {account.avatar ? (
-                              <img src={account.avatar} alt="" className="w-full h-full object-cover" />
-                            ) : (
-                              <i className="ri-user-line text-kol-text-muted" />
-                            )}
-                          </div>
+                      filteredAccounts.map(account => {
+                        const isExpanded = expandedAccountId === account.id
+                        const hasCustomSettings = account.settings && !account.settings.useGroupSettings
+                        const effectiveSettings = getEffectiveAccountSettings(account, selectedGroup)
 
-                          {/* Info */}
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-white truncate">{account.name}</p>
-                            <p className="text-xs text-kol-text-muted">@{account.handle}</p>
-                          </div>
-
-                          {/* Remove button */}
-                          <button
-                            onClick={() => removeAccount(selectedGroupId, account.id)}
-                            className="opacity-0 group-hover:opacity-100 w-6 h-6 rounded flex items-center justify-center text-kol-text-muted hover:text-kol-red hover:bg-kol-red/10 transition-all"
+                        return (
+                          <div
+                            key={account.id}
+                            className={`rounded-lg transition-colors ${isExpanded ? 'bg-kol-surface/50 border border-kol-border/30' : ''}`}
                           >
-                            <i className="ri-close-line text-sm" />
-                          </button>
-                        </div>
-                      ))
+                            {/* Account Row - Clickable to expand */}
+                            <div
+                              className={`group flex items-center gap-3 px-3 py-2.5 cursor-pointer transition-colors ${
+                                isExpanded ? '' : 'hover:bg-kol-surface-elevated/50 rounded-lg'
+                              }`}
+                              onClick={() => setExpandedAccountId(isExpanded ? null : account.id)}
+                            >
+                              {/* Avatar */}
+                              <div className="w-8 h-8 rounded-full bg-kol-surface-elevated flex items-center justify-center overflow-hidden ring-1 ring-kol-border/50">
+                                {account.avatar ? (
+                                  <img src={account.avatar} alt="" className="w-full h-full object-cover" />
+                                ) : (
+                                  <i className="ri-user-line text-kol-text-muted" />
+                                )}
+                              </div>
+
+                              {/* Info */}
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-medium text-white truncate">{account.name}</p>
+                                <p className="text-xs text-kol-text-muted">@{account.handle}</p>
+                              </div>
+
+                              {/* Custom settings indicator */}
+                              {hasCustomSettings && !isExpanded && (
+                                <Tooltip content="Has custom settings" position="top">
+                                  <div className="w-5 h-5 rounded flex items-center justify-center text-kol-blue">
+                                    <i className="ri-settings-3-line text-xs" />
+                                  </div>
+                                </Tooltip>
+                              )}
+
+                              {/* Expand/collapse chevron */}
+                              <motion.div
+                                animate={{ rotate: isExpanded ? 180 : 0 }}
+                                transition={{ duration: 0.2 }}
+                                className="w-5 h-5 rounded flex items-center justify-center text-kol-text-muted"
+                              >
+                                <i className="ri-arrow-down-s-line text-sm" />
+                              </motion.div>
+
+                              {/* Remove button */}
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  removeAccount(selectedGroupId, account.id)
+                                }}
+                                className="opacity-0 group-hover:opacity-100 w-6 h-6 rounded flex items-center justify-center text-kol-text-muted hover:text-kol-red hover:bg-kol-red/10 transition-all"
+                              >
+                                <i className="ri-close-line text-sm" />
+                              </button>
+                            </div>
+
+                            {/* Expanded Settings Panel */}
+                            <AnimatePresence>
+                              {isExpanded && (
+                                <motion.div
+                                  initial={{ opacity: 0, height: 0 }}
+                                  animate={{ opacity: 1, height: 'auto' }}
+                                  exit={{ opacity: 0, height: 0 }}
+                                  transition={{ duration: 0.2 }}
+                                  className="overflow-hidden"
+                                >
+                                  <div className="px-3 pb-3 pt-1 space-y-4">
+                                    {/* Divider */}
+                                    <div className="h-px bg-kol-border/30" />
+
+                                    {/* Use Group Settings Toggle */}
+                                    <div className="flex items-center justify-between p-2.5 rounded-lg bg-kol-bg/50 border border-kol-border/30">
+                                      <div className="flex-1">
+                                        <p className="text-xs font-medium text-white">Use group settings</p>
+                                        <p className="text-[10px] text-kol-text-muted mt-0.5">
+                                          Inheriting from: {selectedGroup.name}
+                                        </p>
+                                      </div>
+                                      <ToggleSwitch
+                                        enabled={account.settings?.useGroupSettings ?? true}
+                                        onChange={(v) => updateAccountSettings(selectedGroupId, account.id, {
+                                          ...DEFAULT_ACCOUNT_SETTINGS,
+                                          ...account.settings,
+                                          useGroupSettings: v
+                                        })}
+                                      />
+                                    </div>
+
+                                    {/* Account Settings (dimmed when using group settings) */}
+                                    <div className={account.settings?.useGroupSettings !== false ? 'opacity-40 pointer-events-none' : ''}>
+                                      {/* Settings Section */}
+                                      <div className="mb-2">
+                                        <span className="text-[9px] text-kol-text-muted uppercase tracking-wide font-medium">
+                                          Settings
+                                        </span>
+                                      </div>
+
+                                      <div className="space-y-3">
+                                        <div className="flex items-center justify-between">
+                                          <div className="flex-1">
+                                            <p className="text-xs font-medium text-white">Auto-translate</p>
+                                          </div>
+                                          <ToggleSwitch
+                                            enabled={effectiveSettings.autoTranslate}
+                                            onChange={(v) => updateAccountSettings(selectedGroupId, account.id, { autoTranslate: v })}
+                                            disabled={account.settings?.useGroupSettings !== false}
+                                          />
+                                        </div>
+
+                                        {/* Language Selection - shown when auto-translate is enabled */}
+                                        <AnimatePresence>
+                                          {effectiveSettings.autoTranslate && account.settings?.useGroupSettings === false && (
+                                            <motion.div
+                                              initial={{ opacity: 0, height: 0 }}
+                                              animate={{ opacity: 1, height: 'auto' }}
+                                              exit={{ opacity: 0, height: 0 }}
+                                              transition={{ duration: 0.2 }}
+                                              className="overflow-hidden"
+                                            >
+                                              <div className="flex gap-3 py-1">
+                                                <div className="flex-1">
+                                                  <label className="text-[9px] text-kol-text-muted uppercase tracking-wide font-medium mb-1 block">From</label>
+                                                  <LanguageSelect
+                                                    value={effectiveSettings.translateFrom}
+                                                    onChange={(v) => updateAccountSettings(selectedGroupId, account.id, { translateFrom: v })}
+                                                    options={LANGUAGES}
+                                                    disabled={account.settings?.useGroupSettings !== false}
+                                                  />
+                                                </div>
+                                                <div className="flex-1">
+                                                  <label className="text-[9px] text-kol-text-muted uppercase tracking-wide font-medium mb-1 block">To</label>
+                                                  <LanguageSelect
+                                                    value={effectiveSettings.translateTo}
+                                                    onChange={(v) => updateAccountSettings(selectedGroupId, account.id, { translateTo: v })}
+                                                    options={TARGET_LANGUAGES}
+                                                    disabled={account.settings?.useGroupSettings !== false}
+                                                  />
+                                                </div>
+                                              </div>
+                                            </motion.div>
+                                          )}
+                                        </AnimatePresence>
+
+                                        <div className="flex items-center justify-between">
+                                          <div className="flex-1">
+                                            <p className="text-xs font-medium text-white">Notifications</p>
+                                          </div>
+                                          <ToggleSwitch
+                                            enabled={effectiveSettings.notifications}
+                                            onChange={(v) => updateAccountSettings(selectedGroupId, account.id, { notifications: v })}
+                                            disabled={account.settings?.useGroupSettings !== false}
+                                          />
+                                        </div>
+
+                                        {/* Tweet Types */}
+                                        <div className="pt-1">
+                                          <span className="text-[9px] text-kol-text-muted uppercase tracking-wide font-medium">
+                                            Tweet Types
+                                          </span>
+                                          <div className="flex flex-wrap gap-1.5 mt-2">
+                                            <TweetTypePill
+                                              label="Posts"
+                                              enabled={effectiveSettings.tweetTypes.posts}
+                                              onChange={(v) => updateAccountTweetTypes(selectedGroupId, account.id, 'posts', v)}
+                                              disabled={account.settings?.useGroupSettings !== false}
+                                            />
+                                            <TweetTypePill
+                                              label="Replies"
+                                              enabled={effectiveSettings.tweetTypes.replies}
+                                              onChange={(v) => updateAccountTweetTypes(selectedGroupId, account.id, 'replies', v)}
+                                              disabled={account.settings?.useGroupSettings !== false}
+                                            />
+                                            <TweetTypePill
+                                              label="Quotes"
+                                              enabled={effectiveSettings.tweetTypes.quotes}
+                                              onChange={(v) => updateAccountTweetTypes(selectedGroupId, account.id, 'quotes', v)}
+                                              disabled={account.settings?.useGroupSettings !== false}
+                                            />
+                                            <TweetTypePill
+                                              label="Reposts"
+                                              enabled={effectiveSettings.tweetTypes.reposts}
+                                              onChange={(v) => updateAccountTweetTypes(selectedGroupId, account.id, 'reposts', v)}
+                                              disabled={account.settings?.useGroupSettings !== false}
+                                            />
+                                            <TweetTypePill
+                                              label="Deleted"
+                                              enabled={effectiveSettings.tweetTypes.deletedTweets}
+                                              onChange={(v) => updateAccountTweetTypes(selectedGroupId, account.id, 'deletedTweets', v)}
+                                              disabled={account.settings?.useGroupSettings !== false}
+                                            />
+                                            <TweetTypePill
+                                              label="Following"
+                                              enabled={effectiveSettings.tweetTypes.followingUpdates}
+                                              onChange={(v) => updateAccountTweetTypes(selectedGroupId, account.id, 'followingUpdates', v)}
+                                              disabled={account.settings?.useGroupSettings !== false}
+                                            />
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+
+                                    {/* Account-Specific Settings (always editable) */}
+                                    <div className="pt-2">
+                                      <div className="mb-2">
+                                        <span className="text-[9px] text-kol-text-muted uppercase tracking-wide font-medium">
+                                          Account-Specific
+                                        </span>
+                                      </div>
+                                      <div className="flex items-center justify-between">
+                                        <div className="flex-1">
+                                          <p className="text-xs font-medium text-white">Highlight tweets</p>
+                                          <p className="text-[10px] text-kol-text-muted mt-0.5">Visually mark tweets from this account</p>
+                                        </div>
+                                        <ToggleSwitch
+                                          enabled={account.settings?.highlightTweets ?? false}
+                                          onChange={(v) => updateAccountSettings(selectedGroupId, account.id, {
+                                            ...DEFAULT_ACCOUNT_SETTINGS,
+                                            ...account.settings,
+                                            highlightTweets: v
+                                          })}
+                                        />
+                                      </div>
+                                    </div>
+                                  </div>
+                                </motion.div>
+                              )}
+                            </AnimatePresence>
+                          </div>
+                        )
+                      })
                     )}
                   </div>
                 </div>
