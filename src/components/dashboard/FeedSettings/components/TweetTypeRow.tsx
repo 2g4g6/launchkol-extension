@@ -43,16 +43,15 @@ export function TweetTypeRow({ typeKey, label, settings, groupDefaults, onChange
         onClick={() => onChange({ enabled: !effective.enabled })}
         className={`
           h-5 px-2 rounded text-[10px] font-medium transition-colors border min-w-[60px] flex items-center gap-1
-          ${effective.enabled
-            ? 'bg-kol-surface/60 border-kol-border/80 text-kol-text'
-            : 'bg-kol-surface/45 border-kol-border text-kol-text-muted hover:bg-kol-surface-elevated'
-          }
+          ${!effective.enabled && 'bg-kol-surface/45 border-kol-border text-kol-text-muted hover:bg-kol-surface-elevated'}
         `}
+        style={effective.enabled ? {
+          backgroundColor: `${effective.highlightColor}15`,
+          borderColor: `${effective.highlightColor}80`,
+          color: effective.highlightColor,
+        } : undefined}
       >
-        <i
-          className={TWEET_TYPE_ICONS[typeKey]}
-          style={{ color: effective.enabled ? effective.highlightColor : undefined }}
-        />
+        <i className={TWEET_TYPE_ICONS[typeKey]} />
         {label}
       </button>
 
