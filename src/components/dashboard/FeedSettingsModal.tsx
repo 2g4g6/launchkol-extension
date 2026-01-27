@@ -137,7 +137,7 @@ const PLATFORM_OPTIONS: { id: PlatformType; label: string; icon: string }[] = [
   { id: 'bonk', label: 'Bonk.fun', icon: '/images/bonk.svg' },
   { id: 'bags', label: 'Bags', icon: '/images/bags.svg' },
   { id: 'mayhem', label: 'Mayhem', icon: '/images/mayhem.svg' },
-  { id: 'fourmeme', label: '4Meme', icon: '/images/fourmeme.svg' },
+  { id: 'fourmeme', label: 'Four.meme', icon: '/images/fourmeme.svg' },
 ]
 
 // Create default tweet type settings
