@@ -31,6 +31,9 @@ export type { KeywordInputProps } from './KeywordInput'
 export { KeywordBadge } from './KeywordBadge'
 export type { KeywordBadgeProps } from './KeywordBadge'
 
+export { KeywordRow } from './KeywordRow'
+export type { KeywordRowProps } from './KeywordRow'
+
 export { KeywordFormPopover } from './KeywordFormPopover'
 export type { KeywordFormPopoverProps } from './KeywordFormPopover'
 

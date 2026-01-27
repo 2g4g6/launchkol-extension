@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import { KeywordBadge } from './KeywordBadge'
+import { KeywordRow } from './KeywordRow'
 import { KeywordFormPopover } from './KeywordFormPopover'
 import type { Keyword } from '../types'
 
@@ -16,9 +16,7 @@ function generateKeywordId(): string {
 
 export function KeywordInput({ keywords, onChange, disabled }: KeywordInputProps) {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false)
-  const [editingKeyword, setEditingKeyword] = useState<Keyword | null>(null)
   const addButtonRef = useRef<HTMLButtonElement>(null)
-  const editAnchorRef = useRef<HTMLSpanElement>(null)
 
   const handleAddKeyword = (keywordData: Omit<Keyword, 'id'> & { id?: string }) => {
     const newKeyword: Keyword = {
@@ -32,18 +30,9 @@ export function KeywordInput({ keywords, onChange, disabled }: KeywordInputProps
     onChange([...keywords, newKeyword])
   }
 
-  const handleEditKeyword = (keywordData: Omit<Keyword, 'id'> & { id?: string }) => {
-    if (!keywordData.id) return
+  const handleUpdateKeyword = (id: string, updates: Partial<Keyword>) => {
     onChange(keywords.map(kw =>
-      kw.id === keywordData.id
-        ? {
-            ...kw,
-            text: keywordData.text,
-            color: keywordData.color,
-            caseSensitive: keywordData.caseSensitive,
-            wholeWord: keywordData.wholeWord,
-          }
-        : kw
+      kw.id === id ? { ...kw, ...updates } : kw
     ))
   }
 
@@ -51,44 +40,12 @@ export function KeywordInput({ keywords, onChange, disabled }: KeywordInputProps
     onChange(keywords.filter(kw => kw.id !== id))
   }
 
-  const handleToggleEnabled = (id: string) => {
-    onChange(keywords.map(kw =>
-      kw.id === id ? { ...kw, enabled: !kw.enabled } : kw
-    ))
-  }
-
-  const handleOpenAdd = () => {
-    setEditingKeyword(null)
-    setIsPopoverOpen(true)
-  }
-
-  const handleOpenEdit = (keyword: Keyword) => {
-    setEditingKeyword(keyword)
-    setIsPopoverOpen(true)
-  }
-
-  const handleClosePopover = () => {
-    setIsPopoverOpen(false)
-    setEditingKeyword(null)
-  }
-
-  const handleSave = (keywordData: Omit<Keyword, 'id'> & { id?: string }) => {
-    if (editingKeyword) {
-      handleEditKeyword(keywordData)
-    } else {
-      handleAddKeyword(keywordData)
-    }
-  }
-
-  // Use the add button as anchor for both add and edit (simpler approach)
-  const anchorRef = editingKeyword ? editAnchorRef : addButtonRef
-
   return (
     <div className="space-y-2">
       {/* Add Keyword Button */}
       <button
         ref={addButtonRef}
-        onClick={handleOpenAdd}
+        onClick={() => setIsPopoverOpen(true)}
         disabled={disabled}
         className={`
           inline-flex items-center gap-1 px-2 py-1 text-xs
@@ -102,22 +59,17 @@ export function KeywordInput({ keywords, onChange, disabled }: KeywordInputProps
         Add Keyword
       </button>
 
-      {/* Keywords List */}
+      {/* Keywords List - Row format */}
       {keywords.length > 0 && (
-        <div className="flex flex-wrap items-center gap-1.5">
+        <div className="space-y-1.5">
           {keywords.map(keyword => (
-            <span
+            <KeywordRow
               key={keyword.id}
-              ref={editingKeyword?.id === keyword.id ? editAnchorRef : undefined}
-            >
-              <KeywordBadge
-                keyword={keyword}
-                onClick={() => handleOpenEdit(keyword)}
-                onDelete={() => handleDeleteKeyword(keyword.id)}
-                onToggleEnabled={() => handleToggleEnabled(keyword.id)}
-                disabled={disabled}
-              />
-            </span>
+              keyword={keyword}
+              onChange={(updates) => handleUpdateKeyword(keyword.id, updates)}
+              onDelete={() => handleDeleteKeyword(keyword.id)}
+              disabled={disabled}
+            />
           ))}
         </div>
       )}
@@ -129,13 +81,13 @@ export function KeywordInput({ keywords, onChange, disabled }: KeywordInputProps
         </p>
       )}
 
-      {/* Popover */}
+      {/* Add Keyword Popover */}
       <KeywordFormPopover
         isOpen={isPopoverOpen}
-        onClose={handleClosePopover}
-        onSave={handleSave}
-        editingKeyword={editingKeyword}
-        anchorRef={anchorRef}
+        onClose={() => setIsPopoverOpen(false)}
+        onSave={handleAddKeyword}
+        editingKeyword={null}
+        anchorRef={addButtonRef}
         existingKeywords={keywords}
       />
     </div>
