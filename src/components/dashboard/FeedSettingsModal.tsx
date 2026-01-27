@@ -176,13 +176,14 @@ function IconPicker({ currentIcon, onSelect }: IconPickerProps) {
     setMounted(true)
   }, [])
 
-  // Calculate dropdown position when opening
+  // Calculate dropdown position when opening (centered below icon)
   const updatePosition = useCallback(() => {
     if (!triggerRef.current) return
     const rect = triggerRef.current.getBoundingClientRect()
+    const dropdownWidth = 5 * 28 + 2 * 8 + 4 * 4 // 5 cols * 28px + padding + gaps
     setDropdownPosition({
       top: rect.bottom + 4,
-      left: rect.left,
+      left: rect.left + rect.width / 2 - dropdownWidth / 2,
     })
   }, [])
 
@@ -437,9 +438,9 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
       isOpen={isOpen}
       onClose={onClose}
       title="Feed Settings"
-      width="w-[520px]"
+      width="w-[600px]"
     >
-      <div className="flex h-[380px] -mx-4 -mt-4 -mb-4">
+      <div className="flex h-[460px] -mx-4 -mt-4 -mb-4">
         {/* Left Column - Groups Sidebar */}
         <div className="w-[160px] flex flex-col border-r border-kol-border/50 bg-kol-surface/30">
           {/* All Feeds (Global) */}
@@ -592,10 +593,10 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
           )}
 
           {/* Content */}
-          <div className="flex-1 overflow-y-auto scrollbar-styled">
+          <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
             {/* Global Settings (All Feeds selected) */}
             {selectedGroupId === null && (
-              <div className="space-y-5">
+              <div className="flex-1 overflow-y-auto scrollbar-styled space-y-5">
                 <div className="p-3 rounded-lg bg-kol-surface/30 border border-kol-border/30">
                   <p className="text-xs text-kol-text-muted">
                     <i className="ri-information-line mr-1.5" />
@@ -679,9 +680,9 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
 
             {/* Accounts Tab */}
             {selectedGroupId !== null && selectedTab === 'accounts' && selectedGroup && (
-              <div className="space-y-3">
-                {/* Search */}
-                <div className="relative">
+              <div className="flex flex-col h-full">
+                {/* Search - Fixed at top */}
+                <div className="relative flex-shrink-0 mb-3">
                   {/* Focus glow effect */}
                   <div
                     className={`absolute inset-0 rounded-lg transition-opacity duration-500 blur-xl -z-10 ${
@@ -707,95 +708,97 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                   />
                 </div>
 
-                {/* Accounts List */}
-                <div className="space-y-1">
-                  {filteredAccounts.length === 0 && !accountSearchQuery ? (
-                    <motion.div
-                      className="flex flex-col items-center justify-center py-12 text-center"
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                    >
-                      <div className="relative mb-4">
-                        <div className="w-14 h-14 rounded-2xl bg-kol-surface-elevated/50 backdrop-blur-sm border border-kol-border/40 flex items-center justify-center">
-                          <i className="ri-user-add-line text-2xl text-kol-text-muted" />
-                        </div>
-                        <div
-                          className="absolute inset-0 rounded-2xl opacity-50 blur-xl -z-10"
-                          style={{
-                            background: 'radial-gradient(circle, rgba(0, 123, 255, 0.15) 0%, transparent 70%)',
-                          }}
-                        />
-                        <motion.div
-                          className="absolute -top-1.5 -right-1.5 w-2.5 h-2.5 rounded-full bg-kol-blue/30"
-                          animate={{ y: [0, -4, 0], opacity: [0.5, 1, 0.5] }}
-                          transition={{ duration: 2, repeat: Infinity }}
-                        />
-                        <motion.div
-                          className="absolute -bottom-1 -left-1 w-2 h-2 rounded-full bg-kol-green/30"
-                          animate={{ y: [0, -3, 0], opacity: [0.3, 0.7, 0.3] }}
-                          transition={{ duration: 2.5, repeat: Infinity, delay: 0.5 }}
-                        />
-                      </div>
-                      <h3 className="text-sm font-semibold text-white mb-1">No accounts yet</h3>
-                      <p className="text-xs text-kol-text-muted max-w-[180px]">Add Twitter accounts to track in this group</p>
-                    </motion.div>
-                  ) : filteredAccounts.length === 0 ? (
-                    <motion.div
-                      className="flex flex-col items-center justify-center py-8 text-center"
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                    >
-                      <div className="relative mb-3">
-                        <div className="w-12 h-12 rounded-xl bg-kol-surface-elevated/30 flex items-center justify-center">
-                          <i className="ri-search-line text-xl text-kol-text-muted" />
-                        </div>
-                        <div
-                          className="absolute inset-0 rounded-xl opacity-40 blur-lg -z-10"
-                          style={{
-                            background: 'radial-gradient(circle, rgba(136, 136, 136, 0.1) 0%, transparent 70%)',
-                          }}
-                        />
-                      </div>
-                      <p className="text-sm text-kol-text-muted">No accounts match "<span className="text-white">{accountSearchQuery}</span>"</p>
-                    </motion.div>
-                  ) : (
-                    filteredAccounts.map(account => (
-                      <div
-                        key={account.id}
-                        className="group flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-kol-surface-elevated/50 transition-colors"
+                {/* Accounts List - Scrollable middle section */}
+                <div className="flex-1 overflow-y-auto scrollbar-styled min-h-0">
+                  <div className="space-y-1">
+                    {filteredAccounts.length === 0 && !accountSearchQuery ? (
+                      <motion.div
+                        className="flex flex-col items-center justify-center py-12 text-center"
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
                       >
-                        {/* Avatar */}
-                        <div className="w-8 h-8 rounded-full bg-kol-surface-elevated flex items-center justify-center overflow-hidden ring-1 ring-kol-border/50">
-                          {account.avatar ? (
-                            <img src={account.avatar} alt="" className="w-full h-full object-cover" />
-                          ) : (
-                            <i className="ri-user-line text-kol-text-muted" />
-                          )}
+                        <div className="relative mb-4">
+                          <div className="w-14 h-14 rounded-2xl bg-kol-surface-elevated/50 backdrop-blur-sm border border-kol-border/40 flex items-center justify-center">
+                            <i className="ri-user-add-line text-2xl text-kol-text-muted" />
+                          </div>
+                          <div
+                            className="absolute inset-0 rounded-2xl opacity-50 blur-xl -z-10"
+                            style={{
+                              background: 'radial-gradient(circle, rgba(0, 123, 255, 0.15) 0%, transparent 70%)',
+                            }}
+                          />
+                          <motion.div
+                            className="absolute -top-1.5 -right-1.5 w-2.5 h-2.5 rounded-full bg-kol-blue/30"
+                            animate={{ y: [0, -4, 0], opacity: [0.5, 1, 0.5] }}
+                            transition={{ duration: 2, repeat: Infinity }}
+                          />
+                          <motion.div
+                            className="absolute -bottom-1 -left-1 w-2 h-2 rounded-full bg-kol-green/30"
+                            animate={{ y: [0, -3, 0], opacity: [0.3, 0.7, 0.3] }}
+                            transition={{ duration: 2.5, repeat: Infinity, delay: 0.5 }}
+                          />
                         </div>
-
-                        {/* Info */}
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-white truncate">{account.name}</p>
-                          <p className="text-xs text-kol-text-muted">@{account.handle}</p>
+                        <h3 className="text-sm font-semibold text-white mb-1">No accounts yet</h3>
+                        <p className="text-xs text-kol-text-muted max-w-[180px]">Add Twitter accounts to track in this group</p>
+                      </motion.div>
+                    ) : filteredAccounts.length === 0 ? (
+                      <motion.div
+                        className="flex flex-col items-center justify-center py-8 text-center"
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                      >
+                        <div className="relative mb-3">
+                          <div className="w-12 h-12 rounded-xl bg-kol-surface-elevated/30 flex items-center justify-center">
+                            <i className="ri-search-line text-xl text-kol-text-muted" />
+                          </div>
+                          <div
+                            className="absolute inset-0 rounded-xl opacity-40 blur-lg -z-10"
+                            style={{
+                              background: 'radial-gradient(circle, rgba(136, 136, 136, 0.1) 0%, transparent 70%)',
+                            }}
+                          />
                         </div>
-
-                        {/* Remove button */}
-                        <button
-                          onClick={() => removeAccount(selectedGroupId, account.id)}
-                          className="opacity-0 group-hover:opacity-100 w-6 h-6 rounded flex items-center justify-center text-kol-text-muted hover:text-kol-red hover:bg-kol-red/10 transition-all"
+                        <p className="text-sm text-kol-text-muted">No accounts match "<span className="text-white">{accountSearchQuery}</span>"</p>
+                      </motion.div>
+                    ) : (
+                      filteredAccounts.map(account => (
+                        <div
+                          key={account.id}
+                          className="group flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-kol-surface-elevated/50 transition-colors"
                         >
-                          <i className="ri-close-line text-sm" />
-                        </button>
-                      </div>
-                    ))
-                  )}
+                          {/* Avatar */}
+                          <div className="w-8 h-8 rounded-full bg-kol-surface-elevated flex items-center justify-center overflow-hidden ring-1 ring-kol-border/50">
+                            {account.avatar ? (
+                              <img src={account.avatar} alt="" className="w-full h-full object-cover" />
+                            ) : (
+                              <i className="ri-user-line text-kol-text-muted" />
+                            )}
+                          </div>
+
+                          {/* Info */}
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-white truncate">{account.name}</p>
+                            <p className="text-xs text-kol-text-muted">@{account.handle}</p>
+                          </div>
+
+                          {/* Remove button */}
+                          <button
+                            onClick={() => removeAccount(selectedGroupId, account.id)}
+                            className="opacity-0 group-hover:opacity-100 w-6 h-6 rounded flex items-center justify-center text-kol-text-muted hover:text-kol-red hover:bg-kol-red/10 transition-all"
+                          >
+                            <i className="ri-close-line text-sm" />
+                          </button>
+                        </div>
+                      ))
+                    )}
+                  </div>
                 </div>
 
-                {/* Add Account */}
-                <div className="pt-2 border-t border-kol-border/30 mt-3">
-                  <div className="flex gap-2 mt-3 relative">
+                {/* Add Account - Fixed at bottom */}
+                <div className="flex-shrink-0 pt-3 mt-3 border-t border-kol-border/30">
+                  <div className="flex gap-2 relative">
                     {/* Focus glow effect */}
                     <div
                       className={`absolute inset-0 rounded-lg transition-opacity duration-500 blur-xl -z-10 ${
@@ -839,7 +842,7 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
 
             {/* Settings Tab */}
             {selectedGroupId !== null && selectedTab === 'settings' && selectedGroup && (
-              <div className="space-y-5">
+              <div className="flex-1 overflow-y-auto scrollbar-styled space-y-5">
                 {/* Use Global Settings Toggle */}
                 <div className="flex items-center justify-between p-3 rounded-lg bg-kol-surface/30 border border-kol-border/30">
                   <div className="flex-1">
