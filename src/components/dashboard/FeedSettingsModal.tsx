@@ -511,7 +511,7 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                     </button>
                   )}
 
-                  <span className="text-[10px] text-kol-text-muted">{group.accounts.length}</span>
+                  <span className="text-[10px] text-kol-text-muted group-hover:opacity-0 transition-opacity">{group.accounts.length}</span>
                 </div>
 
                 {/* Edit/Delete on hover */}
