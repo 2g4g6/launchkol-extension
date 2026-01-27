@@ -11,10 +11,12 @@ export interface ColorPickerProps {
   onSelect: (color: string) => void
 }
 
-const PICKER_WIDTH = 280
-const GRADIENT_SIZE = 140
-const HUE_HEIGHT = 16
+const PICKER_WIDTH = 264
+const GRADIENT_SIZE = 120
+const HUE_HEIGHT = 14
 const SWATCH_SIZE = 24
+
+const CUSTOM_EASE = [0.16, 1, 0.3, 1] as const
 
 export function ColorPicker({ currentColor, onSelect }: ColorPickerProps) {
   const [isOpen, setIsOpen] = useState(false)
@@ -54,20 +56,23 @@ export function ColorPicker({ currentColor, onSelect }: ColorPickerProps) {
     }
   }, [isOpen, currentColor])
 
-  // Calculate dropdown position when opening
+  // Calculate dropdown position - ABOVE the trigger
   const updatePosition = useCallback(() => {
     if (!triggerRef.current) return
     const rect = triggerRef.current.getBoundingClientRect()
     const popupWidth = 380 // Extension popup width
 
-    // Position below the trigger, centered but clamped to popup bounds
+    // Estimate picker height (gradient + hue + hex + presets + recent + padding)
+    const pickerHeight = 320
+
+    // Position ABOVE the trigger, centered but clamped to popup bounds
     let left = rect.left + rect.width / 2 - PICKER_WIDTH / 2
 
     // Clamp to not overflow popup (8px padding)
     left = Math.max(8, Math.min(left, popupWidth - PICKER_WIDTH - 8))
 
     setDropdownPosition({
-      top: rect.bottom + 6,
+      top: rect.top - pickerHeight - 8,
       left,
     })
   }, [])
@@ -112,6 +117,14 @@ export function ColorPicker({ currentColor, onSelect }: ColorPickerProps) {
       }
     }
   }, [isOpen, updatePosition])
+
+  // Live update: call onSelect whenever HSV changes
+  useEffect(() => {
+    if (isOpen) {
+      const hex = hsvToHex(hsv)
+      onSelect(hex)
+    }
+  }, [hsv, isOpen, onSelect])
 
   // Handle gradient drag
   const handleGradientInteraction = useCallback((clientX: number, clientY: number) => {
@@ -214,15 +227,14 @@ export function ColorPicker({ currentColor, onSelect }: ColorPickerProps) {
     }
   }
 
-  // Handle close - save to recent and notify parent
+  // Handle close - save to recent colors
   const handleClose = () => {
     const hex = hsvToHex(hsv)
     addRecentColor(hex)
-    onSelect(hex)
     setIsOpen(false)
   }
 
-  // Handle preset/recent color click
+  // Handle preset/recent color click - update live
   const handleColorClick = (color: string) => {
     const parsed = hexToHsv(color)
     if (parsed) {
@@ -230,10 +242,6 @@ export function ColorPicker({ currentColor, onSelect }: ColorPickerProps) {
       setHexInput(color.replace('#', '').toUpperCase())
       setHexInputError(false)
     }
-    // Also immediately select and close
-    addRecentColor(color)
-    onSelect(color)
-    setIsOpen(false)
   }
 
   // Current color from HSV
@@ -244,29 +252,34 @@ export function ColorPicker({ currentColor, onSelect }: ColorPickerProps) {
     <AnimatePresence>
       <motion.div
         ref={dropdownRef}
-        initial={{ opacity: 0, scale: 0.95, y: -4 }}
+        initial={{ opacity: 0, scale: 0.95, y: 8 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.95, y: -4 }}
-        transition={{ duration: 0.15 }}
-        className="fixed bg-kol-bg border border-kol-border rounded-xl shadow-[0_4px_24px_rgba(0,0,0,0.5)] z-[9999] overflow-hidden"
+        exit={{ opacity: 0, scale: 0.95, y: 8 }}
+        transition={{ duration: 0.2, ease: CUSTOM_EASE }}
+        className="fixed bg-kol-bg border border-kol-border rounded-lg shadow-[0_4px_24px_rgba(0,0,0,0.5)] z-[9999] overflow-hidden"
         style={{
           top: dropdownPosition.top,
           left: dropdownPosition.left,
           width: PICKER_WIDTH,
         }}
       >
-        {/* Preview Bar */}
-        <div
-          className="h-8 w-full"
-          style={{ backgroundColor: previewColor }}
-        />
+        {/* Header */}
+        <div className="flex items-center justify-between px-3 py-2 border-b border-kol-border">
+          <span className="text-xs font-medium text-white">Pick Color</span>
+          <button
+            onClick={handleClose}
+            className="rounded opacity-50 transition-opacity hover:opacity-100"
+          >
+            <i className="ri-close-line text-sm" />
+          </button>
+        </div>
 
         {/* Main content */}
         <div className="p-3 space-y-3">
           {/* Saturation/Brightness Gradient */}
           <div
             ref={gradientRef}
-            className="relative rounded-lg cursor-crosshair overflow-hidden"
+            className="relative rounded-md cursor-crosshair overflow-hidden"
             style={{
               height: GRADIENT_SIZE,
               background: `
@@ -323,28 +336,26 @@ export function ColorPicker({ currentColor, onSelect }: ColorPickerProps) {
 
           {/* Hex Input */}
           <div className="flex items-center gap-2">
-            <span className="text-kol-text-muted text-xs font-mono">#</span>
-            <input
-              type="text"
-              value={hexInput}
-              onChange={(e) => handleHexChange(e.target.value)}
-              maxLength={6}
-              className={`
-                flex-1 bg-kol-surface border rounded-lg px-2 py-1.5
-                text-xs font-mono text-kol-text
-                focus:outline-none focus:ring-1
-                ${hexInputError
-                  ? 'border-kol-red focus:ring-kol-red'
-                  : 'border-kol-border focus:ring-kol-blue'
-                }
-              `}
-              placeholder="FF5500"
-            />
-            {/* Preview swatch */}
             <div
-              className="w-8 h-8 rounded-lg border border-kol-border"
+              className="w-8 h-8 rounded-md border border-kol-border shrink-0"
               style={{ backgroundColor: previewColor }}
             />
+            <div className="flex items-center flex-1 bg-kol-surface border border-kol-border rounded-md overflow-hidden">
+              <span className="text-kol-text-muted text-xs font-mono pl-2">#</span>
+              <input
+                type="text"
+                value={hexInput}
+                onChange={(e) => handleHexChange(e.target.value)}
+                maxLength={6}
+                className={`
+                  flex-1 bg-transparent px-1 py-1.5
+                  text-xs font-mono text-kol-text
+                  focus:outline-none
+                  ${hexInputError ? 'text-kol-red' : ''}
+                `}
+                placeholder="FF5500"
+              />
+            </div>
           </div>
 
           {/* Preset Colors */}
@@ -361,7 +372,7 @@ export function ColorPicker({ currentColor, onSelect }: ColorPickerProps) {
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.95 }}
                     className={`
-                      rounded-md flex items-center justify-center transition-all
+                      rounded-md transition-all
                       ${color.toLowerCase() === previewColor.toLowerCase()
                         ? 'ring-2 ring-white ring-offset-1 ring-offset-kol-bg'
                         : ''
@@ -393,7 +404,7 @@ export function ColorPicker({ currentColor, onSelect }: ColorPickerProps) {
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.95 }}
                     className={`
-                      rounded-md flex items-center justify-center transition-all
+                      rounded-md transition-all
                       ${color.toLowerCase() === previewColor.toLowerCase()
                         ? 'ring-2 ring-white ring-offset-1 ring-offset-kol-bg'
                         : ''
