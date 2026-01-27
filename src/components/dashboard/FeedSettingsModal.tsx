@@ -438,11 +438,11 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
       isOpen={isOpen}
       onClose={onClose}
       title="Feed Settings"
-      width="w-[600px]"
+      width="w-[680px]"
     >
       <div className="flex h-[460px] -mx-4 -mt-4 -mb-4">
         {/* Left Column - Groups Sidebar */}
-        <div className="w-[160px] flex flex-col border-r border-kol-border/50 bg-kol-surface/30">
+        <div className="w-[200px] flex flex-col border-r border-kol-border/50 bg-kol-surface/30">
           {/* All Feeds (Global) */}
           <button
             onClick={() => {
