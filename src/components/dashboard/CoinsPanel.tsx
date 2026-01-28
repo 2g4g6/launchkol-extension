@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { CoinCard, CoinData } from './CoinCard'
-import { ExpandableButton } from '../ui/ExpandableButton'
+
 
 // Mock data with new fields - showcasing all tweet types
 const MOCK_COINS: CoinData[] = [
@@ -418,30 +418,16 @@ export function CoinsPanel({}: CoinsPanelProps) {
               {/* Divider */}
               <div className="w-px h-4 bg-kol-border/40 mx-1" />
 
-              {/* Action buttons - all expandable */}
-              <ExpandableButton
-                icon="ri-filter-3-line"
-                label="Filter"
-                variant="subtle"
-              />
+              {/* Action buttons */}
+              <button className="h-7 px-2 rounded-lg flex items-center gap-1.5 text-kol-text-muted hover:text-white hover:bg-white/5 transition-colors">
+                <i className="ri-file-copy-line text-sm" />
+                <span className="text-xs font-medium whitespace-nowrap">Clone</span>
+              </button>
 
-              <ExpandableButton
-                icon="ri-refresh-line"
-                label="Refresh"
-                variant="subtle"
-              />
-
-              <ExpandableButton
-                icon="ri-file-copy-line"
-                label="Clone"
-                variant="subtle"
-              />
-
-              <ExpandableButton
-                icon="ri-pencil-line"
-                label="Create"
-                variant="subtle"
-              />
+              <button className="h-7 px-2 rounded-lg flex items-center gap-1.5 text-kol-text-muted hover:text-white hover:bg-white/5 transition-colors">
+                <i className="ri-add-line text-sm" />
+                <span className="text-xs font-medium whitespace-nowrap">Create</span>
+              </button>
             </div>
           </div>
         </div>
@@ -514,34 +500,16 @@ export function CoinsPanel({}: CoinsPanelProps) {
               {/* Divider */}
               <div className="w-px h-5 bg-kol-border/40 mx-1" />
 
-              {/* Action buttons - all expandable, larger on mobile */}
-              <ExpandableButton
-                icon="ri-filter-3-line"
-                label="Filter"
-                variant="subtle"
-                size="large"
-              />
+              {/* Action buttons */}
+              <button className="h-9 px-2.5 rounded-lg flex items-center gap-2 text-kol-text-muted hover:text-white hover:bg-white/5 transition-colors">
+                <i className="ri-file-copy-line text-base" />
+                <span className="text-sm font-medium whitespace-nowrap">Clone</span>
+              </button>
 
-              <ExpandableButton
-                icon="ri-refresh-line"
-                label="Refresh"
-                variant="subtle"
-                size="large"
-              />
-
-              <ExpandableButton
-                icon="ri-file-copy-line"
-                label="Clone"
-                variant="subtle"
-                size="large"
-              />
-
-              <ExpandableButton
-                icon="ri-pencil-line"
-                label="Create"
-                variant="subtle"
-                size="large"
-              />
+              <button className="h-9 px-2.5 rounded-lg flex items-center gap-2 text-kol-text-muted hover:text-white hover:bg-white/5 transition-colors">
+                <i className="ri-add-line text-base" />
+                <span className="text-sm font-medium whitespace-nowrap">Create</span>
+              </button>
             </div>
           </div>
         </div>
