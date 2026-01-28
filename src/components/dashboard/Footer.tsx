@@ -4,7 +4,6 @@ interface FooterProps {
   balance: number
   solPrice: number
   ethPrice?: number
-  btcPrice?: number
   bnbPrice?: number
   chatUnreadCount?: number
   onWalletClick?: () => void
@@ -130,7 +129,6 @@ export function Footer({
   balance,
   solPrice,
   ethPrice,
-  btcPrice,
   bnbPrice,
   chatUnreadCount = 0,
   onWalletClick,
@@ -186,14 +184,6 @@ export function Footer({
             price={ethPrice}
             color="#497493"
             label="ETH"
-          />
-        )}
-        {btcPrice != null && (
-          <CryptoTicker
-            icon="/images/btcLogo.svg"
-            price={btcPrice}
-            color="#F7931A"
-            label="BTC"
           />
         )}
         {bnbPrice != null && (
