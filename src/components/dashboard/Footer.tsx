@@ -114,12 +114,6 @@ export function Footer({
       {/* Left section */}
       <div className="flex items-center gap-1.5 flex-shrink-0">
         <FooterIconButton icon="ri-percent-line" label="Fees" onClick={onFeesClick} />
-        <FooterIconButton
-          icon="ri-chat-3-line"
-          label="Chat"
-          badge={chatUnreadCount > 0}
-          onClick={onChatClick}
-        />
 
         <VerticalDivider />
 
@@ -151,6 +145,7 @@ export function Footer({
 
       {/* Right section */}
       <div className="flex items-center gap-1.5 flex-shrink-0">
+        <FooterIconButton icon="ri-chat-3-line" badge={chatUnreadCount > 0} onClick={onChatClick} />
         <FooterIconButton icon="ri-volume-up-line" />
         <FooterIconButton icon="ri-translate-2" />
         <FooterIconButton icon="ri-palette-line" />
