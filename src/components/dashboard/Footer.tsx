@@ -169,68 +169,71 @@ export function Footer({
 
       <VerticalDivider />
 
-      <FooterIconButton icon="ri-percent-line" label="Fees" onClick={onFeesClick} />
-      <FooterIconButton
-        icon="ri-chat-3-line"
-        label="Chat"
-        badge={chatUnreadCount > 0}
-        onClick={onChatClick}
+      {/* Crypto prices */}
+      <CryptoTicker
+        icon="/images/solanaLogoMark.svg"
+        price={solPrice}
+        color="#14F195"
+        label="SOL"
       />
+      {bnbPrice != null && (
+        <CryptoTicker
+          iconElement={<BnbIcon className="w-3.5 h-3.5" />}
+          price={bnbPrice}
+          color="#F0B90B"
+          label="BNB"
+        />
+      )}
 
       {/* Spacer */}
       <div className="flex-1" />
 
-      {/* Right section - prices & platform pill */}
-      <div className="flex items-center gap-2">
-        <CryptoTicker
-          icon="/images/solanaLogoMark.svg"
-          price={solPrice}
-          color="#14F195"
-          label="SOL"
+      {/* Center - platform pill */}
+      <PlatformPill />
+
+      {/* Spacer */}
+      <div className="flex-1" />
+
+      {/* Right section */}
+      <div className="flex items-center gap-1.5">
+        <FooterIconButton icon="ri-percent-line" label="Fees" onClick={onFeesClick} />
+        <FooterIconButton
+          icon="ri-chat-3-line"
+          label="Chat"
+          badge={chatUnreadCount > 0}
+          onClick={onChatClick}
         />
-        <div className="hidden lg:flex items-center gap-2">
-          {bnbPrice != null && (
-            <CryptoTicker
-              iconElement={<BnbIcon className="w-3.5 h-3.5" />}
-              price={bnbPrice}
-              color="#F0B90B"
-              label="BNB"
-            />
-          )}
-          <VerticalDivider />
-          <PlatformPill />
-          <VerticalDivider />
-          <FooterIconButton icon="ri-volume-up-line" />
-          <FooterIconButton icon="ri-translate-2" />
-          <FooterIconButton icon="ri-palette-line" />
-          <FooterIconButton icon="ri-settings-3-line" />
-          <VerticalDivider />
-          <a
-            href="https://discord.gg/launchkol"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-kol-text-muted hover:text-white transition-colors duration-150 px-1"
-          >
-            <i className="ri-discord-fill text-[14px]" />
-          </a>
-          <a
-            href="https://x.com/launchkol"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-kol-text-muted hover:text-white transition-colors duration-150 px-1"
-          >
-            <i className="ri-twitter-x-line text-[14px]" />
-          </a>
-          <a
-            href="https://docs.launchkol.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-1 text-kol-text-muted hover:text-white transition-colors duration-150 px-1"
-          >
-            <i className="ri-file-text-line text-[14px]" />
-            <span className="text-[12px] font-body whitespace-nowrap">Docs</span>
-          </a>
-        </div>
+        <VerticalDivider />
+        <FooterIconButton icon="ri-volume-up-line" />
+        <FooterIconButton icon="ri-translate-2" />
+        <FooterIconButton icon="ri-palette-line" />
+        <FooterIconButton icon="ri-settings-3-line" />
+        <VerticalDivider />
+        <a
+          href="https://discord.gg/launchkol"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-kol-text-muted hover:text-white transition-colors duration-150 px-1"
+        >
+          <i className="ri-discord-fill text-[14px]" />
+        </a>
+        <a
+          href="https://x.com/launchkol"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-kol-text-muted hover:text-white transition-colors duration-150 px-1"
+        >
+          <i className="ri-twitter-x-line text-[14px]" />
+        </a>
+        <a
+          href="https://docs.launchkol.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-1 text-kol-text-muted hover:text-white transition-colors duration-150 px-1"
+        >
+          <i className="ri-file-text-line text-[14px]" />
+          <span className="text-[12px] font-body whitespace-nowrap">Docs</span>
+        </a>
       </div>
     </div>
   )
