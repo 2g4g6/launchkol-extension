@@ -185,7 +185,7 @@ function TradingStatsBar({
   const isProfitable = pnl >= 0
 
   return (
-    <div className="flex max-h-[64px] min-h-[64px] flex-1 flex-row items-center justify-center py-2 border-t border-kol-border/20">
+    <div className="flex max-h-[64px] min-h-[64px] flex-1 flex-row items-center justify-center py-2 border-t border-kol-border/40">
       {/* Bought */}
       <div className="flex flex-1 flex-col items-center justify-center gap-1">
         <span className="text-[12px] font-normal leading-4 text-kol-text-muted">Bought</span>

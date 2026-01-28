@@ -255,7 +255,7 @@ export function TrackerFeed({ onDeploy }: TrackerFeedProps) {
   return (
     <div className="relative flex flex-col h-full overflow-hidden">
       {/* Container for search and feed */}
-      <div className="flex flex-col h-full lg:bg-kol-surface/50 lg:backdrop-blur-sm lg:border lg:border-kol-border/50 lg:rounded-xl overflow-hidden">
+      <div className="flex flex-col h-full lg:bg-kol-surface/50 lg:backdrop-blur-sm lg:border lg:border-kol-border/70 lg:rounded-xl overflow-hidden">
         {/* Search Bar */}
         <motion.div
           className="relative px-3 pt-3 pb-2"
@@ -274,7 +274,7 @@ export function TrackerFeed({ onDeploy }: TrackerFeedProps) {
         />
 
         <div className={`relative flex items-center bg-kol-surface/50 border rounded-xl transition-all duration-300 ${
-          isSearchFocused ? 'border-kol-blue/50' : 'border-kol-border/50'
+          isSearchFocused ? 'border-kol-blue/50' : 'border-kol-border/70'
         }`}>
           <i className={`ri-search-line absolute left-3.5 lg:left-3 text-base lg:text-sm transition-colors duration-200 ${
             isSearchFocused ? 'text-kol-blue' : 'text-kol-text-tertiary'
