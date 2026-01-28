@@ -1,5 +1,5 @@
 import type { ContentFilters, PlatformType, FeedGroupSettings, AccountSettings, GlobalFeedSettings, Keyword } from './types'
-import { DEFAULT_KEYWORD_COLOR } from './constants'
+import { DEFAULT_KEYWORD_COLOR, DEFAULT_TOKEN_SYMBOLS_COLOR, DEFAULT_MINT_ADDRESSES_COLOR } from './constants'
 
 // Generate a unique ID for keywords
 function generateKeywordId(): string {
@@ -53,6 +53,9 @@ export function migrateFilters(oldFilters: Record<string, unknown> | undefined):
     const existingFilters = oldFilters as unknown as ContentFilters
     return {
       ...existingFilters,
+      // Ensure color fields exist (for migration from before colors were added)
+      tokenSymbolsColor: existingFilters.tokenSymbolsColor || DEFAULT_TOKEN_SYMBOLS_COLOR,
+      mintAddressesColor: existingFilters.mintAddressesColor || DEFAULT_MINT_ADDRESSES_COLOR,
       keywords: migrateKeywords(existingFilters.keywords),
     }
   }
@@ -64,7 +67,9 @@ export function migrateFilters(oldFilters: Record<string, unknown> | undefined):
 
   return {
     filterTokenSymbols: Boolean(oldTokenSymbols && oldTokenSymbols.length > 0),
+    tokenSymbolsColor: DEFAULT_TOKEN_SYMBOLS_COLOR,
     filterMintAddresses: Boolean(oldMintAddresses && oldMintAddresses.length > 0),
+    mintAddressesColor: DEFAULT_MINT_ADDRESSES_COLOR,
     keywords: migrateKeywords(oldKeywords),
   }
 }

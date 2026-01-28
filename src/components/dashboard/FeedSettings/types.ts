@@ -21,7 +21,9 @@ export interface TweetTypeNotificationSettings {
 // Filters for highlighting/notifications
 export interface ContentFilters {
   filterTokenSymbols: boolean    // Highlight tweets containing token symbols ($XXX)
+  tokenSymbolsColor: string      // Hex color for token symbol highlights
   filterMintAddresses: boolean   // Highlight tweets containing mint addresses
+  mintAddressesColor: string     // Hex color for mint address highlights
   keywords: Keyword[]            // Custom keywords to highlight with rich options
 }
 

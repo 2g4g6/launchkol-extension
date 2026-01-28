@@ -44,7 +44,13 @@ import {
   PlatformPicker,
   MobileGroupTrigger,
   GroupsDropdown,
+  ColorPicker,
 } from './components'
+
+import {
+  DEFAULT_TOKEN_SYMBOLS_COLOR,
+  DEFAULT_MINT_ADDRESSES_COLOR,
+} from './constants'
 
 export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
   const [groups, setGroups] = useState<FeedGroup[]>([])
@@ -622,18 +628,38 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                         </p>
                         <p className="text-xs max-sm:text-sm text-kol-text-muted mt-0.5">Highlight tweets with $TOKEN mentions</p>
                       </div>
-                      <ToggleSwitch
-                        enabled={globalSettings.filters?.filterTokenSymbols ?? false}
-                        onChange={(v) => setGlobalSettings({
-                          ...globalSettings,
-                          filters: {
-                            ...globalSettings.filters,
-                            filterTokenSymbols: v,
-                            filterMintAddresses: globalSettings.filters?.filterMintAddresses ?? false,
-                            keywords: globalSettings.filters?.keywords ?? [],
-                          }
-                        })}
-                      />
+                      <div className="flex items-center gap-2">
+                        {(globalSettings.filters?.filterTokenSymbols ?? false) && (
+                          <ColorPicker
+                            currentColor={globalSettings.filters?.tokenSymbolsColor ?? DEFAULT_TOKEN_SYMBOLS_COLOR}
+                            onSelect={(color) => setGlobalSettings({
+                              ...globalSettings,
+                              filters: {
+                                ...globalSettings.filters,
+                                filterTokenSymbols: globalSettings.filters?.filterTokenSymbols ?? false,
+                                tokenSymbolsColor: color,
+                                filterMintAddresses: globalSettings.filters?.filterMintAddresses ?? false,
+                                mintAddressesColor: globalSettings.filters?.mintAddressesColor ?? DEFAULT_MINT_ADDRESSES_COLOR,
+                                keywords: globalSettings.filters?.keywords ?? [],
+                              }
+                            })}
+                          />
+                        )}
+                        <ToggleSwitch
+                          enabled={globalSettings.filters?.filterTokenSymbols ?? false}
+                          onChange={(v) => setGlobalSettings({
+                            ...globalSettings,
+                            filters: {
+                              ...globalSettings.filters,
+                              filterTokenSymbols: v,
+                              tokenSymbolsColor: globalSettings.filters?.tokenSymbolsColor ?? DEFAULT_TOKEN_SYMBOLS_COLOR,
+                              filterMintAddresses: globalSettings.filters?.filterMintAddresses ?? false,
+                              mintAddressesColor: globalSettings.filters?.mintAddressesColor ?? DEFAULT_MINT_ADDRESSES_COLOR,
+                              keywords: globalSettings.filters?.keywords ?? [],
+                            }
+                          })}
+                        />
+                      </div>
                     </div>
                     <div className="flex items-center justify-between py-1">
                       <div className="flex-1">
@@ -643,18 +669,38 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                         </p>
                         <p className="text-xs max-sm:text-sm text-kol-text-muted mt-0.5">Highlight tweets with contract addresses</p>
                       </div>
-                      <ToggleSwitch
-                        enabled={globalSettings.filters?.filterMintAddresses ?? false}
-                        onChange={(v) => setGlobalSettings({
-                          ...globalSettings,
-                          filters: {
-                            ...globalSettings.filters,
-                            filterTokenSymbols: globalSettings.filters?.filterTokenSymbols ?? false,
-                            filterMintAddresses: v,
-                            keywords: globalSettings.filters?.keywords ?? [],
-                          }
-                        })}
-                      />
+                      <div className="flex items-center gap-2">
+                        {(globalSettings.filters?.filterMintAddresses ?? false) && (
+                          <ColorPicker
+                            currentColor={globalSettings.filters?.mintAddressesColor ?? DEFAULT_MINT_ADDRESSES_COLOR}
+                            onSelect={(color) => setGlobalSettings({
+                              ...globalSettings,
+                              filters: {
+                                ...globalSettings.filters,
+                                filterTokenSymbols: globalSettings.filters?.filterTokenSymbols ?? false,
+                                tokenSymbolsColor: globalSettings.filters?.tokenSymbolsColor ?? DEFAULT_TOKEN_SYMBOLS_COLOR,
+                                filterMintAddresses: globalSettings.filters?.filterMintAddresses ?? false,
+                                mintAddressesColor: color,
+                                keywords: globalSettings.filters?.keywords ?? [],
+                              }
+                            })}
+                          />
+                        )}
+                        <ToggleSwitch
+                          enabled={globalSettings.filters?.filterMintAddresses ?? false}
+                          onChange={(v) => setGlobalSettings({
+                            ...globalSettings,
+                            filters: {
+                              ...globalSettings.filters,
+                              filterTokenSymbols: globalSettings.filters?.filterTokenSymbols ?? false,
+                              tokenSymbolsColor: globalSettings.filters?.tokenSymbolsColor ?? DEFAULT_TOKEN_SYMBOLS_COLOR,
+                              filterMintAddresses: v,
+                              mintAddressesColor: globalSettings.filters?.mintAddressesColor ?? DEFAULT_MINT_ADDRESSES_COLOR,
+                              keywords: globalSettings.filters?.keywords ?? [],
+                            }
+                          })}
+                        />
+                      </div>
                     </div>
                     <KeywordInput
                       keywords={globalSettings.filters?.keywords ?? []}
@@ -663,7 +709,9 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                         filters: {
                           ...globalSettings.filters,
                           filterTokenSymbols: globalSettings.filters?.filterTokenSymbols ?? false,
+                          tokenSymbolsColor: globalSettings.filters?.tokenSymbolsColor ?? DEFAULT_TOKEN_SYMBOLS_COLOR,
                           filterMintAddresses: globalSettings.filters?.filterMintAddresses ?? false,
+                          mintAddressesColor: globalSettings.filters?.mintAddressesColor ?? DEFAULT_MINT_ADDRESSES_COLOR,
                           keywords: v,
                         }
                       })}
@@ -956,37 +1004,73 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                                             <i className="ri-coin-line text-kol-text-muted text-xs" />
                                             <p className="text-xs font-medium text-white">Token Symbols</p>
                                           </div>
-                                          <ToggleSwitch
-                                            enabled={account.settings?.filters?.filterTokenSymbols ?? groupSettings.filters?.filterTokenSymbols ?? false}
-                                            onChange={(v) => updateAccountFilters(selectedGroupId, account.id, {
-                                              ...account.settings?.filters,
-                                              filterTokenSymbols: v,
-                                              filterMintAddresses: account.settings?.filters?.filterMintAddresses ?? false,
-                                              keywords: account.settings?.filters?.keywords ?? [],
-                                            })}
-                                          />
+                                          <div className="flex items-center gap-2">
+                                            {(account.settings?.filters?.filterTokenSymbols ?? groupSettings.filters?.filterTokenSymbols ?? false) && (
+                                              <ColorPicker
+                                                currentColor={account.settings?.filters?.tokenSymbolsColor ?? groupSettings.filters?.tokenSymbolsColor ?? DEFAULT_TOKEN_SYMBOLS_COLOR}
+                                                onSelect={(color) => updateAccountFilters(selectedGroupId, account.id, {
+                                                  ...account.settings?.filters,
+                                                  filterTokenSymbols: account.settings?.filters?.filterTokenSymbols ?? false,
+                                                  tokenSymbolsColor: color,
+                                                  filterMintAddresses: account.settings?.filters?.filterMintAddresses ?? false,
+                                                  mintAddressesColor: account.settings?.filters?.mintAddressesColor ?? DEFAULT_MINT_ADDRESSES_COLOR,
+                                                  keywords: account.settings?.filters?.keywords ?? [],
+                                                })}
+                                              />
+                                            )}
+                                            <ToggleSwitch
+                                              enabled={account.settings?.filters?.filterTokenSymbols ?? groupSettings.filters?.filterTokenSymbols ?? false}
+                                              onChange={(v) => updateAccountFilters(selectedGroupId, account.id, {
+                                                ...account.settings?.filters,
+                                                filterTokenSymbols: v,
+                                                tokenSymbolsColor: account.settings?.filters?.tokenSymbolsColor ?? DEFAULT_TOKEN_SYMBOLS_COLOR,
+                                                filterMintAddresses: account.settings?.filters?.filterMintAddresses ?? false,
+                                                mintAddressesColor: account.settings?.filters?.mintAddressesColor ?? DEFAULT_MINT_ADDRESSES_COLOR,
+                                                keywords: account.settings?.filters?.keywords ?? [],
+                                              })}
+                                            />
+                                          </div>
                                         </div>
                                         <div className="flex items-center justify-between">
                                           <div className="flex items-center gap-1.5">
                                             <i className="ri-file-code-line text-kol-text-muted text-xs" />
                                             <p className="text-xs font-medium text-white">Mint Addresses</p>
                                           </div>
-                                          <ToggleSwitch
-                                            enabled={account.settings?.filters?.filterMintAddresses ?? groupSettings.filters?.filterMintAddresses ?? false}
-                                            onChange={(v) => updateAccountFilters(selectedGroupId, account.id, {
-                                              ...account.settings?.filters,
-                                              filterTokenSymbols: account.settings?.filters?.filterTokenSymbols ?? false,
-                                              filterMintAddresses: v,
-                                              keywords: account.settings?.filters?.keywords ?? [],
-                                            })}
-                                          />
+                                          <div className="flex items-center gap-2">
+                                            {(account.settings?.filters?.filterMintAddresses ?? groupSettings.filters?.filterMintAddresses ?? false) && (
+                                              <ColorPicker
+                                                currentColor={account.settings?.filters?.mintAddressesColor ?? groupSettings.filters?.mintAddressesColor ?? DEFAULT_MINT_ADDRESSES_COLOR}
+                                                onSelect={(color) => updateAccountFilters(selectedGroupId, account.id, {
+                                                  ...account.settings?.filters,
+                                                  filterTokenSymbols: account.settings?.filters?.filterTokenSymbols ?? false,
+                                                  tokenSymbolsColor: account.settings?.filters?.tokenSymbolsColor ?? DEFAULT_TOKEN_SYMBOLS_COLOR,
+                                                  filterMintAddresses: account.settings?.filters?.filterMintAddresses ?? false,
+                                                  mintAddressesColor: color,
+                                                  keywords: account.settings?.filters?.keywords ?? [],
+                                                })}
+                                              />
+                                            )}
+                                            <ToggleSwitch
+                                              enabled={account.settings?.filters?.filterMintAddresses ?? groupSettings.filters?.filterMintAddresses ?? false}
+                                              onChange={(v) => updateAccountFilters(selectedGroupId, account.id, {
+                                                ...account.settings?.filters,
+                                                filterTokenSymbols: account.settings?.filters?.filterTokenSymbols ?? false,
+                                                tokenSymbolsColor: account.settings?.filters?.tokenSymbolsColor ?? DEFAULT_TOKEN_SYMBOLS_COLOR,
+                                                filterMintAddresses: v,
+                                                mintAddressesColor: account.settings?.filters?.mintAddressesColor ?? DEFAULT_MINT_ADDRESSES_COLOR,
+                                                keywords: account.settings?.filters?.keywords ?? [],
+                                              })}
+                                            />
+                                          </div>
                                         </div>
                                         <KeywordInput
                                           keywords={account.settings?.filters?.keywords ?? groupSettings.filters?.keywords ?? []}
                                           onChange={(v) => updateAccountFilters(selectedGroupId, account.id, {
                                             ...account.settings?.filters,
                                             filterTokenSymbols: account.settings?.filters?.filterTokenSymbols ?? false,
+                                            tokenSymbolsColor: account.settings?.filters?.tokenSymbolsColor ?? DEFAULT_TOKEN_SYMBOLS_COLOR,
                                             filterMintAddresses: account.settings?.filters?.filterMintAddresses ?? false,
+                                            mintAddressesColor: account.settings?.filters?.mintAddressesColor ?? DEFAULT_MINT_ADDRESSES_COLOR,
                                             keywords: v,
                                           })}
                                         />
@@ -1214,16 +1298,33 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                           </p>
                           <p className="text-xs max-sm:text-sm text-kol-text-muted mt-0.5">Highlight tweets with $TOKEN mentions</p>
                         </div>
-                        <ToggleSwitch
-                          enabled={selectedGroup.settings.filters?.filterTokenSymbols ?? false}
-                          onChange={(v) => updateGroupFilters(selectedGroupId, {
-                            ...selectedGroup.settings.filters,
-                            filterTokenSymbols: v,
-                            filterMintAddresses: selectedGroup.settings.filters?.filterMintAddresses ?? false,
-                            keywords: selectedGroup.settings.filters?.keywords ?? [],
-                          })}
-                          disabled={selectedGroup.settings.useGlobalSettings}
-                        />
+                        <div className="flex items-center gap-2">
+                          {(selectedGroup.settings.filters?.filterTokenSymbols ?? false) && !selectedGroup.settings.useGlobalSettings && (
+                            <ColorPicker
+                              currentColor={selectedGroup.settings.filters?.tokenSymbolsColor ?? DEFAULT_TOKEN_SYMBOLS_COLOR}
+                              onSelect={(color) => updateGroupFilters(selectedGroupId, {
+                                ...selectedGroup.settings.filters,
+                                filterTokenSymbols: selectedGroup.settings.filters?.filterTokenSymbols ?? false,
+                                tokenSymbolsColor: color,
+                                filterMintAddresses: selectedGroup.settings.filters?.filterMintAddresses ?? false,
+                                mintAddressesColor: selectedGroup.settings.filters?.mintAddressesColor ?? DEFAULT_MINT_ADDRESSES_COLOR,
+                                keywords: selectedGroup.settings.filters?.keywords ?? [],
+                              })}
+                            />
+                          )}
+                          <ToggleSwitch
+                            enabled={selectedGroup.settings.filters?.filterTokenSymbols ?? false}
+                            onChange={(v) => updateGroupFilters(selectedGroupId, {
+                              ...selectedGroup.settings.filters,
+                              filterTokenSymbols: v,
+                              tokenSymbolsColor: selectedGroup.settings.filters?.tokenSymbolsColor ?? DEFAULT_TOKEN_SYMBOLS_COLOR,
+                              filterMintAddresses: selectedGroup.settings.filters?.filterMintAddresses ?? false,
+                              mintAddressesColor: selectedGroup.settings.filters?.mintAddressesColor ?? DEFAULT_MINT_ADDRESSES_COLOR,
+                              keywords: selectedGroup.settings.filters?.keywords ?? [],
+                            })}
+                            disabled={selectedGroup.settings.useGlobalSettings}
+                          />
+                        </div>
                       </div>
                       <div className="flex items-center justify-between py-1">
                         <div className="flex-1">
@@ -1233,23 +1334,42 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                           </p>
                           <p className="text-xs max-sm:text-sm text-kol-text-muted mt-0.5">Highlight tweets with contract addresses</p>
                         </div>
-                        <ToggleSwitch
-                          enabled={selectedGroup.settings.filters?.filterMintAddresses ?? false}
-                          onChange={(v) => updateGroupFilters(selectedGroupId, {
-                            ...selectedGroup.settings.filters,
-                            filterTokenSymbols: selectedGroup.settings.filters?.filterTokenSymbols ?? false,
-                            filterMintAddresses: v,
-                            keywords: selectedGroup.settings.filters?.keywords ?? [],
-                          })}
-                          disabled={selectedGroup.settings.useGlobalSettings}
-                        />
+                        <div className="flex items-center gap-2">
+                          {(selectedGroup.settings.filters?.filterMintAddresses ?? false) && !selectedGroup.settings.useGlobalSettings && (
+                            <ColorPicker
+                              currentColor={selectedGroup.settings.filters?.mintAddressesColor ?? DEFAULT_MINT_ADDRESSES_COLOR}
+                              onSelect={(color) => updateGroupFilters(selectedGroupId, {
+                                ...selectedGroup.settings.filters,
+                                filterTokenSymbols: selectedGroup.settings.filters?.filterTokenSymbols ?? false,
+                                tokenSymbolsColor: selectedGroup.settings.filters?.tokenSymbolsColor ?? DEFAULT_TOKEN_SYMBOLS_COLOR,
+                                filterMintAddresses: selectedGroup.settings.filters?.filterMintAddresses ?? false,
+                                mintAddressesColor: color,
+                                keywords: selectedGroup.settings.filters?.keywords ?? [],
+                              })}
+                            />
+                          )}
+                          <ToggleSwitch
+                            enabled={selectedGroup.settings.filters?.filterMintAddresses ?? false}
+                            onChange={(v) => updateGroupFilters(selectedGroupId, {
+                              ...selectedGroup.settings.filters,
+                              filterTokenSymbols: selectedGroup.settings.filters?.filterTokenSymbols ?? false,
+                              tokenSymbolsColor: selectedGroup.settings.filters?.tokenSymbolsColor ?? DEFAULT_TOKEN_SYMBOLS_COLOR,
+                              filterMintAddresses: v,
+                              mintAddressesColor: selectedGroup.settings.filters?.mintAddressesColor ?? DEFAULT_MINT_ADDRESSES_COLOR,
+                              keywords: selectedGroup.settings.filters?.keywords ?? [],
+                            })}
+                            disabled={selectedGroup.settings.useGlobalSettings}
+                          />
+                        </div>
                       </div>
                       <KeywordInput
                         keywords={selectedGroup.settings.filters?.keywords ?? []}
                         onChange={(v) => updateGroupFilters(selectedGroupId, {
                           ...selectedGroup.settings.filters,
                           filterTokenSymbols: selectedGroup.settings.filters?.filterTokenSymbols ?? false,
+                          tokenSymbolsColor: selectedGroup.settings.filters?.tokenSymbolsColor ?? DEFAULT_TOKEN_SYMBOLS_COLOR,
                           filterMintAddresses: selectedGroup.settings.filters?.filterMintAddresses ?? false,
+                          mintAddressesColor: selectedGroup.settings.filters?.mintAddressesColor ?? DEFAULT_MINT_ADDRESSES_COLOR,
                           keywords: v,
                         })}
                         disabled={selectedGroup.settings.useGlobalSettings}
