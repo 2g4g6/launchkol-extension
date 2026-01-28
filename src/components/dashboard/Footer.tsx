@@ -3,7 +3,6 @@ import { PLATFORM_OPTIONS } from './FeedSettings/constants'
 interface FooterProps {
   balance: number
   solPrice: number
-  ethPrice?: number
   bnbPrice?: number
   chatUnreadCount?: number
   onWalletClick?: () => void
@@ -82,7 +81,7 @@ function PlatformPill() {
   return (
     <div className="relative rounded-full p-[1px] flex-shrink-0" style={{ background: 'linear-gradient(135deg, rgba(0,220,130,0.4), rgba(168,85,247,0.4), rgba(255,179,71,0.4))' }}>
       <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-kol-surface">
-        {PLATFORM_OPTIONS.map((p) => (
+        {PLATFORM_OPTIONS.slice(0, 3).map((p) => (
           <img key={p.id} src={p.icon} alt={p.label} className="w-4 h-4 rounded-full" />
         ))}
       </div>
@@ -116,7 +115,6 @@ function CryptoTicker({
 export function Footer({
   balance,
   solPrice,
-  ethPrice,
   bnbPrice,
   chatUnreadCount = 0,
   onWalletClick,
@@ -157,14 +155,6 @@ export function Footer({
           label="SOL"
         />
         <div className="hidden lg:flex items-center gap-2">
-          {ethPrice != null && (
-            <CryptoTicker
-              icon="/images/ethLogo.svg"
-              price={ethPrice}
-              color="#497493"
-              label="ETH"
-            />
-          )}
           {bnbPrice != null && (
             <CryptoTicker
               iconElement={<BnbIcon className="w-3.5 h-3.5" />}

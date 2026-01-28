@@ -41,7 +41,6 @@ const NETWORKS: NetworkConfig[] = [
 export function Dashboard({ user, onSignOut }: DashboardProps) {
   const [balance, setBalance] = useState(4.523)
   const [solPrice, setSolPrice] = useState(150)
-  const [ethPrice, setEthPrice] = useState(2450)
   const [bnbPrice, setBnbPrice] = useState(580)
   const [activeTab, setActiveTab] = useState<TabId>('feed')
   const [isDepositModalOpen, setIsDepositModalOpen] = useState(false)
@@ -276,7 +275,6 @@ export function Dashboard({ user, onSignOut }: DashboardProps) {
       <Footer
         balance={balance}
         solPrice={solPrice}
-        ethPrice={ethPrice}
         bnbPrice={bnbPrice}
         chatUnreadCount={3}
       />
