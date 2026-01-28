@@ -1,7 +1,8 @@
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { createPortal } from 'react-dom'
 import { Tooltip } from './Tooltip'
+import { WalletFilterDropdown, SavedWallet } from './WalletFilterDropdown'
 
 // ============================================================================
 // Types
@@ -56,6 +57,8 @@ const SORT_OPTIONS: { id: SortOption; icon: string; label: string }[] = [
   { id: 'volume', icon: 'ri-bar-chart-line', label: 'Volume' },
   { id: 'liquidity', icon: 'ri-drop-line', label: 'Liquidity' },
 ]
+
+const WALLET_FILTER_STORAGE_KEY = 'launchkol_wallet_filter'
 
 // Platform badge colors
 const PLATFORM_COLORS: Record<PlatformType, string> = {
@@ -322,8 +325,11 @@ export function SearchTokensModal({
   const [selectedIndex, setSelectedIndex] = useState(0)
   const [canScrollLeft, setCanScrollLeft] = useState(false)
   const [canScrollRight, setCanScrollRight] = useState(false)
+  const [walletFilterOpen, setWalletFilterOpen] = useState(false)
+  const [savedWallets, setSavedWallets] = useState<SavedWallet[]>([])
   const inputRef = useRef<HTMLInputElement>(null)
   const filterScrollRef = useRef<HTMLDivElement>(null)
+  const walletFilterRef = useRef<HTMLButtonElement>(null)
 
   // Check if filters can scroll
   const checkScrollable = () => {
@@ -345,6 +351,66 @@ export function SearchTokensModal({
       filterScrollRef.current.scrollBy({ left: 100, behavior: 'smooth' })
     }
   }
+
+  // Load wallets from storage on modal open
+  useEffect(() => {
+    if (isOpen) {
+      try {
+        if (typeof chrome !== 'undefined' && chrome.storage?.local) {
+          chrome.storage.local.get(WALLET_FILTER_STORAGE_KEY, (result) => {
+            const stored = result[WALLET_FILTER_STORAGE_KEY]
+            if (Array.isArray(stored)) {
+              setSavedWallets(stored)
+            }
+          })
+        } else {
+          const stored = localStorage.getItem(WALLET_FILTER_STORAGE_KEY)
+          if (stored) setSavedWallets(JSON.parse(stored))
+        }
+      } catch {
+        // ignore storage errors
+      }
+    }
+  }, [isOpen])
+
+  // Persist wallets to storage
+  const persistWallets = useCallback((wallets: SavedWallet[]) => {
+    try {
+      if (typeof chrome !== 'undefined' && chrome.storage?.local) {
+        chrome.storage.local.set({ [WALLET_FILTER_STORAGE_KEY]: wallets })
+      } else {
+        localStorage.setItem(WALLET_FILTER_STORAGE_KEY, JSON.stringify(wallets))
+      }
+    } catch {
+      // ignore storage errors
+    }
+  }, [])
+
+  const handleAddWallet = useCallback((address: string) => {
+    setSavedWallets((prev) => {
+      const next = [...prev, { id: crypto.randomUUID(), address, mode: 'include' as const }]
+      persistWallets(next)
+      return next
+    })
+  }, [persistWallets])
+
+  const handleRemoveWallet = useCallback((id: string) => {
+    setSavedWallets((prev) => {
+      const next = prev.filter((w) => w.id !== id)
+      persistWallets(next)
+      return next
+    })
+  }, [persistWallets])
+
+  const handleToggleMode = useCallback((id: string) => {
+    setSavedWallets((prev) => {
+      const next = prev.map((w) =>
+        w.id === id ? { ...w, mode: w.mode === 'include' ? 'exclude' as const : 'include' as const } : w
+      )
+      persistWallets(next)
+      return next
+    })
+  }, [persistWallets])
 
   useEffect(() => {
     setMounted(true)
@@ -371,10 +437,11 @@ export function SearchTokensModal({
     if (!isOpen) {
       setSearchQuery('')
       setSelectedIndex(0)
+      setWalletFilterOpen(false)
     }
   }, [isOpen])
 
-  // Filter tokens based on search and platform
+  // Filter tokens based on search, platform, and wallet filter
   const filteredTokens = MOCK_TOKENS.filter((token) => {
     const matchesSearch =
       searchQuery === '' ||
@@ -385,7 +452,21 @@ export function SearchTokensModal({
     const matchesPlatform =
       platformFilter === 'all' || token.platform === platformFilter
 
-    return matchesSearch && matchesPlatform
+    // Wallet filter
+    let matchesWallet = true
+    if (savedWallets.length > 0 && token.creatorWallet) {
+      const includeWallets = savedWallets.filter((w) => w.mode === 'include')
+      const excludeWallets = savedWallets.filter((w) => w.mode === 'exclude')
+
+      if (includeWallets.length > 0) {
+        matchesWallet = includeWallets.some((w) => w.address === token.creatorWallet)
+      }
+      if (matchesWallet && excludeWallets.length > 0) {
+        matchesWallet = !excludeWallets.some((w) => w.address === token.creatorWallet)
+      }
+    }
+
+    return matchesSearch && matchesPlatform && matchesWallet
   })
 
   // Handle keyboard navigation
@@ -516,6 +597,27 @@ export function SearchTokensModal({
                       </button>
                     </Tooltip>
                   ))}
+
+                  {/* Wallet Filter Button */}
+                  <div className="w-px h-4 bg-kol-border/50" />
+                  <Tooltip content="Filter by Wallet" position="bottom" delayShow={200}>
+                    <button
+                      ref={walletFilterRef}
+                      onClick={() => setWalletFilterOpen((prev) => !prev)}
+                      className={`
+                        relative h-6 w-6 flex items-center justify-center rounded transition-colors
+                        ${savedWallets.length > 0
+                          ? 'bg-kol-blue/15 text-kol-blue'
+                          : 'text-kol-text-muted hover:bg-kol-surface-elevated'
+                        }
+                      `}
+                    >
+                      <i className="ri-wallet-3-line text-sm" />
+                      {savedWallets.length > 0 && (
+                        <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-kol-blue" />
+                      )}
+                    </button>
+                  </Tooltip>
                 </div>
               </div>
 
@@ -568,6 +670,17 @@ export function SearchTokensModal({
               </div>
             </div>
           </motion.div>
+
+          {/* Wallet Filter Dropdown (portaled alongside modal) */}
+          <WalletFilterDropdown
+            isOpen={walletFilterOpen}
+            onClose={() => setWalletFilterOpen(false)}
+            triggerRef={walletFilterRef}
+            wallets={savedWallets}
+            onAddWallet={handleAddWallet}
+            onRemoveWallet={handleRemoveWallet}
+            onToggleMode={handleToggleMode}
+          />
         </motion.div>
       )}
     </AnimatePresence>
