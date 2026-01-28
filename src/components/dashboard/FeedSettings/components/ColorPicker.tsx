@@ -325,7 +325,7 @@ export function ColorPicker({ currentColor, onSelect }: ColorPickerProps) {
           {/* Hue Slider */}
           <div
             ref={hueRef}
-            className="relative rounded-full cursor-pointer overflow-hidden"
+            className="relative rounded-full cursor-pointer"
             style={{
               height: HUE_HEIGHT,
               background: 'linear-gradient(to right, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000)',
@@ -338,10 +338,12 @@ export function ColorPicker({ currentColor, onSelect }: ColorPickerProps) {
           >
             {/* Hue indicator */}
             <motion.div
-              className="absolute top-1/2 w-3 h-3 rounded-full border-2 border-white shadow-[0_0_4px_rgba(0,0,0,0.5)] pointer-events-none"
+              className="absolute w-1.5 h-5 rounded-sm border-2 border-white shadow-[0_0_4px_rgba(0,0,0,0.5)] pointer-events-none"
               style={{
                 left: `${(hsv.h / 360) * 100}%`,
-                transform: 'translate(-50%, -50%)',
+                top: '50%',
+                marginTop: -10,
+                marginLeft: -3,
                 backgroundColor: hueColor,
               }}
               animate={isDraggingHue ? {} : { scale: 1 }}
