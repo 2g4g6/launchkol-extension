@@ -43,6 +43,7 @@ export function Dashboard({ user, onSignOut }: DashboardProps) {
   const [solPrice, setSolPrice] = useState(150)
   const [ethPrice, setEthPrice] = useState(2450)
   const [btcPrice, setBtcPrice] = useState(62000)
+  const [bnbPrice, setBnbPrice] = useState(580)
   const [activeTab, setActiveTab] = useState<TabId>('feed')
   const [isDepositModalOpen, setIsDepositModalOpen] = useState(false)
   const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false)
@@ -56,6 +57,7 @@ export function Dashboard({ user, onSignOut }: DashboardProps) {
       setSolPrice(prev => prev + (Math.random() - 0.5) * 0.5)
       setEthPrice(prev => prev + (Math.random() - 0.5) * 5)
       setBtcPrice(prev => prev + (Math.random() - 0.5) * 50)
+      setBnbPrice(prev => prev + (Math.random() - 0.5) * 2)
     }, 5000)
     return () => clearInterval(interval)
   }, [])
@@ -278,6 +280,7 @@ export function Dashboard({ user, onSignOut }: DashboardProps) {
         solPrice={solPrice}
         ethPrice={ethPrice}
         btcPrice={btcPrice}
+        bnbPrice={bnbPrice}
         chatUnreadCount={3}
       />
     </motion.div>

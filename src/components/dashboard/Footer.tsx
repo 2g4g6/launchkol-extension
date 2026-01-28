@@ -5,6 +5,7 @@ interface FooterProps {
   solPrice: number
   ethPrice?: number
   btcPrice?: number
+  bnbPrice?: number
   chatUnreadCount?: number
   onWalletClick?: () => void
   onFeesClick?: () => void
@@ -68,30 +69,45 @@ function FooterWalletButton({
   )
 }
 
+function BnbIcon({ className }: { className?: string }) {
+  return (
+    <svg fill="none" viewBox="0 0 18 18" className={className} xmlns="http://www.w3.org/2000/svg">
+      <path d="M3.57583 9L3.58452 12.0945L6.29036 13.6418V15.4535L2.00097 13.0088V8.09508L3.57583 9ZM3.57583 5.90546V7.70873L2 6.80288V4.99961L3.57583 4.09375L5.15939 4.99961L3.57583 5.90546ZM7.42036 4.99961L8.9962 4.09375L10.5797 4.99961L8.9962 5.90546L7.42036 4.99961Z" fill="#F0B90B" />
+      <path d="M4.71436 11.4531V9.64141L6.29019 10.5473V12.3505L4.71436 11.4531ZM7.4202 14.2907L8.99603 15.1966L10.5796 14.2907V16.094L8.99603 16.9998L7.4202 16.094V14.2907ZM12.8396 4.99961L14.4154 4.09375L15.999 4.99961V6.80288L14.4154 7.70873V5.90546L12.8396 4.99961ZM14.4154 12.0945L14.4241 9L15.9999 8.09414V13.0079L11.7106 15.4526V13.6409L14.4154 12.0945Z" fill="#F0B90B" />
+      <path d="M13.2853 11.4543L11.7095 12.3517V10.5484L13.2853 9.64258V11.4543Z" fill="#F0B90B" />
+      <path d="M13.2854 6.54672L13.2941 8.35843L10.5805 9.9057V13.0077L9.00471 13.9052L7.42888 13.0077V9.9057L4.71532 8.35843V6.54672L6.29791 5.64087L8.99506 7.19564L11.7086 5.64087L13.2922 6.54672H13.2854ZM4.71436 3.45312L8.99603 1L13.2854 3.45312L11.7096 4.35898L8.99603 2.80421L6.29019 4.35898L4.71436 3.45312Z" fill="#F0B90B" />
+    </svg>
+  )
+}
+
 function PlatformPill() {
   return (
-    <div className="flex items-center gap-1 px-2 py-0.5 rounded-full border border-kol-border/50 bg-kol-surface/50 flex-shrink-0">
-      <PumpLogo className="w-4 h-4" />
-      <BagsLogo className="w-4 h-4" />
-      <BonkLogo className="w-4 h-4" />
+    <div className="relative rounded-full p-[1px] flex-shrink-0" style={{ background: 'linear-gradient(135deg, rgba(0,220,130,0.4), rgba(168,85,247,0.4), rgba(255,179,71,0.4))' }}>
+      <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-kol-surface">
+        <PumpLogo className="w-4 h-4" />
+        <BagsLogo className="w-4 h-4" />
+        <BonkLogo className="w-4 h-4" />
+      </div>
     </div>
   )
 }
 
 function CryptoTicker({
   icon,
+  iconElement,
   price,
   color,
   label,
 }: {
-  icon: string
+  icon?: string
+  iconElement?: React.ReactNode
   price: number
   color: string
   label: string
 }) {
   return (
     <div className="flex items-center gap-1 flex-shrink-0">
-      <img src={icon} alt={label} className="w-3.5 h-3.5" />
+      {iconElement ?? <img src={icon} alt={label} className="w-3.5 h-3.5" />}
       <span className="text-[12px] font-mono" style={{ color }}>
         ${price.toLocaleString(undefined, { maximumFractionDigits: 2 })}
       </span>
@@ -115,6 +131,7 @@ export function Footer({
   solPrice,
   ethPrice,
   btcPrice,
+  bnbPrice,
   chatUnreadCount = 0,
   onWalletClick,
   onFeesClick,
@@ -177,6 +194,14 @@ export function Footer({
             price={btcPrice}
             color="#F7931A"
             label="BTC"
+          />
+        )}
+        {bnbPrice != null && (
+          <CryptoTicker
+            iconElement={<BnbIcon className="w-3.5 h-3.5" />}
+            price={bnbPrice}
+            color="#F0B90B"
+            label="BNB"
           />
         )}
       </div>
