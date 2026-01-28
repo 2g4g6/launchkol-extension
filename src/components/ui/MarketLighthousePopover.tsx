@@ -80,43 +80,80 @@ const CUSTOM_EASE = [0.16, 1, 0.3, 1] as const
 const POPOVER_WIDTH = 340
 const VIEWPORT_PADDING = 8
 
+const RANK_COLORS: Record<number, { text: string; bg: string }> = {
+  1: { text: 'text-yellow-400', bg: 'bg-yellow-400/10' },
+  2: { text: 'text-gray-300', bg: 'bg-gray-300/10' },
+  3: { text: 'text-amber-600', bg: 'bg-amber-600/10' },
+}
+
 // ============================================================================
 // Helper Components
 // ============================================================================
 
 function ChangeText({ value }: { value: number }) {
   const isPositive = value >= 0
+  const arrow = isPositive ? 'ri-arrow-up-s-fill' : 'ri-arrow-down-s-fill'
   return (
-    <span className={`text-[11px] font-body${isPositive ? 'text-kol-green' : 'text-kol-red'}`}>
-      {isPositive ? '+' : ''}{value}%
+    <span className={`text-[11px] font-mono inline-flex items-center gap-0.5 ${isPositive ? 'text-kol-green' : 'text-kol-red'}`}>
+      <i className={`${arrow} text-[10px]`} />
+      {Math.abs(value)}%
     </span>
   )
 }
 
 function StatCard({ label, value, icon, change }: { label: string; value: string; icon: string; change: number }) {
+  const isPositive = change >= 0
   return (
-    <div className="bg-kol-surface border border-kol-border rounded-lg px-3 py-2 flex-1 min-w-0">
-      <div className="text-[10px] text-kol-text-muted font-body mb-0.5">{label}</div>
+    <motion.div
+      whileHover={{ scale: 1.02 }}
+      transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+      className="relative bg-white/[0.03] border border-white/[0.06] rounded-lg px-3 py-2 flex-1 min-w-0 overflow-hidden"
+    >
+      {/* Top accent line */}
+      <div
+        className="absolute top-0 left-0 right-0 h-[2px]"
+        style={{
+          background: isPositive
+            ? 'linear-gradient(90deg, transparent, #00c46b, transparent)'
+            : 'linear-gradient(90deg, transparent, #ff4d4f, transparent)',
+        }}
+      />
+      <div className="text-[10px] text-kol-text-muted font-body uppercase tracking-wider mb-0.5">{label}</div>
       <div className="flex items-center gap-1.5">
-        <i className={`${icon} text-[12px] text-kol-text-muted`} />
-        <span className="text-[12px] text-white font-bodyfont-medium">{value}</span>
+        <div className={`w-5 h-5 rounded-full flex items-center justify-center ${isPositive ? 'bg-kol-green/10' : 'bg-kol-red/10'}`}>
+          <i className={`${icon} text-[11px] ${isPositive ? 'text-kol-green' : 'text-kol-red'}`} />
+        </div>
+        <span className="text-[14px] text-white font-body font-semibold tabular-nums">{value}</span>
         <ChangeText value={change} />
       </div>
-    </div>
+    </motion.div>
   )
 }
 
-function PlatformBadge({ name, icon, value, change }: { name: string; icon: string; value: string; change: number }) {
-  const isPositive = change >= 0
+function PlatformBadge({ name, icon, value, change, rank }: { name: string; icon: string; value: string; change: number; rank: number }) {
+  const rankStyle = RANK_COLORS[rank] || RANK_COLORS[3]
   return (
-    <div className="flex flex-col items-center gap-0.5 bg-kol-surface border border-kol-border rounded-lg px-2.5 py-1.5 flex-1 min-w-0">
-      <img src={icon} alt={name} className="w-4 h-4 rounded-full" />
-      <span className="text-[11px] text-white font-bodyfont-medium">{value}</span>
-      <span className={`text-[9px] font-body${isPositive ? 'text-kol-green' : 'text-kol-red'}`}>
-        {isPositive ? '+' : ''}{change}%
+    <motion.div
+      whileHover={{ scale: 1.03, y: -1 }}
+      transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+      className="relative flex flex-col items-center gap-0.5 bg-white/[0.03] border border-white/[0.06] rounded-lg px-2.5 py-1.5 flex-1 min-w-0"
+    >
+      {/* Rank indicator */}
+      <span className={`absolute top-1 left-1.5 text-[8px] font-mono font-bold ${rankStyle.text}`}>
+        #{rank}
       </span>
-    </div>
+      <div className={`w-6 h-6 rounded-full flex items-center justify-center border border-white/[0.06] ${rankStyle.bg}`}>
+        <img src={icon} alt={name} className="w-4 h-4 rounded-full" />
+      </div>
+      <span className="text-[9px] text-kol-text-muted font-body">{name}</span>
+      <span className="text-[11px] text-white font-body font-medium">{value}</span>
+      <ChangeText value={change} />
+    </motion.div>
   )
+}
+
+function SectionDivider() {
+  return <div className="h-px bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />
 }
 
 // ============================================================================
@@ -211,100 +248,173 @@ export function MarketLighthousePopover({ children }: { children: React.ReactEle
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
-          <div className="bg-kol-bg border border-kol-border rounded-lg shadow-xl shadow-black/40 overflow-hidden">
+          <div className="glass gradient-border rounded-xl shadow-2xl shadow-black/60 overflow-hidden">
             {/* Header */}
-            <div className="flex items-center justify-between px-3 py-2 border-b border-kol-border">
+            <div
+              className="flex items-center justify-between px-3 py-2 border-b border-white/[0.06] relative"
+              style={{
+                background: 'radial-gradient(ellipse at 30% 50%, rgba(0,123,255,0.06) 0%, transparent 70%)',
+              }}
+            >
               <div className="flex items-center gap-2">
-                <span className="w-[6px] h-[6px] rounded-full bg-kol-green" />
+                <span className="relative w-[6px] h-[6px]">
+                  <span className="absolute inset-0 rounded-full bg-kol-green animate-ping opacity-75" />
+                  <span className="relative block w-full h-full rounded-full bg-kol-green" style={{ boxShadow: '0 0 6px rgba(0,196,107,0.5)' }} />
+                </span>
                 <span className="text-[13px] font-display font-semibold text-white">Market Lighthouse</span>
               </div>
-              <div className="flex items-center gap-0.5 bg-kol-surface rounded p-0.5">
+              <div className="relative flex items-center gap-0.5 bg-white/[0.04] rounded p-0.5">
                 {TIME_FRAMES.map((tf) => (
                   <button
                     key={tf}
                     onClick={() => setTimeFrame(tf)}
-                    className={`px-1.5 py-0.5 rounded text-[10px] font-bodytransition-colors ${
+                    className={`relative z-10 px-1.5 py-0.5 rounded text-[10px] font-body transition-colors ${
                       timeFrame === tf
-                        ? 'bg-kol-blue text-white'
+                        ? 'text-white'
                         : 'text-kol-text-muted hover:text-white'
                     }`}
                   >
-                    {tf}
+                    {timeFrame === tf && (
+                      <motion.div
+                        layoutId="timeframe-slider"
+                        className="absolute inset-0 bg-kol-blue rounded"
+                        transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                      />
+                    )}
+                    <span className="relative z-10">{tf}</span>
                   </button>
                 ))}
               </div>
             </div>
 
             {/* Body */}
-            <div className="p-3 space-y-2.5">
-              {/* Total Trades & Traders */}
-              <div className="flex gap-2">
-                <StatCard
-                  label="Total Trades"
-                  value={data.totalTrades.value}
-                  icon="ri-bar-chart-horizontal-line"
-                  change={data.totalTrades.change}
-                />
-                <StatCard
-                  label="Traders"
-                  value={data.traders.value}
-                  icon="ri-group-line"
-                  change={data.traders.change}
-                />
-              </div>
-
-              {/* 24h Volume */}
-              <div className="bg-kol-surface border border-kol-border rounded-lg px-3 py-2">
-                <div className="flex items-center justify-between mb-1.5">
-                  <span className="text-[10px] text-kol-text-muted font-body">24h Vol</span>
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-[12px] text-white font-bodyfont-medium">{data.volume24h.value}</span>
-                    <ChangeText value={data.volume24h.change} />
-                  </div>
-                </div>
-                <div className="w-full h-[5px] rounded-full overflow-hidden flex">
-                  <div className="bg-kol-green h-full" style={{ width: '55%' }} />
-                  <div className="bg-kol-red h-full" style={{ width: '45%' }} />
-                </div>
-                <div className="flex items-center justify-between mt-1">
-                  <span className="text-[9px] text-kol-green font-mono">{data.volumeBar.left}</span>
-                  <span className="text-[9px] text-kol-red font-mono">{data.volumeBar.right}</span>
-                </div>
-              </div>
-
-              {/* Token Stats */}
-              <div>
-                <div className="flex items-center gap-1.5 mb-1.5">
-                  <i className="ri-coin-line text-[12px] text-kol-text-muted" />
-                  <span className="text-[11px] text-kol-text-muted font-body font-medium">Token Stats</span>
-                </div>
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={timeFrame}
+                initial={{ opacity: 0, y: 4 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -4 }}
+                transition={{ duration: 0.15, ease: CUSTOM_EASE }}
+                className="p-3 space-y-2.5"
+              >
+                {/* Total Trades & Traders */}
                 <div className="flex gap-2">
                   <StatCard
-                    label="Created"
-                    value={data.created.value}
-                    icon="ri-add-circle-line"
-                    change={data.created.change}
+                    label="Total Trades"
+                    value={data.totalTrades.value}
+                    icon="ri-bar-chart-horizontal-line"
+                    change={data.totalTrades.change}
                   />
                   <StatCard
-                    label="Migrations"
-                    value={data.migrations.value}
-                    icon="ri-link-line"
-                    change={data.migrations.change}
+                    label="Traders"
+                    value={data.traders.value}
+                    icon="ri-group-line"
+                    change={data.traders.change}
                   />
                 </div>
-              </div>
 
-              {/* Top Launchpads */}
-              <div>
-                <span className="text-[10px] text-kol-text-muted font-body block mb-1.5">Top Launchpads</span>
-                <div className="flex gap-1.5">
-                  {data.topLaunchpads.map((lp) => (
-                    <PlatformBadge key={lp.name} {...lp} />
-                  ))}
+                <SectionDivider />
+
+                {/* 24h Volume */}
+                <div
+                  className="bg-white/[0.03] border border-white/[0.06] rounded-lg px-3 py-2 relative overflow-hidden"
+                  style={{
+                    background: 'radial-gradient(ellipse at 50% 100%, rgba(0,123,255,0.04) 0%, transparent 70%)',
+                  }}
+                >
+                  <div className="flex items-center justify-between mb-1.5">
+                    <div className="flex items-center gap-1.5">
+                      <div className="w-5 h-5 rounded-full bg-kol-blue/10 flex items-center justify-center">
+                        <i className="ri-funds-line text-[11px] text-kol-blue" />
+                      </div>
+                      <span className="text-[10px] text-kol-text-muted font-body uppercase tracking-wider">24h Vol</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-[14px] text-white font-body font-semibold tabular-nums">{data.volume24h.value}</span>
+                      <ChangeText value={data.volume24h.change} />
+                    </div>
+                  </div>
+                  <div className="w-full h-[8px] rounded-full overflow-hidden flex">
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: '55%' }}
+                      transition={{ duration: 0.6, ease: CUSTOM_EASE }}
+                      className="h-full rounded-l-full"
+                      style={{
+                        background: 'linear-gradient(90deg, #00c46b, #00e67a)',
+                        boxShadow: '0 0 8px rgba(0,196,107,0.3)',
+                      }}
+                    />
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: '45%' }}
+                      transition={{ duration: 0.6, ease: CUSTOM_EASE, delay: 0.1 }}
+                      className="h-full rounded-r-full"
+                      style={{
+                        background: 'linear-gradient(90deg, #ff4d4f, #ff7875)',
+                        boxShadow: '0 0 8px rgba(255,77,79,0.3)',
+                      }}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between mt-1.5">
+                    <div className="flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-kol-green" />
+                      <span className="text-[9px] text-kol-text-muted font-body">Buy</span>
+                      <span className="text-[9px] text-kol-green font-mono">{data.volumeBar.left}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <span className="text-[9px] text-kol-red font-mono">{data.volumeBar.right}</span>
+                      <span className="text-[9px] text-kol-text-muted font-body">Sell</span>
+                      <span className="w-1.5 h-1.5 rounded-full bg-kol-red" />
+                    </div>
+                  </div>
                 </div>
-              </div>
 
-            </div>
+                <SectionDivider />
+
+                {/* Token Stats */}
+                <div>
+                  <div className="flex items-center gap-1.5 mb-1.5">
+                    <div className="w-5 h-5 rounded-full bg-kol-blue/10 flex items-center justify-center">
+                      <i className="ri-coin-line text-[11px] text-kol-blue" />
+                    </div>
+                    <span className="text-[11px] text-kol-text-muted font-body font-medium uppercase tracking-wider">Token Stats</span>
+                  </div>
+                  <div className="flex gap-2">
+                    <StatCard
+                      label="Created"
+                      value={data.created.value}
+                      icon="ri-add-circle-line"
+                      change={data.created.change}
+                    />
+                    <StatCard
+                      label="Migrations"
+                      value={data.migrations.value}
+                      icon="ri-link-line"
+                      change={data.migrations.change}
+                    />
+                  </div>
+                </div>
+
+                <SectionDivider />
+
+                {/* Top Launchpads */}
+                <div>
+                  <div className="flex items-center gap-1.5 mb-1.5">
+                    <div className="w-5 h-5 rounded-full bg-kol-blue/10 flex items-center justify-center">
+                      <i className="ri-rocket-line text-[11px] text-kol-blue" />
+                    </div>
+                    <span className="text-[10px] text-kol-text-muted font-body uppercase tracking-wider">Top Launchpads</span>
+                  </div>
+                  <div className="flex gap-1.5">
+                    {data.topLaunchpads.map((lp, i) => (
+                      <PlatformBadge key={lp.name} {...lp} rank={i + 1} />
+                    ))}
+                  </div>
+                </div>
+
+              </motion.div>
+            </AnimatePresence>
           </div>
         </motion.div>
       )}
