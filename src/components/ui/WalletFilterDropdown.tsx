@@ -1,5 +1,6 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { createPortal } from 'react-dom'
 
 // ============================================================================
 // Types
@@ -51,22 +52,51 @@ export function WalletFilterDropdown({
 }: WalletFilterDropdownProps) {
   const [inputValue, setInputValue] = useState('')
   const [error, setError] = useState('')
+  const [mounted, setMounted] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
-  // Position state
-  const [position, setPosition] = useState({ top: 0, right: 0 })
+  const DROPDOWN_WIDTH = 280
 
-  // Calculate position from trigger
+  // Position state
+  const [position, setPosition] = useState({ top: 0, left: 0 })
+
   useEffect(() => {
-    if (isOpen && triggerRef.current) {
-      const rect = triggerRef.current.getBoundingClientRect()
-      setPosition({
-        top: rect.bottom + 6,
-        right: window.innerWidth - rect.right,
-      })
+    setMounted(true)
+  }, [])
+
+  // Calculate dropdown position - BELOW the trigger, centered horizontally
+  const updatePosition = useCallback(() => {
+    if (!triggerRef.current) return
+
+    const triggerRect = triggerRef.current.getBoundingClientRect()
+
+    // Position BELOW the trigger, centered horizontally
+    let left = triggerRect.left + triggerRect.width / 2 - DROPDOWN_WIDTH / 2
+    const top = triggerRect.bottom + 8
+
+    // Clamp to viewport bounds (8px padding)
+    if (left < 8) {
+      left = 8
+    } else if (left + DROPDOWN_WIDTH > window.innerWidth - 8) {
+      left = window.innerWidth - DROPDOWN_WIDTH - 8
     }
-  }, [isOpen, triggerRef])
+
+    setPosition({ top, left })
+  }, [triggerRef])
+
+  // Update position when open, and on scroll/resize
+  useEffect(() => {
+    if (isOpen) {
+      updatePosition()
+      window.addEventListener('scroll', updatePosition, true)
+      window.addEventListener('resize', updatePosition)
+      return () => {
+        window.removeEventListener('scroll', updatePosition, true)
+        window.removeEventListener('resize', updatePosition)
+      }
+    }
+  }, [isOpen, updatePosition])
 
   // Focus input when opened
   useEffect(() => {
@@ -135,7 +165,9 @@ export function WalletFilterDropdown({
     }
   }
 
-  return (
+  if (!mounted) return null
+
+  const dropdown = (
     <AnimatePresence>
       {isOpen && (
         <motion.div
@@ -145,7 +177,7 @@ export function WalletFilterDropdown({
           exit={{ opacity: 0, y: -4, scale: 0.97 }}
           transition={{ duration: 0.15 }}
           className="fixed z-[10000] w-[280px] rounded-lg border border-kol-border bg-kol-bg shadow-[0_4px_4px_0_rgba(0,0,0,0.30),0_8px_8px_0_rgba(0,0,0,0.45)]"
-          style={{ top: position.top, right: position.right }}
+          style={{ top: position.top, left: position.left }}
         >
           {/* Header */}
           <div className="flex items-center justify-between px-3 pt-3 pb-2">
@@ -237,6 +269,8 @@ export function WalletFilterDropdown({
       )}
     </AnimatePresence>
   )
+
+  return createPortal(dropdown, document.body)
 }
 
 export default WalletFilterDropdown

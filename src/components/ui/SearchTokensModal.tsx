@@ -599,7 +599,6 @@ export function SearchTokensModal({
                   ))}
 
                   {/* Wallet Filter Button */}
-                  <div className="w-px h-4 bg-kol-border/50" />
                   <Tooltip content="Filter by Wallet" position="bottom" delayShow={200}>
                     <button
                       ref={walletFilterRef}
@@ -671,22 +670,25 @@ export function SearchTokensModal({
             </div>
           </motion.div>
 
-          {/* Wallet Filter Dropdown (portaled alongside modal) */}
-          <WalletFilterDropdown
-            isOpen={walletFilterOpen}
-            onClose={() => setWalletFilterOpen(false)}
-            triggerRef={walletFilterRef}
-            wallets={savedWallets}
-            onAddWallet={handleAddWallet}
-            onRemoveWallet={handleRemoveWallet}
-            onToggleMode={handleToggleMode}
-          />
         </motion.div>
       )}
     </AnimatePresence>
   )
 
-  return createPortal(modalContent, document.body)
+  return (
+    <>
+      {createPortal(modalContent, document.body)}
+      <WalletFilterDropdown
+        isOpen={walletFilterOpen}
+        onClose={() => setWalletFilterOpen(false)}
+        triggerRef={walletFilterRef}
+        wallets={savedWallets}
+        onAddWallet={handleAddWallet}
+        onRemoveWallet={handleRemoveWallet}
+        onToggleMode={handleToggleMode}
+      />
+    </>
+  )
 }
 
 export default SearchTokensModal
