@@ -105,14 +105,9 @@ export function Footer({
   onChatClick,
 }: FooterProps) {
   return (
-    <div className="h-[36px] flex-shrink-0 border-t border-kol-border bg-kol-bg/90 backdrop-blur-sm relative z-20 flex items-center justify-between px-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-      {/* Center - platform pill (absolute center) */}
-      <div className="absolute left-1/2 -translate-x-1/2">
-        <PlatformPill />
-      </div>
-
+    <div className="h-[36px] flex-shrink-0 border-t border-kol-border bg-kol-bg/90 backdrop-blur-sm z-20 grid grid-cols-[1fr_auto_1fr] items-center px-2">
       {/* Left section */}
-      <div className="flex items-center gap-1.5 flex-shrink-0">
+      <div className="flex items-center gap-1.5 justify-self-start">
         <FooterIconButton icon="ri-percent-line" label="Fees" onClick={onFeesClick} />
 
         <VerticalDivider />
@@ -143,8 +138,13 @@ export function Footer({
         )}
       </div>
 
+      {/* Center - platform pill */}
+      <div className="justify-self-center">
+        <PlatformPill />
+      </div>
+
       {/* Right section */}
-      <div className="flex items-center gap-1.5 flex-shrink-0">
+      <div className="flex items-center gap-1.5 justify-self-end">
         <FooterIconButton icon="ri-chat-3-line" badge={chatUnreadCount > 0} onClick={onChatClick} />
         <FooterIconButton icon="ri-volume-up-line" />
         <FooterIconButton icon="ri-translate-2" />
