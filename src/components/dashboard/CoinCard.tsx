@@ -469,28 +469,18 @@ export function CoinCard({ coin, index, onView, onDevPanel, onRelaunch }: CoinCa
           </div>
 
           {/* RIGHT: Action Buttons */}
-          <div className="flex items-center gap-2 flex-shrink-0">
-            <button
+          <div className="flex items-center flex-shrink-0">
+            <motion.button
               onClick={(e) => {
                 e.stopPropagation()
                 onDevPanel?.(coin)
               }}
-              className="flex items-center gap-2 px-5 py-3 rounded-md text-[14px] font-medium bg-kol-blue/20 border border-kol-blue/40 text-white hover:bg-kol-blue/30 transition-colors"
+              className="flex items-center justify-center gap-2 px-14 py-4 rounded-tr-xl border-l border-kol-border/40 bg-kol-blue/25 hover:bg-kol-blue/40 text-white text-sm font-semibold transition-all duration-300"
+              whileTap={{ scale: 0.98 }}
             >
-              Manage
+              <span>Manage</span>
               <i className="ri-code-s-slash-line text-[16px]" />
-            </button>
-            <Tooltip content="Relaunch token" position="top">
-              <button
-                onClick={(e) => {
-                  e.stopPropagation()
-                  onRelaunch?.(coin)
-                }}
-                className="flex items-center justify-center w-12 h-12 rounded-md bg-kol-surface-elevated border border-kol-border text-kol-text-muted hover:border-kol-border-hover hover:text-white transition-colors"
-              >
-                <i className="ri-restart-line text-[18px]" />
-              </button>
-            </Tooltip>
+            </motion.button>
           </div>
         </div>
 
