@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import { Header } from './dashboard/Header'
+import { Footer } from './dashboard/Footer'
 import { TrackerFeed } from './dashboard/TrackerFeed'
 import { CoinsPanel } from './dashboard/CoinsPanel'
 import { SocialPostData } from './dashboard/SocialPost'
@@ -39,16 +40,22 @@ const NETWORKS: NetworkConfig[] = [
 
 export function Dashboard({ user, onSignOut }: DashboardProps) {
   const [balance, setBalance] = useState(4.523)
+  const [solPrice, setSolPrice] = useState(150)
+  const [ethPrice, setEthPrice] = useState(2450)
+  const [btcPrice, setBtcPrice] = useState(62000)
   const [activeTab, setActiveTab] = useState<TabId>('feed')
   const [isDepositModalOpen, setIsDepositModalOpen] = useState(false)
   const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false)
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false)
   const [isCoinsOpen, setIsCoinsOpen] = useState(true)
 
-  // Simulated balance fetch
+  // Simulated balance & price fetch
   useEffect(() => {
     const interval = setInterval(() => {
       setBalance(prev => prev + (Math.random() - 0.5) * 0.01)
+      setSolPrice(prev => prev + (Math.random() - 0.5) * 0.5)
+      setEthPrice(prev => prev + (Math.random() - 0.5) * 5)
+      setBtcPrice(prev => prev + (Math.random() - 0.5) * 50)
     }, 5000)
     return () => clearInterval(interval)
   }, [])
@@ -264,6 +271,15 @@ export function Dashboard({ user, onSignOut }: DashboardProps) {
           />
         </div>
       </div>
+
+      {/* Footer Status Bar */}
+      <Footer
+        balance={balance}
+        solPrice={solPrice}
+        ethPrice={ethPrice}
+        btcPrice={btcPrice}
+        chatUnreadCount={3}
+      />
     </motion.div>
   )
 }
