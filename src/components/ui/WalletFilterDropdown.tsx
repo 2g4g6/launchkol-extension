@@ -233,14 +233,16 @@ export function WalletFilterDropdown({
                   </Tooltip>
 
                   {/* Remove */}
-                  <Tooltip content="Remove wallet" position="top" delayShow={200}>
-                    <button
-                      onClick={() => onRemoveWallet(wallet.id)}
-                      className="flex items-center justify-center w-5 h-5 rounded text-kol-text-muted hover:text-kol-red transition-colors opacity-0 group-hover:opacity-100"
-                    >
-                      <i className="ri-close-line text-sm" />
-                    </button>
-                  </Tooltip>
+                  <div className="w-0 overflow-hidden group-hover:w-5 transition-all duration-150">
+                    <Tooltip content="Remove wallet" position="top" delayShow={200}>
+                      <button
+                        onClick={() => onRemoveWallet(wallet.id)}
+                        className="flex items-center justify-center w-5 h-5 rounded text-kol-text-muted hover:text-kol-red transition-colors"
+                      >
+                        <i className="ri-close-line text-sm" />
+                      </button>
+                    </Tooltip>
+                  </div>
                 </div>
               ))
             )}
