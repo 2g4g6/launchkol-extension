@@ -166,9 +166,9 @@ export function Footer({
           <VerticalDivider />
           <PlatformPill />
           <VerticalDivider />
-          <FooterIconButton icon="ri-gas-station-line" />
-          <FooterIconButton icon="ri-notification-3-line" />
-          <FooterIconButton icon="ri-palette-line" />
+          <FooterIconButton icon="ri-volume-up-line" />
+          <FooterIconButton icon="ri-translate-2" />
+          <FooterIconButton icon="ri-settings-3-line" />
           <VerticalDivider />
           <a
             href="https://discord.gg/launchkol"
