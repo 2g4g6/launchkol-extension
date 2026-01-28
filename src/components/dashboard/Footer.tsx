@@ -62,7 +62,7 @@ function FooterWalletButton({
       <i className="ri-wallet-3-line text-[14px] text-kol-text-muted" />
       <span className="text-[12px] text-kol-text-muted font-body">{walletCount}</span>
       <img src="/images/solanaLogoMark.svg" alt="SOL" className="w-3 h-3" />
-      <span className="text-[12px] text-white font-mono">{balance.toFixed(3)}</span>
+      <span className="text-[12px] text-white font-body">{balance.toFixed(3)}</span>
       <i className="ri-arrow-down-s-line text-[12px] text-kol-text-muted" />
     </button>
   )
@@ -107,7 +107,7 @@ function CryptoTicker({
   return (
     <div className="flex items-center gap-1 flex-shrink-0">
       {iconElement ?? <img src={icon} alt={label} className="w-3.5 h-3.5" />}
-      <span className="text-[12px] font-mono" style={{ color }}>
+      <span className="text-[12px] font-body" style={{ color }}>
         ${price.toLocaleString(undefined, { maximumFractionDigits: 2 })}
       </span>
     </div>
