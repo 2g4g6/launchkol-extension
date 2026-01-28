@@ -1,13 +1,9 @@
 import { PLATFORM_OPTIONS } from './FeedSettings/constants'
 
 interface FooterProps {
-  balance: number
-  bnbBalance?: number
   solPrice: number
   bnbPrice?: number
   chatUnreadCount?: number
-  onWalletClick?: () => void
-  onBnbWalletClick?: () => void
   onFeesClick?: () => void
   onChatClick?: () => void
 }
@@ -51,46 +47,6 @@ function RegionDropdown() {
       <i className="ri-global-line text-[12px] text-kol-text-muted" />
       <span className="text-[11px] text-kol-text-muted font-body whitespace-nowrap">GLOBAL</span>
       <i className="ri-arrow-down-s-line text-[10px] text-kol-text-muted" />
-    </button>
-  )
-}
-
-function FooterWalletButton({
-  balance,
-  onClick,
-}: {
-  balance: number
-  onClick?: () => void
-}) {
-  return (
-    <button
-      onClick={onClick}
-      className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-kol-surface border border-kol-border/50 hover:border-kol-blue/30 transition-colors duration-150 flex-shrink-0"
-    >
-      <i className="ri-wallet-3-line text-[14px] text-kol-text-muted" />
-      <img src="/images/solanaLogoMark.svg" alt="SOL" className="w-3 h-3" />
-      <span className="text-[12px] text-white font-body">{balance.toFixed(3)}</span>
-      <i className="ri-arrow-down-s-line text-[12px] text-kol-text-muted" />
-    </button>
-  )
-}
-
-function FooterBnbWalletButton({
-  balance,
-  onClick,
-}: {
-  balance: number
-  onClick?: () => void
-}) {
-  return (
-    <button
-      onClick={onClick}
-      className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-kol-surface border border-kol-border/50 hover:border-kol-blue/30 transition-colors duration-150 flex-shrink-0"
-    >
-      <i className="ri-wallet-3-line text-[14px] text-kol-text-muted" />
-      <BnbIcon className="w-3 h-3" />
-      <span className="text-[12px] text-white font-body">{balance.toFixed(3)}</span>
-      <i className="ri-arrow-down-s-line text-[12px] text-kol-text-muted" />
     </button>
   )
 }
@@ -142,13 +98,9 @@ function CryptoTicker({
 }
 
 export function Footer({
-  balance,
-  bnbBalance = 0,
   solPrice,
   bnbPrice,
   chatUnreadCount = 0,
-  onWalletClick,
-  onBnbWalletClick,
   onFeesClick,
   onChatClick,
 }: FooterProps) {
@@ -179,11 +131,6 @@ export function Footer({
           label="BNB"
         />
       )}
-
-      <VerticalDivider />
-
-      <FooterWalletButton balance={balance} onClick={onWalletClick} />
-      <FooterBnbWalletButton balance={bnbBalance} onClick={onBnbWalletClick} />
 
       {/* Spacer */}
       <div className="flex-1" />

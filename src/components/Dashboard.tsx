@@ -273,7 +273,6 @@ export function Dashboard({ user, onSignOut }: DashboardProps) {
 
       {/* Footer Status Bar */}
       <Footer
-        balance={balance}
         solPrice={solPrice}
         bnbPrice={bnbPrice}
         chatUnreadCount={3}
