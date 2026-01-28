@@ -112,8 +112,11 @@ export function Footer({
         <RegionDropdown />
 
         <span className="w-[6px] h-[6px] rounded-full bg-kol-green flex-shrink-0" />
-        <span className="text-[11px] text-kol-green font-body whitespace-nowrap hidden lg:inline">
+        <span className="text-[11px] text-kol-green font-body whitespace-nowrap lg:hidden">
           Connected
+        </span>
+        <span className="text-[11px] text-kol-green font-body whitespace-nowrap hidden lg:inline">
+          Connection is stable
         </span>
 
         <VerticalDivider />
