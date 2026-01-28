@@ -223,7 +223,7 @@ const MIN_HEIGHT = 150
 const MAX_HEIGHT = 500
 
 // Fixed desktop width
-const DESKTOP_WIDTH = 475
+const DESKTOP_WIDTH = 530
 
 export function CoinsPanel({}: CoinsPanelProps) {
   const [coins] = useState<CoinData[]>(MOCK_COINS)

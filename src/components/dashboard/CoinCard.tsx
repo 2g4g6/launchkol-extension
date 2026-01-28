@@ -361,7 +361,7 @@ function QuickLinks({ coin }: { coin: CoinData }) {
   const platformUrl = platformConfig.urlPattern.replace('{address}', coin.address)
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2 flex-shrink-0">
       {coin.twitterUrl && (
         <Tooltip content={tweetLabel} position="top">
           <a
