@@ -109,10 +109,6 @@ export function Footer({
     <div className="h-[36px] flex-shrink-0 border-t border-kol-border bg-kol-bg/90 backdrop-blur-sm z-20 grid grid-cols-[1fr_auto_1fr] items-center px-2">
       {/* Left section */}
       <div className="flex items-center gap-1.5 justify-self-start">
-        <FooterIconButton icon="ri-percent-line" label="Fees" onClick={onFeesClick} />
-
-        <VerticalDivider />
-
         <RegionDropdown />
 
         <span className="w-[6px] h-[6px] rounded-full bg-kol-green flex-shrink-0" />
@@ -146,6 +142,7 @@ export function Footer({
 
       {/* Right section */}
       <div className="flex items-center gap-0.5 justify-self-end">
+        <ExpandableButton icon="ri-percent-line" label="Fees" variant="subtle" onClick={onFeesClick} />
         <div className="relative">
           <ExpandableButton icon="ri-chat-3-line" label="Chat" variant="subtle" onClick={onChatClick} />
           {chatUnreadCount > 0 && (
