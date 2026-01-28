@@ -475,7 +475,7 @@ export function CoinCard({ coin, index, onView, onDevPanel, onRelaunch }: CoinCa
                 e.stopPropagation()
                 onDevPanel?.(coin)
               }}
-              className="flex items-center justify-center gap-2 px-14 py-4 rounded-r-xl border-l border-kol-border/40 bg-kol-blue/25 hover:bg-kol-blue/40 text-white text-sm font-semibold transition-all duration-300"
+              className="flex items-center justify-center gap-2 px-14 py-4 rounded-tr-xl border-l border-kol-border/40 bg-kol-blue/25 hover:bg-kol-blue/40 text-white text-sm font-semibold transition-all duration-300"
               whileTap={{ scale: 0.98 }}
             >
               <span>Manage</span>
