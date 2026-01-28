@@ -207,7 +207,7 @@ export function WalletFilterDropdown({
                   className="flex items-center gap-2 px-1.5 py-1.5 rounded-md hover:bg-white/[5%] group"
                 >
                   {/* Address */}
-                  <span className="flex-1 text-xs font-mono text-kol-text-muted truncate">
+                  <span className="flex-1 text-xs  text-kol-text-muted truncate">
                     {truncateAddress(wallet.address)}
                   </span>
 
@@ -250,7 +250,7 @@ export function WalletFilterDropdown({
                 }}
                 onKeyDown={handleKeyDown}
                 placeholder="Wallet address..."
-                className="flex-1 h-7 px-2 rounded border border-kol-border bg-kol-surface text-xs text-white font-mono placeholder:text-kol-text-muted/50 focus:outline-none focus:border-kol-blue/50 transition-colors min-w-0"
+                className="flex-1 h-7 px-2 rounded border border-kol-border bg-kol-surface text-xs text-white  placeholder:text-kol-text-muted/50 focus:outline-none focus:border-kol-blue/50 transition-colors min-w-0"
               />
               <button
                 onClick={handleAdd}
