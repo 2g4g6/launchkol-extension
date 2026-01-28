@@ -1,4 +1,5 @@
 import { PLATFORM_OPTIONS } from './FeedSettings/constants'
+import { ExpandableButton } from '../ui/ExpandableButton'
 
 interface FooterProps {
   solPrice: number
@@ -144,38 +145,36 @@ export function Footer({
       </div>
 
       {/* Right section */}
-      <div className="flex items-center gap-1.5 justify-self-end">
-        <FooterIconButton icon="ri-chat-3-line" badge={chatUnreadCount > 0} onClick={onChatClick} />
-        <FooterIconButton icon="ri-volume-up-line" />
-        <FooterIconButton icon="ri-translate-2" />
-        <FooterIconButton icon="ri-palette-line" />
-        <FooterIconButton icon="ri-settings-3-line" />
+      <div className="flex items-center gap-0.5 justify-self-end">
+        <div className="relative">
+          <ExpandableButton icon="ri-chat-3-line" label="Chat" variant="subtle" onClick={onChatClick} />
+          {chatUnreadCount > 0 && (
+            <span className="w-[7px] h-[7px] rounded-full bg-kol-red absolute -top-0.5 -right-0.5 pointer-events-none" />
+          )}
+        </div>
+        <ExpandableButton icon="ri-volume-up-line" label="Sound" variant="subtle" />
+        <ExpandableButton icon="ri-translate-2" label="Language" variant="subtle" />
+        <ExpandableButton icon="ri-palette-line" label="Theme" variant="subtle" />
+        <ExpandableButton icon="ri-settings-3-line" label="Settings" variant="subtle" />
         <VerticalDivider />
-        <a
-          href="https://discord.gg/launchkol"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-kol-text-muted hover:text-white transition-colors duration-150 px-1"
-        >
-          <i className="ri-discord-fill text-[14px]" />
-        </a>
-        <a
-          href="https://x.com/launchkol"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-kol-text-muted hover:text-white transition-colors duration-150 px-1"
-        >
-          <i className="ri-twitter-x-line text-[14px]" />
-        </a>
-        <a
-          href="https://docs.launchkol.com"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-1 text-kol-text-muted hover:text-white transition-colors duration-150 px-1"
-        >
-          <i className="ri-file-text-line text-[14px]" />
-          <span className="text-[12px] font-body whitespace-nowrap">Docs</span>
-        </a>
+        <ExpandableButton
+          icon="ri-discord-fill"
+          label="Discord"
+          variant="subtle"
+          onClick={() => window.open('https://discord.gg/launchkol', '_blank')}
+        />
+        <ExpandableButton
+          icon="ri-twitter-x-line"
+          label="X"
+          variant="subtle"
+          onClick={() => window.open('https://x.com/launchkol', '_blank')}
+        />
+        <ExpandableButton
+          icon="ri-file-text-line"
+          label="Docs"
+          variant="subtle"
+          onClick={() => window.open('https://docs.launchkol.com', '_blank')}
+        />
       </div>
     </div>
   )
