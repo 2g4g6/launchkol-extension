@@ -37,6 +37,7 @@ export function ColorPicker({ currentColor, onSelect }: ColorPickerProps) {
   const gradientRef = useRef<HTMLDivElement>(null)
   const hueRef = useRef<HTMLDivElement>(null)
   const onSelectRef = useRef(onSelect)
+  const hasInitializedRef = useRef(false)
 
   const { recentColors, addRecentColor } = useRecentColors()
 
@@ -50,15 +51,16 @@ export function ColorPicker({ currentColor, onSelect }: ColorPickerProps) {
     onSelectRef.current = onSelect
   }, [onSelect])
 
-  // Initialize HSV from currentColor when opening
+  // Initialize HSV from currentColor when opening (only on first open)
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && !hasInitializedRef.current) {
       const parsed = hexToHsv(currentColor)
       if (parsed) {
         setHsv(parsed)
         setHexInput(currentColor.replace('#', '').toUpperCase())
         setHexInputError(false)
       }
+      hasInitializedRef.current = true
     }
   }, [isOpen, currentColor])
 
@@ -243,6 +245,7 @@ export function ColorPicker({ currentColor, onSelect }: ColorPickerProps) {
   const handleClose = () => {
     const hex = hsvToHex(hsv)
     addRecentColor(hex)
+    hasInitializedRef.current = false  // Reset for next open
     setIsOpen(false)
   }
 
