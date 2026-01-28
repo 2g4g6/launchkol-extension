@@ -168,6 +168,7 @@ export function Footer({
           <VerticalDivider />
           <FooterIconButton icon="ri-volume-up-line" />
           <FooterIconButton icon="ri-translate-2" />
+          <FooterIconButton icon="ri-palette-line" />
           <FooterIconButton icon="ri-settings-3-line" />
           <VerticalDivider />
           <a
