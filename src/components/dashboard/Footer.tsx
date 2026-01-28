@@ -1,5 +1,6 @@
 import { PLATFORM_OPTIONS } from './FeedSettings/constants'
 import { ExpandableButton } from '../ui/ExpandableButton'
+import { MarketLighthousePopover } from '../ui/MarketLighthousePopover'
 
 interface FooterProps {
   solPrice: number
@@ -11,35 +12,6 @@ interface FooterProps {
 
 function VerticalDivider() {
   return <div className="h-[20px] w-[1px] bg-kol-border flex-shrink-0" />
-}
-
-function FooterIconButton({
-  icon,
-  label,
-  badge,
-  onClick,
-}: {
-  icon: string
-  label?: string
-  badge?: boolean
-  onClick?: () => void
-}) {
-  return (
-    <button
-      onClick={onClick}
-      className="relative flex items-center gap-1 px-1.5 py-1 hover:bg-kol-border/40 rounded transition-colors duration-150 flex-shrink-0"
-    >
-      <i className={`${icon} text-[14px] text-kol-text-muted`} />
-      {label && (
-        <span className="text-[12px] text-kol-text-muted font-body whitespace-nowrap">
-          {label}
-        </span>
-      )}
-      {badge && (
-        <span className="w-[7px] h-[7px] rounded-full bg-kol-red absolute -top-0.5 -right-0.5" />
-      )}
-    </button>
-  )
 }
 
 function RegionDropdown() {
@@ -65,7 +37,10 @@ function BnbIcon({ className }: { className?: string }) {
 
 function PlatformPill() {
   return (
-    <div className="relative rounded-full p-[1px] flex-shrink-0" style={{ background: 'linear-gradient(135deg, rgba(0,220,130,0.4), rgba(168,85,247,0.4), rgba(255,179,71,0.4))' }}>
+    <div
+      className="relative rounded-full p-[1px] flex-shrink-0 hover:opacity-80 transition-opacity cursor-default"
+      style={{ background: 'linear-gradient(135deg, rgba(0,220,130,0.4), rgba(168,85,247,0.4), rgba(255,179,71,0.4))' }}
+    >
       <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-kol-surface">
         {PLATFORM_OPTIONS.slice(0, 3).map((p) => (
           <img key={p.id} src={p.icon} alt={p.label} className="w-4 h-4 rounded-full" />
@@ -138,9 +113,11 @@ export function Footer({
         )}
       </div>
 
-      {/* Center - platform pill */}
+      {/* Center - platform pill with hover popover */}
       <div className="justify-self-center">
-        <PlatformPill />
+        <MarketLighthousePopover>
+          <PlatformPill />
+        </MarketLighthousePopover>
       </div>
 
       {/* Right section */}
