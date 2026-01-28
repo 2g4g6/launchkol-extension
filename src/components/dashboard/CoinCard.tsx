@@ -415,7 +415,7 @@ function QuickLinks({ coin }: { coin: CoinData }) {
   )
 }
 
-export function CoinCard({ coin, index, onView, onDevPanel, onRelaunch }: CoinCardProps) {
+export function CoinCard({ coin, index, onView, onDevPanel, onRelaunch: _onRelaunch }: CoinCardProps) {
   return (
     <motion.div
       className="group relative mx-3 my-2"

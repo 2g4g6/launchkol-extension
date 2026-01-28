@@ -209,7 +209,7 @@ function WalletDropdown({
         {/* Wallet icon */}
         <i className="ri-wallet-3-line text-sm text-kol-text-muted relative z-10" />
 
-        {/* Solana Logo */}
+        {/* Solana Logo + Balance */}
         <img
           src="/images/solanaLogoMark.svg"
           alt="SOL"
@@ -217,9 +217,17 @@ function WalletDropdown({
           height={11}
           className="relative z-10"
         />
-
         <span className="relative z-10 text-sm text-white font-bold">
           {balance.toFixed(2)}
+        </span>
+
+        {/* Divider */}
+        <div className="relative z-10 w-px h-4 bg-kol-border/50" />
+
+        {/* BNB Logo + Balance */}
+        <BnbLogo className="relative z-10 w-[14px] h-[14px]" />
+        <span className="relative z-10 text-sm text-white font-bold">
+          {bnbNetwork?.balance.toFixed(2) ?? "0.00"}
         </span>
       </motion.button>
 

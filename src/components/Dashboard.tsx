@@ -53,7 +53,6 @@ export function Dashboard({ user, onSignOut }: DashboardProps) {
     const interval = setInterval(() => {
       setBalance(prev => prev + (Math.random() - 0.5) * 0.01)
       setSolPrice(prev => prev + (Math.random() - 0.5) * 0.5)
-      setEthPrice(prev => prev + (Math.random() - 0.5) * 5)
       setBnbPrice(prev => prev + (Math.random() - 0.5) * 2)
     }, 5000)
     return () => clearInterval(interval)
