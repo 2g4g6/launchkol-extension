@@ -388,7 +388,7 @@ export function SearchTokensModal({
 
   const handleAddWallet = useCallback((address: string) => {
     setSavedWallets((prev) => {
-      const next = [...prev, { id: crypto.randomUUID(), address, mode: 'include' as const }]
+      const next = [...prev, { id: crypto.randomUUID(), address, mode: 'include' as const, enabled: true }]
       persistWallets(next)
       return next
     })
@@ -407,6 +407,22 @@ export function SearchTokensModal({
       const next = prev.map((w) =>
         w.id === id ? { ...w, mode: w.mode === 'include' ? 'exclude' as const : 'include' as const } : w
       )
+      persistWallets(next)
+      return next
+    })
+  }, [persistWallets])
+
+  const handleToggleEnabled = useCallback((id: string) => {
+    setSavedWallets((prev) => {
+      const next = prev.map((w) => w.id === id ? { ...w, enabled: !w.enabled } : w)
+      persistWallets(next)
+      return next
+    })
+  }, [persistWallets])
+
+  const handleSetNickname = useCallback((id: string, nickname: string) => {
+    setSavedWallets((prev) => {
+      const next = prev.map((w) => w.id === id ? { ...w, nickname: nickname || undefined } : w)
       persistWallets(next)
       return next
     })
@@ -452,11 +468,12 @@ export function SearchTokensModal({
     const matchesPlatform =
       platformFilter === 'all' || token.platform === platformFilter
 
-    // Wallet filter
+    // Wallet filter — only consider enabled wallets
     let matchesWallet = true
-    if (savedWallets.length > 0 && token.creatorWallet) {
-      const includeWallets = savedWallets.filter((w) => w.mode === 'include')
-      const excludeWallets = savedWallets.filter((w) => w.mode === 'exclude')
+    const activeWallets = savedWallets.filter((w) => w.enabled)
+    if (activeWallets.length > 0 && token.creatorWallet) {
+      const includeWallets = activeWallets.filter((w) => w.mode === 'include')
+      const excludeWallets = activeWallets.filter((w) => w.mode === 'exclude')
 
       if (includeWallets.length > 0) {
         matchesWallet = includeWallets.some((w) => w.address === token.creatorWallet)
@@ -688,6 +705,8 @@ export function SearchTokensModal({
         onAddWallet={handleAddWallet}
         onRemoveWallet={handleRemoveWallet}
         onToggleMode={handleToggleMode}
+        onToggleEnabled={handleToggleEnabled}
+        onSetNickname={handleSetNickname}
       />
     </>
   )

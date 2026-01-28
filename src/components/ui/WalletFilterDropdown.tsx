@@ -13,6 +13,8 @@ export interface SavedWallet {
   id: string
   address: string
   mode: WalletFilterMode
+  enabled: boolean
+  nickname?: string
 }
 
 export interface WalletFilterDropdownProps {
@@ -23,6 +25,8 @@ export interface WalletFilterDropdownProps {
   onAddWallet: (address: string) => void
   onRemoveWallet: (id: string) => void
   onToggleMode: (id: string) => void
+  onToggleEnabled: (id: string) => void
+  onSetNickname: (id: string, nickname: string) => void
 }
 
 // ============================================================================
@@ -39,6 +43,135 @@ const truncateAddress = (addr: string) => {
 }
 
 // ============================================================================
+// Wallet Row Component
+// ============================================================================
+
+function WalletRow({
+  wallet,
+  onToggleEnabled,
+  onToggleMode,
+  onSetNickname,
+  onRemoveWallet,
+}: {
+  wallet: SavedWallet
+  onToggleEnabled: (id: string) => void
+  onToggleMode: (id: string) => void
+  onSetNickname: (id: string, nickname: string) => void
+  onRemoveWallet: (id: string) => void
+}) {
+  const [editing, setEditing] = useState(false)
+  const [editValue, setEditValue] = useState(wallet.nickname || '')
+  const nicknameInputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    if (editing) {
+      nicknameInputRef.current?.focus()
+    }
+  }, [editing])
+
+  const saveNickname = () => {
+    onSetNickname(wallet.id, editValue.trim())
+    setEditing(false)
+  }
+
+  return (
+    <div
+      className={`flex items-center gap-1.5 px-1.5 py-1.5 rounded-md hover:bg-white/[5%] group transition-opacity ${!wallet.enabled ? 'opacity-40' : ''}`}
+    >
+      {/* Enable/Disable Toggle */}
+      <Tooltip content={wallet.enabled ? 'Disable filter' : 'Enable filter'} position="top" delayShow={200}>
+        <button
+          onClick={() => onToggleEnabled(wallet.id)}
+          className="flex items-center justify-center w-5 h-5 flex-shrink-0 transition-colors"
+        >
+          {wallet.enabled ? (
+            <i className="ri-toggle-fill text-base text-kol-blue" />
+          ) : (
+            <i className="ri-toggle-line text-base text-kol-text-muted" />
+          )}
+        </button>
+      </Tooltip>
+
+      {/* Nickname / Address */}
+      <div className="flex-1 min-w-0">
+        {editing ? (
+          <input
+            ref={nicknameInputRef}
+            type="text"
+            value={editValue}
+            onChange={(e) => setEditValue(e.target.value)}
+            onBlur={saveNickname}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault()
+                saveNickname()
+              }
+              if (e.key === 'Escape') {
+                setEditValue(wallet.nickname || '')
+                setEditing(false)
+              }
+            }}
+            placeholder="Add nickname..."
+            className="w-full h-5 px-1 rounded border border-kol-border bg-kol-surface text-xs text-white placeholder:text-kol-text-muted/50 focus:outline-none focus:border-kol-blue/50 transition-colors"
+          />
+        ) : (
+          <button
+            onClick={() => {
+              setEditValue(wallet.nickname || '')
+              setEditing(true)
+            }}
+            className="text-left w-full truncate"
+          >
+            {wallet.nickname ? (
+              <div className="flex flex-col">
+                <span className="text-xs text-white truncate">{wallet.nickname}</span>
+                <span className="text-[10px] text-kol-text-muted truncate leading-tight">{truncateAddress(wallet.address)}</span>
+              </div>
+            ) : (
+              <span className="text-xs text-kol-text-muted truncate block">
+                {truncateAddress(wallet.address)}
+              </span>
+            )}
+          </button>
+        )}
+      </div>
+
+      {/* Whitelist/Blacklist Toggle */}
+      <Tooltip content={wallet.mode === 'include' ? 'Whitelisted as dev wallet' : 'Blacklisted as dev wallet'} position="top" delayShow={200}>
+        <button
+          onClick={() => onToggleMode(wallet.id)}
+          className="flex items-center gap-1 px-1.5 h-5 rounded transition-colors flex-shrink-0"
+        >
+          {wallet.mode === 'include' ? (
+            <>
+              <i className="ri-checkbox-circle-line text-sm text-kol-green" />
+              <span className="text-[10px] text-kol-green font-medium">Whitelist</span>
+            </>
+          ) : (
+            <>
+              <i className="ri-close-circle-line text-sm text-kol-red" />
+              <span className="text-[10px] text-kol-red font-medium">Blacklist</span>
+            </>
+          )}
+        </button>
+      </Tooltip>
+
+      {/* Remove */}
+      <div className="w-0 overflow-hidden group-hover:w-5 transition-all duration-150">
+        <Tooltip content="Remove wallet" position="top" delayShow={200}>
+          <button
+            onClick={() => onRemoveWallet(wallet.id)}
+            className="flex items-center justify-center w-5 h-5 rounded text-kol-text-muted hover:text-kol-red transition-colors"
+          >
+            <i className="ri-close-line text-sm" />
+          </button>
+        </Tooltip>
+      </div>
+    </div>
+  )
+}
+
+// ============================================================================
 // Main Component
 // ============================================================================
 
@@ -50,6 +183,8 @@ export function WalletFilterDropdown({
   onAddWallet,
   onRemoveWallet,
   onToggleMode,
+  onToggleEnabled,
+  onSetNickname,
 }: WalletFilterDropdownProps) {
   const [inputValue, setInputValue] = useState('')
   const [error, setError] = useState('')
@@ -203,47 +338,14 @@ export function WalletFilterDropdown({
               </div>
             ) : (
               wallets.map((wallet) => (
-                <div
+                <WalletRow
                   key={wallet.id}
-                  className="flex items-center gap-2 px-1.5 py-1.5 rounded-md hover:bg-white/[5%] group"
-                >
-                  {/* Address */}
-                  <span className="flex-1 text-xs  text-kol-text-muted truncate">
-                    {truncateAddress(wallet.address)}
-                  </span>
-
-                  {/* Include/Exclude Toggle */}
-                  <Tooltip content={wallet.mode === 'include' ? 'Click to exclude' : 'Click to include'} position="top" delayShow={200}>
-                    <button
-                      onClick={() => onToggleMode(wallet.id)}
-                      className="flex items-center gap-1 px-1.5 h-5 rounded transition-colors"
-                    >
-                      {wallet.mode === 'include' ? (
-                        <>
-                          <i className="ri-checkbox-circle-line text-sm text-kol-green" />
-                          <span className="text-[10px] text-kol-green font-medium">Include</span>
-                        </>
-                      ) : (
-                        <>
-                          <i className="ri-close-circle-line text-sm text-kol-red" />
-                          <span className="text-[10px] text-kol-red font-medium">Exclude</span>
-                        </>
-                      )}
-                    </button>
-                  </Tooltip>
-
-                  {/* Remove */}
-                  <div className="w-0 overflow-hidden group-hover:w-5 transition-all duration-150">
-                    <Tooltip content="Remove wallet" position="top" delayShow={200}>
-                      <button
-                        onClick={() => onRemoveWallet(wallet.id)}
-                        className="flex items-center justify-center w-5 h-5 rounded text-kol-text-muted hover:text-kol-red transition-colors"
-                      >
-                        <i className="ri-close-line text-sm" />
-                      </button>
-                    </Tooltip>
-                  </div>
-                </div>
+                  wallet={wallet}
+                  onToggleEnabled={onToggleEnabled}
+                  onToggleMode={onToggleMode}
+                  onSetNickname={onSetNickname}
+                  onRemoveWallet={onRemoveWallet}
+                />
               ))
             )}
           </div>
@@ -251,18 +353,21 @@ export function WalletFilterDropdown({
           {/* Add Section */}
           <div className="border-t border-kol-border/50 p-2">
             <div className="flex items-center gap-1.5">
-              <input
-                ref={inputRef}
-                type="text"
-                value={inputValue}
-                onChange={(e) => {
-                  setInputValue(e.target.value)
-                  setError('')
-                }}
-                onKeyDown={handleKeyDown}
-                placeholder="Wallet address..."
-                className="flex-1 h-7 px-2 rounded border border-kol-border bg-kol-surface text-xs text-white  placeholder:text-kol-text-muted/50 focus:outline-none focus:border-kol-blue/50 transition-colors min-w-0"
-              />
+              <div className="relative flex-1 min-w-0">
+                <i className="ri-wallet-3-line absolute left-2 top-1/2 -translate-y-1/2 text-sm text-kol-text-muted/50" />
+                <input
+                  ref={inputRef}
+                  type="text"
+                  value={inputValue}
+                  onChange={(e) => {
+                    setInputValue(e.target.value)
+                    setError('')
+                  }}
+                  onKeyDown={handleKeyDown}
+                  placeholder="Wallet address..."
+                  className="w-full h-7 pl-7 pr-2 rounded border border-kol-border bg-kol-surface text-xs text-white  placeholder:text-kol-text-muted/50 focus:outline-none focus:border-kol-blue/50 transition-colors"
+                />
+              </div>
               <button
                 onClick={handleAdd}
                 disabled={!inputValue.trim()}
