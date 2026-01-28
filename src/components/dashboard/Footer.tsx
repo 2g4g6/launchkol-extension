@@ -113,17 +113,6 @@ function CryptoTicker({
   )
 }
 
-function ConnectionPill() {
-  return (
-    <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-kol-green/10 flex-shrink-0">
-      <span className="w-[6px] h-[6px] rounded-full bg-kol-green" />
-      <span className="text-[11px] text-kol-green font-body whitespace-nowrap">
-        Connection is stable
-      </span>
-    </div>
-  )
-}
-
 export function Footer({
   balance,
   solPrice,
@@ -156,76 +145,66 @@ export function Footer({
         onClick={onChatClick}
       />
 
-      {/* Middle section - lg+ only */}
-      <div className="hidden lg:flex flex-1 items-center justify-center gap-3">
-        <PlatformPill />
-        <VerticalDivider />
+      {/* Spacer */}
+      <div className="flex-1" />
+
+      {/* Right section - prices & platform pill */}
+      <div className="flex items-center gap-2">
         <CryptoTicker
           icon="/images/solanaLogoMark.svg"
           price={solPrice}
           color="#14F195"
           label="SOL"
         />
-        {ethPrice != null && (
-          <CryptoTicker
-            icon="/images/ethLogo.svg"
-            price={ethPrice}
-            color="#497493"
-            label="ETH"
-          />
-        )}
-        {bnbPrice != null && (
-          <CryptoTicker
-            iconElement={<BnbIcon className="w-3.5 h-3.5" />}
-            price={bnbPrice}
-            color="#F0B90B"
-            label="BNB"
-          />
-        )}
-      </div>
-
-      {/* SOL price on mobile only */}
-      <div className="flex lg:hidden items-center ml-auto">
-        <CryptoTicker
-          icon="/images/solanaLogoMark.svg"
-          price={solPrice}
-          color="#14F195"
-          label="SOL"
-        />
-      </div>
-
-      {/* Right section - lg+ only */}
-      <div className="hidden lg:flex items-center gap-1.5 ml-auto">
-        <FooterIconButton icon="ri-gas-station-line" />
-        <ConnectionPill />
-        <VerticalDivider />
-        <FooterIconButton icon="ri-notification-3-line" />
-        <FooterIconButton icon="ri-palette-line" />
-        <VerticalDivider />
-        <a
-          href="https://discord.gg/launchkol"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-kol-text-muted hover:text-white transition-colors duration-150 px-1"
-        >
-          <i className="ri-discord-line text-[14px]" />
-        </a>
-        <a
-          href="https://x.com/launchkol"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-kol-text-muted hover:text-white transition-colors duration-150 px-1"
-        >
-          <i className="ri-twitter-x-line text-[14px]" />
-        </a>
-        <a
-          href="https://docs.launchkol.com"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-kol-text-muted hover:text-white transition-colors duration-150 px-1"
-        >
-          <i className="ri-file-text-line text-[14px]" />
-        </a>
+        <div className="hidden lg:flex items-center gap-2">
+          {ethPrice != null && (
+            <CryptoTicker
+              icon="/images/ethLogo.svg"
+              price={ethPrice}
+              color="#497493"
+              label="ETH"
+            />
+          )}
+          {bnbPrice != null && (
+            <CryptoTicker
+              iconElement={<BnbIcon className="w-3.5 h-3.5" />}
+              price={bnbPrice}
+              color="#F0B90B"
+              label="BNB"
+            />
+          )}
+          <VerticalDivider />
+          <PlatformPill />
+          <VerticalDivider />
+          <FooterIconButton icon="ri-gas-station-line" />
+          <FooterIconButton icon="ri-notification-3-line" />
+          <FooterIconButton icon="ri-palette-line" />
+          <VerticalDivider />
+          <a
+            href="https://discord.gg/launchkol"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-kol-text-muted hover:text-white transition-colors duration-150 px-1"
+          >
+            <i className="ri-discord-line text-[14px]" />
+          </a>
+          <a
+            href="https://x.com/launchkol"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-kol-text-muted hover:text-white transition-colors duration-150 px-1"
+          >
+            <i className="ri-twitter-x-line text-[14px]" />
+          </a>
+          <a
+            href="https://docs.launchkol.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-kol-text-muted hover:text-white transition-colors duration-150 px-1"
+          >
+            <i className="ri-file-text-line text-[14px]" />
+          </a>
+        </div>
       </div>
     </div>
   )
