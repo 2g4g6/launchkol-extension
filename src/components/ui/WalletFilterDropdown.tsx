@@ -115,24 +115,32 @@ function WalletRow({
             className="w-full h-5 px-1 rounded border border-kol-border bg-kol-surface text-xs text-white placeholder:text-kol-text-muted/50 focus:outline-none focus:border-kol-blue/50 transition-colors"
           />
         ) : (
-          <button
-            onClick={() => {
-              setEditValue(wallet.nickname || '')
-              setEditing(true)
-            }}
-            className="text-left w-full truncate"
-          >
-            {wallet.nickname ? (
-              <div className="flex flex-col">
-                <span className="text-xs text-white truncate">{wallet.nickname}</span>
-                <span className="text-[10px] text-kol-text-muted truncate leading-tight">{truncateAddress(wallet.address)}</span>
-              </div>
-            ) : (
-              <span className="text-xs text-kol-text-muted truncate block">
-                {truncateAddress(wallet.address)}
-              </span>
-            )}
-          </button>
+          <Tooltip content="Click to edit nickname" position="top" delayShow={300}>
+            <button
+              onClick={() => {
+                setEditValue(wallet.nickname || '')
+                setEditing(true)
+              }}
+              className="text-left w-full truncate nickname-edit-btn group/nick"
+            >
+              {wallet.nickname ? (
+                <div className="flex flex-col">
+                  <span className="flex items-center gap-1">
+                    <span className="text-xs text-white truncate group-hover/nick:underline group-hover/nick:decoration-kol-text-muted/40 group-hover/nick:underline-offset-2">{wallet.nickname}</span>
+                    <i className="ri-pencil-line text-[10px] text-kol-text-muted opacity-0 group-hover/nick:opacity-100 transition-opacity flex-shrink-0" />
+                  </span>
+                  <span className="text-[10px] text-kol-text-muted truncate leading-tight">{truncateAddress(wallet.address)}</span>
+                </div>
+              ) : (
+                <span className="flex items-center gap-1">
+                  <span className="text-xs text-kol-text-muted truncate group-hover/nick:underline group-hover/nick:decoration-kol-text-muted/40 group-hover/nick:underline-offset-2">
+                    {truncateAddress(wallet.address)}
+                  </span>
+                  <i className="ri-pencil-line text-[10px] text-kol-text-muted opacity-0 group-hover/nick:opacity-100 transition-opacity flex-shrink-0" />
+                </span>
+              )}
+            </button>
+          </Tooltip>
         )}
       </div>
 
