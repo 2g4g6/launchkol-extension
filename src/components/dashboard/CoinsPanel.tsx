@@ -454,7 +454,7 @@ export function CoinsPanel({}: CoinsPanelProps) {
 
       {/* Mobile bottom section (<lg) - resizable height */}
       <div
-        className="lg:hidden border-t border-kol-border/70 bg-kol-bg/80 backdrop-blur-sm relative flex flex-col"
+        className="lg:hidden border-t border-kol-border bg-kol-bg/80 backdrop-blur-sm relative flex flex-col"
         style={{ height: panelHeight }}
       >
         {/* Top resize handle */}
@@ -479,7 +479,7 @@ export function CoinsPanel({}: CoinsPanelProps) {
           />
 
           <div className={`relative flex items-center bg-kol-surface/50 border rounded-xl transition-all duration-300 ${
-            isSearchFocused ? 'border-kol-blue/50' : 'border-kol-border/70'
+            isSearchFocused ? 'border-kol-blue/50' : 'border-kol-border'
           }`}>
             <i className={`ri-search-line absolute left-3.5 text-base transition-colors duration-200 ${
               isSearchFocused ? 'text-kol-blue' : 'text-kol-text-tertiary'
