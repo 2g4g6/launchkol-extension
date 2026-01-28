@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { createPortal } from 'react-dom'
+import { Tooltip } from './Tooltip'
 
 // ============================================================================
 // Types
@@ -212,26 +213,28 @@ export function WalletFilterDropdown({
                   </span>
 
                   {/* Include/Exclude Toggle */}
-                  <button
-                    onClick={() => onToggleMode(wallet.id)}
-                    className="flex items-center justify-center w-5 h-5 rounded transition-colors"
-                    title={wallet.mode === 'include' ? 'Including (click to exclude)' : 'Excluding (click to include)'}
-                  >
-                    {wallet.mode === 'include' ? (
-                      <i className="ri-checkbox-circle-line text-sm text-kol-green" />
-                    ) : (
-                      <i className="ri-close-circle-line text-sm text-kol-red" />
-                    )}
-                  </button>
+                  <Tooltip content={wallet.mode === 'include' ? 'Including (click to exclude)' : 'Excluding (click to include)'} position="top" delayShow={200}>
+                    <button
+                      onClick={() => onToggleMode(wallet.id)}
+                      className="flex items-center justify-center w-5 h-5 rounded transition-colors"
+                    >
+                      {wallet.mode === 'include' ? (
+                        <i className="ri-checkbox-circle-line text-sm text-kol-green" />
+                      ) : (
+                        <i className="ri-close-circle-line text-sm text-kol-red" />
+                      )}
+                    </button>
+                  </Tooltip>
 
                   {/* Remove */}
-                  <button
-                    onClick={() => onRemoveWallet(wallet.id)}
-                    className="flex items-center justify-center w-5 h-5 rounded text-kol-text-muted hover:text-kol-red transition-colors opacity-0 group-hover:opacity-100"
-                    title="Remove wallet"
-                  >
-                    <i className="ri-close-line text-sm" />
-                  </button>
+                  <Tooltip content="Remove wallet" position="top" delayShow={200}>
+                    <button
+                      onClick={() => onRemoveWallet(wallet.id)}
+                      className="flex items-center justify-center w-5 h-5 rounded text-kol-text-muted hover:text-kol-red transition-colors opacity-0 group-hover:opacity-100"
+                    >
+                      <i className="ri-close-line text-sm" />
+                    </button>
+                  </Tooltip>
                 </div>
               ))
             )}
