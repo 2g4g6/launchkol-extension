@@ -105,44 +105,14 @@ export function Footer({
   onChatClick,
 }: FooterProps) {
   return (
-    <div className="h-[36px] flex-shrink-0 border-t border-kol-border bg-kol-bg/90 backdrop-blur-sm relative z-20 flex items-center px-2 gap-1.5 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+    <div className="h-[36px] flex-shrink-0 border-t border-kol-border bg-kol-bg/90 backdrop-blur-sm relative z-20 flex items-center justify-between px-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      {/* Center - platform pill (absolute center) */}
+      <div className="absolute left-1/2 -translate-x-1/2">
+        <PlatformPill />
+      </div>
+
       {/* Left section */}
-      <RegionDropdown />
-
-      <span className="w-[6px] h-[6px] rounded-full bg-kol-green flex-shrink-0" />
-      <span className="text-[11px] text-kol-green font-body whitespace-nowrap hidden lg:inline">
-        Connected
-      </span>
-
-      <VerticalDivider />
-
-      {/* Crypto prices */}
-      <CryptoTicker
-        icon="/images/solanaLogoMark.svg"
-        price={solPrice}
-        color="#14F195"
-        label="SOL"
-      />
-      {bnbPrice != null && (
-        <CryptoTicker
-          iconElement={<BnbIcon className="w-3.5 h-3.5" />}
-          price={bnbPrice}
-          color="#F0B90B"
-          label="BNB"
-        />
-      )}
-
-      {/* Spacer */}
-      <div className="flex-1" />
-
-      {/* Center - platform pill */}
-      <PlatformPill />
-
-      {/* Spacer */}
-      <div className="flex-1" />
-
-      {/* Right section */}
-      <div className="flex items-center gap-1.5">
+      <div className="flex items-center gap-1.5 flex-shrink-0">
         <FooterIconButton icon="ri-percent-line" label="Fees" onClick={onFeesClick} />
         <FooterIconButton
           icon="ri-chat-3-line"
@@ -150,7 +120,37 @@ export function Footer({
           badge={chatUnreadCount > 0}
           onClick={onChatClick}
         />
+
         <VerticalDivider />
+
+        <RegionDropdown />
+
+        <span className="w-[6px] h-[6px] rounded-full bg-kol-green flex-shrink-0" />
+        <span className="text-[11px] text-kol-green font-body whitespace-nowrap hidden lg:inline">
+          Connected
+        </span>
+
+        <VerticalDivider />
+
+        {/* Crypto prices */}
+        <CryptoTicker
+          icon="/images/solanaLogoMark.svg"
+          price={solPrice}
+          color="#14F195"
+          label="SOL"
+        />
+        {bnbPrice != null && (
+          <CryptoTicker
+            iconElement={<BnbIcon className="w-3.5 h-3.5" />}
+            price={bnbPrice}
+            color="#F0B90B"
+            label="BNB"
+          />
+        )}
+      </div>
+
+      {/* Right section */}
+      <div className="flex items-center gap-1.5 flex-shrink-0">
         <FooterIconButton icon="ri-volume-up-line" />
         <FooterIconButton icon="ri-translate-2" />
         <FooterIconButton icon="ri-palette-line" />
