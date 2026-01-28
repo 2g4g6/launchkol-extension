@@ -213,15 +213,21 @@ export function WalletFilterDropdown({
                   </span>
 
                   {/* Include/Exclude Toggle */}
-                  <Tooltip content={wallet.mode === 'include' ? 'Including (click to exclude)' : 'Excluding (click to include)'} position="top" delayShow={200}>
+                  <Tooltip content={wallet.mode === 'include' ? 'Click to exclude' : 'Click to include'} position="top" delayShow={200}>
                     <button
                       onClick={() => onToggleMode(wallet.id)}
-                      className="flex items-center justify-center w-5 h-5 rounded transition-colors"
+                      className="flex items-center gap-1 px-1.5 h-5 rounded transition-colors"
                     >
                       {wallet.mode === 'include' ? (
-                        <i className="ri-checkbox-circle-line text-sm text-kol-green" />
+                        <>
+                          <i className="ri-checkbox-circle-line text-sm text-kol-green" />
+                          <span className="text-[10px] text-kol-green font-medium">Include</span>
+                        </>
                       ) : (
-                        <i className="ri-close-circle-line text-sm text-kol-red" />
+                        <>
+                          <i className="ri-close-circle-line text-sm text-kol-red" />
+                          <span className="text-[10px] text-kol-red font-medium">Exclude</span>
+                        </>
                       )}
                     </button>
                   </Tooltip>
