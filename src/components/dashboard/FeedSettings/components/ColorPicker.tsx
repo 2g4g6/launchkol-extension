@@ -36,6 +36,7 @@ export function ColorPicker({ currentColor, onSelect }: ColorPickerProps) {
   const dropdownRef = useRef<HTMLDivElement>(null)
   const gradientRef = useRef<HTMLDivElement>(null)
   const hueRef = useRef<HTMLDivElement>(null)
+  const onSelectRef = useRef(onSelect)
 
   const { recentColors, addRecentColor } = useRecentColors()
 
@@ -43,6 +44,11 @@ export function ColorPicker({ currentColor, onSelect }: ColorPickerProps) {
   useEffect(() => {
     setMounted(true)
   }, [])
+
+  // Keep onSelectRef updated with the latest callback
+  useEffect(() => {
+    onSelectRef.current = onSelect
+  }, [onSelect])
 
   // Initialize HSV from currentColor when opening
   useEffect(() => {
@@ -124,12 +130,13 @@ export function ColorPicker({ currentColor, onSelect }: ColorPickerProps) {
   }, [isOpen, updatePosition])
 
   // Live update: call onSelect whenever HSV changes
+  // Using ref to avoid re-render loop from onSelect in dependency array
   useEffect(() => {
     if (isOpen) {
       const hex = hsvToHex(hsv)
-      onSelect(hex)
+      onSelectRef.current(hex)
     }
-  }, [hsv, isOpen, onSelect])
+  }, [hsv, isOpen])
 
   // Handle gradient drag
   const handleGradientInteraction = useCallback((clientX: number, clientY: number) => {
