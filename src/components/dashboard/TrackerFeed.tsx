@@ -265,7 +265,7 @@ export function TrackerFeed({ onDeploy }: TrackerFeedProps) {
       >
         {/* Focus glow effect */}
         <div
-          className={`absolute inset-0 rounded-xl transition-opacity duration-500 blur-xl -z-10 ${
+          className={`absolute inset-x-3 top-3 h-11 lg:h-9 rounded-xl transition-opacity duration-500 blur-xl -z-10 ${
             isSearchFocused ? 'opacity-100' : 'opacity-0'
           }`}
           style={{
@@ -276,7 +276,7 @@ export function TrackerFeed({ onDeploy }: TrackerFeedProps) {
         <div className={`relative flex items-center bg-kol-surface/50 border rounded-xl transition-all duration-300 ${
           isSearchFocused ? 'border-kol-blue/50' : 'border-kol-border/50'
         }`}>
-          <i className={`ri-search-line absolute left-3 text-sm transition-colors duration-200 ${
+          <i className={`ri-search-line absolute left-3.5 lg:left-3 text-base lg:text-sm transition-colors duration-200 ${
             isSearchFocused ? 'text-kol-blue' : 'text-kol-text-tertiary'
           }`} />
           <input
@@ -286,11 +286,11 @@ export function TrackerFeed({ onDeploy }: TrackerFeedProps) {
             onChange={(e) => setSearchQuery(e.target.value)}
             onFocus={() => setIsSearchFocused(true)}
             onBlur={() => setIsSearchFocused(false)}
-            className="flex-1 h-9 pl-9 pr-2 bg-transparent border-0 rounded-xl text-sm text-white placeholder:text-kol-text-tertiary font-body focus:outline-none transition-all duration-300"
+            className="flex-1 h-11 lg:h-9 pl-10 lg:pl-9 pr-2 bg-transparent border-0 rounded-xl text-base lg:text-sm text-white placeholder:text-kol-text-tertiary font-body focus:outline-none transition-all duration-300"
           />
 
           {/* Action Buttons */}
-          <div className="flex items-center gap-0.5 pr-2">
+          <div className="flex items-center gap-1 lg:gap-0.5 pr-2">
             {/* Clear search */}
             <AnimatePresence>
               {searchQuery && (
@@ -299,26 +299,26 @@ export function TrackerFeed({ onDeploy }: TrackerFeedProps) {
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.8 }}
                   onClick={() => setSearchQuery('')}
-                  className="w-7 h-7 rounded-lg flex items-center justify-center text-kol-text-muted hover:text-white hover:bg-white/5 transition-colors"
+                  className="w-9 h-9 lg:w-7 lg:h-7 rounded-lg flex items-center justify-center text-kol-text-muted hover:text-white hover:bg-white/5 transition-colors"
                 >
-                  <i className="ri-close-line text-sm" />
+                  <i className="ri-close-line text-base lg:text-sm" />
                 </motion.button>
               )}
             </AnimatePresence>
 
             {/* Divider */}
-            <div className="w-px h-4 bg-kol-border/40 mx-1" />
+            <div className="w-px h-5 lg:h-4 bg-kol-border/40 mx-1" />
 
             {/* Settings Button */}
             <Tooltip content="Feed settings">
               <motion.button
                 onClick={() => setIsSettingsModalOpen(true)}
-                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-kol-text-tertiary hover:text-white hover:bg-white/5 transition-colors"
+                className="flex items-center gap-2 lg:gap-1.5 px-3 lg:px-2.5 py-2 lg:py-1.5 rounded-lg text-kol-text-tertiary hover:text-white hover:bg-white/5 transition-colors"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
-                <i className="ri-settings-3-line text-sm" />
-                <span className="text-xs font-medium">Settings</span>
+                <i className="ri-settings-3-line text-base lg:text-sm" />
+                <span className="text-sm lg:text-xs font-medium">Settings</span>
               </motion.button>
             </Tooltip>
           </div>
