@@ -58,8 +58,8 @@ export function WalletFilterDropdown({
 
   const DROPDOWN_WIDTH = 280
 
-  // Position state
-  const [position, setPosition] = useState({ top: 0, left: 0 })
+  // Position state - null until calculated so we can hide until ready
+  const [position, setPosition] = useState<{ top: number; left: number } | null>(null)
 
   useEffect(() => {
     setMounted(true)
@@ -70,6 +70,9 @@ export function WalletFilterDropdown({
     if (!triggerRef.current) return
 
     const triggerRect = triggerRef.current.getBoundingClientRect()
+
+    // Guard: if trigger hasn't laid out yet, skip
+    if (triggerRect.width === 0 && triggerRect.height === 0) return
 
     // Position BELOW the trigger, centered horizontally
     let left = triggerRect.left + triggerRect.width / 2 - DROPDOWN_WIDTH / 2
@@ -88,13 +91,18 @@ export function WalletFilterDropdown({
   // Update position when open, and on scroll/resize
   useEffect(() => {
     if (isOpen) {
-      updatePosition()
+      // Use rAF to ensure the trigger button has rendered in the DOM
+      requestAnimationFrame(() => {
+        updatePosition()
+      })
       window.addEventListener('scroll', updatePosition, true)
       window.addEventListener('resize', updatePosition)
       return () => {
         window.removeEventListener('scroll', updatePosition, true)
         window.removeEventListener('resize', updatePosition)
       }
+    } else {
+      setPosition(null)
     }
   }, [isOpen, updatePosition])
 
@@ -169,7 +177,7 @@ export function WalletFilterDropdown({
 
   const dropdown = (
     <AnimatePresence>
-      {isOpen && (
+      {isOpen && position && (
         <motion.div
           ref={dropdownRef}
           initial={{ opacity: 0, y: -4, scale: 0.97 }}
