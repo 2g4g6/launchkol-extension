@@ -1,4 +1,4 @@
-import { PumpLogo, BagsLogo, BonkLogo, MayhemLogo, FourMemeLogo } from '../ui/PlatformLogos'
+import { PLATFORM_OPTIONS } from './FeedSettings/constants'
 
 interface FooterProps {
   balance: number
@@ -82,11 +82,9 @@ function PlatformPill() {
   return (
     <div className="relative rounded-full p-[1px] flex-shrink-0" style={{ background: 'linear-gradient(135deg, rgba(0,220,130,0.4), rgba(168,85,247,0.4), rgba(255,179,71,0.4))' }}>
       <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-kol-surface">
-        <PumpLogo className="w-4 h-4" />
-        <BonkLogo className="w-4 h-4" />
-        <BagsLogo className="w-4 h-4" />
-        <MayhemLogo className="w-4 h-4" />
-        <FourMemeLogo className="w-4 h-4" />
+        {PLATFORM_OPTIONS.map((p) => (
+          <img key={p.id} src={p.icon} alt={p.label} className="w-4 h-4 rounded-full" />
+        ))}
       </div>
     </div>
   )
