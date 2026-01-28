@@ -9,7 +9,6 @@ interface FooterProps {
   onWalletClick?: () => void
   onFeesClick?: () => void
   onChatClick?: () => void
-  onLighthouseClick?: () => void
 }
 
 function VerticalDivider() {
@@ -134,7 +133,6 @@ export function Footer({
   onWalletClick,
   onFeesClick,
   onChatClick,
-  onLighthouseClick,
 }: FooterProps) {
   return (
     <div className="h-[36px] flex-shrink-0 border-t border-kol-border bg-kol-bg/90 backdrop-blur-sm relative z-20 flex items-center px-2 gap-1.5 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
@@ -150,7 +148,6 @@ export function Footer({
 
       <VerticalDivider />
 
-      <FooterIconButton icon="ri-settings-3-line" label="Settings" />
       <FooterIconButton icon="ri-percent-line" label="Fees" onClick={onFeesClick} />
       <FooterIconButton
         icon="ri-chat-3-line"
@@ -158,15 +155,6 @@ export function Footer({
         badge={chatUnreadCount > 0}
         onClick={onChatClick}
       />
-
-      <div className="hidden lg:flex items-center gap-1.5">
-        <FooterIconButton icon="ri-share-circle-line" label="Social" />
-        <FooterIconButton
-          icon="ri-lightbulb-line"
-          label="Lighthouse"
-          onClick={onLighthouseClick}
-        />
-      </div>
 
       {/* Middle section - lg+ only */}
       <div className="hidden lg:flex flex-1 items-center justify-center gap-3">
