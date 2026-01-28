@@ -20,7 +20,6 @@ const MOCK_DATA: Record<TimeFrame, {
   created: { value: string; change: number }
   migrations: { value: string; change: number }
   topLaunchpads: { name: string; icon: string; value: string; change: number }[]
-  topProtocols: { name: string; icon: string; value: string; change: number }[]
 }> = {
   '5m': {
     totalTrades: { value: '1.2M', change: -2.31 },
@@ -33,11 +32,6 @@ const MOCK_DATA: Record<TimeFrame, {
       { name: 'Pump.fun', icon: '/images/pump.svg', value: '$33.2M', change: -18.4 },
       { name: 'Bonk.fun', icon: '/images/bonk.svg', value: '$2.2M', change: -25.1 },
       { name: 'Bags', icon: '/images/bags.svg', value: '$1.8M', change: -14.7 },
-    ],
-    topProtocols: [
-      { name: 'Raydium', icon: '/images/raydium.svg', value: '$215M', change: 2.1 },
-      { name: 'Jupiter', icon: '/images/jupiter.svg', value: '$40.5M', change: -0.3 },
-      { name: 'Orca', icon: '/images/orca.svg', value: '$21.4M', change: 11.2 },
     ],
   },
   '1h': {
@@ -52,11 +46,6 @@ const MOCK_DATA: Record<TimeFrame, {
       { name: 'Bonk.fun', icon: '/images/bonk.svg', value: '$6.6M', change: -28.7 },
       { name: 'Bags', icon: '/images/bags.svg', value: '$5.5M', change: -16.2 },
     ],
-    topProtocols: [
-      { name: 'Raydium', icon: '/images/raydium.svg', value: '$645M', change: 2.5 },
-      { name: 'Jupiter', icon: '/images/jupiter.svg', value: '$121M', change: -0.1 },
-      { name: 'Orca', icon: '/images/orca.svg', value: '$64.3M', change: 13.8 },
-    ],
   },
   '6h': {
     totalTrades: { value: '8.9M', change: -5.82 },
@@ -70,11 +59,6 @@ const MOCK_DATA: Record<TimeFrame, {
       { name: 'Bonk.fun', icon: '/images/bonk.svg', value: '$15.9M', change: -31.4 },
       { name: 'Bags', icon: '/images/bags.svg', value: '$13.4M', change: -15.9 },
     ],
-    topProtocols: [
-      { name: 'Raydium', icon: '/images/raydium.svg', value: '$1.56B', change: 2.9 },
-      { name: 'Jupiter', icon: '/images/jupiter.svg', value: '$294M', change: 0.2 },
-      { name: 'Orca', icon: '/images/orca.svg', value: '$155M', change: 14.1 },
-    ],
   },
   '24h': {
     totalTrades: { value: '14.6M', change: -6.59 },
@@ -87,11 +71,6 @@ const MOCK_DATA: Record<TimeFrame, {
       { name: 'Pump.fun', icon: '/images/pump.svg', value: '$399M', change: -26.3 },
       { name: 'Bonk.fun', icon: '/images/bonk.svg', value: '$26.3M', change: -35.2 },
       { name: 'Bags', icon: '/images/bags.svg', value: '$22.1M', change: -18.3 },
-    ],
-    topProtocols: [
-      { name: 'Raydium', icon: '/images/raydium.svg', value: '$2.58B', change: 3.182 },
-      { name: 'Jupiter', icon: '/images/jupiter.svg', value: '$486M', change: 0.44 },
-      { name: 'Orca', icon: '/images/orca.svg', value: '$257M', change: 15.62 },
     ],
   },
 }
@@ -108,7 +87,7 @@ const VIEWPORT_PADDING = 8
 function ChangeText({ value }: { value: number }) {
   const isPositive = value >= 0
   return (
-    <span className={`text-[11px] font-mono ${isPositive ? 'text-kol-green' : 'text-kol-red'}`}>
+    <span className={`text-[11px] font-body${isPositive ? 'text-kol-green' : 'text-kol-red'}`}>
       {isPositive ? '+' : ''}{value}%
     </span>
   )
@@ -120,7 +99,7 @@ function StatCard({ label, value, icon, change }: { label: string; value: string
       <div className="text-[10px] text-kol-text-muted font-body mb-0.5">{label}</div>
       <div className="flex items-center gap-1.5">
         <i className={`${icon} text-[12px] text-kol-text-muted`} />
-        <span className="text-[12px] text-white font-mono font-medium">{value}</span>
+        <span className="text-[12px] text-white font-bodyfont-medium">{value}</span>
         <ChangeText value={change} />
       </div>
     </div>
@@ -132,8 +111,8 @@ function PlatformBadge({ name, icon, value, change }: { name: string; icon: stri
   return (
     <div className="flex flex-col items-center gap-0.5 bg-kol-surface border border-kol-border rounded-lg px-2.5 py-1.5 flex-1 min-w-0">
       <img src={icon} alt={name} className="w-4 h-4 rounded-full" />
-      <span className="text-[11px] text-white font-mono font-medium">{value}</span>
-      <span className={`text-[9px] font-mono ${isPositive ? 'text-kol-green' : 'text-kol-red'}`}>
+      <span className="text-[11px] text-white font-bodyfont-medium">{value}</span>
+      <span className={`text-[9px] font-body${isPositive ? 'text-kol-green' : 'text-kol-red'}`}>
         {isPositive ? '+' : ''}{change}%
       </span>
     </div>
@@ -244,7 +223,7 @@ export function MarketLighthousePopover({ children }: { children: React.ReactEle
                   <button
                     key={tf}
                     onClick={() => setTimeFrame(tf)}
-                    className={`px-1.5 py-0.5 rounded text-[10px] font-mono transition-colors ${
+                    className={`px-1.5 py-0.5 rounded text-[10px] font-bodytransition-colors ${
                       timeFrame === tf
                         ? 'bg-kol-blue text-white'
                         : 'text-kol-text-muted hover:text-white'
@@ -279,7 +258,7 @@ export function MarketLighthousePopover({ children }: { children: React.ReactEle
                 <div className="flex items-center justify-between mb-1.5">
                   <span className="text-[10px] text-kol-text-muted font-body">24h Vol</span>
                   <div className="flex items-center gap-1.5">
-                    <span className="text-[12px] text-white font-mono font-medium">{data.volume24h.value}</span>
+                    <span className="text-[12px] text-white font-bodyfont-medium">{data.volume24h.value}</span>
                     <ChangeText value={data.volume24h.change} />
                   </div>
                 </div>
@@ -325,15 +304,6 @@ export function MarketLighthousePopover({ children }: { children: React.ReactEle
                 </div>
               </div>
 
-              {/* Top Protocols */}
-              <div>
-                <span className="text-[10px] text-kol-text-muted font-body block mb-1.5">Top Protocols</span>
-                <div className="flex gap-1.5">
-                  {data.topProtocols.map((p) => (
-                    <PlatformBadge key={p.name} {...p} />
-                  ))}
-                </div>
-              </div>
             </div>
           </div>
         </motion.div>
