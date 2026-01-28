@@ -177,7 +177,7 @@ export function Footer({
             rel="noopener noreferrer"
             className="text-kol-text-muted hover:text-white transition-colors duration-150 px-1"
           >
-            <i className="ri-discord-line text-[14px]" />
+            <i className="ri-discord-fill text-[14px]" />
           </a>
           <a
             href="https://x.com/launchkol"
@@ -191,9 +191,10 @@ export function Footer({
             href="https://docs.launchkol.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-kol-text-muted hover:text-white transition-colors duration-150 px-1"
+            className="flex items-center gap-1 text-kol-text-muted hover:text-white transition-colors duration-150 px-1"
           >
             <i className="ri-file-text-line text-[14px]" />
+            <span className="text-[12px] font-body whitespace-nowrap">Docs</span>
           </a>
         </div>
       </div>
