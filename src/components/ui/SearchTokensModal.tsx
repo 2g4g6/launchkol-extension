@@ -623,6 +623,7 @@ export function SearchTokensModal({
 
               {/* Search Input */}
               <div className="flex h-16 items-center gap-2 px-4 border-b border-kol-border/50">
+                <i className="ri-search-line text-xl text-kol-text-muted" />
                 <input
                   ref={inputRef}
                   type="text"
