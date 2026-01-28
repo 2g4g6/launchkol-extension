@@ -1,4 +1,4 @@
-import { PumpLogo, BagsLogo, BonkLogo } from '../ui/PlatformLogos'
+import { PumpLogo, BagsLogo, BonkLogo, MayhemLogo, FourMemeLogo } from '../ui/PlatformLogos'
 
 interface FooterProps {
   balance: number
@@ -83,8 +83,10 @@ function PlatformPill() {
     <div className="relative rounded-full p-[1px] flex-shrink-0" style={{ background: 'linear-gradient(135deg, rgba(0,220,130,0.4), rgba(168,85,247,0.4), rgba(255,179,71,0.4))' }}>
       <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-kol-surface">
         <PumpLogo className="w-4 h-4" />
-        <BagsLogo className="w-4 h-4" />
         <BonkLogo className="w-4 h-4" />
+        <BagsLogo className="w-4 h-4" />
+        <MayhemLogo className="w-4 h-4" />
+        <FourMemeLogo className="w-4 h-4" />
       </div>
     </div>
   )
