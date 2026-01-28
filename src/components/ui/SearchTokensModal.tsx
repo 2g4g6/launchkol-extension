@@ -329,7 +329,7 @@ export function SearchTokensModal({
   const [savedWallets, setSavedWallets] = useState<SavedWallet[]>([])
   const inputRef = useRef<HTMLInputElement>(null)
   const filterScrollRef = useRef<HTMLDivElement>(null)
-  const walletFilterRef = useRef<HTMLButtonElement>(null)
+  const walletFilterRef = useRef<HTMLSpanElement>(null)
 
   // Check if filters can scroll
   const checkScrollable = () => {
@@ -599,24 +599,25 @@ export function SearchTokensModal({
                   ))}
 
                   {/* Wallet Filter Button */}
-                  <Tooltip content="Filter by Wallet" position="bottom" delayShow={200}>
-                    <button
-                      ref={walletFilterRef}
-                      onClick={() => setWalletFilterOpen((prev) => !prev)}
-                      className={`
-                        relative h-6 w-6 flex items-center justify-center rounded transition-colors
-                        ${savedWallets.length > 0
-                          ? 'bg-kol-blue/15 text-kol-blue'
-                          : 'text-kol-text-muted hover:bg-kol-surface-elevated'
-                        }
-                      `}
-                    >
-                      <i className="ri-wallet-3-line text-sm" />
-                      {savedWallets.length > 0 && (
-                        <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-kol-blue" />
-                      )}
-                    </button>
-                  </Tooltip>
+                  <span ref={walletFilterRef}>
+                    <Tooltip content="Filter by Wallet" position="bottom" delayShow={200}>
+                      <button
+                        onClick={() => setWalletFilterOpen((prev) => !prev)}
+                        className={`
+                          relative h-6 w-6 flex items-center justify-center rounded transition-colors
+                          ${savedWallets.length > 0
+                            ? 'bg-kol-blue/15 text-kol-blue'
+                            : 'text-kol-text-muted hover:bg-kol-surface-elevated'
+                          }
+                        `}
+                      >
+                        <i className="ri-wallet-3-line text-sm" />
+                        {savedWallets.length > 0 && (
+                          <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-kol-blue" />
+                        )}
+                      </button>
+                    </Tooltip>
+                  </span>
                 </div>
               </div>
 

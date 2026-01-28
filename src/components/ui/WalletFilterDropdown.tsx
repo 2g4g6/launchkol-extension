@@ -17,7 +17,7 @@ export interface SavedWallet {
 export interface WalletFilterDropdownProps {
   isOpen: boolean
   onClose: () => void
-  triggerRef: React.RefObject<HTMLButtonElement | null>
+  triggerRef: React.RefObject<HTMLElement | null>
   wallets: SavedWallet[]
   onAddWallet: (address: string) => void
   onRemoveWallet: (id: string) => void
