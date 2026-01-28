@@ -2,10 +2,12 @@ import { PLATFORM_OPTIONS } from './FeedSettings/constants'
 
 interface FooterProps {
   balance: number
+  bnbBalance?: number
   solPrice: number
   bnbPrice?: number
   chatUnreadCount?: number
   onWalletClick?: () => void
+  onBnbWalletClick?: () => void
   onFeesClick?: () => void
   onChatClick?: () => void
 }
@@ -43,6 +45,16 @@ function FooterIconButton({
   )
 }
 
+function RegionDropdown() {
+  return (
+    <button className="flex items-center gap-1 px-1.5 py-0.5 hover:bg-kol-border/40 rounded transition-colors duration-150 flex-shrink-0">
+      <i className="ri-global-line text-[12px] text-kol-text-muted" />
+      <span className="text-[11px] text-kol-text-muted font-body whitespace-nowrap">GLOBAL</span>
+      <i className="ri-arrow-down-s-line text-[10px] text-kol-text-muted" />
+    </button>
+  )
+}
+
 function FooterWalletButton({
   walletCount,
   balance,
@@ -60,6 +72,29 @@ function FooterWalletButton({
       <i className="ri-wallet-3-line text-[14px] text-kol-text-muted" />
       <span className="text-[12px] text-kol-text-muted font-body">{walletCount}</span>
       <img src="/images/solanaLogoMark.svg" alt="SOL" className="w-3 h-3" />
+      <span className="text-[12px] text-white font-body">{balance.toFixed(3)}</span>
+      <i className="ri-arrow-down-s-line text-[12px] text-kol-text-muted" />
+    </button>
+  )
+}
+
+function FooterBnbWalletButton({
+  walletCount,
+  balance,
+  onClick,
+}: {
+  walletCount: number
+  balance: number
+  onClick?: () => void
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-kol-surface border border-kol-border/50 hover:border-kol-blue/30 transition-colors duration-150 flex-shrink-0"
+    >
+      <i className="ri-wallet-3-line text-[14px] text-kol-text-muted" />
+      <span className="text-[12px] text-kol-text-muted font-body">{walletCount}</span>
+      <BnbIcon className="w-3 h-3" />
       <span className="text-[12px] text-white font-body">{balance.toFixed(3)}</span>
       <i className="ri-arrow-down-s-line text-[12px] text-kol-text-muted" />
     </button>
@@ -114,16 +149,20 @@ function CryptoTicker({
 
 export function Footer({
   balance,
+  bnbBalance = 0,
   solPrice,
   bnbPrice,
   chatUnreadCount = 0,
   onWalletClick,
+  onBnbWalletClick,
   onFeesClick,
   onChatClick,
 }: FooterProps) {
   return (
     <div className="h-[36px] flex-shrink-0 border-t border-kol-border bg-kol-bg/90 backdrop-blur-sm relative z-20 flex items-center px-2 gap-1.5 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
       {/* Left section */}
+      <RegionDropdown />
+
       <span className="w-[6px] h-[6px] rounded-full bg-kol-green flex-shrink-0" />
       <span className="text-[11px] text-kol-green font-body whitespace-nowrap hidden lg:inline">
         Connected
@@ -132,6 +171,7 @@ export function Footer({
       <VerticalDivider />
 
       <FooterWalletButton walletCount={1} balance={balance} onClick={onWalletClick} />
+      <FooterBnbWalletButton walletCount={1} balance={bnbBalance} onClick={onBnbWalletClick} />
 
       <VerticalDivider />
 
