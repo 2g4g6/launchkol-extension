@@ -56,11 +56,9 @@ function RegionDropdown() {
 }
 
 function FooterWalletButton({
-  walletCount,
   balance,
   onClick,
 }: {
-  walletCount: number
   balance: number
   onClick?: () => void
 }) {
@@ -70,7 +68,6 @@ function FooterWalletButton({
       className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-kol-surface border border-kol-border/50 hover:border-kol-blue/30 transition-colors duration-150 flex-shrink-0"
     >
       <i className="ri-wallet-3-line text-[14px] text-kol-text-muted" />
-      <span className="text-[12px] text-kol-text-muted font-body">{walletCount}</span>
       <img src="/images/solanaLogoMark.svg" alt="SOL" className="w-3 h-3" />
       <span className="text-[12px] text-white font-body">{balance.toFixed(3)}</span>
       <i className="ri-arrow-down-s-line text-[12px] text-kol-text-muted" />
@@ -79,11 +76,9 @@ function FooterWalletButton({
 }
 
 function FooterBnbWalletButton({
-  walletCount,
   balance,
   onClick,
 }: {
-  walletCount: number
   balance: number
   onClick?: () => void
 }) {
@@ -93,7 +88,6 @@ function FooterBnbWalletButton({
       className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-kol-surface border border-kol-border/50 hover:border-kol-blue/30 transition-colors duration-150 flex-shrink-0"
     >
       <i className="ri-wallet-3-line text-[14px] text-kol-text-muted" />
-      <span className="text-[12px] text-kol-text-muted font-body">{walletCount}</span>
       <BnbIcon className="w-3 h-3" />
       <span className="text-[12px] text-white font-body">{balance.toFixed(3)}</span>
       <i className="ri-arrow-down-s-line text-[12px] text-kol-text-muted" />
@@ -170,8 +164,8 @@ export function Footer({
 
       <VerticalDivider />
 
-      <FooterWalletButton walletCount={1} balance={balance} onClick={onWalletClick} />
-      <FooterBnbWalletButton walletCount={1} balance={bnbBalance} onClick={onBnbWalletClick} />
+      <FooterWalletButton balance={balance} onClick={onWalletClick} />
+      <FooterBnbWalletButton balance={bnbBalance} onClick={onBnbWalletClick} />
 
       <VerticalDivider />
 
