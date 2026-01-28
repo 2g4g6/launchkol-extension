@@ -164,11 +164,6 @@ export function Footer({
 
       <VerticalDivider />
 
-      <FooterWalletButton balance={balance} onClick={onWalletClick} />
-      <FooterBnbWalletButton balance={bnbBalance} onClick={onBnbWalletClick} />
-
-      <VerticalDivider />
-
       {/* Crypto prices */}
       <CryptoTicker
         icon="/images/solanaLogoMark.svg"
@@ -184,6 +179,11 @@ export function Footer({
           label="BNB"
         />
       )}
+
+      <VerticalDivider />
+
+      <FooterWalletButton balance={balance} onClick={onWalletClick} />
+      <FooterBnbWalletButton balance={bnbBalance} onClick={onBnbWalletClick} />
 
       {/* Spacer */}
       <div className="flex-1" />
