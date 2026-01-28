@@ -479,7 +479,7 @@ export function CoinCard({ coin, index, onView, onDevPanel, onRelaunch }: CoinCa
               whileTap={{ scale: 0.98 }}
             >
               <span>Manage</span>
-              <i className="ri-code-s-slash-line text-[16px]" />
+              <i className="ri-settings-3-line text-[16px]" />
             </motion.button>
           </div>
         </div>
