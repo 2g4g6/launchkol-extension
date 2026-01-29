@@ -287,7 +287,7 @@ interface CoinsPanelProps {
 // Mobile panel height constants
 const DEFAULT_HEIGHT = 300
 const MIN_HEIGHT = 150
-const HEADER_FOOTER_BUFFER = 96 // ~60px header + ~36px footer
+const MAX_HEIGHT = 500
 
 // Fixed desktop width
 const DESKTOP_WIDTH = 530
@@ -357,8 +357,7 @@ export function CoinsPanel({ solPrice }: CoinsPanelProps) {
     const handleMove = (e: MouseEvent | TouchEvent) => {
       const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY
       const delta = startY - clientY
-      const maxHeight = window.innerHeight - HEADER_FOOTER_BUFFER
-      const newHeight = Math.min(maxHeight, Math.max(MIN_HEIGHT, startHeight + delta))
+      const newHeight = Math.min(MAX_HEIGHT, Math.max(MIN_HEIGHT, startHeight + delta))
       setPanelHeight(newHeight)
     }
 
@@ -609,7 +608,7 @@ export function CoinsPanel({ solPrice }: CoinsPanelProps) {
           onTouchStart={handleMobileResizeStart}
           className="absolute -top-2 left-0 right-0 h-4 cursor-row-resize flex items-center justify-center z-10"
         >
-          <div className="w-12 h-1.5 rounded-full bg-kol-border hover:bg-kol-blue/70 transition-colors" />
+          <div className="w-10 h-1 rounded-full bg-kol-border/50 hover:bg-kol-blue/50 transition-colors" />
         </div>
 
         {/* Header: filters + search container - larger on mobile for better touch targets */}
