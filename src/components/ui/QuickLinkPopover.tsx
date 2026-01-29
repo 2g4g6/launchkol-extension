@@ -12,7 +12,6 @@ export interface QuickLinkPopoverProps {
   triggerMode?: 'hover' | 'click'
   showDelay?: number
   hideDelay?: number
-  bare?: boolean
 }
 
 export function QuickLinkPopover({
@@ -22,7 +21,6 @@ export function QuickLinkPopover({
   triggerMode = 'hover',
   showDelay = 300,
   hideDelay = 200,
-  bare = false,
 }: QuickLinkPopoverProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [mounted, setMounted] = useState(false)
@@ -138,11 +136,9 @@ export function QuickLinkPopover({
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
-          {bare ? content : (
-            <div className="bg-kol-bg border border-kol-border rounded-xl shadow-[0_4px_4px_0_rgba(0,0,0,0.30),0_8px_8px_0_rgba(0,0,0,0.45)] overflow-hidden overflow-y-auto" style={{ maxHeight: `calc(100vh - ${VIEWPORT_PADDING * 2}px)` }}>
-              {content}
-            </div>
-          )}
+          <div className="bg-kol-bg border border-kol-border rounded-xl shadow-[0_4px_4px_0_rgba(0,0,0,0.30),0_8px_8px_0_rgba(0,0,0,0.45)] overflow-hidden overflow-y-auto" style={{ maxHeight: `calc(100vh - ${VIEWPORT_PADDING * 2}px)` }}>
+            {content}
+          </div>
         </motion.div>
       )}
     </AnimatePresence>

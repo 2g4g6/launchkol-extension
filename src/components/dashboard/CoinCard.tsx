@@ -424,7 +424,6 @@ function QuickLinks({ coin, onSearchToken, solPrice }: { coin: CoinData; onSearc
         <QuickLinkPopover
           width={coin.sourceTweet ? 356 : 220}
           triggerMode="hover"
-          bare={!!coin.sourceTweet}
           content={
             <SourceTweetPopoverContent
               sourceTweet={coin.sourceTweet}

@@ -251,7 +251,7 @@ export function SocialPost({ post, index, onDeploy, flat }: SocialPostProps) {
 
   return (
     <motion.article
-      className="group relative mx-3 my-2"
+      className={`group relative ${flat ? '' : 'mx-3 my-2'}`}
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{
@@ -261,15 +261,17 @@ export function SocialPost({ post, index, onDeploy, flat }: SocialPostProps) {
       }}
     >
       {/* Hover glow effect */}
-      <div
-        className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl -z-10"
-        style={{
-          background: `radial-gradient(circle at 50% 50%, ${typeColor}15 0%, transparent 70%)`,
-        }}
-      />
+      {!flat && (
+        <div
+          className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl -z-10"
+          style={{
+            background: `radial-gradient(circle at 50% 50%, ${typeColor}15 0%, transparent 70%)`,
+          }}
+        />
+      )}
 
-      {/* Glass card container */}
-      <div className="relative bg-kol-surface/50 backdrop-blur-md border border-kol-border/70 rounded-xl overflow-hidden group-hover:border-kol-border/90 group-hover:bg-kol-surface/60 transition-all duration-300">
+      {/* Card container */}
+      <div className={flat ? "relative overflow-hidden" : "relative bg-kol-surface/50 backdrop-blur-md border border-kol-border/70 rounded-xl overflow-hidden group-hover:border-kol-border/90 group-hover:bg-kol-surface/60 transition-all duration-300"}>
         {/* Header Row - Avatar, Author, Actions, Deploy */}
         <div className="flex items-stretch border-b border-kol-border/40 min-h-[60px]">
           {/* Left Section - Avatar & Author Info */}
