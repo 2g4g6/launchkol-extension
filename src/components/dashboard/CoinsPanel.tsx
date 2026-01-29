@@ -1,7 +1,6 @@
 import { useState, useCallback, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { CoinCard, CoinData } from './CoinCard'
-import { Tooltip } from '../ui/Tooltip'
 import { ExpandableFilterPill } from '../ui/ExpandableFilterPill'
 
 type PlatformType = 'pump' | 'bonk' | 'bags' | 'mayhem' | 'fourmeme'
@@ -354,21 +353,15 @@ export function CoinsPanel({}: CoinsPanelProps) {
       </div>
 
       {/* Sort options */}
-      <div className="flex items-center gap-0.5 flex-shrink-0">
-        <span className="text-[10px] text-kol-text-muted mr-1">Sort</span>
+      <div className="flex items-center gap-1 flex-shrink-0">
         {SORT_OPTIONS.map((option) => (
-          <Tooltip key={option.id} content={option.label} position="bottom">
-            <button
-              onClick={() => setSortBy(option.id)}
-              className={`w-6 h-6 rounded flex items-center justify-center transition-colors ${
-                sortBy === option.id
-                  ? 'bg-kol-blue/15 text-kol-blue'
-                  : 'text-kol-text-muted hover:bg-kol-surface-elevated'
-              }`}
-            >
-              <i className={`${option.icon} text-xs`} />
-            </button>
-          </Tooltip>
+          <ExpandableFilterPill
+            key={option.id}
+            icon={option.icon}
+            label={option.label}
+            active={sortBy === option.id}
+            onClick={() => setSortBy(option.id)}
+          />
         ))}
       </div>
     </div>
