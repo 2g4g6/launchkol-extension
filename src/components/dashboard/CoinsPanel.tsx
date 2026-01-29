@@ -834,18 +834,19 @@ export function CoinsPanel({ solPrice }: CoinsPanelProps) {
       </div>
 
       {/* Mobile bottom section (<lg) - resizable height */}
-      <div
-        className="lg:hidden border-t border-kol-border bg-kol-bg/80 backdrop-blur-sm relative flex flex-col"
-        style={{ height: panelHeight }}
-      >
-        {/* Top resize handle */}
+      <div className="lg:hidden relative flex flex-col">
+        {/* Top resize handle - outside the collapsible area so it stays grabbable */}
         <div
           onMouseDown={handleMobileResizeStart}
           onTouchStart={handleMobileResizeStart}
-          className="absolute -top-2 left-0 right-0 h-4 cursor-row-resize flex items-center justify-center z-10"
+          className="h-4 cursor-row-resize flex items-center justify-center z-10 flex-shrink-0 border-t border-kol-border bg-kol-bg/80 backdrop-blur-sm"
         >
           <div className="w-10 h-1 rounded-full bg-kol-border/50 hover:bg-kol-blue/50 transition-colors" />
         </div>
+        <div
+          className="border-t border-kol-border bg-kol-bg/80 backdrop-blur-sm flex flex-col overflow-hidden"
+          style={{ height: panelHeight }}
+        >
 
         {/* Header: filters + search container - larger on mobile for better touch targets */}
         <div className="px-3 pt-3 pb-2 flex-shrink-0 border-b border-kol-border/30 space-y-2">
@@ -941,6 +942,7 @@ export function CoinsPanel({ solPrice }: CoinsPanelProps) {
         {/* Coins List - vertical scroll */}
         <div className="flex-1 overflow-y-auto pt-1 scrollbar-styled">
           {renderCoinsList()}
+        </div>
         </div>
       </div>
 
