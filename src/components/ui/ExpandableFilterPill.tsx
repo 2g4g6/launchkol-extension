@@ -39,7 +39,7 @@ export function ExpandableFilterPill({
 
   useEffect(() => {
     if (measureRef.current) {
-      setExpandedWidth(measureRef.current.scrollWidth)
+      setExpandedWidth(measureRef.current.scrollWidth + 2)
     }
   }, [label, children])
 
@@ -62,7 +62,7 @@ export function ExpandableFilterPill({
       <div
         ref={measureRef}
         aria-hidden
-        className="h-0 overflow-hidden flex items-center whitespace-nowrap"
+        className="h-0 overflow-hidden flex items-center whitespace-nowrap w-max"
         style={{ paddingLeft: 5, paddingRight: 8, gap: 6 }}
       >
         {iconSrc ? (
