@@ -860,7 +860,7 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
                 onClick={handleHide}
                 className="flex items-center justify-center w-9 h-full text-gray-400 hover:text-white hover:bg-kol-surface/60 transition-all duration-200"
               >
-                <i className="ri-close-line text-sm" />
+                <i className="ri-eye-off-line text-sm" />
               </button>
             </Tooltip>
             <div className="w-px h-4 bg-kol-border/40" />
