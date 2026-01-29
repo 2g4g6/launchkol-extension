@@ -1,5 +1,7 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { motion } from 'framer-motion'
+import { Tooltip } from './Tooltip'
+import { useIsSmallScreen } from '../../shared/hooks/useMediaQuery'
 
 export type ExpandableButtonVariant = 'default' | 'primary' | 'subtle'
 export type ExpandableButtonSize = 'default' | 'large'
@@ -74,6 +76,7 @@ const variantStyles: Record<
 }
 
 const springTransition = { type: 'spring' as const, stiffness: 400, damping: 25 }
+const instantTransition = { duration: 0 }
 
 export function ExpandableButton({
   icon,
@@ -85,15 +88,23 @@ export function ExpandableButton({
   className = '',
 }: ExpandableButtonProps) {
   const [isHovered, setIsHovered] = useState(false)
+  const isSmall = useIsSmallScreen()
+
+  // Track breakpoint changes to snap instantly instead of spring-animating
+  const prevSmallRef = useRef(isSmall)
+  const didBreakpointChange = prevSmallRef.current !== isSmall
+  useEffect(() => { prevSmallRef.current = isSmall }, [isSmall])
 
   const styles = variantStyles[variant]
   const config = sizeConfig[size]
   const expandedWidth = getExpandedWidth(label, size)
 
-  const isExpanded = isHovered
+  const isExpanded = !isSmall && isHovered
+  const transition = didBreakpointChange ? instantTransition : springTransition
 
   return (
-    <motion.button
+    <Tooltip content={label} position="top" delayShow={200} disabled={!isSmall}>
+      <motion.button
         className={`
           group relative ${config.height} rounded-lg flex items-center justify-center overflow-hidden
           border border-transparent
@@ -110,7 +121,7 @@ export function ExpandableButton({
             ? (variant === 'primary' ? 'rgba(0, 123, 255, 0.4)' : 'rgba(255, 255, 255, 0.1)')
             : (variant === 'primary' ? 'rgba(0, 123, 255, 0.2)' : 'transparent'),
         }}
-        transition={springTransition}
+        transition={transition}
         onMouseEnter={() => !disabled && setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         onFocus={() => !disabled && setIsHovered(true)}
@@ -141,7 +152,7 @@ export function ExpandableButton({
               opacity: isExpanded ? 1 : 0,
               width: isExpanded ? 'auto' : 0,
             }}
-            transition={{
+            transition={didBreakpointChange ? instantTransition : {
               opacity: { duration: 0.15, delay: isExpanded ? 0.03 : 0 },
               width: springTransition,
             }}
@@ -150,6 +161,7 @@ export function ExpandableButton({
           </motion.span>
         </div>
       </motion.button>
+    </Tooltip>
   )
 }
 
