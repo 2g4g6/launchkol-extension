@@ -522,7 +522,7 @@ interface CoinsPanelProps {
 
 // Mobile panel height constants
 const DEFAULT_HEIGHT = 300
-const MIN_HEIGHT = 150
+const MIN_HEIGHT = 0
 const MAX_HEIGHT = 500
 
 // Fixed desktop width
