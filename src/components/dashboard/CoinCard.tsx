@@ -209,7 +209,7 @@ function TradingStatsBar({
   return (
     <div className="flex max-h-[64px] min-h-[64px] flex-1 flex-row items-center justify-center py-2">
       {/* Bought */}
-      <div className="group/bought flex flex-1 flex-col items-center justify-center gap-1 cursor-default border-r border-kol-border/20">
+      <div className="group/bought flex flex-1 flex-col items-center justify-center gap-1 cursor-default border-r border-kol-border">
         <span className="text-[12px] font-normal leading-4 text-kol-text-muted">Bought</span>
         {showUsd ? (
           <span className="text-[12px] font-medium leading-4 text-kol-green">
@@ -229,7 +229,7 @@ function TradingStatsBar({
       </div>
 
       {/* Sold */}
-      <div className="group/sold flex flex-1 flex-col items-center justify-center gap-1 cursor-default border-r border-kol-border/20">
+      <div className="group/sold flex flex-1 flex-col items-center justify-center gap-1 cursor-default border-r border-kol-border">
         <span className="text-[12px] font-normal leading-4 text-kol-text-muted">Sold</span>
         {showUsd ? (
           <span className="text-[12px] font-medium leading-4 text-kol-red">
@@ -249,7 +249,7 @@ function TradingStatsBar({
       </div>
 
       {/* Holding */}
-      <div className="group/holding flex flex-1 flex-col items-center justify-center gap-1 cursor-default border-r border-kol-border/20">
+      <div className="group/holding flex flex-1 flex-col items-center justify-center gap-1 cursor-default border-r border-kol-border">
         <span className="text-[12px] font-normal leading-4 text-kol-text-muted">Holding</span>
         {showUsd ? (
           <span className="text-[12px] font-medium leading-4 text-kol-text-secondary">
