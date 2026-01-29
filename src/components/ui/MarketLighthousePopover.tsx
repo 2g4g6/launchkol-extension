@@ -93,13 +93,13 @@ function ChangeText({ value }: { value: number }) {
   )
 }
 
-function StatCard({ label, value, icon, change, iconColor }: { label: string; value: string; icon: string; change: number; iconColor?: string }) {
+function StatCard({ label, value, icon, change, accent }: { label: string; value: string; icon: string; change: number; accent?: string }) {
   return (
     <div className="bg-kol-surface border border-kol-border rounded-lg px-3 py-2 flex-1 min-w-0">
       <div className="text-[10px] text-kol-text-muted font-body mb-1">{label}</div>
       <div className="flex items-center gap-1.5">
-        <i className={`${icon} text-[12px] ${iconColor || 'text-kol-text-muted'}`} />
-        <span className="text-[14px] text-white font-body font-semibold tabular-nums">{value}</span>
+        <i className={`${icon} text-[12px] ${accent || 'text-kol-text-muted'}`} />
+        <span className={`text-[14px] font-body font-semibold tabular-nums ${accent || 'text-white'}`}>{value}</span>
         <ChangeText value={change} />
       </div>
     </div>
@@ -291,7 +291,7 @@ export function MarketLighthousePopover({ children }: { children: React.ReactEle
                       value={data.migrations.value}
                       icon="ri-capsule-line"
                       change={data.migrations.change}
-                      iconColor="text-kol-blue"
+                      accent="text-kol-blue"
                     />
                   </div>
                 </div>
