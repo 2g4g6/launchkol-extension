@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { SocialPost, SocialPostData } from './SocialPost'
 import { Tooltip } from '../ui/Tooltip'
 import { FeedSettingsModal } from './FeedSettings'
+import { ExpandableFilterPill } from '../ui/ExpandableFilterPill'
 
 type LaunchPlatform = 'pump' | 'bonk' | 'bags' | 'mayhem' | 'fourmeme'
 
@@ -341,64 +342,41 @@ export function TrackerFeed({ onDeploy }: TrackerFeedProps) {
       {/* Tweet type filter pills */}
       <div className="flex items-center gap-1 overflow-x-auto no-scrollbar">
         {TWEET_TYPE_FILTERS.map((filter) => (
-          <button
+          <ExpandableFilterPill
             key={filter.id}
+            icon={filter.icon}
+            label={filter.label}
+            active={tweetTypeFilters.has(filter.id)}
             onClick={() => toggleTweetTypeFilter(filter.id)}
-            className={`flex items-center gap-1 h-6 px-2 rounded text-xs font-medium border whitespace-nowrap transition-colors ${
-              tweetTypeFilters.has(filter.id)
-                ? 'bg-kol-blue/15 text-kol-blue border-kol-blue/50'
-                : 'bg-kol-surface/45 border-kol-border text-kol-text-muted hover:bg-kol-surface-elevated'
-            }`}
-          >
-            <i className={`${filter.icon} text-[10px]`} />
-            <span>{filter.label}</span>
-          </button>
+          />
         ))}
       </div>
 
       {/* Right controls */}
       <div className="flex items-center gap-1 flex-shrink-0">
         {/* Pause on hover pill */}
-        <button
+        <ExpandableFilterPill
+          icon={pauseOnHover ? 'ri-pause-circle-fill' : 'ri-pause-circle-line'}
+          label={pauseOnHover ? 'Pause on hover' : 'Auto-scroll'}
+          active={pauseOnHover}
           onClick={() => setPauseOnHover(!pauseOnHover)}
-          className={`flex items-center gap-1 h-6 px-2 rounded text-xs font-medium border whitespace-nowrap transition-colors ${
-            pauseOnHover
-              ? 'bg-kol-blue/15 text-kol-blue border-kol-blue/50'
-              : 'bg-kol-surface/45 border-kol-border text-kol-text-muted hover:bg-kol-surface-elevated'
-          }`}
-        >
-          <motion.i
-            className={pauseOnHover ? 'ri-pause-circle-fill text-[10px]' : 'ri-pause-circle-line text-[10px]'}
-            animate={{ scale: [1, 1.2, 1] }}
-            key={String(pauseOnHover)}
-            transition={{ duration: 0.25 }}
-          />
-          <span>{pauseOnHover ? 'Pause on hover' : 'Auto-scroll'}</span>
-        </button>
+        />
 
         {/* Launch platform dropdown */}
         <div className="relative">
-          <button
-            ref={platformButtonRef}
+          <ExpandableFilterPill
+            buttonRef={platformButtonRef}
+            iconSrc={LAUNCH_PLATFORMS.find(p => p.id === launchPlatform)?.icon}
+            label={LAUNCH_PLATFORMS.find(p => p.id === launchPlatform)?.label || ''}
+            active={isPlatformDropdownOpen}
             onClick={() => setIsPlatformDropdownOpen(!isPlatformDropdownOpen)}
-            className={`flex items-center gap-1 h-6 px-2 rounded text-xs font-medium border whitespace-nowrap transition-colors ${
-              isPlatformDropdownOpen
-                ? 'bg-kol-blue/15 text-kol-blue border-kol-blue/50'
-                : 'bg-kol-surface/45 border-kol-border text-kol-text-muted hover:bg-kol-surface-elevated'
-            }`}
           >
-            <img
-              src={LAUNCH_PLATFORMS.find(p => p.id === launchPlatform)?.icon}
-              alt=""
-              className="w-3.5 h-3.5 rounded-sm"
-            />
-            <span>{LAUNCH_PLATFORMS.find(p => p.id === launchPlatform)?.label}</span>
             <motion.i
               className="ri-arrow-down-s-line text-[10px]"
               animate={{ rotate: isPlatformDropdownOpen ? 180 : 0 }}
               transition={{ duration: 0.2 }}
             />
-          </button>
+          </ExpandableFilterPill>
 
           {createPortal(
             <AnimatePresence>

@@ -2,13 +2,14 @@ import { useState, useCallback, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { CoinCard, CoinData } from './CoinCard'
 import { Tooltip } from '../ui/Tooltip'
+import { ExpandableFilterPill } from '../ui/ExpandableFilterPill'
 
 type PlatformType = 'pump' | 'bonk' | 'bags' | 'mayhem' | 'fourmeme'
 type PlatformFilter = 'all' | PlatformType
 type SortOption = 'time' | 'trending' | 'volume' | 'liquidity'
 
-const PLATFORM_FILTERS: { id: PlatformFilter; label: string; icon?: string }[] = [
-  { id: 'all', label: 'All' },
+const PLATFORM_FILTERS: { id: PlatformFilter; label: string; icon?: string; riIcon?: string }[] = [
+  { id: 'all', label: 'All', riIcon: 'ri-list-check' },
   { id: 'pump', label: 'Pump', icon: '/images/pump.svg' },
   { id: 'bonk', label: 'Bonk', icon: '/images/bonk.svg' },
   { id: 'bags', label: 'Bags', icon: '/images/bags.svg' },
@@ -341,20 +342,14 @@ export function CoinsPanel({}: CoinsPanelProps) {
       {/* Platform filter pills */}
       <div className="flex items-center gap-1 overflow-x-auto no-scrollbar">
         {PLATFORM_FILTERS.map((filter) => (
-          <button
+          <ExpandableFilterPill
             key={filter.id}
+            icon={filter.riIcon}
+            iconSrc={filter.icon}
+            label={filter.label}
+            active={platformFilters.has(filter.id)}
             onClick={() => togglePlatformFilter(filter.id)}
-            className={`flex items-center gap-0.5 h-6 px-1.5 rounded text-xs font-medium border whitespace-nowrap transition-colors ${
-              platformFilters.has(filter.id)
-                ? 'bg-kol-blue/15 text-kol-blue border-kol-blue/50'
-                : 'bg-kol-surface/45 border-kol-border text-kol-text-muted hover:bg-kol-surface-elevated'
-            }`}
-          >
-            {filter.icon && (
-              <img src={filter.icon} alt={filter.label} className="w-3 h-3" />
-            )}
-            <span>{filter.label}</span>
-          </button>
+          />
         ))}
       </div>
 
