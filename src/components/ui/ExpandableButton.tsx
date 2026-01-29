@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
+import { Tooltip } from './Tooltip'
+import { useIsSmallScreen } from '../../shared/hooks/useMediaQuery'
 
 export type ExpandableButtonVariant = 'default' | 'primary' | 'subtle'
 export type ExpandableButtonSize = 'default' | 'large'
@@ -82,13 +84,16 @@ export function ExpandableButton({
   disabled = false,
   className = '',
 }: ExpandableButtonProps) {
-  const [isExpanded, setIsExpanded] = useState(false)
+  const [isHovered, setIsHovered] = useState(false)
+  const isSmall = useIsSmallScreen()
 
   const styles = variantStyles[variant]
   const config = sizeConfig[size]
   const expandedWidth = getExpandedWidth(label, size)
 
-  return (
+  const isExpanded = !isSmall && isHovered
+
+  const btn = (
     <motion.button
       className={`
         group relative ${config.height} rounded-lg flex items-center justify-center overflow-hidden
@@ -111,10 +116,10 @@ export function ExpandableButton({
         stiffness: 400,
         damping: 25,
       }}
-      onMouseEnter={() => !disabled && setIsExpanded(true)}
-      onMouseLeave={() => setIsExpanded(false)}
-      onFocus={() => !disabled && setIsExpanded(true)}
-      onBlur={() => setIsExpanded(false)}
+      onMouseEnter={() => !disabled && setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onFocus={() => !disabled && setIsHovered(true)}
+      onBlur={() => setIsHovered(false)}
       onClick={onClick}
       disabled={disabled}
       whileTap={disabled ? undefined : { scale: 0.97 }}
@@ -151,6 +156,16 @@ export function ExpandableButton({
       </div>
     </motion.button>
   )
+
+  if (isSmall) {
+    return (
+      <Tooltip content={label} position="top" delayShow={200}>
+        {btn}
+      </Tooltip>
+    )
+  }
+
+  return btn
 }
 
 export default ExpandableButton

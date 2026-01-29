@@ -1,5 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { motion } from 'framer-motion'
+import { Tooltip } from './Tooltip'
+import { useIsSmallScreen } from '../../shared/hooks/useMediaQuery'
 
 export interface ExpandableFilterPillProps {
   /** Remixicon class name (e.g., "ri-list-check") */
@@ -34,8 +36,9 @@ export function ExpandableFilterPill({
   const [isHovered, setIsHovered] = useState(false)
   const measureRef = useRef<HTMLDivElement>(null)
   const [expandedWidth, setExpandedWidth] = useState(COLLAPSED_SIZE)
+  const isSmall = useIsSmallScreen()
 
-  const expanded = isHovered || active
+  const expanded = !isSmall && (isHovered || active)
 
   useEffect(() => {
     if (measureRef.current) {
@@ -43,7 +46,13 @@ export function ExpandableFilterPill({
     }
   }, [label, children])
 
-  return (
+  const iconContent = iconSrc ? (
+    <img src={iconSrc} alt="" className="w-[18px] h-[18px] rounded-sm" />
+  ) : icon ? (
+    <i className={`${icon} text-sm`} />
+  ) : null
+
+  const pill = (
     <motion.button
       ref={buttonRef}
       className={`h-7 rounded-md text-xs font-medium border overflow-hidden flex-shrink-0 ${
@@ -66,11 +75,7 @@ export function ExpandableFilterPill({
         style={{ paddingLeft: 5, paddingRight: 8, gap: 6 }}
       >
         <div className="flex-shrink-0 flex items-center justify-center w-[18px] h-[18px]">
-          {iconSrc ? (
-            <img src={iconSrc} alt="" className="w-[18px] h-[18px] rounded-sm" />
-          ) : icon ? (
-            <i className={`${icon} text-sm`} />
-          ) : null}
+          {iconContent}
         </div>
         <span className="text-xs font-medium">{label}</span>
         {children}
@@ -82,11 +87,7 @@ export function ExpandableFilterPill({
         style={{ paddingLeft: 5, paddingRight: 8, gap: 6 }}
       >
         <div className="flex-shrink-0 flex items-center justify-center w-[18px] h-[18px]">
-          {iconSrc ? (
-            <img src={iconSrc} alt="" className="w-[18px] h-[18px] rounded-sm" />
-          ) : icon ? (
-            <i className={`${icon} text-sm`} />
-          ) : null}
+          {iconContent}
         </div>
 
         <motion.span
@@ -111,4 +112,14 @@ export function ExpandableFilterPill({
       </div>
     </motion.button>
   )
+
+  if (isSmall) {
+    return (
+      <Tooltip content={label} position="top" delayShow={200}>
+        {pill}
+      </Tooltip>
+    )
+  }
+
+  return pill
 }
