@@ -110,7 +110,7 @@ function RegionDropdown() {
                     {region.label}
                   </span>
                   <span
-                    className="text-[11px] font-mono tabular-nums"
+                    className="text-[11px] font-body tabular-nums"
                     style={{ color: pingColor }}
                   >
                     {region.ping}ms
@@ -185,16 +185,6 @@ export function Footer({
     <div className="h-[36px] flex-shrink-0 border-t border-kol-border bg-kol-bg/90 backdrop-blur-sm z-20 grid grid-cols-[1fr_auto_1fr] items-center px-2">
       {/* Left section */}
       <div className="flex items-center gap-1.5 justify-self-start col-start-1">
-        <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-kol-green/10 border border-kol-green/20 flex-shrink-0">
-          <span className="w-[6px] h-[6px] rounded-full bg-kol-green flex-shrink-0" />
-          <span className="text-[11px] text-kol-green font-body whitespace-nowrap lg:hidden">
-            Connected
-          </span>
-          <span className="text-[11px] text-kol-green font-body whitespace-nowrap hidden lg:inline">
-            Connection is stable
-          </span>
-        </div>
-
         <RegionDropdown />
 
         <div className="hidden sm:block">
@@ -229,6 +219,15 @@ export function Footer({
 
       {/* Right section */}
       <div className="flex items-center gap-0.5 justify-self-end col-start-3">
+        <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-kol-green/10 border border-kol-green/20 flex-shrink-0 mr-1">
+          <span className="w-[6px] h-[6px] rounded-full bg-kol-green flex-shrink-0" />
+          <span className="text-[11px] text-kol-green font-body whitespace-nowrap lg:hidden">
+            Connected
+          </span>
+          <span className="text-[11px] text-kol-green font-body whitespace-nowrap hidden lg:inline">
+            Connection is stable
+          </span>
+        </div>
         <ExpandableButton icon="ri-percent-line" label="Fees" variant="subtle" onClick={onFeesClick} />
         <div className="relative">
           <ExpandableButton icon="ri-chat-3-line" label="Chat" variant="subtle" onClick={onChatClick} />
