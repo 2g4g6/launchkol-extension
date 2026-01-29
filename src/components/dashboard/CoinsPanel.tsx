@@ -610,11 +610,11 @@ export function CoinsPanel({ solPrice }: CoinsPanelProps) {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onFocus={() => setIsSearchFocused(true)}
                 onBlur={() => setIsSearchFocused(false)}
-                className="flex-1 h-11 pl-16 pr-2 bg-transparent border-0 rounded-xl text-base text-white placeholder:text-kol-text-tertiary font-body focus:outline-none transition-all duration-300"
+                className="flex-1 min-w-0 h-11 pl-16 pr-2 bg-transparent border-0 rounded-xl text-base text-white placeholder:text-kol-text-tertiary font-body focus:outline-none transition-all duration-300"
               />
 
               {/* Action Buttons */}
-              <div className="flex items-center gap-1 pr-2">
+              <div className="flex items-center gap-1 pr-2 flex-shrink-0">
                 {/* Clear search */}
                 <AnimatePresence>
                   {searchQuery && (
