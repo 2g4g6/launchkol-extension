@@ -1,6 +1,10 @@
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState } from "react";
+import { motion } from "framer-motion";
 import { Tooltip } from "../ui/Tooltip";
+import { ImageLightbox } from "../ui/ImageLightbox";
+import type { LightboxMedia } from "../ui/ImageLightbox";
+import { formatFollowers, formatTime, formatTimeShort, getInitials } from "../../utils/format";
+import { extractUrls, getDomain, getTruncatedPath } from "../../utils/url";
 
 export interface MediaItem {
   type: "image" | "video";
@@ -82,172 +86,22 @@ interface SocialPostProps {
   post: SocialPostData;
   index: number;
   onDeploy?: (post: SocialPostData) => void;
+  flat?: boolean;
 }
 
-// Format follower count (e.g., 8500000 -> "8.5M")
-function formatFollowers(count: number): string {
-  if (count >= 1000000) {
-    return `${(count / 1000000).toFixed(1)}M`;
-  }
-  if (count >= 1000) {
-    return `${(count / 1000).toFixed(1)}K`;
-  }
-  return count.toString();
-}
-
-// Lightbox media item with type info
-interface LightboxMedia {
-  type: "image" | "video";
-  url: string;
-  thumbnailUrl?: string;
-}
-
-export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
+export function SocialPost({ post, index, onDeploy, flat }: SocialPostProps) {
   const [lightboxMedia, setLightboxMedia] = useState<LightboxMedia[]>([]);
   const [lightboxIndex, setLightboxIndex] = useState(0);
-  const [isZoomed, setIsZoomed] = useState(false);
-
-  // Pan-and-zoom state
-  const [panPosition, setPanPosition] = useState({ x: 0, y: 0 });
-  const [isDragging, setIsDragging] = useState(false);
-  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
-  const [dragMoved, setDragMoved] = useState(false);
-
-  const isLightboxOpen = lightboxMedia.length > 0;
-  const currentMedia = lightboxMedia[lightboxIndex];
-
-  const resetZoomState = () => {
-    setIsZoomed(false);
-    setPanPosition({ x: 0, y: 0 });
-    setIsDragging(false);
-    setDragMoved(false);
-  };
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
 
   const openLightbox = (media: LightboxMedia[], startIndex: number = 0) => {
     setLightboxMedia(media);
     setLightboxIndex(startIndex);
-    resetZoomState();
+    setIsLightboxOpen(true);
   };
 
   const closeLightbox = () => {
-    setLightboxMedia([]);
-    setLightboxIndex(0);
-    resetZoomState();
-  };
-
-  const goToPrevious = () => {
-    setLightboxIndex((prev) =>
-      prev > 0 ? prev - 1 : lightboxMedia.length - 1,
-    );
-    resetZoomState();
-  };
-
-  const goToNext = () => {
-    setLightboxIndex((prev) =>
-      prev < lightboxMedia.length - 1 ? prev + 1 : 0,
-    );
-    resetZoomState();
-  };
-
-  // Zoom click handler - toggles zoom, centers on click position when zooming in
-  const handleZoomClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    e.stopPropagation();
-
-    // If we dragged, don't toggle zoom
-    if (dragMoved) {
-      setDragMoved(false);
-      return;
-    }
-
-    if (!isZoomed) {
-      // Zoom in - calculate pan position to center on click point
-      const rect = e.currentTarget.getBoundingClientRect();
-      const clickX = e.clientX - rect.left - rect.width / 2;
-      const clickY = e.clientY - rect.top - rect.height / 2;
-      // Pan in opposite direction of click offset, scaled for zoom
-      setPanPosition({ x: -clickX, y: -clickY });
-      setIsZoomed(true);
-    } else {
-      // Zoom out
-      resetZoomState();
-    }
-  };
-
-  // Mouse down - start potential drag
-  const handleMouseDown = (e: React.MouseEvent) => {
-    if (!isZoomed) return;
-    e.preventDefault();
-    setIsDragging(true);
-    setDragMoved(false);
-    setDragStart({
-      x: e.clientX - panPosition.x,
-      y: e.clientY - panPosition.y,
-    });
-  };
-
-  // Mouse move - pan if dragging
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging || !isZoomed) return;
-    const newX = e.clientX - dragStart.x;
-    const newY = e.clientY - dragStart.y;
-
-    // Check if we've moved enough to count as a drag
-    const distance = Math.sqrt(
-      Math.pow(newX - panPosition.x, 2) + Math.pow(newY - panPosition.y, 2),
-    );
-    if (distance > 5) {
-      setDragMoved(true);
-    }
-
-    setPanPosition({ x: newX, y: newY });
-  };
-
-  // Mouse up - stop dragging
-  const handleMouseUp = () => {
-    setIsDragging(false);
-  };
-
-  // Handle keyboard navigation
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (!isLightboxOpen) return;
-
-      switch (e.key) {
-        case "Escape":
-          closeLightbox();
-          break;
-        case "ArrowLeft":
-          goToPrevious();
-          break;
-        case "ArrowRight":
-          goToNext();
-          break;
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isLightboxOpen, lightboxMedia.length]);
-
-  const formatTime = (date: Date) => {
-    const now = new Date();
-    const diff = Math.floor((now.getTime() - date.getTime()) / 1000);
-    if (diff < 60) return `${diff}s ago`;
-    if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
-    if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
-    return `${Math.floor(diff / 86400)}d ago`;
-  };
-
-  const formatTimeShort = (date: Date) => {
-    return date.toLocaleTimeString("en-US", {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: true,
-    });
-  };
-
-  // Generate avatar initials
-  const getInitials = (name: string) => {
-    return name.charAt(0).toUpperCase();
+    setIsLightboxOpen(false);
   };
 
   // Get type styling
@@ -268,40 +122,8 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
     console.log("Hide user:", post.author.handle);
   };
 
-  // Extract URLs from text
-  const extractUrls = (text: string): string[] => {
-    const urlRegex = /(https?:\/\/[^\s]+)/g;
-    const matches = text.match(urlRegex);
-    return matches || [];
-  };
-
-  // Get domain from URL
-  const getDomain = (url: string): string => {
-    try {
-      const urlObj = new URL(url);
-      return urlObj.hostname.replace("www.", "");
-    } catch {
-      return url;
-    }
-  };
-
-  // Get truncated path from URL
-  const getTruncatedPath = (url: string, maxLength: number = 30): string => {
-    try {
-      const urlObj = new URL(url);
-      const path = urlObj.pathname + urlObj.search;
-      if (path.length > maxLength) {
-        return path.slice(0, maxLength) + "...";
-      }
-      return path || "/";
-    } catch {
-      return "";
-    }
-  };
-
   // Render content with @mentions and URLs highlighted in blue
   const renderContent = (text: string) => {
-    // Split by @mentions and URLs
     const parts = text.split(/(@\w+|https?:\/\/[^\s]+)/g);
     return parts.map((part, i) => {
       if (part.startsWith("@")) {
@@ -319,7 +141,6 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
         );
       }
       if (part.startsWith("http://") || part.startsWith("https://")) {
-        // Truncate long URLs for display
         const displayUrl = part.length > 50 ? part.slice(0, 47) + "..." : part;
         return (
           <a
@@ -905,187 +726,13 @@ export function SocialPost({ post, index, onDeploy }: SocialPostProps) {
         </div>
       </div>
 
-      {/* Image Lightbox Modal */}
-      <AnimatePresence>
-        {isLightboxOpen && (
-          <motion.div
-            className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/95"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            onClick={closeLightbox}
-          >
-            {/* Close button - styled to match the app */}
-            <button
-              className="absolute top-5 right-5 w-11 h-11 flex items-center justify-center rounded-xl bg-kol-surface-elevated/80 border border-kol-border/50 hover:bg-kol-surface-elevated hover:border-kol-border text-gray-400 hover:text-white transition-all duration-200 z-20"
-              onClick={(e) => {
-                e.stopPropagation();
-                closeLightbox();
-              }}
-            >
-              <i className="ri-close-line text-xl" />
-            </button>
-
-            {/* Image counter */}
-            {lightboxMedia.length > 1 && (
-              <div className="absolute top-5 left-1/2 -translate-x-1/2 px-4 py-2 rounded-lg bg-kol-surface-elevated/80 border border-kol-border/50 text-sm text-gray-300 font-mono z-20">
-                {lightboxIndex + 1} / {lightboxMedia.length}
-              </div>
-            )}
-
-            {/* Navigation arrows */}
-            {lightboxMedia.length > 1 && (
-              <>
-                {/* Previous button */}
-                <button
-                  className="absolute left-5 top-1/2 -translate-y-1/2 w-12 h-12 flex items-center justify-center rounded-xl bg-kol-surface-elevated/80 border border-kol-border/50 hover:bg-kol-surface-elevated hover:border-kol-border text-gray-400 hover:text-white transition-all duration-200 z-20"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    goToPrevious();
-                  }}
-                >
-                  <i className="ri-arrow-left-s-line text-2xl" />
-                </button>
-
-                {/* Next button */}
-                <button
-                  className="absolute right-5 top-1/2 -translate-y-1/2 w-12 h-12 flex items-center justify-center rounded-xl bg-kol-surface-elevated/80 border border-kol-border/50 hover:bg-kol-surface-elevated hover:border-kol-border text-gray-400 hover:text-white transition-all duration-200 z-20"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    goToNext();
-                  }}
-                >
-                  <i className="ri-arrow-right-s-line text-2xl" />
-                </button>
-              </>
-            )}
-
-            {/* Zoom hint - only for images */}
-            {currentMedia?.type === "image" && (
-              <div className="absolute bottom-5 left-1/2 -translate-x-1/2 px-3 py-1.5 rounded-lg bg-kol-surface-elevated/60 border border-kol-border/30 text-xs text-gray-500 z-20">
-                {isZoomed
-                  ? "Drag to pan, click to zoom out"
-                  : "Click image to zoom"}
-              </div>
-            )}
-
-            {/* Media container */}
-            {currentMedia?.type === "video" ? (
-              <motion.div
-                className="relative flex items-center justify-center"
-                style={{ maxWidth: "90vw", maxHeight: "85vh" }}
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.9, opacity: 0 }}
-                transition={{ duration: 0.2 }}
-                onClick={(e) => e.stopPropagation()}
-              >
-                <video
-                  key={currentMedia.url}
-                  src={currentMedia.url}
-                  poster={currentMedia.thumbnailUrl}
-                  controls
-                  autoPlay
-                  className="rounded-lg max-w-full max-h-[85vh]"
-                />
-              </motion.div>
-            ) : (
-              <motion.div
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.9, opacity: 0 }}
-                transition={{ duration: 0.2 }}
-                onClick={(e) => e.stopPropagation()}
-              >
-                {/* Image zoom container - plain div for reliable click handling */}
-                <div
-                  className={`relative overflow-hidden rounded-lg ${
-                    isZoomed
-                      ? isDragging
-                        ? "cursor-grabbing"
-                        : "cursor-grab"
-                      : "cursor-zoom-in"
-                  }`}
-                  style={{
-                    width: isZoomed ? "90vw" : "auto",
-                    height: isZoomed ? "85vh" : "auto",
-                    maxWidth: "90vw",
-                    maxHeight: "85vh",
-                  }}
-                  onClick={handleZoomClick}
-                  onMouseDown={handleMouseDown}
-                  onMouseMove={handleMouseMove}
-                  onMouseUp={handleMouseUp}
-                  onMouseLeave={handleMouseUp}
-                >
-                  <img
-                    key={currentMedia?.url}
-                    src={currentMedia?.url}
-                    alt=""
-                    className="select-none"
-                    draggable={false}
-                    style={
-                      isZoomed
-                        ? {
-                            width: "180vw",
-                            height: "auto",
-                            maxWidth: "none",
-                            maxHeight: "none",
-                            transform: `translate(calc(-50% + 45vw + ${panPosition.x}px), calc(-50% + 42.5vh + ${panPosition.y}px))`,
-                            transition: isDragging
-                              ? "none"
-                              : "transform 0.15s ease-out",
-                          }
-                        : {
-                            maxWidth: "90vw",
-                            maxHeight: "85vh",
-                            objectFit: "contain" as const,
-                          }
-                    }
-                  />
-                </div>
-              </motion.div>
-            )}
-
-            {/* Thumbnail strip for multiple media items */}
-            {lightboxMedia.length > 1 && (
-              <div className="absolute bottom-16 left-1/2 -translate-x-1/2 flex gap-2 p-2 rounded-xl bg-kol-surface-elevated/80 border border-kol-border/50 z-20">
-                {lightboxMedia.map((media, idx) => (
-                  <button
-                    key={idx}
-                    className={`relative w-12 h-12 rounded-lg overflow-hidden border-2 transition-all duration-200 ${
-                      idx === lightboxIndex
-                        ? "border-kol-blue ring-2 ring-kol-blue/30"
-                        : "border-kol-border/50 hover:border-kol-border opacity-60 hover:opacity-100"
-                    }`}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setLightboxIndex(idx);
-                      resetZoomState();
-                    }}
-                  >
-                    <img
-                      src={
-                        media.type === "video"
-                          ? media.thumbnailUrl || media.url
-                          : media.url
-                      }
-                      alt=""
-                      className="w-full h-full object-cover"
-                    />
-                    {media.type === "video" && (
-                      <div className="absolute inset-0 flex items-center justify-center bg-black/40">
-                        <i className="ri-play-fill text-white text-sm" />
-                      </div>
-                    )}
-                  </button>
-                ))}
-              </div>
-            )}
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Image Lightbox - rendered via portal to document.body */}
+      <ImageLightbox
+        media={lightboxMedia}
+        initialIndex={lightboxIndex}
+        isOpen={isLightboxOpen}
+        onClose={closeLightbox}
+      />
     </motion.article>
   );
 }
