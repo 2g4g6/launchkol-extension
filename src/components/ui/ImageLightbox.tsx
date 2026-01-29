@@ -15,7 +15,7 @@ interface ImageLightboxProps {
   onClose: () => void;
 }
 
-const ZOOM_LEVELS = [1, 1.5, 2] as const;
+const ZOOM_LEVELS = [1, 1.5, 2, 3, 4, 5, 6, 7, 8] as const;
 type ZoomLevel = (typeof ZOOM_LEVELS)[number];
 
 export function ImageLightbox({
@@ -172,9 +172,16 @@ export function ImageLightbox({
     };
   }, [isOpen]);
 
-  // Click on image: zoom in centered on click, or cycle zoom
+  // Click handler for the container — close if clicking the black area, zoom if clicking the image
   const handleZoomClick = (e: React.MouseEvent<HTMLDivElement>) => {
     e.stopPropagation();
+
+    // Click landed on the container background (black area), not the image — close
+    if (e.target === e.currentTarget) {
+      onClose();
+      return;
+    }
+
     if (dragMoved) {
       setDragMoved(false);
       return;
@@ -192,9 +199,10 @@ export function ImageLightbox({
     }
   };
 
-  // Pan handlers
+  // Pan handlers — only start drag when clicking the image, not the black area
   const handleMouseDown = (e: React.MouseEvent) => {
     if (!isZoomed) return;
+    if (e.target === e.currentTarget) return; // ignore black area
     e.preventDefault();
     setIsDragging(true);
     setDragMoved(false);
