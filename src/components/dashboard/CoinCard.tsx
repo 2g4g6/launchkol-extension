@@ -50,7 +50,7 @@ interface CoinCardProps {
 const PLATFORM_CONFIG: Record<PlatformType, { name: string; logo: string; color: string; ringColor: string; ringGradient: string; urlPattern: string }> = {
   pump: { name: 'Pump.fun', logo: '/images/pump.svg', color: 'bg-green-500/20 border-green-500/40', ringColor: '#00c46b', ringGradient: 'linear-gradient(219deg, #00FF88 0%, #00c46b 49%, #009950 100%)', urlPattern: 'https://pump.fun/{address}' },
   bonk: { name: 'Bonk.fun', logo: '/images/bonk.svg', color: 'bg-orange-500/20 border-orange-500/40', ringColor: '#f97316', ringGradient: 'linear-gradient(219deg, #FFA500 0%, #f97316 49%, #CC5500 100%)', urlPattern: 'https://bonk.fun/{address}' },
-  bags: { name: 'Bags', logo: '/images/bags.svg', color: 'bg-purple-500/20 border-purple-500/40', ringColor: '#a855f7', ringGradient: 'linear-gradient(219deg, #C084FC 0%, #a855f7 49%, #7C3AED 100%)', urlPattern: 'https://bags.fm/{address}' },
+  bags: { name: 'Bags', logo: '/images/bags.svg', color: 'bg-emerald-700/20 border-emerald-700/40', ringColor: '#047857', ringGradient: 'linear-gradient(219deg, #059669 0%, #047857 49%, #065F46 100%)', urlPattern: 'https://bags.fm/{address}' },
   mayhem: { name: 'Mayhem', logo: '/images/mayhem.svg', color: 'bg-red-500/20 border-red-500/40', ringColor: '#ff4d4f', ringGradient: 'linear-gradient(219deg, #FF6B6B 0%, #ff4d4f 49%, #CC3333 100%)', urlPattern: 'https://mayhem.fun/{address}' },
   fourmeme: { name: '4Meme', logo: '/images/fourmeme.svg', color: 'bg-pink-500/20 border-pink-500/40', ringColor: '#ec4899', ringGradient: 'linear-gradient(219deg, #F472B6 0%, #ec4899 49%, #BE185D 100%)', urlPattern: 'https://4meme.fun/{address}' },
 }

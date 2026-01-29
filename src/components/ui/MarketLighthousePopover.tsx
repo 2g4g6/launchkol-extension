@@ -31,7 +31,7 @@ const MOCK_DATA: Record<TimeFrame, {
     topLaunchpads: [
       { name: 'Pump.fun', icon: '/images/pump.svg', value: '$33.2M', change: -18.4, color: '#00c46b' },
       { name: 'Bonk.fun', icon: '/images/bonk.svg', value: '$2.2M', change: -25.1, color: '#f97316' },
-      { name: 'Bags', icon: '/images/bags.svg', value: '$1.8M', change: -14.7, color: '#a855f7' },
+      { name: 'Bags', icon: '/images/bags.svg', value: '$1.8M', change: -14.7, color: '#047857' },
     ],
   },
   '1h': {
@@ -44,7 +44,7 @@ const MOCK_DATA: Record<TimeFrame, {
     topLaunchpads: [
       { name: 'Pump.fun', icon: '/images/pump.svg', value: '$99.8M', change: -20.1, color: '#00c46b' },
       { name: 'Bonk.fun', icon: '/images/bonk.svg', value: '$6.6M', change: -28.7, color: '#f97316' },
-      { name: 'Bags', icon: '/images/bags.svg', value: '$5.5M', change: -16.2, color: '#a855f7' },
+      { name: 'Bags', icon: '/images/bags.svg', value: '$5.5M', change: -16.2, color: '#047857' },
     ],
   },
   '6h': {
@@ -57,7 +57,7 @@ const MOCK_DATA: Record<TimeFrame, {
     topLaunchpads: [
       { name: 'Pump.fun', icon: '/images/pump.svg', value: '$241M', change: -23.5, color: '#00c46b' },
       { name: 'Bonk.fun', icon: '/images/bonk.svg', value: '$15.9M', change: -31.4, color: '#f97316' },
-      { name: 'Bags', icon: '/images/bags.svg', value: '$13.4M', change: -15.9, color: '#a855f7' },
+      { name: 'Bags', icon: '/images/bags.svg', value: '$13.4M', change: -15.9, color: '#047857' },
     ],
   },
   '24h': {
@@ -70,7 +70,7 @@ const MOCK_DATA: Record<TimeFrame, {
     topLaunchpads: [
       { name: 'Pump.fun', icon: '/images/pump.svg', value: '$399M', change: -26.3, color: '#00c46b' },
       { name: 'Bonk.fun', icon: '/images/bonk.svg', value: '$26.3M', change: -35.2, color: '#f97316' },
-      { name: 'Bags', icon: '/images/bags.svg', value: '$22.1M', change: -18.3, color: '#a855f7' },
+      { name: 'Bags', icon: '/images/bags.svg', value: '$22.1M', change: -18.3, color: '#047857' },
     ],
   },
 }
