@@ -24,7 +24,7 @@ export function SourceTweetPopoverContent({ sourceTweet, twitterUrl, tweetLabel 
   }
 
   return (
-    <div className="max-h-[400px] overflow-y-auto scrollbar-styled" style={{ width: 340 }}>
+    <div className="max-h-[400px] overflow-y-auto scrollbar-styled rounded-xl shadow-[0_4px_4px_0_rgba(0,0,0,0.30),0_8px_8px_0_rgba(0,0,0,0.45)] [&>article]:!mx-0 [&>article]:!my-0">
       <SocialPost post={sourceTweet} index={0} />
     </div>
   )
