@@ -65,11 +65,13 @@ export function ExpandableFilterPill({
         className="h-0 overflow-hidden flex items-center whitespace-nowrap w-max"
         style={{ paddingLeft: 5, paddingRight: 8, gap: 6 }}
       >
-        {iconSrc ? (
-          <img src={iconSrc} alt="" className="w-[18px] h-[18px] rounded-sm" />
-        ) : icon ? (
-          <i className={`${icon} text-sm`} />
-        ) : null}
+        <div className="flex-shrink-0 flex items-center justify-center w-[18px] h-[18px]">
+          {iconSrc ? (
+            <img src={iconSrc} alt="" className="w-[18px] h-[18px] rounded-sm" />
+          ) : icon ? (
+            <i className={`${icon} text-sm`} />
+          ) : null}
+        </div>
         <span className="text-xs font-medium">{label}</span>
         {children}
       </div>
