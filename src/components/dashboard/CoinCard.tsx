@@ -30,8 +30,6 @@ export interface CoinData {
   pnl: number
   pnlPercent: number
   marketCap?: number
-  price?: number
-  liquidity?: number
   tradingStats?: TradingStats
   platform: PlatformType
   twitterUrl?: string
@@ -499,9 +497,6 @@ function QuickLinks({ coin, onSearchToken, solPrice }: { coin: CoinData; onSearc
               <TokenInfoPopoverContent
                 security={coin.tokenSecurity}
                 axiomUrl={coin.axiomUrl}
-                marketCap={coin.marketCap}
-                price={coin.price}
-                liquidity={coin.liquidity}
               />
             ) : (
               <div className="p-3">

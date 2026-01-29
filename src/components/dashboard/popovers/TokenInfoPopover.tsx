@@ -13,35 +13,6 @@ export interface TokenSecurityInfo {
 interface TokenInfoPopoverProps {
   security: TokenSecurityInfo
   axiomUrl?: string
-  marketCap?: number
-  price?: number
-  liquidity?: number
-}
-
-const SUBSCRIPT_DIGITS = ['₀', '₁', '₂', '₃', '₄', '₅', '₆', '₇', '₈', '₉']
-
-function formatCompactUsd(value: number): string {
-  if (value >= 1_000_000) return `$${(value / 1_000_000).toFixed(1)}M`
-  if (value >= 1_000) return `$${(value / 1_000).toFixed(1)}K`
-  return `$${value.toFixed(0)}`
-}
-
-function FormatPrice({ value }: { value: number }): JSX.Element {
-  if (value >= 1) return <>${value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</>
-  if (value >= 0.01) return <>${value.toFixed(4)}</>
-
-  const str = value.toFixed(20)
-  const afterDot = str.split('.')[1] || ''
-  let leadingZeros = 0
-  for (const ch of afterDot) {
-    if (ch === '0') leadingZeros++
-    else break
-  }
-  if (leadingZeros < 2) return <>${value.toFixed(4)}</>
-
-  const significant = afterDot.slice(leadingZeros, leadingZeros + 3).replace(/0+$/, '') || '0'
-  const sub = String(leadingZeros).split('').map(d => SUBSCRIPT_DIGITS[parseInt(d)]).join('')
-  return <>$0.0{sub}{significant}</>
 }
 
 function getPercentColor(value: number | undefined, inverted = false): string {
@@ -74,44 +45,13 @@ function StatCell({ icon, iconSize, value, label, colorClass }: {
   )
 }
 
-export function TokenInfoPopoverContent({ security, axiomUrl, marketCap, price, liquidity }: TokenInfoPopoverProps) {
+export function TokenInfoPopoverContent({ security, axiomUrl }: TokenInfoPopoverProps) {
   const fmt = (v: number | undefined, suffix = '%') => v !== undefined ? `${v}${suffix}` : '--'
-  const hasMarketInfo = marketCap !== undefined || price !== undefined || liquidity !== undefined
 
   return (
     <div className="flex min-h-[0px] flex-1 flex-col gap-[16px] p-[16px] pt-[4px]">
       {/* Header */}
       <span className="text-[13px] font-semibold text-white pb-[4px]">Token Info</span>
-
-      {/* Market Info Row */}
-      {hasMarketInfo && (
-        <>
-          <div className="flex w-full flex-row items-center gap-[16px]">
-            {marketCap !== undefined && (
-              <span className="text-[14px] font-medium text-kol-text-secondary">
-                {formatCompactUsd(marketCap)}
-              </span>
-            )}
-            {price !== undefined && (
-              <div className="flex flex-col items-center gap-0.5">
-                <span className="text-[10px] font-normal text-kol-text-muted leading-none">Price</span>
-                <span className="text-[12px] font-medium text-kol-text-secondary leading-none">
-                  <FormatPrice value={price} />
-                </span>
-              </div>
-            )}
-            {liquidity !== undefined && (
-              <div className="flex flex-col items-center gap-0.5">
-                <span className="text-[10px] font-normal text-kol-text-muted leading-none">Liquidity</span>
-                <span className="text-[12px] font-medium text-kol-text-secondary leading-none">
-                  {formatCompactUsd(liquidity)}
-                </span>
-              </div>
-            )}
-          </div>
-          <div className="h-[1px] w-full bg-kol-border/50" />
-        </>
-      )}
       {/* Row 1: Top 10 H., Dev H., Snipers H. */}
       <div className="flex w-full flex-row gap-[16px]">
         <StatCell
