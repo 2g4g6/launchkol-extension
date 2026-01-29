@@ -1,3 +1,4 @@
+import { useState, useRef, useEffect } from 'react'
 import { PLATFORM_OPTIONS } from './FeedSettings/constants'
 import { ExpandableButton } from '../ui/ExpandableButton'
 import { MarketLighthousePopover } from '../ui/MarketLighthousePopover'
@@ -10,17 +11,117 @@ interface FooterProps {
   onChatClick?: () => void
 }
 
+interface Region {
+  id: string
+  label: string
+  icon: string
+  ping: number
+}
+
+const REGIONS: Region[] = [
+  { id: 'us-w', label: 'US-W', icon: 'ri-server-line', ping: 74 },
+  { id: 'us-c', label: 'US-C', icon: 'ri-server-line', ping: 94 },
+  { id: 'us-e', label: 'US-E', icon: 'ri-server-line', ping: 79 },
+  { id: 'eu-w', label: 'EU-W', icon: 'ri-server-line', ping: 106 },
+  { id: 'eu-c', label: 'EU-C', icon: 'ri-server-line', ping: 102 },
+  { id: 'eu-e', label: 'EU-E', icon: 'ri-server-line', ping: 111 },
+  { id: 'asia', label: 'ASIA', icon: 'ri-server-line', ping: 158 },
+  { id: 'asia-v2', label: 'ASIA-V2', icon: 'ri-server-line', ping: 155 },
+  { id: 'aus', label: 'AUS', icon: 'ri-server-line', ping: 379 },
+  { id: 'global', label: 'GLOBAL', icon: 'ri-global-line', ping: 125 },
+]
+
+function getPingColor(ping: number): string {
+  if (ping < 100) return '#00c46b'
+  if (ping < 150) return '#f59e0b'
+  if (ping < 200) return '#f97316'
+  return '#ff4d4f'
+}
+
 function VerticalDivider() {
   return <div className="h-[20px] w-[1px] bg-kol-border flex-shrink-0" />
 }
 
 function RegionDropdown() {
+  const [open, setOpen] = useState(false)
+  const [selected, setSelected] = useState('global')
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
+  const selectedRegion = REGIONS.find((r) => r.id === selected) ?? REGIONS[REGIONS.length - 1]
+
   return (
-    <button className="flex items-center gap-1 px-1.5 py-0.5 hover:bg-kol-border/40 rounded transition-colors duration-150 flex-shrink-0">
-      <i className="ri-global-line text-[12px] text-kol-text-muted" />
-      <span className="text-[11px] text-kol-text-muted font-body whitespace-nowrap">GLOBAL</span>
-      <i className="ri-arrow-down-s-line text-[10px] text-kol-text-muted" />
-    </button>
+    <div className="relative flex-shrink-0" ref={ref}>
+      <button
+        onClick={() => setOpen(!open)}
+        className="flex items-center gap-1 px-1.5 py-0.5 hover:bg-kol-border/40 rounded transition-colors duration-150"
+      >
+        <i className="ri-global-line text-[12px] text-kol-text-muted" />
+        <span className="text-[11px] text-kol-text-muted font-body whitespace-nowrap">
+          {selectedRegion.label}
+        </span>
+        <i className="ri-arrow-down-s-line text-[10px] text-kol-text-muted" />
+      </button>
+
+      {open && (
+        <div className="absolute bottom-full left-0 mb-1.5 w-[200px] bg-kol-surface border border-kol-border rounded-lg shadow-xl overflow-hidden z-50">
+          {/* Header */}
+          <div className="flex items-center justify-between px-3 py-2.5 border-b border-kol-border">
+            <span className="text-[12px] text-kol-text font-body font-medium">Regions</span>
+            <button className="text-kol-text-muted hover:text-kol-text transition-colors">
+              <i className="ri-refresh-line text-[13px]" />
+            </button>
+          </div>
+
+          {/* Region list */}
+          <div className="py-1 max-h-[320px] overflow-y-auto">
+            {REGIONS.map((region) => {
+              const isSelected = region.id === selected
+              const pingColor = getPingColor(region.ping)
+              return (
+                <button
+                  key={region.id}
+                  onClick={() => {
+                    setSelected(region.id)
+                    setOpen(false)
+                  }}
+                  className={`w-full flex items-center gap-2.5 px-3 py-1.5 hover:bg-kol-border/30 transition-colors ${
+                    isSelected ? 'bg-kol-border/20' : ''
+                  }`}
+                >
+                  <i
+                    className={`${region.icon} text-[13px]`}
+                    style={{ color: pingColor }}
+                  />
+                  <span
+                    className={`text-[12px] font-body flex-1 text-left ${
+                      isSelected ? 'text-kol-text font-medium' : 'text-kol-text-muted'
+                    }`}
+                  >
+                    {region.label}
+                  </span>
+                  <span
+                    className="text-[11px] font-mono tabular-nums"
+                    style={{ color: pingColor }}
+                  >
+                    {region.ping}ms
+                  </span>
+                </button>
+              )
+            })}
+          </div>
+        </div>
+      )}
+    </div>
   )
 }
 
@@ -84,15 +185,17 @@ export function Footer({
     <div className="h-[36px] flex-shrink-0 border-t border-kol-border bg-kol-bg/90 backdrop-blur-sm z-20 grid grid-cols-[1fr_auto_1fr] items-center px-2">
       {/* Left section */}
       <div className="flex items-center gap-1.5 justify-self-start col-start-1">
-        <RegionDropdown />
+        <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-kol-green/10 border border-kol-green/20 flex-shrink-0">
+          <span className="w-[6px] h-[6px] rounded-full bg-kol-green flex-shrink-0" />
+          <span className="text-[11px] text-kol-green font-body whitespace-nowrap lg:hidden">
+            Connected
+          </span>
+          <span className="text-[11px] text-kol-green font-body whitespace-nowrap hidden lg:inline">
+            Connection is stable
+          </span>
+        </div>
 
-        <span className="w-[6px] h-[6px] rounded-full bg-kol-green flex-shrink-0" />
-        <span className="text-[11px] text-kol-green font-body whitespace-nowrap lg:hidden">
-          Connected
-        </span>
-        <span className="text-[11px] text-kol-green font-body whitespace-nowrap hidden lg:inline">
-          Connection is stable
-        </span>
+        <RegionDropdown />
 
         <div className="hidden sm:block">
           <VerticalDivider />
