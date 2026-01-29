@@ -303,8 +303,8 @@ export function MarketLighthousePopover({ children }: { children: React.ReactEle
                     {data.topLaunchpads.map((lp) => (
                       <div key={lp.name} className="group/lp relative flex flex-col items-center flex-1 min-w-0 bg-kol-surface border border-kol-border rounded-lg px-2 py-2 gap-1 cursor-default transition-colors duration-150 hover:bg-kol-surface-elevated">
                         {/* Tooltip */}
-                        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 rounded shadow-md opacity-0 group-hover/lp:opacity-100 transition-opacity duration-150 pointer-events-none whitespace-nowrap z-10" style={{ padding: '2px 8px', background: '#222' }}>
-                          <span className="text-[11px] font-body font-medium text-white" style={{ lineHeight: '16px' }}>{lp.name.replace('.fun', '')} Volume</span>
+                        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 flex items-center rounded shadow-md opacity-0 group-hover/lp:opacity-100 transition-opacity duration-150 pointer-events-none whitespace-nowrap z-10" style={{ height: '20px', padding: '0 8px', background: '#222' }}>
+                          <span className="text-[11px] font-body font-medium text-white leading-none">{lp.name.replace('.fun', '')} Volume</span>
                         </div>
                         <img src={lp.icon} alt={lp.name} className="w-7 h-7 rounded-full" />
                         <span className="text-[12px] font-body font-medium" style={{ color: lp.color }}>{lp.value}</span>
