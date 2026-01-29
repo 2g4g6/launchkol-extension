@@ -364,19 +364,23 @@ export function TrackerFeed({ onDeploy }: TrackerFeedProps) {
 
         {/* Launch platform dropdown */}
         <div className="relative">
-          <ExpandableFilterPill
-            buttonRef={platformButtonRef}
-            iconSrc={LAUNCH_PLATFORMS.find(p => p.id === launchPlatform)?.icon}
-            label={LAUNCH_PLATFORMS.find(p => p.id === launchPlatform)?.label || ''}
-            active={isPlatformDropdownOpen}
+          <button
+            ref={platformButtonRef}
+            className={`h-7 rounded-md text-xs font-medium border flex-shrink-0 flex items-center gap-1.5 px-2 ${
+              isPlatformDropdownOpen
+                ? 'bg-kol-blue/15 text-kol-blue border-kol-blue/50'
+                : 'bg-kol-surface/45 border-kol-border text-kol-text-muted hover:bg-kol-surface-elevated'
+            }`}
             onClick={() => setIsPlatformDropdownOpen(!isPlatformDropdownOpen)}
           >
+            <img src={LAUNCH_PLATFORMS.find(p => p.id === launchPlatform)?.icon} alt="" className="w-[18px] h-[18px] rounded-sm" />
+            <span className="text-xs font-medium whitespace-nowrap">{LAUNCH_PLATFORMS.find(p => p.id === launchPlatform)?.label || ''}</span>
             <motion.i
               className="ri-arrow-down-s-line text-[10px]"
               animate={{ rotate: isPlatformDropdownOpen ? 180 : 0 }}
               transition={{ duration: 0.2 }}
             />
-          </ExpandableFilterPill>
+          </button>
 
           {createPortal(
             <AnimatePresence>
