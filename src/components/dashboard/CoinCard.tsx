@@ -294,7 +294,7 @@ function TradingStatsBar({
           <div className="flex flex-row items-center gap-1">
             <img alt="SOL" width="14" height="14" src="/images/solanaLogoMark.svg" />
             <span className={`text-nowrap text-[12px] font-medium leading-4 ${isProfitable ? 'text-kol-green' : 'text-kol-red'}`}>
-              {isProfitable ? '+' : ''}{pnl.toFixed(2)}
+              {isProfitable ? '+' : ''}{pnl.toFixed(2)} ({isProfitable ? '+' : ''}{pnlPercent.toFixed(0)}%)
             </span>
           </div>
         )}
