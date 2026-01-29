@@ -208,14 +208,14 @@ export function MarketLighthousePopover({ children }: { children: React.ReactEle
                 </span>
                 <span className="text-[13px] font-display font-semibold text-white">Market Lighthouse</span>
               </div>
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-0.5">
                 {TIME_FRAMES.map((tf) => (
                   <button
                     key={tf}
                     onClick={() => setTimeFrame(tf)}
-                    className={`px-1.5 py-0.5 text-[11px] font-body transition-colors ${
+                    className={`relative z-10 px-1.5 py-0.5 rounded text-[11px] font-body transition-colors ${
                       timeFrame === tf
-                        ? 'text-white font-medium'
+                        ? 'text-white font-medium bg-kol-blue'
                         : 'text-kol-text-muted hover:text-white'
                     }`}
                   >
@@ -310,7 +310,7 @@ export function MarketLighthousePopover({ children }: { children: React.ReactEle
                   <div className="flex gap-2 mt-1.5">
                     {data.topLaunchpads.map((lp) => (
                       <div key={lp.name} className="flex items-center gap-1.5 flex-1 min-w-0 bg-kol-surface border border-kol-border rounded-lg px-2 py-1.5">
-                        <img src={lp.icon} alt={lp.name} className="w-5 h-5 rounded-full shrink-0" />
+                        <img src={lp.icon} alt={lp.name} className="w-7 h-7 rounded-full shrink-0" />
                         <div className="min-w-0">
                           <span className="text-[12px] text-white font-body font-medium">{lp.value}</span>
                           <div>
