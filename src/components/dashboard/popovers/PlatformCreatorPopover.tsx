@@ -1,3 +1,5 @@
+import { useRef, useEffect } from 'react'
+
 export interface CreatorInfo {
   name: string
   avatar?: string
@@ -28,6 +30,33 @@ export function PlatformCreatorPopoverContent({
   solPrice,
   platformUrl,
 }: PlatformCreatorPopoverProps) {
+  const creatorRef = useRef<HTMLDivElement>(null)
+  const nameRef = useRef<HTMLSpanElement>(null)
+  const walletRef = useRef<HTMLSpanElement>(null)
+
+  useEffect(() => {
+    const el = creatorRef.current
+    const nameEl = nameRef.current
+    const walletEl = walletRef.current
+    if (!el || !nameEl || !walletEl) return
+
+    const onEnter = () => {
+      nameEl.style.display = 'none'
+      walletEl.style.display = 'inline'
+    }
+    const onLeave = () => {
+      nameEl.style.display = 'inline'
+      walletEl.style.display = 'none'
+    }
+
+    el.addEventListener('mouseenter', onEnter)
+    el.addEventListener('mouseleave', onLeave)
+    return () => {
+      el.removeEventListener('mouseenter', onEnter)
+      el.removeEventListener('mouseleave', onLeave)
+    }
+  }, [creator?.walletAddress])
+
   const isMigrated = progressPercent !== undefined && progressPercent >= 100
   const creatorFeesEarnedSol =
     creator?.rewardsPercent !== undefined && totalVolumeUsd !== undefined && solPrice
@@ -95,13 +124,7 @@ export function PlatformCreatorPopoverContent({
         <div className="border-t border-kol-border pt-3 space-y-2">
           <div className="flex items-center justify-between px-1">
             <span className="text-[11px] text-kol-text-muted">Launched by</span>
-            <div className="kol-creator-hover flex items-center gap-1.5 cursor-pointer">
-              <style>{`
-                .kol-creator-hover .kol-creator-wallet { display: none; }
-                .kol-creator-hover .kol-creator-name { display: inline; }
-                .kol-creator-hover:hover .kol-creator-wallet { display: inline; }
-                .kol-creator-hover:hover .kol-creator-name { display: none; }
-              `}</style>
+            <div ref={creatorRef} className="flex items-center gap-1.5 cursor-pointer">
               {creator.avatar ? (
                 <img
                   src={creator.avatar}
@@ -115,9 +138,9 @@ export function PlatformCreatorPopoverContent({
                   </span>
                 </div>
               )}
-              <span className="kol-creator-name text-[12px] font-medium text-white">{creator.name}</span>
+              <span ref={nameRef} className="text-[12px] font-medium text-white">{creator.name}</span>
               {creator.walletAddress && (
-                <span className="kol-creator-wallet text-[11px] font-mono text-kol-text-muted">
+                <span ref={walletRef} style={{ display: 'none' }} className="text-[11px] font-mono text-kol-text-muted">
                   {creator.walletAddress.slice(0, 6)}...{creator.walletAddress.slice(-4)}
                 </span>
               )}
