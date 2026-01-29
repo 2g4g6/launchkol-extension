@@ -73,7 +73,6 @@ const MOCK_COINS: CoinData[] = [
 
 interface MyCoinsTabProps {
   balance: number
-  solPrice?: number
 }
 
 // Animation variants
@@ -94,7 +93,7 @@ const itemVariants = {
   }
 }
 
-export function MyCoinsTab({ balance, solPrice }: MyCoinsTabProps) {
+export function MyCoinsTab({ balance }: MyCoinsTabProps) {
   const [coins] = useState<CoinData[]>(MOCK_COINS)
   const [sortBy, setSortBy] = useState<'recent' | 'pnl' | 'holdings'>('recent')
 
@@ -268,7 +267,6 @@ export function MyCoinsTab({ balance, solPrice }: MyCoinsTabProps) {
                 key={coin.id}
                 coin={coin}
                 index={index}
-                solPrice={solPrice}
                 onView={handleView}
                 onDevPanel={handleDevPanel}
                 onRelaunch={handleRelaunch}

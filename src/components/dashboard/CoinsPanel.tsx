@@ -235,7 +235,6 @@ const MOCK_COINS: CoinData[] = [
 interface CoinsPanelProps {
   isOpen: boolean
   onClose: () => void
-  solPrice?: number
 }
 
 // Mobile panel height constants
@@ -246,7 +245,7 @@ const MAX_HEIGHT = 500
 // Fixed desktop width
 const DESKTOP_WIDTH = 530
 
-export function CoinsPanel({ solPrice }: CoinsPanelProps) {
+export function CoinsPanel({}: CoinsPanelProps) {
   const [coins] = useState<CoinData[]>(MOCK_COINS)
   const [panelHeight, setPanelHeight] = useState(DEFAULT_HEIGHT)
   const [isResizing, setIsResizing] = useState(false)
@@ -376,7 +375,6 @@ export function CoinsPanel({ solPrice }: CoinsPanelProps) {
             key={coin.id}
             coin={coin}
             index={index}
-            solPrice={solPrice}
             onView={handleView}
             onDevPanel={handleDevPanel}
             onRelaunch={handleRelaunch}

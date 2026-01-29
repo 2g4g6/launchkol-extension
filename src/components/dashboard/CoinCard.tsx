@@ -41,7 +41,6 @@ export interface CoinData {
 interface CoinCardProps {
   coin: CoinData
   index: number
-  solPrice?: number
   onView: (coin: CoinData) => void
   onDevPanel?: (coin: CoinData) => void
   onRelaunch?: (coin: CoinData) => void
@@ -169,88 +168,44 @@ function TimeBadge({ date }: { date: Date }) {
   )
 }
 
-// Format SOL to USD string
-function formatUsd(sol: number, solPrice: number): string {
-  const usd = sol * solPrice
-  if (Math.abs(usd) >= 1000) {
-    return `$${usd.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-  }
-  return `$${usd.toFixed(2)}`
-}
-
 // Trading Stats Bar Component (Bought, Sold, Holding, PnL)
 function TradingStatsBar({
   stats,
   pnl,
   holdings,
   holdingsSol,
-  symbol,
-  solPrice
+  symbol
 }: {
   stats: TradingStats
   pnl: number
   holdings: number
   holdingsSol?: number
   symbol: string
-  solPrice?: number
 }) {
   const isProfitable = pnl >= 0
-  const price = solPrice ?? 0
-  const hasPrice = !!solPrice
-
-  const holdingSolValue = holdingsSol ?? holdings
-
-  // PnL tooltip shows all values in USD
-  const pnlTooltipContent = hasPrice ? (
-    <div className="flex flex-col gap-1 text-xs">
-      <div className="flex justify-between gap-3">
-        <span className="text-kol-text-muted">Bought:</span>
-        <span className="text-kol-green font-medium">{formatUsd(stats.boughtAmount, price)}</span>
-      </div>
-      <div className="flex justify-between gap-3">
-        <span className="text-kol-text-muted">Sold:</span>
-        <span className="text-kol-red font-medium">{formatUsd(stats.soldAmount, price)}</span>
-      </div>
-      <div className="flex justify-between gap-3">
-        <span className="text-kol-text-muted">Holding:</span>
-        <span className="text-kol-text-secondary font-medium">{formatUsd(holdingSolValue, price)}</span>
-      </div>
-      <div className="w-full h-px bg-kol-border/60 my-0.5" />
-      <div className="flex justify-between gap-3">
-        <span className="text-kol-text-muted">PnL:</span>
-        <span className={`font-medium ${isProfitable ? 'text-kol-green' : 'text-kol-red'}`}>
-          {isProfitable ? '+' : ''}{formatUsd(pnl, price)}
-        </span>
-      </div>
-    </div>
-  ) : null
 
   return (
     <div className="flex max-h-[64px] min-h-[64px] flex-1 flex-row items-center justify-center py-2 border-t border-kol-border/40">
       {/* Bought */}
-      <Tooltip content={formatUsd(stats.boughtAmount, price)} position="top" disabled={!hasPrice}>
-        <div className="flex flex-1 flex-col items-center justify-center gap-1 cursor-default">
-          <span className="text-[12px] font-normal leading-4 text-kol-text-muted">Bought</span>
-          <div className="flex flex-row items-center gap-1">
-            <img alt="SOL" width="14" height="14" src="/images/solanaLogoMark.svg" />
-            <span className="text-[12px] font-medium leading-4 text-kol-green">{stats.boughtAmount.toFixed(2)}</span>
-          </div>
+      <div className="flex flex-1 flex-col items-center justify-center gap-1">
+        <span className="text-[12px] font-normal leading-4 text-kol-text-muted">Bought</span>
+        <div className="flex flex-row items-center gap-1">
+          <img alt="SOL" width="14" height="14" src="/images/solanaLogoMark.svg" />
+          <span className="text-[12px] font-medium leading-4 text-kol-green">{stats.boughtAmount.toFixed(2)}</span>
         </div>
-      </Tooltip>
+      </div>
 
       {/* Divider */}
       <div className="h-12 w-px bg-kol-border" />
 
       {/* Sold */}
-      <Tooltip content={formatUsd(stats.soldAmount, price)} position="top" disabled={!hasPrice}>
-        <div className="flex flex-1 flex-col items-center justify-center gap-1 cursor-default">
-          <span className="text-[12px] font-normal leading-4 text-kol-text-muted">Sold</span>
-          <div className="flex flex-row items-center gap-1">
-            <img alt="SOL" width="14" height="14" src="/images/solanaLogoMark.svg" />
-            <span className="text-[12px] font-medium leading-4 text-kol-red">{stats.soldAmount.toFixed(2)}</span>
-          </div>
+      <div className="flex flex-1 flex-col items-center justify-center gap-1">
+        <span className="text-[12px] font-normal leading-4 text-kol-text-muted">Sold</span>
+        <div className="flex flex-row items-center gap-1">
+          <img alt="SOL" width="14" height="14" src="/images/solanaLogoMark.svg" />
+          <span className="text-[12px] font-medium leading-4 text-kol-red">{stats.soldAmount.toFixed(2)}</span>
         </div>
-      </Tooltip>
+      </div>
 
       {/* Divider */}
       <div className="h-12 w-px bg-kol-border" />
@@ -261,7 +216,7 @@ function TradingStatsBar({
         <div className="group/holding flex flex-row items-center gap-1 cursor-default">
           <div className="flex flex-row items-center gap-1 group-hover/holding:hidden">
             <img alt="SOL" width="14" height="14" src="/images/solanaLogoMark.svg" />
-            <span className="text-[12px] font-medium leading-4 text-kol-text-secondary">{holdingSolValue.toFixed(2)}</span>
+            <span className="text-[12px] font-medium leading-4 text-kol-text-secondary">{(holdingsSol ?? holdings).toFixed(2)}</span>
           </div>
           <span className="hidden text-[12px] font-medium leading-4 text-kol-text-secondary group-hover/holding:inline">
             {holdings.toFixed(2)} {symbol}
@@ -273,19 +228,17 @@ function TradingStatsBar({
       <div className="h-12 w-px bg-kol-border" />
 
       {/* PnL */}
-      <Tooltip content={pnlTooltipContent} position="top" disabled={!hasPrice} maxWidth={200}>
-        <div className="flex min-w-[100px] flex-col items-center justify-center gap-1 px-1 cursor-default">
-          <div className="flex h-4 flex-row items-center justify-center">
-            <span className="text-[12px] font-normal leading-4 text-kol-text-muted">PnL</span>
-          </div>
-          <div className="flex flex-row items-center gap-1">
-            <img alt="SOL" width="14" height="14" src="/images/solanaLogoMark.svg" />
-            <span className={`text-nowrap text-[12px] font-medium leading-4 ${isProfitable ? 'text-kol-green' : 'text-kol-red'}`}>
-              {isProfitable ? '+' : ''}{pnl.toFixed(2)}
-            </span>
-          </div>
+      <div className="flex min-w-[100px] flex-col items-center justify-center gap-1 px-1">
+        <div className="flex h-4 flex-row items-center justify-center">
+          <span className="text-[12px] font-normal leading-4 text-kol-text-muted">PnL</span>
         </div>
-      </Tooltip>
+        <div className="flex flex-row items-center gap-1">
+          <img alt="SOL" width="14" height="14" src="/images/solanaLogoMark.svg" />
+          <span className={`text-nowrap text-[12px] font-medium leading-4 ${isProfitable ? 'text-kol-green' : 'text-kol-red'}`}>
+            {isProfitable ? '+' : ''}{pnl.toFixed(2)}
+          </span>
+        </div>
+      </div>
     </div>
   )
 }
@@ -459,7 +412,7 @@ function QuickLinks({ coin }: { coin: CoinData }) {
   )
 }
 
-export function CoinCard({ coin, index, solPrice, onView, onDevPanel, onRelaunch: _onRelaunch }: CoinCardProps) {
+export function CoinCard({ coin, index, onView, onDevPanel, onRelaunch: _onRelaunch }: CoinCardProps) {
   return (
     <motion.div
       className="group relative mx-3 my-2"
@@ -548,7 +501,6 @@ export function CoinCard({ coin, index, solPrice, onView, onDevPanel, onRelaunch
             holdings={coin.holdings}
             holdingsSol={coin.holdingsSol}
             symbol={coin.symbol}
-            solPrice={solPrice}
           />
         )}
       </div>
