@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 export interface CreatorInfo {
   name: string
   avatar?: string
@@ -28,6 +30,7 @@ export function PlatformCreatorPopoverContent({
   solPrice,
   platformUrl,
 }: PlatformCreatorPopoverProps) {
+  const [creatorHovered, setCreatorHovered] = useState(false)
   const isMigrated = progressPercent !== undefined && progressPercent >= 100
   const creatorFeesEarnedSol =
     creator?.rewardsPercent !== undefined && totalVolumeUsd !== undefined && solPrice
@@ -95,7 +98,11 @@ export function PlatformCreatorPopoverContent({
         <div className="border-t border-kol-border pt-3 space-y-2">
           <div className="flex items-center justify-between px-1">
             <span className="text-[11px] text-kol-text-muted">Launched by</span>
-            <div className="relative group/creator flex items-center gap-1.5 cursor-pointer">
+            <div
+              className="flex items-center gap-1.5 cursor-pointer"
+              onMouseEnter={() => setCreatorHovered(true)}
+              onMouseLeave={() => setCreatorHovered(false)}
+            >
               {creator.avatar ? (
                 <img
                   src={creator.avatar}
@@ -109,15 +116,12 @@ export function PlatformCreatorPopoverContent({
                   </span>
                 </div>
               )}
-              <span className="text-[12px] font-medium text-white">{creator.name}</span>
-              {creator.walletAddress && (
-                <div className="absolute bottom-full right-0 mb-1.5 hidden group-hover/creator:block z-50">
-                  <div className="bg-kol-surface-elevated border border-kol-border rounded-lg px-2.5 py-1.5 shadow-xl whitespace-nowrap">
-                    <span className="text-[10px] font-mono text-kol-text-muted">
-                      {creator.walletAddress.slice(0, 6)}...{creator.walletAddress.slice(-4)}
-                    </span>
-                  </div>
-                </div>
+              {creatorHovered && creator.walletAddress ? (
+                <span className="text-[11px] font-mono text-kol-text-muted">
+                  {creator.walletAddress.slice(0, 6)}...{creator.walletAddress.slice(-4)}
+                </span>
+              ) : (
+                <span className="text-[12px] font-medium text-white">{creator.name}</span>
               )}
             </div>
           </div>
