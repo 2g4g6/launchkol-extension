@@ -45,9 +45,12 @@ export function QuickLinkPopover({
         window.innerWidth - width - VIEWPORT_PADDING
       )
     )
-    // Check if there's enough space above
+    // Measure actual popover height if rendered, otherwise estimate
+    const popoverHeight = popoverRef.current?.offsetHeight ?? 300
     const spaceAbove = rect.top - VIEWPORT_PADDING
-    const below = spaceAbove < 200
+    const spaceBelow = window.innerHeight - rect.bottom - VIEWPORT_PADDING
+    // Prefer above, but flip below if not enough space above
+    const below = spaceAbove < popoverHeight + 8 && spaceBelow > spaceAbove
     const y = below ? rect.bottom + 8 : rect.top - 8
     setPosition({ x, y, below })
   }, [width])
@@ -55,11 +58,14 @@ export function QuickLinkPopover({
   useEffect(() => {
     if (isOpen) {
       const raf = requestAnimationFrame(updatePosition)
+      // Re-measure after popover renders to get actual height
+      const raf2 = requestAnimationFrame(() => requestAnimationFrame(updatePosition))
       const handleUpdate = () => requestAnimationFrame(updatePosition)
       window.addEventListener('scroll', handleUpdate, true)
       window.addEventListener('resize', handleUpdate)
       return () => {
         cancelAnimationFrame(raf)
+        cancelAnimationFrame(raf2)
         window.removeEventListener('scroll', handleUpdate, true)
         window.removeEventListener('resize', handleUpdate)
       }
@@ -130,7 +136,7 @@ export function QuickLinkPopover({
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
-          <div className="bg-kol-bg border border-kol-border rounded-xl shadow-[0_4px_4px_0_rgba(0,0,0,0.30),0_8px_8px_0_rgba(0,0,0,0.45)] overflow-hidden">
+          <div className="bg-kol-bg border border-kol-border rounded-xl shadow-[0_4px_4px_0_rgba(0,0,0,0.30),0_8px_8px_0_rgba(0,0,0,0.45)] overflow-hidden overflow-y-auto" style={{ maxHeight: `calc(100vh - ${VIEWPORT_PADDING * 2}px)` }}>
             {content}
           </div>
         </motion.div>
