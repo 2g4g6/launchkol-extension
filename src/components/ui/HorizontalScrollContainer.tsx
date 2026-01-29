@@ -59,7 +59,7 @@ export function HorizontalScrollContainer({
       <div
         ref={scrollRef}
         onScroll={checkScrollable}
-        className={className}
+        className={`scrollbar-hide no-scrollbar ${className}`}
       >
         {children}
       </div>
