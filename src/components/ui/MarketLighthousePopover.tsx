@@ -87,7 +87,7 @@ const VIEWPORT_PADDING = 8
 function ChangeText({ value }: { value: number }) {
   const isPositive = value >= 0
   return (
-    <span className={`text-[11px] font-mono ${isPositive ? 'text-kol-green' : 'text-kol-red'}`}>
+    <span className={`text-[11px] font-body ${isPositive ? 'text-kol-green' : 'text-kol-red'}`}>
       {isPositive ? '+' : ''}{value}%
     </span>
   )
@@ -277,8 +277,8 @@ export function MarketLighthousePopover({ children }: { children: React.ReactEle
                     />
                   </div>
                   <div className="flex items-center justify-between mt-1">
-                    <span className="text-[9px] text-kol-green font-mono">{data.volumeBar.left}</span>
-                    <span className="text-[9px] text-kol-red font-mono">{data.volumeBar.right}</span>
+                    <span className="text-[9px] text-kol-green font-body">{data.volumeBar.left}</span>
+                    <span className="text-[9px] text-kol-red font-body">{data.volumeBar.right}</span>
                   </div>
                 </div>
 
