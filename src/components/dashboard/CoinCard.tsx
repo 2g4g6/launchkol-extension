@@ -472,6 +472,7 @@ function QuickLinks({ coin, onSearchToken, solPrice }: { coin: CoinData; onSearc
             progressPercent={coin.progressPercent}
             totalVolumeUsd={coin.buyVolumeUsd !== undefined && coin.sellVolumeUsd !== undefined ? coin.buyVolumeUsd + coin.sellVolumeUsd : undefined}
             solPrice={solPrice}
+            platformUrl={platformUrl}
           />
         }
       >

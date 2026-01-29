@@ -13,6 +13,7 @@ interface PlatformCreatorPopoverProps {
   progressPercent?: number
   totalVolumeUsd?: number
   solPrice?: number
+  platformUrl?: string
 }
 
 export function PlatformCreatorPopoverContent({
@@ -24,6 +25,7 @@ export function PlatformCreatorPopoverContent({
   progressPercent,
   totalVolumeUsd,
   solPrice,
+  platformUrl,
 }: PlatformCreatorPopoverProps) {
   const isMigrated = progressPercent !== undefined && progressPercent >= 100
   const creatorFeesEarnedSol =
@@ -33,7 +35,7 @@ export function PlatformCreatorPopoverContent({
 
   return (
     <div className="p-3 space-y-3" style={{ width: 280 }}>
-      {/* Platform header */}
+      {/* Platform header + Open button */}
       <div className="flex items-center gap-2.5">
         <div
           className="w-8 h-8 rounded-lg flex items-center justify-center"
@@ -41,7 +43,7 @@ export function PlatformCreatorPopoverContent({
         >
           <img src={platformLogo} alt={platformName} className="w-5 h-5 object-contain" />
         </div>
-        <div>
+        <div className="flex-1 min-w-0">
           <div className="text-sm font-medium text-white">{platformName}</div>
           {platformFee && (
             <div className="text-[11px] text-kol-text-muted">
@@ -49,6 +51,19 @@ export function PlatformCreatorPopoverContent({
             </div>
           )}
         </div>
+        {platformUrl && (
+          <a
+            href={platformUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group/open flex items-center gap-1 h-6 px-1.5 rounded-md bg-kol-surface-elevated hover:bg-kol-border transition-all ml-auto"
+          >
+            <i className="ri-external-link-line text-[13px] text-kol-text-muted group-hover/open:text-white transition-colors" />
+            <span className="text-[11px] font-medium text-kol-text-muted group-hover/open:text-white max-w-0 overflow-hidden group-hover/open:max-w-[40px] transition-all duration-200">
+              Open
+            </span>
+          </a>
+        )}
       </div>
 
       {/* Bonding curve progress */}
