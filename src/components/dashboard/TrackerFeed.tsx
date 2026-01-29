@@ -1,8 +1,18 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { SocialPost, SocialPostData } from './SocialPost'
 import { Tooltip } from '../ui/Tooltip'
 import { FeedSettingsModal } from './FeedSettings'
+
+type LaunchPlatform = 'pump' | 'bonk' | 'bags' | 'mayhem' | 'fourmeme'
+
+const LAUNCH_PLATFORMS: { id: LaunchPlatform; label: string; icon: string }[] = [
+  { id: 'pump', label: 'Pump', icon: '/images/pump.svg' },
+  { id: 'bonk', label: 'Bonk', icon: '/images/bonk.svg' },
+  { id: 'bags', label: 'Bags', icon: '/images/bags.svg' },
+  { id: 'mayhem', label: 'Mayhem', icon: '/images/mayhem.svg' },
+  { id: 'fourmeme', label: 'Four', icon: '/images/fourmeme.svg' },
+]
 
 type TweetTypeFilter = 'all' | 'posts' | 'replies' | 'quotes' | 'reposts' | 'deleted' | 'following'
 
@@ -259,8 +269,20 @@ export function TrackerFeed({ onDeploy }: TrackerFeedProps) {
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
   const [showFilters, setShowFilters] = useState(true)
   const [tweetTypeFilter, setTweetTypeFilter] = useState<TweetTypeFilter>('all')
-  const [autoTranslate, setAutoTranslate] = useState(false)
   const [pauseOnHover, setPauseOnHover] = useState(true)
+  const [launchPlatform, setLaunchPlatform] = useState<LaunchPlatform>('pump')
+  const [isPlatformDropdownOpen, setIsPlatformDropdownOpen] = useState(false)
+  const platformDropdownRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (platformDropdownRef.current && !platformDropdownRef.current.contains(e.target as Node)) {
+        setIsPlatformDropdownOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
 
   const TWEET_TYPE_MAP: Record<TweetTypeFilter, string | undefined> = {
     all: undefined,
@@ -302,38 +324,81 @@ export function TrackerFeed({ onDeploy }: TrackerFeedProps) {
       </div>
 
       {/* Right controls */}
-      <div className="flex items-center gap-0.5 flex-shrink-0">
-        <Tooltip content="Auto-translate tweets" position="bottom">
+      <div className="flex items-center gap-1 flex-shrink-0">
+        {/* Pause on hover pill */}
+        <button
+          onClick={() => setPauseOnHover(!pauseOnHover)}
+          className={`flex items-center gap-1 h-6 px-2 rounded text-xs font-medium border whitespace-nowrap transition-colors ${
+            pauseOnHover
+              ? 'bg-kol-blue/15 text-kol-blue border-kol-blue/50'
+              : 'bg-kol-surface/45 border-kol-border text-kol-text-muted hover:bg-kol-surface-elevated'
+          }`}
+        >
+          <motion.i
+            className={pauseOnHover ? 'ri-pause-circle-fill text-[10px]' : 'ri-pause-circle-line text-[10px]'}
+            animate={{ scale: [1, 1.2, 1] }}
+            key={String(pauseOnHover)}
+            transition={{ duration: 0.25 }}
+          />
+          <span>Pause</span>
+        </button>
+
+        {/* Launch platform dropdown */}
+        <div ref={platformDropdownRef} className="relative">
           <button
-            onClick={() => setAutoTranslate(!autoTranslate)}
-            className={`w-6 h-6 rounded flex items-center justify-center transition-colors ${
-              autoTranslate
-                ? 'bg-kol-blue/15 text-kol-blue'
-                : 'text-kol-text-muted hover:bg-kol-surface-elevated'
+            onClick={() => setIsPlatformDropdownOpen(!isPlatformDropdownOpen)}
+            className={`flex items-center gap-1 h-6 px-2 rounded text-xs font-medium border whitespace-nowrap transition-colors ${
+              isPlatformDropdownOpen
+                ? 'bg-kol-blue/15 text-kol-blue border-kol-blue/50'
+                : 'bg-kol-surface/45 border-kol-border text-kol-text-muted hover:bg-kol-surface-elevated'
             }`}
           >
-            <i className="ri-translate text-xs" />
+            <img
+              src={LAUNCH_PLATFORMS.find(p => p.id === launchPlatform)?.icon}
+              alt=""
+              className="w-3.5 h-3.5 rounded-sm"
+            />
+            <span>{LAUNCH_PLATFORMS.find(p => p.id === launchPlatform)?.label}</span>
+            <motion.i
+              className="ri-arrow-down-s-line text-[10px]"
+              animate={{ rotate: isPlatformDropdownOpen ? 180 : 0 }}
+              transition={{ duration: 0.2 }}
+            />
           </button>
-        </Tooltip>
-        <Tooltip content="Pause feed on hover" position="bottom">
-          <button
-            onClick={() => setPauseOnHover(!pauseOnHover)}
-            className={`w-6 h-6 rounded flex items-center justify-center transition-colors ${
-              pauseOnHover
-                ? 'bg-kol-blue/15 text-kol-blue'
-                : 'text-kol-text-muted hover:bg-kol-surface-elevated'
-            }`}
-          >
-            <i className="ri-pause-circle-line text-xs" />
-          </button>
-        </Tooltip>
-        <Tooltip content="Default launch platform" position="bottom">
-          <button
-            className="w-6 h-6 rounded flex items-center justify-center text-kol-text-muted hover:bg-kol-surface-elevated transition-colors"
-          >
-            <i className="ri-rocket-line text-xs" />
-          </button>
-        </Tooltip>
+
+          <AnimatePresence>
+            {isPlatformDropdownOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: -4 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -4 }}
+                transition={{ duration: 0.15 }}
+                className="absolute right-0 top-full mt-1 z-50 bg-kol-bg border border-kol-border rounded-lg shadow-lg shadow-black/40 ring-1 ring-white/5 min-w-[120px] py-1"
+              >
+                {LAUNCH_PLATFORMS.map((platform) => (
+                  <button
+                    key={platform.id}
+                    onClick={() => {
+                      setLaunchPlatform(platform.id)
+                      setIsPlatformDropdownOpen(false)
+                    }}
+                    className={`w-full flex items-center gap-2 px-2.5 py-1.5 text-xs transition-colors ${
+                      launchPlatform === platform.id
+                        ? 'text-kol-blue bg-kol-blue/10'
+                        : 'text-kol-text-muted hover:bg-kol-surface-elevated hover:text-white'
+                    }`}
+                  >
+                    <img src={platform.icon} alt="" className="w-4 h-4 rounded-sm" />
+                    <span className="flex-1 text-left font-medium">{platform.label}</span>
+                    {launchPlatform === platform.id && (
+                      <i className="ri-check-line text-kol-blue text-sm" />
+                    )}
+                  </button>
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
     </div>
   )
