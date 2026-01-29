@@ -388,13 +388,7 @@ export function ImageLightbox({
                 </div>
               ) : (
                 <div
-                  className={`relative overflow-hidden rounded-lg flex items-center justify-center ${
-                    isZoomed
-                      ? isDragging
-                        ? "cursor-grabbing"
-                        : "cursor-grab"
-                      : "cursor-zoom-in"
-                  }`}
+                  className="relative overflow-hidden rounded-lg flex items-center justify-center cursor-default"
                   style={{
                     width: "90vw",
                     height: "85vh",
@@ -415,7 +409,13 @@ export function ImageLightbox({
                     key={currentMedia?.url}
                     src={currentMedia?.url}
                     alt=""
-                    className={`select-none ${imageLoaded ? "opacity-100" : "opacity-0"}`}
+                    className={`select-none ${imageLoaded ? "opacity-100" : "opacity-0"} ${
+                      isZoomed
+                        ? isDragging
+                          ? "cursor-grabbing"
+                          : "cursor-grab"
+                        : "cursor-zoom-in"
+                    }`}
                     draggable={false}
                     onLoad={() => setImageLoaded(true)}
                     style={{
