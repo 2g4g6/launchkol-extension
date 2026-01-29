@@ -94,27 +94,31 @@ export function Footer({
           Connection is stable
         </span>
 
-        <VerticalDivider />
+        <div className="hidden sm:block">
+          <VerticalDivider />
+        </div>
 
-        {/* Crypto prices */}
-        <CryptoTicker
-          icon="/images/solanaLogoMark.svg"
-          price={solPrice}
-          color="#14F195"
-          label="SOL"
-        />
-        {bnbPrice != null && (
+        {/* Crypto prices - hidden on small screens */}
+        <div className="hidden sm:flex items-center gap-1.5">
           <CryptoTicker
-            iconElement={<BnbIcon className="w-3.5 h-3.5" />}
-            price={bnbPrice}
-            color="#F0B90B"
-            label="BNB"
+            icon="/images/solanaLogoMark.svg"
+            price={solPrice}
+            color="#14F195"
+            label="SOL"
           />
-        )}
+          {bnbPrice != null && (
+            <CryptoTicker
+              iconElement={<BnbIcon className="w-3.5 h-3.5" />}
+              price={bnbPrice}
+              color="#F0B90B"
+              label="BNB"
+            />
+          )}
+        </div>
       </div>
 
-      {/* Center - platform pill with hover popover */}
-      <div className="justify-self-center">
+      {/* Center - platform pill with hover popover - hidden on small screens */}
+      <div className="justify-self-center hidden sm:block">
         <MarketLighthousePopover>
           <PlatformPill />
         </MarketLighthousePopover>

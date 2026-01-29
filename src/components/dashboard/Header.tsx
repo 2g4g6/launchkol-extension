@@ -42,14 +42,14 @@ function SearchInput({ onClick }: { onClick?: () => void }) {
   return (
     <button
       onClick={onClick}
-      className="relative flex items-center gap-2 px-3 py-1.5 rounded-lg bg-kol-surface/50 border border-[#282828] hover:border-kol-blue/30 hover:bg-kol-surface/70 transition-colors cursor-pointer group min-w-[120px]"
+      className="relative flex items-center gap-2 px-3 py-1.5 rounded-lg bg-kol-surface/50 border border-[#282828] hover:border-kol-blue/30 hover:bg-kol-surface/70 transition-colors cursor-pointer group sm:min-w-[120px]"
     >
       <i className="ri-search-line text-sm text-kol-text-muted group-hover:text-kol-text-secondary transition-colors" />
-      <span className="text-xs text-kol-text-muted group-hover:text-kol-text-secondary transition-colors font-body flex-1">
+      <span className="text-xs text-kol-text-muted group-hover:text-kol-text-secondary transition-colors font-body flex-1 hidden sm:inline">
         Search...
       </span>
       {/* Keyboard shortcut badge */}
-      <span className="px-1.5 py-0.5 rounded text-[9px] font-mono bg-kol-border/40 text-kol-text-muted border border-kol-border/30">
+      <span className="px-1.5 py-0.5 rounded text-[9px] font-mono bg-kol-border/40 text-kol-text-muted border border-kol-border/30 hidden sm:inline">
         /
       </span>
     </button>
@@ -209,24 +209,24 @@ function WalletDropdown({
         {/* Wallet icon */}
         <i className="ri-wallet-3-line text-sm text-kol-text-muted relative z-10" />
 
-        {/* Solana Logo + Balance */}
+        {/* Solana Logo + Balance - hidden on small screens */}
         <img
           src="/images/solanaLogoMark.svg"
           alt="SOL"
           width={14}
           height={11}
-          className="relative z-10"
+          className="relative z-10 hidden sm:block"
         />
-        <span className="relative z-10 text-sm text-white font-bold">
+        <span className="relative z-10 text-sm text-white font-bold hidden sm:inline">
           {balance.toFixed(2)}
         </span>
 
         {/* Divider */}
-        <div className="relative z-10 w-px h-4 bg-kol-border/50" />
+        <div className="relative z-10 w-px h-4 bg-kol-border/50 hidden sm:block" />
 
-        {/* BNB Logo + Balance */}
-        <BnbLogo className="relative z-10 w-[14px] h-[14px]" />
-        <span className="relative z-10 text-sm text-white font-bold">
+        {/* BNB Logo + Balance - hidden on small screens */}
+        <BnbLogo className="relative z-10 w-[14px] h-[14px] hidden sm:block" />
+        <span className="relative z-10 text-sm text-white font-bold hidden sm:inline">
           {bnbNetwork?.balance.toFixed(2) ?? "0.00"}
         </span>
       </motion.button>
