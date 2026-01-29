@@ -354,13 +354,18 @@ export function TrackerFeed({ onDeploy }: TrackerFeedProps) {
 
       {/* Right controls */}
       <div className="flex items-center gap-1 flex-shrink-0">
-        {/* Pause on hover pill */}
-        <ExpandableFilterPill
-          icon={pauseOnHover ? 'ri-pause-circle-fill' : 'ri-pause-circle-line'}
-          label={pauseOnHover ? 'Pause on hover' : 'Auto-scroll'}
-          active={pauseOnHover}
+        {/* Pause on hover toggle */}
+        <button
+          className={`h-7 rounded-md text-xs font-medium border flex-shrink-0 flex items-center gap-1.5 px-2 transition-colors ${
+            pauseOnHover
+              ? 'bg-kol-blue/15 text-kol-blue border-kol-blue/50'
+              : 'bg-kol-surface/45 border-kol-border text-kol-text-muted hover:bg-kol-surface-elevated'
+          }`}
           onClick={() => setPauseOnHover(!pauseOnHover)}
-        />
+        >
+          <i className={pauseOnHover ? 'ri-pause-circle-fill' : 'ri-pause-circle-line'} />
+          <span>{pauseOnHover ? 'Pause on hover' : 'Auto-scroll'}</span>
+        </button>
 
         {/* Launch platform dropdown */}
         <div className="relative">
