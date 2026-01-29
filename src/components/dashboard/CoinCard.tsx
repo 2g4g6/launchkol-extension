@@ -410,7 +410,7 @@ function getTweetTypeLabel(type?: TweetType): string {
 }
 
 // Quick Links Component
-function QuickLinks({ coin, onSearchToken }: { coin: CoinData; onSearchToken?: (coin: CoinData) => void }) {
+function QuickLinks({ coin, onSearchToken, solPrice }: { coin: CoinData; onSearchToken?: (coin: CoinData) => void; solPrice?: number }) {
   const tweetIcon = getTweetTypeIcon(coin.tweetType)
   const tweetColor = getTweetTypeColor(coin.tweetType)
   const tweetLabel = getTweetTypeLabel(coin.tweetType)
@@ -471,6 +471,7 @@ function QuickLinks({ coin, onSearchToken }: { coin: CoinData; onSearchToken?: (
             creator={coin.creator}
             progressPercent={coin.progressPercent}
             totalVolumeUsd={coin.buyVolumeUsd !== undefined && coin.sellVolumeUsd !== undefined ? coin.buyVolumeUsd + coin.sellVolumeUsd : undefined}
+            solPrice={solPrice}
           />
         }
       >
@@ -576,7 +577,7 @@ export function CoinCard({ coin, index, solPrice, onView, onDevPanel, onRelaunch
             {/* Row 2: Time + Quick Links */}
             <div className="flex items-center gap-3">
               <TimeBadge date={coin.launchedAt} />
-              <QuickLinks coin={coin} onSearchToken={onSearchToken} />
+              <QuickLinks coin={coin} onSearchToken={onSearchToken} solPrice={solPrice} />
             </div>
           </div>
 

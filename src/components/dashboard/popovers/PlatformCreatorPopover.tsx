@@ -12,12 +12,7 @@ interface PlatformCreatorPopoverProps {
   creator?: CreatorInfo
   progressPercent?: number
   totalVolumeUsd?: number
-}
-
-function formatUsd(value: number): string {
-  if (value >= 1_000_000) return `$${(value / 1_000_000).toFixed(1)}M`
-  if (value >= 1_000) return `$${(value / 1_000).toFixed(1)}k`
-  return `$${value.toFixed(0)}`
+  solPrice?: number
 }
 
 export function PlatformCreatorPopoverContent({
@@ -28,11 +23,12 @@ export function PlatformCreatorPopoverContent({
   creator,
   progressPercent,
   totalVolumeUsd,
+  solPrice,
 }: PlatformCreatorPopoverProps) {
   const isMigrated = progressPercent !== undefined && progressPercent >= 100
-  const creatorFeesEarned =
-    creator?.rewardsPercent !== undefined && totalVolumeUsd !== undefined
-      ? (totalVolumeUsd * creator.rewardsPercent) / 100
+  const creatorFeesEarnedSol =
+    creator?.rewardsPercent !== undefined && totalVolumeUsd !== undefined && solPrice
+      ? (totalVolumeUsd * creator.rewardsPercent) / 100 / solPrice
       : undefined
 
   return (
@@ -108,12 +104,15 @@ export function PlatformCreatorPopoverContent({
               </span>
             </div>
           )}
-          {creatorFeesEarned !== undefined && (
+          {creatorFeesEarnedSol !== undefined && (
             <div className="flex items-center justify-between px-1">
-              <span className="text-[11px] text-kol-text-muted">Approx. fees earned</span>
-              <span className="text-[12px] font-medium text-kol-text-secondary">
-                ~{formatUsd(creatorFeesEarned)}
-              </span>
+              <span className="text-[11px] text-kol-text-muted">Fees earned</span>
+              <div className="flex items-center gap-1">
+                <img alt="SOL" width="12" height="12" src="/images/solanaLogoMark.svg" />
+                <span className="text-[12px] font-medium font-mono text-kol-text-secondary">
+                  {creatorFeesEarnedSol < 0.01 ? '<0.01' : creatorFeesEarnedSol < 100 ? creatorFeesEarnedSol.toFixed(2) : creatorFeesEarnedSol < 10000 ? creatorFeesEarnedSol.toFixed(1) : Math.round(creatorFeesEarnedSol).toLocaleString()}
+                </span>
+              </div>
             </div>
           )}
         </div>
