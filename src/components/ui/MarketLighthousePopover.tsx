@@ -309,7 +309,7 @@ export function MarketLighthousePopover({ children }: { children: React.ReactEle
                   <span className="text-[11px] text-kol-text-muted font-body">Top Launchpads</span>
                   <div className="flex gap-2 mt-1.5">
                     {data.topLaunchpads.map((lp) => (
-                      <div key={lp.name} className="flex items-center gap-1.5 flex-1 min-w-0">
+                      <div key={lp.name} className="flex items-center gap-1.5 flex-1 min-w-0 bg-kol-surface border border-kol-border rounded-lg px-2 py-1.5">
                         <img src={lp.icon} alt={lp.name} className="w-5 h-5 rounded-full shrink-0" />
                         <div className="min-w-0">
                           <span className="text-[12px] text-white font-body font-medium">{lp.value}</span>
