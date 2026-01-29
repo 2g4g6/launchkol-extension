@@ -266,6 +266,7 @@ export function Dashboard({ user, onSignOut }: DashboardProps) {
           <CoinsPanel
             isOpen={isCoinsOpen}
             onClose={() => setIsCoinsOpen(false)}
+            solPrice={solPrice}
           />
         </div>
       </div>

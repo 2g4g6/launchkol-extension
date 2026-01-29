@@ -41,6 +41,7 @@ export interface CoinData {
 interface CoinCardProps {
   coin: CoinData
   index: number
+  solPrice?: number
   onView: (coin: CoinData) => void
   onDevPanel?: (coin: CoinData) => void
   onRelaunch?: (coin: CoinData) => void
@@ -168,76 +169,135 @@ function TimeBadge({ date }: { date: Date }) {
   )
 }
 
+// Format USD value for display
+function formatUsd(value: number): string {
+  const abs = Math.abs(value)
+  if (abs >= 1000) {
+    return `$${value.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`
+  }
+  return `$${value.toFixed(2)}`
+}
+
 // Trading Stats Bar Component (Bought, Sold, Holding, PnL)
 function TradingStatsBar({
   stats,
   pnl,
+  pnlPercent,
   holdings,
+  holdingsUsd,
   holdingsSol,
-  symbol
+  symbol,
+  solPrice
 }: {
   stats: TradingStats
   pnl: number
+  pnlPercent: number
   holdings: number
+  holdingsUsd: number
   holdingsSol?: number
   symbol: string
+  solPrice?: number
 }) {
+  const [showUsd, setShowUsd] = useState(false)
   const isProfitable = pnl >= 0
+  const price = solPrice ?? 0
+
+  const boughtUsd = stats.boughtAmount * price
+  const soldUsd = stats.soldAmount * price
+  const pnlUsd = pnl * price
 
   return (
     <div className="flex max-h-[64px] min-h-[64px] flex-1 flex-row items-center justify-center py-2 border-t border-kol-border/40">
       {/* Bought */}
-      <div className="flex flex-1 flex-col items-center justify-center gap-1">
+      <div className="group/bought flex flex-1 flex-col items-center justify-center gap-1 cursor-default">
         <span className="text-[12px] font-normal leading-4 text-kol-text-muted">Bought</span>
-        <div className="flex flex-row items-center gap-1">
-          <img alt="SOL" width="14" height="14" src="/images/solanaLogoMark.svg" />
-          <span className="text-[12px] font-medium leading-4 text-kol-green">{stats.boughtAmount.toFixed(2)}</span>
-        </div>
+        {showUsd ? (
+          <span className="text-[12px] font-medium leading-4 text-kol-green">
+            {formatUsd(boughtUsd)}
+          </span>
+        ) : (
+          <>
+            <div className="flex flex-row items-center gap-1 group-hover/bought:hidden">
+              <img alt="SOL" width="14" height="14" src="/images/solanaLogoMark.svg" />
+              <span className="text-[12px] font-medium leading-4 text-kol-green">{stats.boughtAmount.toFixed(2)}</span>
+            </div>
+            <span className="hidden text-[12px] font-medium leading-4 text-kol-green group-hover/bought:inline">
+              {formatUsd(boughtUsd)}
+            </span>
+          </>
+        )}
       </div>
 
       {/* Divider */}
       <div className="h-12 w-px bg-kol-border" />
 
       {/* Sold */}
-      <div className="flex flex-1 flex-col items-center justify-center gap-1">
+      <div className="group/sold flex flex-1 flex-col items-center justify-center gap-1 cursor-default">
         <span className="text-[12px] font-normal leading-4 text-kol-text-muted">Sold</span>
-        <div className="flex flex-row items-center gap-1">
-          <img alt="SOL" width="14" height="14" src="/images/solanaLogoMark.svg" />
-          <span className="text-[12px] font-medium leading-4 text-kol-red">{stats.soldAmount.toFixed(2)}</span>
-        </div>
+        {showUsd ? (
+          <span className="text-[12px] font-medium leading-4 text-kol-red">
+            {formatUsd(soldUsd)}
+          </span>
+        ) : (
+          <>
+            <div className="flex flex-row items-center gap-1 group-hover/sold:hidden">
+              <img alt="SOL" width="14" height="14" src="/images/solanaLogoMark.svg" />
+              <span className="text-[12px] font-medium leading-4 text-kol-red">{stats.soldAmount.toFixed(2)}</span>
+            </div>
+            <span className="hidden text-[12px] font-medium leading-4 text-kol-red group-hover/sold:inline">
+              {formatUsd(soldUsd)}
+            </span>
+          </>
+        )}
       </div>
 
       {/* Divider */}
       <div className="h-12 w-px bg-kol-border" />
 
       {/* Holding */}
-      <div className="flex flex-1 flex-col items-center justify-center gap-1">
+      <div className="group/holding flex flex-1 flex-col items-center justify-center gap-1 cursor-default">
         <span className="text-[12px] font-normal leading-4 text-kol-text-muted">Holding</span>
-        <div className="group/holding flex flex-row items-center gap-1 cursor-default">
-          <div className="flex flex-row items-center gap-1 group-hover/holding:hidden">
-            <img alt="SOL" width="14" height="14" src="/images/solanaLogoMark.svg" />
-            <span className="text-[12px] font-medium leading-4 text-kol-text-secondary">{(holdingsSol ?? holdings).toFixed(2)}</span>
-          </div>
-          <span className="hidden text-[12px] font-medium leading-4 text-kol-text-secondary group-hover/holding:inline">
-            {holdings.toFixed(2)} {symbol}
+        {showUsd ? (
+          <span className="text-[12px] font-medium leading-4 text-kol-text-secondary">
+            {formatUsd(holdingsUsd)}
           </span>
-        </div>
+        ) : (
+          <>
+            <div className="flex flex-row items-center gap-1 group-hover/holding:hidden">
+              <img alt="SOL" width="14" height="14" src="/images/solanaLogoMark.svg" />
+              <span className="text-[12px] font-medium leading-4 text-kol-text-secondary">{(holdingsSol ?? holdings).toFixed(2)}</span>
+            </div>
+            <span className="hidden text-[12px] font-medium leading-4 text-kol-text-secondary group-hover/holding:inline">
+              {holdings.toFixed(2)} {symbol}
+            </span>
+          </>
+        )}
       </div>
 
       {/* Divider */}
       <div className="h-12 w-px bg-kol-border" />
 
       {/* PnL */}
-      <div className="flex min-w-[100px] flex-col items-center justify-center gap-1 px-1">
+      <div
+        className="flex min-w-[100px] flex-col items-center justify-center gap-1 px-1 cursor-default"
+        onMouseEnter={() => setShowUsd(true)}
+        onMouseLeave={() => setShowUsd(false)}
+      >
         <div className="flex h-4 flex-row items-center justify-center">
           <span className="text-[12px] font-normal leading-4 text-kol-text-muted">PnL</span>
         </div>
-        <div className="flex flex-row items-center gap-1">
-          <img alt="SOL" width="14" height="14" src="/images/solanaLogoMark.svg" />
+        {showUsd ? (
           <span className={`text-nowrap text-[12px] font-medium leading-4 ${isProfitable ? 'text-kol-green' : 'text-kol-red'}`}>
-            {isProfitable ? '+' : ''}{pnl.toFixed(2)}
+            {isProfitable ? '+' : ''}{formatUsd(pnlUsd)} ({isProfitable ? '+' : ''}{pnlPercent.toFixed(0)}%)
           </span>
-        </div>
+        ) : (
+          <div className="flex flex-row items-center gap-1">
+            <img alt="SOL" width="14" height="14" src="/images/solanaLogoMark.svg" />
+            <span className={`text-nowrap text-[12px] font-medium leading-4 ${isProfitable ? 'text-kol-green' : 'text-kol-red'}`}>
+              {isProfitable ? '+' : ''}{pnl.toFixed(2)}
+            </span>
+          </div>
+        )}
       </div>
     </div>
   )
@@ -412,7 +472,7 @@ function QuickLinks({ coin }: { coin: CoinData }) {
   )
 }
 
-export function CoinCard({ coin, index, onView, onDevPanel, onRelaunch: _onRelaunch }: CoinCardProps) {
+export function CoinCard({ coin, index, solPrice, onView, onDevPanel, onRelaunch: _onRelaunch }: CoinCardProps) {
   return (
     <motion.div
       className="group relative mx-3 my-2"
@@ -498,9 +558,12 @@ export function CoinCard({ coin, index, onView, onDevPanel, onRelaunch: _onRelau
           <TradingStatsBar
             stats={coin.tradingStats}
             pnl={coin.pnl}
+            pnlPercent={coin.pnlPercent}
             holdings={coin.holdings}
+            holdingsUsd={coin.holdingsUsd}
             holdingsSol={coin.holdingsSol}
             symbol={coin.symbol}
+            solPrice={solPrice}
           />
         )}
       </div>
