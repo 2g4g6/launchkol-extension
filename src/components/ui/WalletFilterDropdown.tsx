@@ -328,7 +328,7 @@ export function WalletFilterDropdown({
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: -4, scale: 0.97 }}
           transition={{ duration: 0.15 }}
-          className="fixed z-[10000] w-[280px] rounded-lg border border-kol-border bg-kol-bg shadow-[0_4px_4px_0_rgba(0,0,0,0.30),0_8px_8px_0_rgba(0,0,0,0.45)]"
+          className="fixed z-[10000] w-[280px] rounded-xl border border-kol-border bg-kol-bg shadow-[0_8px_32px_rgba(0,0,0,0.5)] ring-1 ring-white/[0.06] backdrop-blur-sm"
           style={{ top: position.top, left: position.left }}
         >
           {/* Header */}

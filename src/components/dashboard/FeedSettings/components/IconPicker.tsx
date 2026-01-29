@@ -232,7 +232,7 @@ export function IconPicker({ currentIcon, onSelect }: IconPickerProps) {
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 8 }}
         transition={{ duration: 0.15 }}
-        className="fixed w-[280px] bg-kol-bg border border-kol-border rounded-lg shadow-[0_4px_24px_rgba(0,0,0,0.4)] z-[9999] flex flex-col"
+        className="fixed w-[280px] bg-kol-bg border border-kol-border rounded-xl shadow-[0_8px_32px_rgba(0,0,0,0.5)] ring-1 ring-white/[0.06] backdrop-blur-sm z-[9999] flex flex-col"
         style={{
           top: dropdownPosition.top,
           left: dropdownPosition.left,

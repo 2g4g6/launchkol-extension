@@ -271,7 +271,7 @@ export function ColorPicker({ currentColor, onSelect }: ColorPickerProps) {
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 8 }}
         transition={{ duration: 0.15, ease: CUSTOM_EASE }}
-        className="fixed bg-kol-bg border border-kol-border rounded-lg shadow-[0_4px_24px_rgba(0,0,0,0.5)] z-[9999] overflow-hidden"
+        className="fixed bg-kol-bg border border-kol-border rounded-xl shadow-[0_8px_32px_rgba(0,0,0,0.5)] ring-1 ring-white/[0.06] backdrop-blur-sm z-[9999] overflow-hidden"
         style={{
           top: dropdownPosition.top,
           left: dropdownPosition.left,
