@@ -228,9 +228,6 @@ function TradingStatsBar({
         )}
       </div>
 
-      {/* Divider */}
-      <div className="h-12 w-px bg-kol-border" />
-
       {/* Sold */}
       <div className="group/sold flex flex-1 flex-col items-center justify-center gap-1 cursor-default">
         <span className="text-[12px] font-normal leading-4 text-kol-text-muted">Sold</span>
@@ -251,9 +248,6 @@ function TradingStatsBar({
         )}
       </div>
 
-      {/* Divider */}
-      <div className="h-12 w-px bg-kol-border" />
-
       {/* Holding */}
       <div className="group/holding flex flex-1 flex-col items-center justify-center gap-1 cursor-default">
         <span className="text-[12px] font-normal leading-4 text-kol-text-muted">Holding</span>
@@ -273,9 +267,6 @@ function TradingStatsBar({
           </>
         )}
       </div>
-
-      {/* Divider */}
-      <div className="h-12 w-px bg-kol-border" />
 
       {/* PnL */}
       <div
