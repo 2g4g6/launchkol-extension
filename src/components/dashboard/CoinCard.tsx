@@ -270,7 +270,7 @@ function TradingStatsBar({
 
       {/* PnL */}
       <div
-        className="flex min-w-[100px] flex-col items-center justify-center gap-1 px-3 cursor-default"
+        className="flex min-w-[100px] flex-col items-center justify-center gap-1 px-8 cursor-default"
         onMouseEnter={() => setShowUsd(true)}
         onMouseLeave={() => setShowUsd(false)}
       >
