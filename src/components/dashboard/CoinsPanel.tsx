@@ -4,17 +4,17 @@ import { CoinCard, CoinData } from './CoinCard'
 import { Tooltip } from '../ui/Tooltip'
 
 type PlatformType = 'pump' | 'bonk' | 'bags' | 'mayhem' | 'fourmeme'
-type PlatformFilter = 'all' | PlatformType
 type SortOption = 'time' | 'trending' | 'volume' | 'liquidity'
 
-const PLATFORM_FILTERS: { id: PlatformFilter; label: string; icon?: string }[] = [
-  { id: 'all', label: 'All' },
+const PLATFORM_FILTERS: { id: PlatformType; label: string; icon: string }[] = [
   { id: 'pump', label: 'Pump', icon: '/images/pump.svg' },
   { id: 'bonk', label: 'Bonk', icon: '/images/bonk.svg' },
   { id: 'bags', label: 'Bags', icon: '/images/bags.svg' },
   { id: 'mayhem', label: 'Mayhem', icon: '/images/mayhem.svg' },
   { id: 'fourmeme', label: 'Four', icon: '/images/fourmeme.svg' },
 ]
+
+const ALL_PLATFORMS = new Set<PlatformType>(PLATFORM_FILTERS.map(f => f.id))
 
 const SORT_OPTIONS: { id: SortOption; icon: string; label: string }[] = [
   { id: 'time', icon: 'ri-time-line', label: 'Recent' },
@@ -251,7 +251,7 @@ export function CoinsPanel({}: CoinsPanelProps) {
   const [isResizing, setIsResizing] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [isSearchFocused, setIsSearchFocused] = useState(false)
-  const [platformFilter, setPlatformFilter] = useState<PlatformFilter>('all')
+  const [platformFilters, setPlatformFilters] = useState<Set<PlatformType>>(new Set(ALL_PLATFORMS))
   const [sortBy, setSortBy] = useState<SortOption>('time')
   const [showFilters, setShowFilters] = useState(true)
 
@@ -260,7 +260,7 @@ export function CoinsPanel({}: CoinsPanelProps) {
       coin.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       coin.symbol.toLowerCase().includes(searchQuery.toLowerCase()) ||
       coin.address.toLowerCase().includes(searchQuery.toLowerCase())
-    const matchesPlatform = platformFilter === 'all' || coin.platform === platformFilter
+    const matchesPlatform = platformFilters.size === ALL_PLATFORMS.size || platformFilters.has(coin.platform as PlatformType)
     return matchesSearch && matchesPlatform
   })
 
@@ -323,22 +323,33 @@ export function CoinsPanel({}: CoinsPanelProps) {
     <div className="flex items-center justify-between gap-2">
       {/* Platform filter pills */}
       <div className="flex items-center gap-1 overflow-x-auto no-scrollbar">
-        {PLATFORM_FILTERS.map((filter) => (
-          <button
-            key={filter.id}
-            onClick={() => setPlatformFilter(filter.id)}
-            className={`flex items-center gap-1 h-6 px-2 rounded text-xs font-medium border whitespace-nowrap transition-colors ${
-              platformFilter === filter.id
-                ? 'bg-kol-blue/15 text-kol-blue border-kol-blue/50'
-                : 'bg-kol-surface/45 border-kol-border text-kol-text-muted hover:bg-kol-surface-elevated'
-            }`}
-          >
-            {filter.icon && (
+        {PLATFORM_FILTERS.map((filter) => {
+          const isActive = platformFilters.has(filter.id)
+          return (
+            <button
+              key={filter.id}
+              onClick={() => {
+                setPlatformFilters(prev => {
+                  const next = new Set(prev)
+                  if (next.has(filter.id)) {
+                    next.delete(filter.id)
+                  } else {
+                    next.add(filter.id)
+                  }
+                  return next
+                })
+              }}
+              className={`flex items-center gap-1 h-6 px-2 rounded text-xs font-medium border whitespace-nowrap transition-colors ${
+                isActive
+                  ? 'bg-kol-blue/15 text-kol-blue border-kol-blue/50'
+                  : 'bg-kol-surface/45 border-kol-border text-kol-text-muted hover:bg-kol-surface-elevated'
+              }`}
+            >
               <img src={filter.icon} alt={filter.label} className="w-3.5 h-3.5" />
-            )}
-            <span>{filter.label}</span>
-          </button>
-        ))}
+              <span>{filter.label}</span>
+            </button>
+          )
+        })}
       </div>
 
       {/* Sort options */}
