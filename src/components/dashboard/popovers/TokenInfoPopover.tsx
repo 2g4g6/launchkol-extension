@@ -51,10 +51,7 @@ export function TokenInfoPopoverContent({ security, axiomUrl }: TokenInfoPopover
   return (
     <div className="flex min-h-[0px] flex-1 flex-col gap-[16px] p-[16px] pt-[4px]">
       {/* Header */}
-      <div className="flex items-center gap-2 pb-[4px]">
-        <i className="ri-shield-check-line text-[14px] text-kol-text-muted" />
-        <span className="text-[13px] font-semibold text-white">Token Info</span>
-      </div>
+      <span className="text-[13px] font-semibold text-white pb-[4px]">Token Info</span>
       {/* Row 1: Top 10 H., Dev H., Snipers H. */}
       <div className="flex w-full flex-row gap-[16px]">
         <StatCell
