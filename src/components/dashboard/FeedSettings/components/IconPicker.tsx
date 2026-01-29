@@ -9,6 +9,7 @@ import {
   type IconCategory,
   type IconDefinition
 } from '../constants'
+import { HorizontalScrollContainer } from '../../../ui/HorizontalScrollContainer'
 
 export interface IconPickerProps {
   currentIcon: string
@@ -273,38 +274,40 @@ export function IconPicker({ currentIcon, onSelect }: IconPickerProps) {
         </div>
 
         {/* Category tabs */}
-        <div className="flex gap-1.5 px-2.5 py-2 border-b border-kol-border overflow-x-auto scrollbar-hide">
-          <button
-            onClick={() => {
-              setActiveCategory('all')
-              setFocusedIndex(-1)
-            }}
-            className={`px-2.5 py-1.5 text-xs rounded-md whitespace-nowrap transition-colors flex items-center gap-1.5 ${
-              activeCategory === 'all'
-                ? 'bg-kol-blue/15 text-kol-blue'
-                : 'text-kol-text-muted hover:text-white hover:bg-kol-surface-elevated'
-            }`}
-          >
-            <i className="ri-apps-2-line text-[11px]" />
-            All
-          </button>
-          {ICON_CATEGORIES.map(cat => (
+        <div className="border-b border-kol-border py-2 px-2.5">
+          <HorizontalScrollContainer className="flex gap-1.5 overflow-x-auto scrollbar-hide">
             <button
-              key={cat.id}
               onClick={() => {
-                setActiveCategory(cat.id)
+                setActiveCategory('all')
                 setFocusedIndex(-1)
               }}
               className={`px-2.5 py-1.5 text-xs rounded-md whitespace-nowrap transition-colors flex items-center gap-1.5 ${
-                activeCategory === cat.id
+                activeCategory === 'all'
                   ? 'bg-kol-blue/15 text-kol-blue'
                   : 'text-kol-text-muted hover:text-white hover:bg-kol-surface-elevated'
               }`}
             >
-              <i className={`${cat.icon} text-[11px]`} />
-              {cat.label}
+              <i className="ri-apps-2-line text-[11px]" />
+              All
             </button>
-          ))}
+            {ICON_CATEGORIES.map(cat => (
+              <button
+                key={cat.id}
+                onClick={() => {
+                  setActiveCategory(cat.id)
+                  setFocusedIndex(-1)
+                }}
+                className={`px-2.5 py-1.5 text-xs rounded-md whitespace-nowrap transition-colors flex items-center gap-1.5 ${
+                  activeCategory === cat.id
+                    ? 'bg-kol-blue/15 text-kol-blue'
+                    : 'text-kol-text-muted hover:text-white hover:bg-kol-surface-elevated'
+                }`}
+              >
+                <i className={`${cat.icon} text-[11px]`} />
+                {cat.label}
+              </button>
+            ))}
+          </HorizontalScrollContainer>
         </div>
 
         {/* Recently used section */}

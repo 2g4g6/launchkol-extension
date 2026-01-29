@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { CoinCard, CoinData } from './CoinCard'
 import { ExpandableFilterPill } from '../ui/ExpandableFilterPill'
+import { HorizontalScrollContainer } from '../ui/HorizontalScrollContainer'
 
 type PlatformType = 'pump' | 'bonk' | 'bags' | 'mayhem' | 'fourmeme'
 type PlatformFilter = 'all' | PlatformType
@@ -340,7 +341,7 @@ export function CoinsPanel({ solPrice }: CoinsPanelProps) {
   const renderFilterRow = () => (
     <div className="flex items-center justify-between gap-2">
       {/* Platform filter pills */}
-      <div className="flex items-center gap-1 overflow-x-auto no-scrollbar">
+      <HorizontalScrollContainer className="flex items-center gap-1 overflow-x-auto no-scrollbar" gradientFrom="from-kol-surface/50">
         {PLATFORM_FILTERS.map((filter) => (
           <ExpandableFilterPill
             key={filter.id}
@@ -351,7 +352,7 @@ export function CoinsPanel({ solPrice }: CoinsPanelProps) {
             onClick={() => togglePlatformFilter(filter.id)}
           />
         ))}
-      </div>
+      </HorizontalScrollContainer>
 
       {/* Sort options */}
       <div className="flex items-center gap-1 flex-shrink-0">

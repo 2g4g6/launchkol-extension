@@ -5,6 +5,7 @@ import { SocialPost, SocialPostData } from './SocialPost'
 import { Tooltip } from '../ui/Tooltip'
 import { FeedSettingsModal } from './FeedSettings'
 import { ExpandableFilterPill } from '../ui/ExpandableFilterPill'
+import { HorizontalScrollContainer } from '../ui/HorizontalScrollContainer'
 
 type LaunchPlatform = 'pump' | 'bonk' | 'bags' | 'mayhem' | 'fourmeme'
 
@@ -340,7 +341,7 @@ export function TrackerFeed({ onDeploy }: TrackerFeedProps) {
   const renderFeedFilterRow = () => (
     <div className="flex items-center justify-between gap-2">
       {/* Tweet type filter pills */}
-      <div className="flex items-center gap-1 overflow-x-auto no-scrollbar">
+      <HorizontalScrollContainer className="flex items-center gap-1 overflow-x-auto no-scrollbar" gradientFrom="from-kol-surface/50">
         {TWEET_TYPE_FILTERS.map((filter) => (
           <ExpandableFilterPill
             key={filter.id}
@@ -350,7 +351,7 @@ export function TrackerFeed({ onDeploy }: TrackerFeedProps) {
             onClick={() => toggleTweetTypeFilter(filter.id)}
           />
         ))}
-      </div>
+      </HorizontalScrollContainer>
 
       {/* Right controls */}
       <div className="flex items-center gap-1 flex-shrink-0">

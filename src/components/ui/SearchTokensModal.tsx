@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { createPortal } from 'react-dom'
 import { Tooltip } from './Tooltip'
 import { WalletFilterDropdown, SavedWallet } from './WalletFilterDropdown'
+import { HorizontalScrollContainer } from './HorizontalScrollContainer'
 
 // ============================================================================
 // Types
@@ -323,34 +324,10 @@ export function SearchTokensModal({
   const [platformFilter, setPlatformFilter] = useState<PlatformFilter>('all')
   const [sortBy, setSortBy] = useState<SortOption>('time')
   const [selectedIndex, setSelectedIndex] = useState(0)
-  const [canScrollLeft, setCanScrollLeft] = useState(false)
-  const [canScrollRight, setCanScrollRight] = useState(false)
   const [walletFilterOpen, setWalletFilterOpen] = useState(false)
   const [savedWallets, setSavedWallets] = useState<SavedWallet[]>([])
   const inputRef = useRef<HTMLInputElement>(null)
-  const filterScrollRef = useRef<HTMLDivElement>(null)
   const walletFilterRef = useRef<HTMLSpanElement>(null)
-
-  // Check if filters can scroll
-  const checkScrollable = () => {
-    if (filterScrollRef.current) {
-      const { scrollLeft, scrollWidth, clientWidth } = filterScrollRef.current
-      setCanScrollLeft(scrollLeft > 10)
-      setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 10)
-    }
-  }
-
-  const scrollFiltersLeft = () => {
-    if (filterScrollRef.current) {
-      filterScrollRef.current.scrollBy({ left: -100, behavior: 'smooth' })
-    }
-  }
-
-  const scrollFiltersRight = () => {
-    if (filterScrollRef.current) {
-      filterScrollRef.current.scrollBy({ left: 100, behavior: 'smooth' })
-    }
-  }
 
   // Load wallets from storage on modal open
   useEffect(() => {
@@ -431,15 +408,6 @@ export function SearchTokensModal({
   useEffect(() => {
     setMounted(true)
   }, [])
-
-  // Check scroll on mount and resize
-  useEffect(() => {
-    if (isOpen) {
-      setTimeout(checkScrollable, 100)
-      window.addEventListener('resize', checkScrollable)
-      return () => window.removeEventListener('resize', checkScrollable)
-    }
-  }, [isOpen])
 
   // Focus input when modal opens
   useEffect(() => {
@@ -546,54 +514,24 @@ export function SearchTokensModal({
               {/* Filters Row - Platform filters left, Sort icons right */}
               <div className="flex items-center justify-between gap-4 px-4 pl-3 pt-3">
                 {/* Platform Filters - scrollable */}
-                <div className="relative flex-1 min-w-0 overflow-hidden">
-                  {/* Left scroll arrow */}
-                  {canScrollLeft && (
-                    <div className="absolute left-0 top-0 z-10 h-full w-8 bg-gradient-to-r from-kol-bg to-transparent pointer-events-none flex items-center justify-start">
-                      <button
-                        type="button"
-                        onClick={scrollFiltersLeft}
-                        className="pointer-events-auto flex items-center justify-center w-6 h-6 text-kol-text-muted hover:text-white transition-colors"
-                      >
-                        <i className="ri-arrow-left-s-line text-xl" />
-                      </button>
-                    </div>
-                  )}
-                  <div
-                    ref={filterScrollRef}
-                    onScroll={checkScrollable}
-                    className="flex items-center gap-2 overflow-x-auto scrollbar-hide -ml-2 pl-2 pr-0"
-                  >
-                    {PLATFORM_FILTERS.map((filter) => (
-                      <button
-                        key={filter.id}
-                        onClick={() => setPlatformFilter(filter.id)}
-                        className={`
-                          flex h-6 flex-shrink-0 items-center gap-[3px] px-1 rounded text-xs font-medium whitespace-nowrap transition-colors border
-                          ${platformFilter === filter.id
-                            ? 'bg-kol-blue/15 text-kol-blue border-kol-blue/50'
-                            : 'bg-kol-surface/45 border-kol-border text-kol-text-muted hover:bg-kol-surface-elevated'
-                          }
-                        `}
-                      >
-                        {filter.icon && <img src={filter.icon} alt={filter.label} className="w-3 h-3" />}
-                        <span className="font-medium">{filter.label}</span>
-                      </button>
-                    ))}
-                  </div>
-                  {/* Right scroll arrow */}
-                  {canScrollRight && (
-                    <div className="absolute right-0 top-0 z-10 h-full w-8 bg-gradient-to-l from-kol-bg to-transparent pointer-events-none flex items-center justify-end">
-                      <button
-                        type="button"
-                        onClick={scrollFiltersRight}
-                        className="pointer-events-auto flex items-center justify-center w-6 h-6 text-kol-text-muted hover:text-white transition-colors"
-                      >
-                        <i className="ri-arrow-right-s-line text-xl" />
-                      </button>
-                    </div>
-                  )}
-                </div>
+                <HorizontalScrollContainer className="flex items-center gap-2 overflow-x-auto scrollbar-hide -ml-2 pl-2 pr-0" gradientFrom="from-kol-bg">
+                  {PLATFORM_FILTERS.map((filter) => (
+                    <button
+                      key={filter.id}
+                      onClick={() => setPlatformFilter(filter.id)}
+                      className={`
+                        flex h-6 flex-shrink-0 items-center gap-[3px] px-1 rounded text-xs font-medium whitespace-nowrap transition-colors border
+                        ${platformFilter === filter.id
+                          ? 'bg-kol-blue/15 text-kol-blue border-kol-blue/50'
+                          : 'bg-kol-surface/45 border-kol-border text-kol-text-muted hover:bg-kol-surface-elevated'
+                        }
+                      `}
+                    >
+                      {filter.icon && <img src={filter.icon} alt={filter.label} className="w-3 h-3" />}
+                      <span className="font-medium">{filter.label}</span>
+                    </button>
+                  ))}
+                </HorizontalScrollContainer>
 
                 {/* Sort Icons */}
                 <div className="flex items-center gap-2 flex-shrink-0">
