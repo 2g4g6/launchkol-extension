@@ -344,14 +344,14 @@ export function CoinsPanel({}: CoinsPanelProps) {
           <button
             key={filter.id}
             onClick={() => togglePlatformFilter(filter.id)}
-            className={`flex items-center gap-1 h-6 px-2 rounded text-xs font-medium border whitespace-nowrap transition-colors ${
+            className={`flex items-center gap-0.5 h-6 px-1.5 rounded text-xs font-medium border whitespace-nowrap transition-colors ${
               platformFilters.has(filter.id)
                 ? 'bg-kol-blue/15 text-kol-blue border-kol-blue/50'
                 : 'bg-kol-surface/45 border-kol-border text-kol-text-muted hover:bg-kol-surface-elevated'
             }`}
           >
             {filter.icon && (
-              <img src={filter.icon} alt={filter.label} className="w-3.5 h-3.5" />
+              <img src={filter.icon} alt={filter.label} className="w-3 h-3" />
             )}
             <span>{filter.label}</span>
           </button>
@@ -499,7 +499,7 @@ export function CoinsPanel({}: CoinsPanelProps) {
                   transition={{ duration: 0.2 }}
                 />
               </button>
-              <i className={`ri-search-line absolute left-7 top-1/2 -translate-y-1/2 text-sm transition-colors duration-200 ${
+              <i className={`ri-search-line absolute left-8 top-1/2 -translate-y-1/2 text-sm transition-colors duration-200 ${
                 isSearchFocused ? 'text-kol-blue' : 'text-kol-text-tertiary'
               }`} />
               <input
@@ -509,11 +509,11 @@ export function CoinsPanel({}: CoinsPanelProps) {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onFocus={() => setIsSearchFocused(true)}
                 onBlur={() => setIsSearchFocused(false)}
-                className="flex-1 h-9 pl-12 pr-1 bg-transparent border-0 rounded-xl text-sm text-white placeholder:text-kol-text-tertiary font-body focus:outline-none transition-all duration-300 min-w-0"
+                className="flex-1 h-9 pl-14 pr-2 bg-transparent border-0 rounded-xl text-sm text-white placeholder:text-kol-text-tertiary font-body focus:outline-none transition-all duration-300"
               />
 
               {/* Action Buttons */}
-              <div className="flex items-center gap-0.5 pr-1.5 flex-shrink-0">
+              <div className="flex items-center gap-0.5 pr-2">
                 {/* Clear search */}
                 <AnimatePresence>
                   {searchQuery && (
@@ -522,24 +522,24 @@ export function CoinsPanel({}: CoinsPanelProps) {
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.8 }}
                       onClick={() => setSearchQuery('')}
-                      className="w-6 h-6 rounded-md flex items-center justify-center text-kol-text-muted hover:text-white hover:bg-white/5 transition-colors"
+                      className="w-7 h-7 rounded-lg flex items-center justify-center text-kol-text-muted hover:text-white hover:bg-white/5 transition-colors"
                     >
-                      <i className="ri-close-line text-xs" />
+                      <i className="ri-close-line text-sm" />
                     </motion.button>
                   )}
                 </AnimatePresence>
 
                 {/* Divider */}
-                <div className="w-px h-4 bg-kol-border/40 mx-0.5" />
+                <div className="w-px h-4 bg-kol-border/40 mx-1" />
 
                 {/* Action buttons */}
-                <button className="h-7 px-1.5 rounded-lg flex items-center gap-1 text-kol-text-muted hover:text-white hover:bg-white/5 transition-colors">
-                  <i className="ri-file-copy-line text-xs" />
+                <button className="h-7 px-2 rounded-lg flex items-center gap-1.5 text-kol-text-muted hover:text-white hover:bg-white/5 transition-colors">
+                  <i className="ri-file-copy-line text-sm" />
                   <span className="text-xs font-medium whitespace-nowrap">Clone</span>
                 </button>
 
-                <button className="h-7 px-1.5 rounded-lg flex items-center gap-1 text-kol-text-muted hover:text-white hover:bg-white/5 transition-colors">
-                  <i className="ri-add-line text-xs" />
+                <button className="h-7 px-2 rounded-lg flex items-center gap-1.5 text-kol-text-muted hover:text-white hover:bg-white/5 transition-colors">
+                  <i className="ri-add-line text-sm" />
                   <span className="text-xs font-medium whitespace-nowrap">Create</span>
                 </button>
               </div>
