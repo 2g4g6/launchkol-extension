@@ -42,7 +42,7 @@ function SearchInput({ onClick }: { onClick?: () => void }) {
   return (
     <button
       onClick={onClick}
-      className="relative flex items-center gap-2 px-3 py-1.5 rounded-lg bg-kol-surface/50 border border-[#2e2e2e] hover:border-kol-blue/30 hover:bg-kol-surface/70 transition-colors cursor-pointer group min-w-[120px]"
+      className="relative flex items-center gap-2 px-3 py-1.5 rounded-lg bg-kol-surface/50 border border-[#282828] hover:border-kol-blue/30 hover:bg-kol-surface/70 transition-colors cursor-pointer group min-w-[120px]"
     >
       <i className="ri-search-line text-sm text-kol-text-muted group-hover:text-kol-text-secondary transition-colors" />
       <span className="text-xs text-kol-text-muted group-hover:text-kol-text-secondary transition-colors font-body flex-1">
@@ -199,7 +199,7 @@ function WalletDropdown({
       {/* Wallet button trigger */}
       <motion.button
         onClick={() => setIsOpen(!isOpen)}
-        className="relative flex items-center gap-2 px-3 py-1.5 rounded-lg bg-kol-surface/50 border border-[#2e2e2e] hover:border-kol-blue/30 transition-all cursor-pointer group"
+        className="relative flex items-center gap-2 px-3 py-1.5 rounded-lg bg-kol-surface/50 border border-[#282828] hover:border-kol-blue/30 transition-all cursor-pointer group"
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
       >
