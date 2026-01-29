@@ -260,21 +260,12 @@ export function MarketLighthousePopover({ children }: { children: React.ReactEle
                       <ChangeText value={data.volume24h.change} />
                     </div>
                   </div>
-                  <div className="w-full h-[6px] rounded-full overflow-hidden flex bg-kol-surface">
+                  <div className="flex h-[2px] w-full flex-row items-center gap-[4px]">
                     <div
-                      className="h-full rounded-l-full"
-                      style={{
-                        width: '55%',
-                        background: 'linear-gradient(90deg, #00c46b, #00e67a)',
-                      }}
+                      className="flex h-[2px] rounded-l-full"
+                      style={{ width: '55%', backgroundColor: '#00d492' }}
                     />
-                    <div
-                      className="h-full rounded-r-full"
-                      style={{
-                        width: '45%',
-                        background: 'linear-gradient(90deg, #ff4d4f, #ff7875)',
-                      }}
-                    />
+                    <div className="flex h-[2px] flex-1 rounded-r-full bg-kol-red" />
                   </div>
                   <div className="flex items-center justify-between mt-1">
                     <span className="text-[9px] text-kol-green font-body">{data.volumeBar.left}</span>
@@ -309,14 +300,10 @@ export function MarketLighthousePopover({ children }: { children: React.ReactEle
                   <span className="text-[11px] text-kol-text-muted font-body">Top Launchpads</span>
                   <div className="flex gap-2 mt-1.5">
                     {data.topLaunchpads.map((lp) => (
-                      <div key={lp.name} className="flex items-center gap-1.5 flex-1 min-w-0 bg-kol-surface border border-kol-border rounded-lg px-2 py-1.5">
-                        <img src={lp.icon} alt={lp.name} className="w-7 h-7 rounded-full shrink-0" />
-                        <div className="min-w-0">
-                          <span className="text-[12px] text-white font-body font-medium">{lp.value}</span>
-                          <div>
-                            <ChangeText value={lp.change} />
-                          </div>
-                        </div>
+                      <div key={lp.name} className="flex flex-col items-center flex-1 min-w-0 bg-kol-surface border border-kol-border rounded-lg px-2 py-2 gap-1">
+                        <img src={lp.icon} alt={lp.name} className="w-7 h-7 rounded-full" />
+                        <span className="text-[12px] text-white font-body font-medium">{lp.value}</span>
+                        <ChangeText value={lp.change} />
                       </div>
                     ))}
                   </div>
