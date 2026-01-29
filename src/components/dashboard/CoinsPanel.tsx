@@ -2,6 +2,25 @@ import { useState, useCallback, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { CoinCard, CoinData } from './CoinCard'
 
+type PlatformType = 'pump' | 'bonk' | 'bags' | 'mayhem' | 'fourmeme'
+type PlatformFilter = 'all' | PlatformType
+type SortOption = 'time' | 'trending' | 'volume' | 'liquidity'
+
+const PLATFORM_FILTERS: { id: PlatformFilter; label: string; icon?: string }[] = [
+  { id: 'all', label: 'All' },
+  { id: 'pump', label: 'Pump', icon: '/images/pump.svg' },
+  { id: 'bonk', label: 'Bonk', icon: '/images/bonk.svg' },
+  { id: 'bags', label: 'Bags', icon: '/images/bags.svg' },
+  { id: 'mayhem', label: 'Mayhem', icon: '/images/mayhem.svg' },
+  { id: 'fourmeme', label: 'Four', icon: '/images/fourmeme.svg' },
+]
+
+const SORT_OPTIONS: { id: SortOption; icon: string; label: string }[] = [
+  { id: 'time', icon: 'ri-time-line', label: 'Recent' },
+  { id: 'trending', icon: 'ri-fire-line', label: 'Trending' },
+  { id: 'volume', icon: 'ri-bar-chart-line', label: 'Volume' },
+  { id: 'liquidity', icon: 'ri-drop-line', label: 'Liquidity' },
+]
 
 // Mock data with new fields - showcasing all tweet types
 const MOCK_COINS: CoinData[] = [
@@ -231,12 +250,17 @@ export function CoinsPanel({}: CoinsPanelProps) {
   const [isResizing, setIsResizing] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [isSearchFocused, setIsSearchFocused] = useState(false)
+  const [platformFilter, setPlatformFilter] = useState<PlatformFilter>('all')
+  const [sortBy, setSortBy] = useState<SortOption>('time')
 
-  const filteredCoins = coins.filter(coin =>
-    coin.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    coin.symbol.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    coin.address.toLowerCase().includes(searchQuery.toLowerCase())
-  )
+  const filteredCoins = coins.filter(coin => {
+    const matchesSearch =
+      coin.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      coin.symbol.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      coin.address.toLowerCase().includes(searchQuery.toLowerCase())
+    const matchesPlatform = platformFilter === 'all' || coin.platform === platformFilter
+    return matchesSearch && matchesPlatform
+  })
 
   const handleView = (coin: CoinData) => {
     window.open(`https://pump.fun/${coin.address}`, '_blank')
@@ -292,6 +316,49 @@ export function CoinsPanel({}: CoinsPanelProps) {
       document.body.style.cursor = ''
     }
   }, [isResizing])
+
+  const renderFilterRow = () => (
+    <div className="flex items-center justify-between gap-2 mt-2">
+      {/* Platform filter pills */}
+      <div className="flex items-center gap-1 overflow-x-auto no-scrollbar">
+        {PLATFORM_FILTERS.map((filter) => (
+          <button
+            key={filter.id}
+            onClick={() => setPlatformFilter(filter.id)}
+            className={`flex items-center gap-1 h-6 px-2 rounded text-xs font-medium border whitespace-nowrap transition-colors ${
+              platformFilter === filter.id
+                ? 'bg-kol-blue/15 text-kol-blue border-kol-blue/50'
+                : 'bg-kol-surface/45 border-kol-border text-kol-text-muted hover:bg-kol-surface-elevated'
+            }`}
+          >
+            {filter.icon && (
+              <img src={filter.icon} alt={filter.label} className="w-3.5 h-3.5" />
+            )}
+            <span>{filter.label}</span>
+          </button>
+        ))}
+      </div>
+
+      {/* Sort options */}
+      <div className="flex items-center gap-0.5 flex-shrink-0">
+        <span className="text-[10px] text-kol-text-muted mr-1">Sort</span>
+        {SORT_OPTIONS.map((option) => (
+          <button
+            key={option.id}
+            onClick={() => setSortBy(option.id)}
+            title={option.label}
+            className={`w-6 h-6 rounded flex items-center justify-center transition-colors ${
+              sortBy === option.id
+                ? 'bg-kol-blue/15 text-kol-blue'
+                : 'text-kol-text-muted hover:bg-kol-surface-elevated'
+            }`}
+          >
+            <i className={`${option.icon} text-xs`} />
+          </button>
+        ))}
+      </div>
+    </div>
+  )
 
   const renderCoinsList = () => (
     <>
@@ -430,6 +497,9 @@ export function CoinsPanel({}: CoinsPanelProps) {
               </button>
             </div>
           </div>
+
+          {/* Platform filters & sort */}
+          {renderFilterRow()}
         </div>
 
         {/* Coins List */}
@@ -512,6 +582,9 @@ export function CoinsPanel({}: CoinsPanelProps) {
               </button>
             </div>
           </div>
+
+          {/* Platform filters & sort */}
+          {renderFilterRow()}
         </div>
 
         {/* Coins List - vertical scroll */}
