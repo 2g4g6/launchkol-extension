@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { CoinCard, CoinData } from './CoinCard'
+import { Tooltip } from '../ui/Tooltip'
 
 type PlatformType = 'pump' | 'bonk' | 'bags' | 'mayhem' | 'fourmeme'
 type PlatformFilter = 'all' | PlatformType
@@ -252,6 +253,7 @@ export function CoinsPanel({}: CoinsPanelProps) {
   const [isSearchFocused, setIsSearchFocused] = useState(false)
   const [platformFilter, setPlatformFilter] = useState<PlatformFilter>('all')
   const [sortBy, setSortBy] = useState<SortOption>('time')
+  const [showFilters, setShowFilters] = useState(true)
 
   const filteredCoins = coins.filter(coin => {
     const matchesSearch =
@@ -343,18 +345,18 @@ export function CoinsPanel({}: CoinsPanelProps) {
       <div className="flex items-center gap-0.5 flex-shrink-0">
         <span className="text-[10px] text-kol-text-muted mr-1">Sort</span>
         {SORT_OPTIONS.map((option) => (
-          <button
-            key={option.id}
-            onClick={() => setSortBy(option.id)}
-            title={option.label}
-            className={`w-6 h-6 rounded flex items-center justify-center transition-colors ${
-              sortBy === option.id
-                ? 'bg-kol-blue/15 text-kol-blue'
-                : 'text-kol-text-muted hover:bg-kol-surface-elevated'
-            }`}
-          >
-            <i className={`${option.icon} text-xs`} />
-          </button>
+          <Tooltip key={option.id} content={option.label} position="bottom">
+            <button
+              onClick={() => setSortBy(option.id)}
+              className={`w-6 h-6 rounded flex items-center justify-center transition-colors ${
+                sortBy === option.id
+                  ? 'bg-kol-blue/15 text-kol-blue'
+                  : 'text-kol-text-muted hover:bg-kol-surface-elevated'
+              }`}
+            >
+              <i className={`${option.icon} text-xs`} />
+            </button>
+          </Tooltip>
         ))}
       </div>
     </div>
@@ -440,7 +442,19 @@ export function CoinsPanel({}: CoinsPanelProps) {
         {/* Header: filters + search container */}
         <div className="px-3 pt-3 pb-2 border-b border-kol-border/30 space-y-2">
           {/* Platform filters & sort */}
-          {renderFilterRow()}
+          <AnimatePresence>
+            {showFilters && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="overflow-hidden"
+              >
+                {renderFilterRow()}
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {/* Search bar */}
           <div className="relative">
@@ -457,7 +471,18 @@ export function CoinsPanel({}: CoinsPanelProps) {
             <div className={`relative flex items-center bg-kol-surface/50 border rounded-xl transition-all duration-300 ${
               isSearchFocused ? 'border-kol-blue/50' : 'border-kol-border/70'
             }`}>
-              <i className={`ri-search-line absolute left-3 text-sm transition-colors duration-200 ${
+              {/* Chevron toggle for filters */}
+              <button
+                onClick={() => setShowFilters(!showFilters)}
+                className="absolute left-2 top-1/2 -translate-y-1/2 w-5 h-5 rounded flex items-center justify-center text-kol-text-muted hover:text-white transition-colors z-10"
+              >
+                <motion.i
+                  className="ri-arrow-down-s-line text-sm"
+                  animate={{ rotate: showFilters ? 180 : 0 }}
+                  transition={{ duration: 0.2 }}
+                />
+              </button>
+              <i className={`ri-search-line absolute left-8 top-1/2 -translate-y-1/2 text-sm transition-colors duration-200 ${
                 isSearchFocused ? 'text-kol-blue' : 'text-kol-text-tertiary'
               }`} />
               <input
@@ -467,7 +492,7 @@ export function CoinsPanel({}: CoinsPanelProps) {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onFocus={() => setIsSearchFocused(true)}
                 onBlur={() => setIsSearchFocused(false)}
-                className="flex-1 h-9 pl-9 pr-2 bg-transparent border-0 rounded-xl text-sm text-white placeholder:text-kol-text-tertiary font-body focus:outline-none transition-all duration-300"
+                className="flex-1 h-9 pl-14 pr-2 bg-transparent border-0 rounded-xl text-sm text-white placeholder:text-kol-text-tertiary font-body focus:outline-none transition-all duration-300"
               />
 
               {/* Action Buttons */}
@@ -528,7 +553,19 @@ export function CoinsPanel({}: CoinsPanelProps) {
         {/* Header: filters + search container - larger on mobile for better touch targets */}
         <div className="px-3 pt-3 pb-2 flex-shrink-0 border-b border-kol-border/30 space-y-2">
           {/* Platform filters & sort */}
-          {renderFilterRow()}
+          <AnimatePresence>
+            {showFilters && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="overflow-hidden"
+              >
+                {renderFilterRow()}
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {/* Search bar */}
           <div className="relative">
@@ -545,7 +582,18 @@ export function CoinsPanel({}: CoinsPanelProps) {
             <div className={`relative flex items-center bg-kol-surface/50 border rounded-xl transition-all duration-300 ${
               isSearchFocused ? 'border-kol-blue/50' : 'border-kol-border'
             }`}>
-              <i className={`ri-search-line absolute left-3.5 text-base transition-colors duration-200 ${
+              {/* Chevron toggle for filters */}
+              <button
+                onClick={() => setShowFilters(!showFilters)}
+                className="absolute left-2.5 top-1/2 -translate-y-1/2 w-6 h-6 rounded flex items-center justify-center text-kol-text-muted hover:text-white transition-colors z-10"
+              >
+                <motion.i
+                  className="ri-arrow-down-s-line text-base"
+                  animate={{ rotate: showFilters ? 180 : 0 }}
+                  transition={{ duration: 0.2 }}
+                />
+              </button>
+              <i className={`ri-search-line absolute left-9 top-1/2 -translate-y-1/2 text-base transition-colors duration-200 ${
                 isSearchFocused ? 'text-kol-blue' : 'text-kol-text-tertiary'
               }`} />
               <input
@@ -555,7 +603,7 @@ export function CoinsPanel({}: CoinsPanelProps) {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onFocus={() => setIsSearchFocused(true)}
                 onBlur={() => setIsSearchFocused(false)}
-                className="flex-1 h-11 pl-10 pr-2 bg-transparent border-0 rounded-xl text-base text-white placeholder:text-kol-text-tertiary font-body focus:outline-none transition-all duration-300"
+                className="flex-1 h-11 pl-16 pr-2 bg-transparent border-0 rounded-xl text-base text-white placeholder:text-kol-text-tertiary font-body focus:outline-none transition-all duration-300"
               />
 
               {/* Action Buttons */}
