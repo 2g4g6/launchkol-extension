@@ -469,6 +469,7 @@ function QuickLinks({ coin, onSearchToken }: { coin: CoinData; onSearchToken?: (
             platformColor={platformConfig.ringColor}
             platformFee="1.5%"
             creator={coin.creator}
+            progressPercent={coin.progressPercent}
           />
         }
       >

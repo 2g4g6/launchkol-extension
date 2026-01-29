@@ -10,6 +10,7 @@ interface PlatformCreatorPopoverProps {
   platformColor: string
   platformFee?: string
   creator?: CreatorInfo
+  progressPercent?: number
 }
 
 export function PlatformCreatorPopoverContent({
@@ -18,7 +19,10 @@ export function PlatformCreatorPopoverContent({
   platformColor,
   platformFee,
   creator,
+  progressPercent,
 }: PlatformCreatorPopoverProps) {
+  const isMigrated = progressPercent !== undefined && progressPercent >= 100
+
   return (
     <div className="p-3 space-y-3" style={{ width: 280 }}>
       {/* Platform header */}
@@ -39,41 +43,38 @@ export function PlatformCreatorPopoverContent({
         </div>
       </div>
 
-      {/* Creator info */}
-      {creator && (
-        <div className="border-t border-kol-border pt-3">
-          <div className="flex items-center gap-2.5">
-            {creator.avatar ? (
-              <img
-                src={creator.avatar}
-                alt={creator.name}
-                className="w-7 h-7 rounded-full object-cover ring-1 ring-kol-border/50"
-              />
-            ) : (
-              <div className="w-7 h-7 rounded-full bg-kol-surface-elevated flex items-center justify-center ring-1 ring-kol-border/50">
-                <span className="text-xs font-bold text-kol-text-muted">
-                  {creator.name.charAt(0).toUpperCase()}
-                </span>
-              </div>
-            )}
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-1.5">
-                <span className="text-sm font-medium text-white truncate">{creator.name}</span>
-                <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-kol-blue/15 text-kol-blue border border-kol-blue/30">
-                  Creator
-                </span>
-              </div>
-            </div>
+      {/* Bonding curve progress */}
+      {progressPercent !== undefined && (
+        <div className="border-t border-kol-border pt-3 space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] text-kol-text-muted">Bonding curve</span>
+            <span className={`text-[12px] font-medium ${isMigrated ? 'text-kol-green' : 'text-kol-blue'}`}>
+              {isMigrated ? 'Migrated' : `${progressPercent}%`}
+            </span>
           </div>
-
-          {creator.rewardsPercent !== undefined && (
-            <div className="flex items-center justify-between mt-2.5 px-1">
-              <span className="text-[11px] text-kol-text-muted">Creator rewards</span>
-              <span className="text-[12px] font-medium text-kol-green">
-                {creator.rewardsPercent}%
-              </span>
+          <div className="h-1.5 rounded-full bg-kol-surface-elevated overflow-hidden">
+            <div
+              className={`h-full rounded-full transition-all ${isMigrated ? 'bg-kol-green' : 'bg-kol-blue'}`}
+              style={{ width: `${Math.min(progressPercent, 100)}%` }}
+            />
+          </div>
+          {!isMigrated && (
+            <div className="text-[10px] text-kol-text-muted">
+              {100 - progressPercent}% remaining to migration
             </div>
           )}
+        </div>
+      )}
+
+      {/* Creator rewards */}
+      {creator?.rewardsPercent !== undefined && (
+        <div className="border-t border-kol-border pt-3">
+          <div className="flex items-center justify-between px-1">
+            <span className="text-[11px] text-kol-text-muted">Creator rewards</span>
+            <span className="text-[12px] font-medium text-kol-green">
+              {creator.rewardsPercent}%
+            </span>
+          </div>
         </div>
       )}
     </div>
