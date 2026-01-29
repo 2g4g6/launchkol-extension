@@ -15,7 +15,7 @@ interface ImageLightboxProps {
   onClose: () => void;
 }
 
-const ZOOM_LEVELS = [1, 2, 3] as const;
+const ZOOM_LEVELS = [1, 1.5, 2] as const;
 type ZoomLevel = (typeof ZOOM_LEVELS)[number];
 
 export function ImageLightbox({
@@ -182,14 +182,11 @@ export function ImageLightbox({
 
     if (zoomLevel === 1) {
       // Zoom in centered on click point
-      // The click offset from center needs to be scaled by the target zoom level
-      // because at 2x the same image point is at 2x the pixel offset
-      const targetZoom = 2;
       const rect = e.currentTarget.getBoundingClientRect();
       const clickX = e.clientX - rect.left - rect.width / 2;
       const clickY = e.clientY - rect.top - rect.height / 2;
-      setPanPosition({ x: -clickX * targetZoom, y: -clickY * targetZoom });
-      setZoomLevel(targetZoom);
+      setPanPosition({ x: -clickX, y: -clickY });
+      setZoomLevel(1.5);
     } else {
       resetZoom();
     }
@@ -255,8 +252,6 @@ export function ImageLightbox({
   };
 
   if (!mounted) return null;
-
-  const zoomScale = `${zoomLevel * 90}vw`;
 
   const lightboxContent = (
     <AnimatePresence>
@@ -347,9 +342,7 @@ export function ImageLightbox({
                   cycleZoom();
                 }}
               >
-                {zoomLevel === 1
-                  ? "Fit"
-                  : `${zoomLevel}x`}
+                {zoomLevel === 1 ? "Fit" : `${zoomLevel}x`}
               </button>
               {/* Hint */}
               <div className="px-3 py-1.5 rounded-lg bg-kol-surface-elevated/60 border border-kol-border/30 text-xs text-gray-500">
@@ -387,7 +380,7 @@ export function ImageLightbox({
                 </div>
               ) : (
                 <div
-                  className={`relative overflow-hidden rounded-lg ${
+                  className={`relative overflow-hidden rounded-lg flex items-center justify-center ${
                     isZoomed
                       ? isDragging
                         ? "cursor-grabbing"
@@ -395,10 +388,8 @@ export function ImageLightbox({
                       : "cursor-zoom-in"
                   }`}
                   style={{
-                    width: isZoomed ? "90vw" : "auto",
-                    height: isZoomed ? "85vh" : "auto",
-                    maxWidth: "90vw",
-                    maxHeight: "85vh",
+                    width: "90vw",
+                    height: "85vh",
                   }}
                   onClick={handleZoomClick}
                   onMouseDown={handleMouseDown}
@@ -416,27 +407,19 @@ export function ImageLightbox({
                     key={currentMedia?.url}
                     src={currentMedia?.url}
                     alt=""
-                    className={`select-none transition-opacity duration-200 ${imageLoaded ? "opacity-100" : "opacity-0"}`}
+                    className={`select-none ${imageLoaded ? "opacity-100" : "opacity-0"}`}
                     draggable={false}
                     onLoad={() => setImageLoaded(true)}
-                    style={
-                      isZoomed
-                        ? {
-                            width: zoomScale,
-                            height: "auto",
-                            maxWidth: "none",
-                            maxHeight: "none",
-                            transform: `translate(calc(-50% + 45vw + ${panPosition.x}px), calc(-50% + 42.5vh + ${panPosition.y}px))`,
-                            transition: isDragging
-                              ? "none"
-                              : "transform 0.15s ease-out",
-                          }
-                        : {
-                            maxWidth: "90vw",
-                            maxHeight: "85vh",
-                            objectFit: "contain" as const,
-                          }
-                    }
+                    style={{
+                      maxWidth: "90vw",
+                      maxHeight: "85vh",
+                      objectFit: "contain" as const,
+                      transformOrigin: "center center",
+                      transform: `scale(${zoomLevel}) translate(${panPosition.x / zoomLevel}px, ${panPosition.y / zoomLevel}px)`,
+                      transition: isDragging
+                        ? "none"
+                        : "transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s",
+                    }}
                   />
                 </div>
               )}
