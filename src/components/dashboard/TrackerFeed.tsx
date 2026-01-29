@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { SocialPost, SocialPostData } from './SocialPost'
 import { Tooltip } from '../ui/Tooltip'
@@ -273,16 +274,31 @@ export function TrackerFeed({ onDeploy }: TrackerFeedProps) {
   const [launchPlatform, setLaunchPlatform] = useState<LaunchPlatform>('pump')
   const [isPlatformDropdownOpen, setIsPlatformDropdownOpen] = useState(false)
   const platformDropdownRef = useRef<HTMLDivElement>(null)
+  const platformButtonRef = useRef<HTMLButtonElement>(null)
+  const [dropdownPos, setDropdownPos] = useState({ top: 0, right: 0 })
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (platformDropdownRef.current && !platformDropdownRef.current.contains(e.target as Node)) {
+      if (
+        platformDropdownRef.current && !platformDropdownRef.current.contains(e.target as Node) &&
+        platformButtonRef.current && !platformButtonRef.current.contains(e.target as Node)
+      ) {
         setIsPlatformDropdownOpen(false)
       }
     }
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
+
+  useEffect(() => {
+    if (isPlatformDropdownOpen && platformButtonRef.current) {
+      const rect = platformButtonRef.current.getBoundingClientRect()
+      setDropdownPos({
+        top: rect.bottom + 4,
+        right: window.innerWidth - rect.right,
+      })
+    }
+  }, [isPlatformDropdownOpen])
 
   const TWEET_TYPE_MAP: Record<TweetTypeFilter, string | undefined> = {
     all: undefined,
@@ -340,12 +356,13 @@ export function TrackerFeed({ onDeploy }: TrackerFeedProps) {
             key={String(pauseOnHover)}
             transition={{ duration: 0.25 }}
           />
-          <span>Pause</span>
+          <span>{pauseOnHover ? 'Pause on hover' : 'Live'}</span>
         </button>
 
         {/* Launch platform dropdown */}
-        <div ref={platformDropdownRef} className="relative">
+        <div className="relative">
           <button
+            ref={platformButtonRef}
             onClick={() => setIsPlatformDropdownOpen(!isPlatformDropdownOpen)}
             className={`flex items-center gap-1 h-6 px-2 rounded text-xs font-medium border whitespace-nowrap transition-colors ${
               isPlatformDropdownOpen
@@ -366,38 +383,43 @@ export function TrackerFeed({ onDeploy }: TrackerFeedProps) {
             />
           </button>
 
-          <AnimatePresence>
-            {isPlatformDropdownOpen && (
-              <motion.div
-                initial={{ opacity: 0, y: -4 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -4 }}
-                transition={{ duration: 0.15 }}
-                className="absolute right-0 top-full mt-1 z-50 bg-kol-bg border border-kol-border rounded-lg shadow-lg shadow-black/40 ring-1 ring-white/5 min-w-[120px] py-1"
-              >
-                {LAUNCH_PLATFORMS.map((platform) => (
-                  <button
-                    key={platform.id}
-                    onClick={() => {
-                      setLaunchPlatform(platform.id)
-                      setIsPlatformDropdownOpen(false)
-                    }}
-                    className={`w-full flex items-center gap-2 px-2.5 py-1.5 text-xs transition-colors ${
-                      launchPlatform === platform.id
-                        ? 'text-kol-blue bg-kol-blue/10'
-                        : 'text-kol-text-muted hover:bg-kol-surface-elevated hover:text-white'
-                    }`}
-                  >
-                    <img src={platform.icon} alt="" className="w-4 h-4 rounded-sm" />
-                    <span className="flex-1 text-left font-medium">{platform.label}</span>
-                    {launchPlatform === platform.id && (
-                      <i className="ri-check-line text-kol-blue text-sm" />
-                    )}
-                  </button>
-                ))}
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {createPortal(
+            <AnimatePresence>
+              {isPlatformDropdownOpen && (
+                <motion.div
+                  ref={platformDropdownRef}
+                  initial={{ opacity: 0, y: -4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -4 }}
+                  transition={{ duration: 0.15 }}
+                  className="fixed z-[9999] bg-kol-bg border border-kol-border rounded-lg shadow-lg shadow-black/40 ring-1 ring-white/5 min-w-[120px] py-1"
+                  style={{ top: dropdownPos.top, right: dropdownPos.right }}
+                >
+                  {LAUNCH_PLATFORMS.map((platform) => (
+                    <button
+                      key={platform.id}
+                      onClick={() => {
+                        setLaunchPlatform(platform.id)
+                        setIsPlatformDropdownOpen(false)
+                      }}
+                      className={`w-full flex items-center gap-2 px-2.5 py-1.5 text-xs transition-colors ${
+                        launchPlatform === platform.id
+                          ? 'text-kol-blue bg-kol-blue/10'
+                          : 'text-kol-text-muted hover:bg-kol-surface-elevated hover:text-white'
+                      }`}
+                    >
+                      <img src={platform.icon} alt="" className="w-4 h-4 rounded-sm" />
+                      <span className="flex-1 text-left font-medium">{platform.label}</span>
+                      {launchPlatform === platform.id && (
+                        <i className="ri-check-line text-kol-blue text-sm" />
+                      )}
+                    </button>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>,
+            document.body
+          )}
         </div>
       </div>
     </div>
