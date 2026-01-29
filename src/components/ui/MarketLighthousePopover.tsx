@@ -289,7 +289,7 @@ export function MarketLighthousePopover({ children }: { children: React.ReactEle
                     <StatCard
                       label="Migrations"
                       value={data.migrations.value}
-                      icon="ri-link-line"
+                      icon="ri-capsule-line"
                       change={data.migrations.change}
                     />
                   </div>
