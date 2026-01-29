@@ -363,8 +363,8 @@ export function TrackerFeed({ onDeploy }: TrackerFeedProps) {
           }`}
           onClick={() => setPauseOnHover(!pauseOnHover)}
         >
-          <i className={pauseOnHover ? 'ri-pause-circle-fill' : 'ri-pause-circle-line'} />
-          <span>{pauseOnHover ? 'Pause on hover' : 'Auto-scroll'}</span>
+          <i className={pauseOnHover ? 'ri-pause-fill' : 'ri-play-fill'} />
+          <span>Pause on hover</span>
         </button>
 
         {/* Launch platform dropdown */}
