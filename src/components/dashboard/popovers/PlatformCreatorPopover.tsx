@@ -109,7 +109,7 @@ export function PlatformCreatorPopoverContent({
               <span className="text-[11px] text-kol-text-muted">Fees earned</span>
               <div className="flex items-center gap-1">
                 <img alt="SOL" width="12" height="12" src="/images/solanaLogoMark.svg" />
-                <span className="text-[12px] font-medium font-mono text-kol-text-secondary">
+                <span className="text-[12px] font-medium text-kol-text-secondary">
                   {creatorFeesEarnedSol < 0.01 ? '<0.01' : creatorFeesEarnedSol < 100 ? creatorFeesEarnedSol.toFixed(2) : creatorFeesEarnedSol < 10000 ? creatorFeesEarnedSol.toFixed(1) : Math.round(creatorFeesEarnedSol).toLocaleString()}
                 </span>
               </div>
