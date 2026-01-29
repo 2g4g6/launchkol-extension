@@ -11,6 +11,13 @@ interface PlatformCreatorPopoverProps {
   platformFee?: string
   creator?: CreatorInfo
   progressPercent?: number
+  totalVolumeUsd?: number
+}
+
+function formatUsd(value: number): string {
+  if (value >= 1_000_000) return `$${(value / 1_000_000).toFixed(1)}M`
+  if (value >= 1_000) return `$${(value / 1_000).toFixed(1)}k`
+  return `$${value.toFixed(0)}`
 }
 
 export function PlatformCreatorPopoverContent({
@@ -20,8 +27,13 @@ export function PlatformCreatorPopoverContent({
   platformFee,
   creator,
   progressPercent,
+  totalVolumeUsd,
 }: PlatformCreatorPopoverProps) {
   const isMigrated = progressPercent !== undefined && progressPercent >= 100
+  const creatorFeesEarned =
+    creator?.rewardsPercent !== undefined && totalVolumeUsd !== undefined
+      ? (totalVolumeUsd * creator.rewardsPercent) / 100
+      : undefined
 
   return (
     <div className="p-3 space-y-3" style={{ width: 280 }}>
@@ -66,15 +78,44 @@ export function PlatformCreatorPopoverContent({
         </div>
       )}
 
-      {/* Creator rewards */}
-      {creator?.rewardsPercent !== undefined && (
-        <div className="border-t border-kol-border pt-3">
+      {/* Launched by + Creator rewards */}
+      {creator && (
+        <div className="border-t border-kol-border pt-3 space-y-2">
           <div className="flex items-center justify-between px-1">
-            <span className="text-[11px] text-kol-text-muted">Creator rewards</span>
-            <span className="text-[12px] font-medium text-kol-green">
-              {creator.rewardsPercent}%
-            </span>
+            <span className="text-[11px] text-kol-text-muted">Launched by</span>
+            <div className="flex items-center gap-1.5">
+              {creator.avatar ? (
+                <img
+                  src={creator.avatar}
+                  alt={creator.name}
+                  className="w-4 h-4 rounded-full object-cover ring-1 ring-kol-border/50"
+                />
+              ) : (
+                <div className="w-4 h-4 rounded-full bg-kol-surface-elevated flex items-center justify-center ring-1 ring-kol-border/50">
+                  <span className="text-[8px] font-bold text-kol-text-muted">
+                    {creator.name.charAt(0).toUpperCase()}
+                  </span>
+                </div>
+              )}
+              <span className="text-[12px] font-medium text-white">{creator.name}</span>
+            </div>
           </div>
+          {creator.rewardsPercent !== undefined && (
+            <div className="flex items-center justify-between px-1">
+              <span className="text-[11px] text-kol-text-muted">Creator rewards</span>
+              <span className="text-[12px] font-medium text-kol-green">
+                {creator.rewardsPercent}%
+              </span>
+            </div>
+          )}
+          {creatorFeesEarned !== undefined && (
+            <div className="flex items-center justify-between px-1">
+              <span className="text-[11px] text-kol-text-muted">Approx. fees earned</span>
+              <span className="text-[12px] font-medium text-kol-text-secondary">
+                ~{formatUsd(creatorFeesEarned)}
+              </span>
+            </div>
+          )}
         </div>
       )}
     </div>

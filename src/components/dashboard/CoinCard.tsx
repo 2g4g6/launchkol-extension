@@ -470,6 +470,7 @@ function QuickLinks({ coin, onSearchToken }: { coin: CoinData; onSearchToken?: (
             platformFee="1.5%"
             creator={coin.creator}
             progressPercent={coin.progressPercent}
+            totalVolumeUsd={coin.buyVolumeUsd !== undefined && coin.sellVolumeUsd !== undefined ? coin.buyVolumeUsd + coin.sellVolumeUsd : undefined}
           />
         }
       >
