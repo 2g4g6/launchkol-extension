@@ -182,11 +182,14 @@ export function ImageLightbox({
 
     if (zoomLevel === 1) {
       // Zoom in centered on click point
+      // The click offset from center needs to be scaled by the target zoom level
+      // because at 2x the same image point is at 2x the pixel offset
+      const targetZoom = 2;
       const rect = e.currentTarget.getBoundingClientRect();
       const clickX = e.clientX - rect.left - rect.width / 2;
       const clickY = e.clientY - rect.top - rect.height / 2;
-      setPanPosition({ x: -clickX, y: -clickY });
-      setZoomLevel(2);
+      setPanPosition({ x: -clickX * targetZoom, y: -clickY * targetZoom });
+      setZoomLevel(targetZoom);
     } else {
       resetZoom();
     }
