@@ -62,11 +62,8 @@ export function TokenInfoPopoverContent({ security, axiomUrl }: TokenInfoPopover
           colorClass={getPercentColor(security.top10HoldersPercent)}
         />
         <StatCell
-          iconSvg={
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2a3 3 0 0 0-3 3v1H4a1 1 0 0 0-.996 1.09l1 10A1 1 0 0 0 5 18h14a1 1 0 0 0 .996-.91l1-10A1 1 0 0 0 20 6h-5V5a3 3 0 0 0-3-3zm-1 3a1 1 0 1 1 2 0v1h-2V5zM3 20a1 1 0 0 1 1-1h16a1 1 0 1 1 0 2H4a1 1 0 0 1-1-1z"/>
-            </svg>
-          }
+          icon="ri-vip-crown-line"
+          iconSize={12}
           value={fmt(security.devHoldersPercent)}
           label="Dev H."
           colorClass={getPercentColor(security.devHoldersPercent)}
