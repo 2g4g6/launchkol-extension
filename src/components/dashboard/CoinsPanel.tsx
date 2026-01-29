@@ -69,6 +69,7 @@ const MOCK_COINS: CoinData[] = [
       name: 'dogwifcoin',
       avatar: 'https://pbs.twimg.com/profile_images/1742059584087289856/viSxBP1h_400x400.jpg',
       rewardsPercent: 5,
+      walletAddress: '43HPNeS2FroDxUGRQKV1iNDrYFD1wo5rPVj5Qc9igLZN',
     },
     tokenSecurity: {
       top10HoldersPercent: 35,
@@ -134,6 +135,7 @@ const MOCK_COINS: CoinData[] = [
     creator: {
       name: 'bonk_dev',
       rewardsPercent: 3,
+      walletAddress: '7vfCXTUXx5WJV5JADk17DUJ4ksgau7utNKj4b963voxs',
     },
     tokenSecurity: {
       top10HoldersPercent: 52,
@@ -201,6 +203,7 @@ const MOCK_COINS: CoinData[] = [
       name: 'myro_creator',
       avatar: 'https://pbs.twimg.com/profile_images/1755899881783185408/Mtp0uwfM_400x400.jpg',
       rewardsPercent: 4,
+      walletAddress: 'DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263',
     },
     tokenSecurity: {
       top10HoldersPercent: 28,
@@ -268,6 +271,7 @@ const MOCK_COINS: CoinData[] = [
       name: 'popcatdev',
       avatar: 'https://pbs.twimg.com/profile_images/1800000000000000000/example_400x400.jpg',
       rewardsPercent: 2.5,
+      walletAddress: '5z3EqYQo9HiCEs3R84RCDMu2n7anpDMxRhdK8PSWmrRC',
     },
     tokenSecurity: {
       top10HoldersPercent: 40,
@@ -329,6 +333,7 @@ const MOCK_COINS: CoinData[] = [
       name: 'giga_deployer',
       avatar: 'https://pbs.twimg.com/profile_images/1780000000000000000/giga_400x400.jpg',
       rewardsPercent: 5,
+      walletAddress: 'HN7cABqLq46Es1jh92dQQisAq662SmxELLLsHHe4YWrH',
     },
     tokenSecurity: {
       top10HoldersPercent: 22,
@@ -384,6 +389,7 @@ const MOCK_COINS: CoinData[] = [
     creator: {
       name: 'pepe_launcher',
       rewardsPercent: 1.5,
+      walletAddress: '2FPyTwcZLUg1MDrwsyoP4D6s1tM7hAkHYRjkNb5w6Pxk',
     },
     tokenSecurity: {
       top10HoldersPercent: 65,
@@ -437,6 +443,7 @@ const MOCK_COINS: CoinData[] = [
     creator: {
       name: 'shib_dev',
       rewardsPercent: 2,
+      walletAddress: '9n4nbM75f5Ui33ZbPYXn59EwSgE8CGsHtAeTH5YFeJ9E',
     },
     tokenSecurity: {
       top10HoldersPercent: 58,
@@ -499,6 +506,7 @@ const MOCK_COINS: CoinData[] = [
       name: 'doge_deployer',
       avatar: 'https://pbs.twimg.com/profile_images/1600000000000000000/doge_400x400.jpg',
       rewardsPercent: 3.5,
+      walletAddress: 'AFbX8oGjGpmVFywbVouvhQSRmiW2aR1mohfahi4Y2AdB',
     },
     tokenSecurity: {
       top10HoldersPercent: 30,
