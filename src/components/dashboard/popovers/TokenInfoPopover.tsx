@@ -50,9 +50,15 @@ export function TokenInfoPopoverContent({ security, axiomUrl }: TokenInfoPopover
   const fmt = (v: number | undefined, suffix = '%') => v !== undefined ? `${v}${suffix}` : '--'
 
   return (
-    <div className="flex min-h-[0px] flex-1 flex-col gap-[16px] p-[16px] pt-[4px]">
+    <div className="flex min-h-[0px] flex-1 flex-col gap-[16px] p-[16px] pt-[8px]">
       {/* Header */}
-      <span className="text-[13px] font-semibold text-white pb-[4px]">Token Info</span>
+      <div className="flex items-center justify-between">
+        <span className="text-[13px] font-semibold text-white">Token Info</span>
+        <div className="flex items-center gap-[5px]">
+          <div className="h-[6px] w-[6px] rounded-full bg-kol-green animate-pulse" />
+          <span className="text-[11px] font-medium text-kol-green">LIVE</span>
+        </div>
+      </div>
       {/* Row 1: Top 10 H., Dev H., Snipers H. */}
       <div className="flex w-full flex-row gap-[16px]">
         <StatCell
