@@ -356,7 +356,7 @@ export function TrackerFeed({ onDeploy }: TrackerFeedProps) {
             key={String(pauseOnHover)}
             transition={{ duration: 0.25 }}
           />
-          <span>{pauseOnHover ? 'Pause on hover' : 'Live'}</span>
+          <span>{pauseOnHover ? 'Pause on hover' : 'Auto-scroll'}</span>
         </button>
 
         {/* Launch platform dropdown */}
