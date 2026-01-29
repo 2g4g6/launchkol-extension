@@ -13,6 +13,7 @@ interface TradingPanelProps {
   onHeightChange: (height: number) => void
   minHeight?: number
   maxHeight?: number
+  solPrice?: number
 }
 
 export function TradingPanel({
@@ -22,6 +23,7 @@ export function TradingPanel({
   onHeightChange,
   minHeight = 150,
   maxHeight = 350,
+  solPrice,
 }: TradingPanelProps) {
   const [activeTab, setActiveTab] = useState<Tab>('coins')
   const [isDragging, setIsDragging] = useState(false)
@@ -150,7 +152,7 @@ export function TradingPanel({
                   exit={{ opacity: 0, x: -10 }}
                   transition={{ duration: 0.15 }}
                 >
-                  {activeTab === 'coins' && <MyCoinsTab balance={4.523} />}
+                  {activeTab === 'coins' && <MyCoinsTab balance={4.523} solPrice={solPrice} />}
                   {activeTab === 'launch' && <LaunchTab onLaunch={handleLaunch} />}
                   {activeTab === 'trade' && <TradeTab onTrade={handleTrade} balance={4.523} />}
                 </motion.div>
