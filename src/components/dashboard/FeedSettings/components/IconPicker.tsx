@@ -86,7 +86,7 @@ export function IconPicker({ currentIcon, onSelect }: IconPickerProps) {
   const updatePosition = useCallback(() => {
     if (!triggerRef.current) return
     const rect = triggerRef.current.getBoundingClientRect()
-    const dropdownWidth = 280
+    const dropdownWidth = 300
     const dropdownHeight = 340 // Approximate max height
 
     // Calculate position - prefer above the trigger
@@ -232,7 +232,7 @@ export function IconPicker({ currentIcon, onSelect }: IconPickerProps) {
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 8 }}
         transition={{ duration: 0.15 }}
-        className="fixed w-[280px] bg-kol-bg border border-kol-border rounded-xl shadow-[0_8px_32px_rgba(0,0,0,0.5)] ring-1 ring-white/[0.06] backdrop-blur-sm z-[9999] flex flex-col"
+        className="fixed w-[300px] bg-kol-bg border border-kol-border rounded-xl shadow-[0_8px_32px_rgba(0,0,0,0.5)] ring-1 ring-white/[0.06] backdrop-blur-sm z-[9999] flex flex-col"
         style={{
           top: dropdownPosition.top,
           left: dropdownPosition.left,
@@ -273,19 +273,19 @@ export function IconPicker({ currentIcon, onSelect }: IconPickerProps) {
         </div>
 
         {/* Category tabs */}
-        <div className="flex gap-1 p-2 border-b border-kol-border overflow-x-auto scrollbar-hide">
+        <div className="flex gap-1.5 px-2.5 py-2 border-b border-kol-border overflow-x-auto scrollbar-hide">
           <button
             onClick={() => {
               setActiveCategory('all')
               setFocusedIndex(-1)
             }}
-            className={`px-2 py-1 text-xs rounded whitespace-nowrap transition-colors flex items-center gap-1 ${
+            className={`px-2.5 py-1.5 text-xs rounded-md whitespace-nowrap transition-colors flex items-center gap-1.5 ${
               activeCategory === 'all'
                 ? 'bg-kol-blue/15 text-kol-blue'
                 : 'text-kol-text-muted hover:text-white hover:bg-kol-surface-elevated'
             }`}
           >
-            <i className="ri-apps-2-line text-[10px]" />
+            <i className="ri-apps-2-line text-[11px]" />
             All
           </button>
           {ICON_CATEGORIES.map(cat => (
@@ -295,13 +295,13 @@ export function IconPicker({ currentIcon, onSelect }: IconPickerProps) {
                 setActiveCategory(cat.id)
                 setFocusedIndex(-1)
               }}
-              className={`px-2 py-1 text-xs rounded whitespace-nowrap transition-colors flex items-center gap-1 ${
+              className={`px-2.5 py-1.5 text-xs rounded-md whitespace-nowrap transition-colors flex items-center gap-1.5 ${
                 activeCategory === cat.id
                   ? 'bg-kol-blue/15 text-kol-blue'
                   : 'text-kol-text-muted hover:text-white hover:bg-kol-surface-elevated'
               }`}
             >
-              <i className={`${cat.icon} text-[10px]`} />
+              <i className={`${cat.icon} text-[11px]`} />
               {cat.label}
             </button>
           ))}
