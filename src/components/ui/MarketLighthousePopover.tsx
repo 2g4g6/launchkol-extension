@@ -301,13 +301,12 @@ export function MarketLighthousePopover({ children }: { children: React.ReactEle
                   <span className="text-[11px] text-kol-text-muted font-body">Top Launchpads</span>
                   <div className="flex gap-2 mt-1.5">
                     {data.topLaunchpads.map((lp) => (
-                      <div key={lp.name} className="group/lp relative flex flex-col items-center flex-1 min-w-0 bg-kol-surface border border-kol-border rounded-lg px-2 py-2 gap-1 cursor-default transition-all duration-150 hover:bg-kol-surface-elevated hover:border-[color:var(--lp-color)] hover:scale-[1.04] hover:shadow-[0_0_8px_rgba(var(--lp-glow),0.15)]" style={{ '--lp-color': lp.color, '--lp-glow': lp.color === '#00c46b' ? '0,196,107' : lp.color === '#f97316' ? '249,115,22' : '4,120,87' } as React.CSSProperties}>
+                      <div key={lp.name} className="group/lp relative flex flex-col items-center flex-1 min-w-0 bg-kol-surface border border-kol-border rounded-lg px-2 py-2 gap-1 cursor-default transition-colors duration-150 hover:bg-kol-surface-elevated">
                         {/* Tooltip */}
-                        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 px-2 py-1 bg-[#1a1a1a] border border-kol-border rounded-md shadow-lg opacity-0 group-hover/lp:opacity-100 transition-opacity duration-150 pointer-events-none whitespace-nowrap z-10">
-                          <span className="text-[10px] font-body text-white">{lp.name.replace('.fun', '')} Volume</span>
-                          <div className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-t-[4px] border-t-kol-border" />
+                        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-0.5 bg-[#222] rounded shadow-md opacity-0 group-hover/lp:opacity-100 transition-opacity duration-150 pointer-events-none whitespace-nowrap z-10">
+                          <span className="text-[11px] font-body font-medium text-white leading-none">{lp.name.replace('.fun', '')} Volume</span>
                         </div>
-                        <img src={lp.icon} alt={lp.name} className="w-7 h-7 rounded-full transition-transform duration-150 group-hover/lp:scale-110" />
+                        <img src={lp.icon} alt={lp.name} className="w-7 h-7 rounded-full" />
                         <span className="text-[12px] font-body font-medium" style={{ color: lp.color }}>{lp.value}</span>
                         <ChangeText value={lp.change} />
                       </div>
