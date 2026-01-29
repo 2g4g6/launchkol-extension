@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Tooltip } from './Tooltip'
 import { useIsSmallScreen } from '../../shared/hooks/useMediaQuery'
@@ -75,6 +75,9 @@ const variantStyles: Record<
   },
 }
 
+const springTransition = { type: 'spring' as const, stiffness: 400, damping: 25 }
+const instantTransition = { duration: 0 }
+
 export function ExpandableButton({
   icon,
   label,
@@ -87,85 +90,79 @@ export function ExpandableButton({
   const [isHovered, setIsHovered] = useState(false)
   const isSmall = useIsSmallScreen()
 
+  // Track breakpoint changes to snap instantly instead of spring-animating
+  const prevSmallRef = useRef(isSmall)
+  const didBreakpointChange = prevSmallRef.current !== isSmall
+  useEffect(() => { prevSmallRef.current = isSmall }, [isSmall])
+
   const styles = variantStyles[variant]
   const config = sizeConfig[size]
   const expandedWidth = getExpandedWidth(label, size)
 
   const isExpanded = !isSmall && isHovered
+  const transition = didBreakpointChange ? instantTransition : springTransition
 
-  const btn = (
-    <motion.button
-      className={`
-        group relative ${config.height} rounded-lg flex items-center justify-center overflow-hidden
-        border border-transparent
-        ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
-        ${className}
-      `}
-      initial={false}
-      animate={{
-        width: isExpanded ? expandedWidth : config.collapsedWidth,
-        backgroundColor: isExpanded
-          ? (variant === 'primary' ? 'rgba(0, 123, 255, 0.2)' : 'rgba(255, 255, 255, 0.05)')
-          : (variant === 'primary' ? 'rgba(0, 123, 255, 0.1)' : 'transparent'),
-        borderColor: isExpanded
-          ? (variant === 'primary' ? 'rgba(0, 123, 255, 0.4)' : 'rgba(255, 255, 255, 0.1)')
-          : (variant === 'primary' ? 'rgba(0, 123, 255, 0.2)' : 'transparent'),
-      }}
-      transition={{
-        type: 'spring',
-        stiffness: 400,
-        damping: 25,
-      }}
-      onMouseEnter={() => !disabled && setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      onFocus={() => !disabled && setIsHovered(true)}
-      onBlur={() => setIsHovered(false)}
-      onClick={onClick}
-      disabled={disabled}
-      whileTap={disabled ? undefined : { scale: 0.97 }}
-    >
-      <div className={`flex items-center ${size === 'large' ? 'gap-2 px-2.5' : 'gap-1.5 px-2'}`}>
-        {/* Icon */}
-        <motion.i
-          className={`${icon} ${config.iconSize} flex-shrink-0`}
-          animate={{
-            color: isExpanded ? styles.iconExpanded : styles.icon,
-          }}
-          style={{
-            color: isExpanded
-              ? (variant === 'primary' ? '#007bff' : '#ffffff')
-              : (variant === 'primary' ? '#007bff' : '#888888'),
-          }}
-        />
+  return (
+    <Tooltip content={label} position="top" delayShow={200} disabled={!isSmall}>
+      <motion.button
+        className={`
+          group relative ${config.height} rounded-lg flex items-center justify-center overflow-hidden
+          border border-transparent
+          ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
+          ${className}
+        `}
+        initial={false}
+        animate={{
+          width: isExpanded ? expandedWidth : config.collapsedWidth,
+          backgroundColor: isExpanded
+            ? (variant === 'primary' ? 'rgba(0, 123, 255, 0.2)' : 'rgba(255, 255, 255, 0.05)')
+            : (variant === 'primary' ? 'rgba(0, 123, 255, 0.1)' : 'transparent'),
+          borderColor: isExpanded
+            ? (variant === 'primary' ? 'rgba(0, 123, 255, 0.4)' : 'rgba(255, 255, 255, 0.1)')
+            : (variant === 'primary' ? 'rgba(0, 123, 255, 0.2)' : 'transparent'),
+        }}
+        transition={transition}
+        onMouseEnter={() => !disabled && setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        onFocus={() => !disabled && setIsHovered(true)}
+        onBlur={() => setIsHovered(false)}
+        onClick={onClick}
+        disabled={disabled}
+        whileTap={disabled ? undefined : { scale: 0.97 }}
+      >
+        <div className={`flex items-center ${size === 'large' ? 'gap-2 px-2.5' : 'gap-1.5 px-2'}`}>
+          {/* Icon */}
+          <motion.i
+            className={`${icon} ${config.iconSize} flex-shrink-0`}
+            animate={{
+              color: isExpanded ? styles.iconExpanded : styles.icon,
+            }}
+            style={{
+              color: isExpanded
+                ? (variant === 'primary' ? '#007bff' : '#ffffff')
+                : (variant === 'primary' ? '#007bff' : '#888888'),
+            }}
+          />
 
-        {/* Label - fades in smoothly */}
-        <motion.span
-          className={`${config.labelSize} font-medium whitespace-nowrap ${styles.label}`}
-          initial={false}
-          animate={{
-            opacity: isExpanded ? 1 : 0,
-            width: isExpanded ? 'auto' : 0,
-          }}
-          transition={{
-            opacity: { duration: 0.15, delay: isExpanded ? 0.03 : 0 },
-            width: { type: 'spring', stiffness: 400, damping: 25 },
-          }}
-        >
-          {label}
-        </motion.span>
-      </div>
-    </motion.button>
+          {/* Label - fades in smoothly */}
+          <motion.span
+            className={`${config.labelSize} font-medium whitespace-nowrap ${styles.label}`}
+            initial={false}
+            animate={{
+              opacity: isExpanded ? 1 : 0,
+              width: isExpanded ? 'auto' : 0,
+            }}
+            transition={didBreakpointChange ? instantTransition : {
+              opacity: { duration: 0.15, delay: isExpanded ? 0.03 : 0 },
+              width: springTransition,
+            }}
+          >
+            {label}
+          </motion.span>
+        </div>
+      </motion.button>
+    </Tooltip>
   )
-
-  if (isSmall) {
-    return (
-      <Tooltip content={label} position="top" delayShow={200}>
-        {btn}
-      </Tooltip>
-    )
-  }
-
-  return btn
 }
 
 export default ExpandableButton
