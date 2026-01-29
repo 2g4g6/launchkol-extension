@@ -29,10 +29,17 @@ export function HorizontalScrollContainer({
     const el = scrollRef.current
     if (!el) return
 
-    const observer = new ResizeObserver(checkScrollable)
-    observer.observe(el)
+    const resizeObs = new ResizeObserver(checkScrollable)
+    resizeObs.observe(el)
 
-    return () => observer.disconnect()
+    // Watch for child additions/removals so we detect when content becomes scrollable
+    const mutationObs = new MutationObserver(checkScrollable)
+    mutationObs.observe(el, { childList: true, subtree: true })
+
+    return () => {
+      resizeObs.disconnect()
+      mutationObs.disconnect()
+    }
   }, [checkScrollable])
 
   const scrollLeft = () => {
