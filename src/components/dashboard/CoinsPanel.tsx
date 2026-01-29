@@ -636,12 +636,12 @@ export function CoinsPanel({ solPrice }: CoinsPanelProps) {
                 {/* Action buttons */}
                 <button className="h-9 px-2.5 rounded-lg flex items-center gap-2 text-kol-text-muted hover:text-white hover:bg-white/5 transition-colors">
                   <i className="ri-file-copy-line text-base" />
-                  <span className="text-sm font-medium whitespace-nowrap hidden sm:inline">Clone</span>
+                  <span className="text-sm font-medium whitespace-nowrap">Clone</span>
                 </button>
 
                 <button className="h-9 px-2.5 rounded-lg flex items-center gap-2 text-kol-text-muted hover:text-white hover:bg-white/5 transition-colors">
                   <i className="ri-add-line text-base" />
-                  <span className="text-sm font-medium whitespace-nowrap hidden sm:inline">Create</span>
+                  <span className="text-sm font-medium whitespace-nowrap">Create</span>
                 </button>
               </div>
             </div>
