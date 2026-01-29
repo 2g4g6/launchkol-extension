@@ -32,6 +32,7 @@ export interface SearchTokensModalProps {
   onClose: () => void
   onSelectToken: (token: TokenResult) => void
   userWalletAddress?: string
+  initialQuery?: string
 }
 
 // ============================================================================
@@ -318,6 +319,7 @@ export function SearchTokensModal({
   isOpen,
   onClose,
   onSelectToken,
+  initialQuery,
 }: SearchTokensModalProps) {
   const [mounted, setMounted] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
@@ -415,6 +417,13 @@ export function SearchTokensModal({
       setTimeout(() => inputRef.current?.focus(), 100)
     }
   }, [isOpen])
+
+  // Pre-fill search query from initialQuery when modal opens
+  useEffect(() => {
+    if (isOpen && initialQuery) {
+      setSearchQuery(initialQuery)
+    }
+  }, [isOpen, initialQuery])
 
   // Reset state when modal closes
   useEffect(() => {

@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { CoinCard, CoinData } from './CoinCard'
 import { ExpandableFilterPill } from '../ui/ExpandableFilterPill'
 import { HorizontalScrollContainer } from '../ui/HorizontalScrollContainer'
+import { SearchTokensModal } from '../ui/SearchTokensModal'
 
 type PlatformType = 'pump' | 'bonk' | 'bags' | 'mayhem' | 'fourmeme'
 type PlatformFilter = 'all' | PlatformType
@@ -51,6 +52,35 @@ const MOCK_COINS: CoinData[] = [
     sellTxns: 199,
     buyVolumeUsd: 4200,
     sellVolumeUsd: 2100,
+    sourceTweet: {
+      id: 'tweet-1',
+      type: 'mention',
+      author: {
+        name: 'DogWifHat',
+        handle: 'dogwifcoin',
+        avatar: 'https://pbs.twimg.com/profile_images/1742059584087289856/viSxBP1h_400x400.jpg',
+        followers: 125000,
+      },
+      content: 'Just launched $WIF on Pump.fun! The hat stays on. LFG!',
+      timestamp: new Date(Date.now() - 3600000 * 24),
+      tweetUrl: 'https://x.com/dogwifcoin/status/1234567890',
+    },
+    creator: {
+      name: 'dogwifcoin',
+      avatar: 'https://pbs.twimg.com/profile_images/1742059584087289856/viSxBP1h_400x400.jpg',
+      rewardsPercent: 5,
+    },
+    tokenSecurity: {
+      top10HoldersPercent: 35,
+      devHoldersPercent: 8,
+      snipersHoldersPercent: 12,
+      insidersPercent: 5,
+      bundlersPercent: 3,
+      lpBurnedPercent: 100,
+      holdersCount: 2450,
+      proTradersCount: 18,
+      dexPaid: true,
+    },
   },
   {
     id: '2',
@@ -76,6 +106,21 @@ const MOCK_COINS: CoinData[] = [
     sellTxns: 45,
     buyVolumeUsd: 1850,
     sellVolumeUsd: 620,
+    creator: {
+      name: 'bonk_dev',
+      rewardsPercent: 3,
+    },
+    tokenSecurity: {
+      top10HoldersPercent: 52,
+      devHoldersPercent: 15,
+      snipersHoldersPercent: 20,
+      insidersPercent: 10,
+      bundlersPercent: 8,
+      lpBurnedPercent: 0,
+      holdersCount: 890,
+      proTradersCount: 5,
+      dexPaid: false,
+    },
   },
   {
     id: '3',
@@ -256,6 +301,13 @@ export function CoinsPanel({ solPrice }: CoinsPanelProps) {
   const [platformFilters, setPlatformFilters] = useState<Set<PlatformFilter>>(new Set(['all']))
   const [sortBy, setSortBy] = useState<SortOption>('time')
   const [showFilters, setShowFilters] = useState(true)
+  const [searchModalOpen, setSearchModalOpen] = useState(false)
+  const [searchModalQuery, setSearchModalQuery] = useState('')
+
+  const handleSearchToken = (coin: CoinData) => {
+    setSearchModalQuery(coin.address)
+    setSearchModalOpen(true)
+  }
 
   const togglePlatformFilter = (id: PlatformFilter) => {
     if (id === 'all') {
@@ -381,6 +433,7 @@ export function CoinsPanel({ solPrice }: CoinsPanelProps) {
             onView={handleView}
             onDevPanel={handleDevPanel}
             onRelaunch={handleRelaunch}
+            onSearchToken={handleSearchToken}
           />
         ))
       ) : (
@@ -654,6 +707,17 @@ export function CoinsPanel({ solPrice }: CoinsPanelProps) {
           {renderCoinsList()}
         </div>
       </div>
+
+      {/* Search Token Modal */}
+      <SearchTokensModal
+        isOpen={searchModalOpen}
+        onClose={() => setSearchModalOpen(false)}
+        onSelectToken={(token) => {
+          console.log('Selected token:', token)
+          setSearchModalOpen(false)
+        }}
+        initialQuery={searchModalQuery}
+      />
     </>
   )
 }

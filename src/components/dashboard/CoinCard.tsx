@@ -1,6 +1,11 @@
 import { motion } from 'framer-motion'
 import { useState } from 'react'
 import { Tooltip } from '../ui/Tooltip'
+import { QuickLinkPopover } from '../ui/QuickLinkPopover'
+import { SocialPostData } from './SocialPost'
+import { SourceTweetPopoverContent } from './popovers/SourceTweetPopover'
+import { PlatformCreatorPopoverContent, CreatorInfo } from './popovers/PlatformCreatorPopover'
+import { TokenInfoPopoverContent, TokenSecurityInfo } from './popovers/TokenInfoPopover'
 
 // Platform types
 export type PlatformType = 'pump' | 'bonk' | 'bags' | 'mayhem' | 'fourmeme'
@@ -36,6 +41,9 @@ export interface CoinData {
   sellTxns?: number
   buyVolumeUsd?: number
   sellVolumeUsd?: number
+  sourceTweet?: SocialPostData
+  creator?: CreatorInfo
+  tokenSecurity?: TokenSecurityInfo
 }
 
 interface CoinCardProps {
@@ -45,6 +53,7 @@ interface CoinCardProps {
   onView: (coin: CoinData) => void
   onDevPanel?: (coin: CoinData) => void
   onRelaunch?: (coin: CoinData) => void
+  onSearchToken?: (coin: CoinData) => void
 }
 
 // Platform configuration with colors matching Axiom
@@ -401,7 +410,7 @@ function getTweetTypeLabel(type?: TweetType): string {
 }
 
 // Quick Links Component
-function QuickLinks({ coin }: { coin: CoinData }) {
+function QuickLinks({ coin, onSearchToken }: { coin: CoinData; onSearchToken?: (coin: CoinData) => void }) {
   const tweetIcon = getTweetTypeIcon(coin.tweetType)
   const tweetColor = getTweetTypeColor(coin.tweetType)
   const tweetLabel = getTweetTypeLabel(coin.tweetType)
@@ -410,8 +419,19 @@ function QuickLinks({ coin }: { coin: CoinData }) {
 
   return (
     <div className="flex items-center gap-2 flex-shrink-0">
+      {/* Tweet type icon - hover popover with embedded tweet */}
       {coin.twitterUrl && (
-        <Tooltip content={tweetLabel} position="top">
+        <QuickLinkPopover
+          width={coin.sourceTweet ? 356 : 220}
+          triggerMode="hover"
+          content={
+            <SourceTweetPopoverContent
+              sourceTweet={coin.sourceTweet}
+              twitterUrl={coin.twitterUrl}
+              tweetLabel={tweetLabel}
+            />
+          }
+        >
           <a
             href={coin.twitterUrl}
             target="_blank"
@@ -422,20 +442,36 @@ function QuickLinks({ coin }: { coin: CoinData }) {
           >
             <i className={`${tweetIcon} text-[20px]`} />
           </a>
-        </Tooltip>
+        </QuickLinkPopover>
       )}
-      <Tooltip content="Search on X" position="top">
-        <a
-          href={`https://x.com/search?q=${coin.address}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={(e) => e.stopPropagation()}
+
+      {/* Search icon - click opens SearchTokensModal */}
+      <Tooltip content="Search token" position="top">
+        <button
+          onClick={(e) => {
+            e.stopPropagation()
+            onSearchToken?.(coin)
+          }}
           className="flex items-center text-kol-text-muted hover:text-kol-blue-hover transition-colors"
         >
           <i className="ri-search-line text-[20px]" />
-        </a>
+        </button>
       </Tooltip>
-      <Tooltip content={`View on ${platformConfig.name}`} position="top">
+
+      {/* Platform logo - hover popover with creator info */}
+      <QuickLinkPopover
+        width={280}
+        triggerMode="hover"
+        content={
+          <PlatformCreatorPopoverContent
+            platformName={platformConfig.name}
+            platformLogo={platformConfig.logo}
+            platformColor={platformConfig.ringColor}
+            platformFee="1.5%"
+            creator={coin.creator}
+          />
+        }
+      >
         <a
           href={platformUrl}
           target="_blank"
@@ -445,9 +481,35 @@ function QuickLinks({ coin }: { coin: CoinData }) {
         >
           <img src={platformConfig.logo} alt={platformConfig.name} className="w-5 h-5 object-contain" />
         </a>
-      </Tooltip>
+      </QuickLinkPopover>
+
+      {/* Axiom icon - hover popover with token security stats */}
       {coin.axiomUrl && (
-        <Tooltip content="Trade on Axiom" position="top">
+        <QuickLinkPopover
+          width={320}
+          triggerMode="hover"
+          content={
+            coin.tokenSecurity ? (
+              <TokenInfoPopoverContent
+                security={coin.tokenSecurity}
+                axiomUrl={coin.axiomUrl}
+              />
+            ) : (
+              <div className="p-3">
+                <a
+                  href={coin.axiomUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 text-sm text-white hover:text-kol-blue-hover transition-colors"
+                >
+                  <AxiomIcon className="w-4 h-4" />
+                  <span>Trade on Axiom</span>
+                  <i className="ri-external-link-line text-[11px]" />
+                </a>
+              </div>
+            )
+          }
+        >
           <a
             href={coin.axiomUrl}
             target="_blank"
@@ -457,13 +519,13 @@ function QuickLinks({ coin }: { coin: CoinData }) {
           >
             <AxiomIcon className="w-6 h-6" />
           </a>
-        </Tooltip>
+        </QuickLinkPopover>
       )}
     </div>
   )
 }
 
-export function CoinCard({ coin, index, solPrice, onView, onDevPanel, onRelaunch: _onRelaunch }: CoinCardProps) {
+export function CoinCard({ coin, index, solPrice, onView, onDevPanel, onRelaunch: _onRelaunch, onSearchToken }: CoinCardProps) {
   return (
     <motion.div
       className="group relative mx-3 my-2"
@@ -512,7 +574,7 @@ export function CoinCard({ coin, index, solPrice, onView, onDevPanel, onRelaunch
             {/* Row 2: Time + Quick Links */}
             <div className="flex items-center gap-3">
               <TimeBadge date={coin.launchedAt} />
-              <QuickLinks coin={coin} />
+              <QuickLinks coin={coin} onSearchToken={onSearchToken} />
             </div>
           </div>
 
