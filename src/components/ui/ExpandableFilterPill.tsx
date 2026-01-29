@@ -1,7 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Tooltip } from './Tooltip'
-import { useIsSmallScreen } from '../../shared/hooks/useMediaQuery'
 
 export interface ExpandableFilterPillProps {
   /** Remixicon class name (e.g., "ri-list-check") */
@@ -23,7 +21,6 @@ export interface ExpandableFilterPillProps {
 const COLLAPSED_SIZE = 28
 
 const springTransition = { type: 'spring' as const, stiffness: 380, damping: 26 }
-const instantTransition = { duration: 0 }
 
 export function ExpandableFilterPill({
   icon,
@@ -37,15 +34,8 @@ export function ExpandableFilterPill({
   const [isHovered, setIsHovered] = useState(false)
   const measureRef = useRef<HTMLDivElement>(null)
   const [expandedWidth, setExpandedWidth] = useState(COLLAPSED_SIZE)
-  const isSmall = useIsSmallScreen()
 
-  // Track breakpoint changes to snap instantly instead of spring-animating
-  const prevSmallRef = useRef(isSmall)
-  const didBreakpointChange = prevSmallRef.current !== isSmall
-  useEffect(() => { prevSmallRef.current = isSmall }, [isSmall])
-
-  const expanded = !isSmall && (isHovered || active)
-  const transition = didBreakpointChange ? instantTransition : springTransition
+  const expanded = isHovered || active
 
   useEffect(() => {
     if (measureRef.current) {
@@ -60,8 +50,7 @@ export function ExpandableFilterPill({
   ) : null
 
   return (
-    <Tooltip content={label} position="top" delayShow={200} disabled={!isSmall}>
-      <motion.button
+    <motion.button
         ref={buttonRef}
         className={`h-7 rounded-md text-xs font-medium border overflow-hidden flex-shrink-0 ${
           active
@@ -70,7 +59,7 @@ export function ExpandableFilterPill({
         }`}
         initial={false}
         animate={{ width: expanded ? expandedWidth : COLLAPSED_SIZE }}
-        transition={transition}
+        transition={springTransition}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         onClick={onClick}
@@ -102,7 +91,7 @@ export function ExpandableFilterPill({
             className="text-xs font-medium whitespace-nowrap"
             initial={false}
             animate={{ opacity: expanded ? 1 : 0 }}
-            transition={didBreakpointChange ? instantTransition : { duration: 0.1, delay: expanded ? 0.02 : 0 }}
+            transition={{ duration: 0.1, delay: expanded ? 0.02 : 0 }}
           >
             {label}
           </motion.span>
@@ -112,13 +101,12 @@ export function ExpandableFilterPill({
               className="flex items-center flex-shrink-0"
               initial={false}
               animate={{ opacity: expanded ? 1 : 0 }}
-              transition={didBreakpointChange ? instantTransition : { duration: 0.1, delay: expanded ? 0.02 : 0 }}
+              transition={{ duration: 0.1, delay: expanded ? 0.02 : 0 }}
             >
               {children}
             </motion.span>
           )}
         </div>
       </motion.button>
-    </Tooltip>
   )
 }
