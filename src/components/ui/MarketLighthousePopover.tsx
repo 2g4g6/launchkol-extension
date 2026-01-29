@@ -19,7 +19,7 @@ const MOCK_DATA: Record<TimeFrame, {
   volumeBar: { left: string; right: string }
   created: { value: string; change: number }
   migrations: { value: string; change: number }
-  topLaunchpads: { name: string; icon: string; value: string; change: number }[]
+  topLaunchpads: { name: string; icon: string; value: string; change: number; color: string }[]
 }> = {
   '5m': {
     totalTrades: { value: '1.2M', change: -2.31 },
@@ -29,9 +29,9 @@ const MOCK_DATA: Record<TimeFrame, {
     created: { value: '4.8K', change: -3.1 },
     migrations: { value: '28', change: -12.5 },
     topLaunchpads: [
-      { name: 'Pump.fun', icon: '/images/pump.svg', value: '$33.2M', change: -18.4 },
-      { name: 'Bonk.fun', icon: '/images/bonk.svg', value: '$2.2M', change: -25.1 },
-      { name: 'Bags', icon: '/images/bags.svg', value: '$1.8M', change: -14.7 },
+      { name: 'Pump.fun', icon: '/images/pump.svg', value: '$33.2M', change: -18.4, color: '#00c46b' },
+      { name: 'Bonk.fun', icon: '/images/bonk.svg', value: '$2.2M', change: -25.1, color: '#f97316' },
+      { name: 'Bags', icon: '/images/bags.svg', value: '$1.8M', change: -14.7, color: '#a855f7' },
     ],
   },
   '1h': {
@@ -42,9 +42,9 @@ const MOCK_DATA: Record<TimeFrame, {
     created: { value: '14.3K', change: -4.2 },
     migrations: { value: '85', change: -15.3 },
     topLaunchpads: [
-      { name: 'Pump.fun', icon: '/images/pump.svg', value: '$99.8M', change: -20.1 },
-      { name: 'Bonk.fun', icon: '/images/bonk.svg', value: '$6.6M', change: -28.7 },
-      { name: 'Bags', icon: '/images/bags.svg', value: '$5.5M', change: -16.2 },
+      { name: 'Pump.fun', icon: '/images/pump.svg', value: '$99.8M', change: -20.1, color: '#00c46b' },
+      { name: 'Bonk.fun', icon: '/images/bonk.svg', value: '$6.6M', change: -28.7, color: '#f97316' },
+      { name: 'Bags', icon: '/images/bags.svg', value: '$5.5M', change: -16.2, color: '#a855f7' },
     ],
   },
   '6h': {
@@ -55,9 +55,9 @@ const MOCK_DATA: Record<TimeFrame, {
     created: { value: '34.7K', change: -4.6 },
     migrations: { value: '207', change: -16.8 },
     topLaunchpads: [
-      { name: 'Pump.fun', icon: '/images/pump.svg', value: '$241M', change: -23.5 },
-      { name: 'Bonk.fun', icon: '/images/bonk.svg', value: '$15.9M', change: -31.4 },
-      { name: 'Bags', icon: '/images/bags.svg', value: '$13.4M', change: -15.9 },
+      { name: 'Pump.fun', icon: '/images/pump.svg', value: '$241M', change: -23.5, color: '#00c46b' },
+      { name: 'Bonk.fun', icon: '/images/bonk.svg', value: '$15.9M', change: -31.4, color: '#f97316' },
+      { name: 'Bags', icon: '/images/bags.svg', value: '$13.4M', change: -15.9, color: '#a855f7' },
     ],
   },
   '24h': {
@@ -68,9 +68,9 @@ const MOCK_DATA: Record<TimeFrame, {
     created: { value: '57.3K', change: -4.923 },
     migrations: { value: '341', change: -18.23 },
     topLaunchpads: [
-      { name: 'Pump.fun', icon: '/images/pump.svg', value: '$399M', change: -26.3 },
-      { name: 'Bonk.fun', icon: '/images/bonk.svg', value: '$26.3M', change: -35.2 },
-      { name: 'Bags', icon: '/images/bags.svg', value: '$22.1M', change: -18.3 },
+      { name: 'Pump.fun', icon: '/images/pump.svg', value: '$399M', change: -26.3, color: '#00c46b' },
+      { name: 'Bonk.fun', icon: '/images/bonk.svg', value: '$26.3M', change: -35.2, color: '#f97316' },
+      { name: 'Bags', icon: '/images/bags.svg', value: '$22.1M', change: -18.3, color: '#a855f7' },
     ],
   },
 }
@@ -303,7 +303,7 @@ export function MarketLighthousePopover({ children }: { children: React.ReactEle
                     {data.topLaunchpads.map((lp) => (
                       <div key={lp.name} className="flex flex-col items-center flex-1 min-w-0 bg-kol-surface border border-kol-border rounded-lg px-2 py-2 gap-1">
                         <img src={lp.icon} alt={lp.name} className="w-7 h-7 rounded-full" />
-                        <span className="text-[12px] text-white font-body font-medium">{lp.value}</span>
+                        <span className="text-[12px] font-body font-medium" style={{ color: lp.color }}>{lp.value}</span>
                         <ChangeText value={lp.change} />
                       </div>
                     ))}
