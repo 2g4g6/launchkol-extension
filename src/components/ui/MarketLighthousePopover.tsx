@@ -107,7 +107,7 @@ function StatCard({ label, value, icon, change }: { label: string; value: string
     <motion.div
       whileHover={{ scale: 1.02 }}
       transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-      className="relative bg-white/[0.03] border border-white/[0.06] rounded-lg px-3 py-2 flex-1 min-w-0 overflow-hidden"
+      className="relative bg-kol-surface border border-kol-border rounded-lg px-3 py-2 flex-1 min-w-0 overflow-hidden"
     >
       {/* Top accent line */}
       <div
@@ -136,13 +136,13 @@ function PlatformBadge({ name, icon, value, change, rank }: { name: string; icon
     <motion.div
       whileHover={{ scale: 1.03, y: -1 }}
       transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-      className="relative flex flex-col items-center gap-0.5 bg-white/[0.03] border border-white/[0.06] rounded-lg px-2.5 py-1.5 flex-1 min-w-0"
+      className="relative flex flex-col items-center gap-0.5 bg-kol-surface border border-kol-border rounded-lg px-2.5 py-1.5 flex-1 min-w-0"
     >
       {/* Rank indicator */}
       <span className={`absolute top-1 left-1.5 text-[8px] font-mono font-bold ${rankStyle.text}`}>
         #{rank}
       </span>
-      <div className={`w-6 h-6 rounded-full flex items-center justify-center border border-white/[0.06] ${rankStyle.bg}`}>
+      <div className={`w-6 h-6 rounded-full flex items-center justify-center border border-kol-border ${rankStyle.bg}`}>
         <img src={icon} alt={name} className="w-4 h-4 rounded-full" />
       </div>
       <span className="text-[9px] text-kol-text-muted font-body">{name}</span>
@@ -153,7 +153,7 @@ function PlatformBadge({ name, icon, value, change, rank }: { name: string; icon
 }
 
 function SectionDivider() {
-  return <div className="h-px bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />
+  return <div className="h-px bg-gradient-to-r from-transparent via-kol-border to-transparent" />
 }
 
 // ============================================================================
@@ -248,10 +248,10 @@ export function MarketLighthousePopover({ children }: { children: React.ReactEle
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
-          <div className="glass gradient-border rounded-xl shadow-2xl shadow-black/60 overflow-hidden">
+          <div className="bg-kol-bg border border-kol-border rounded-xl shadow-[0_4px_4px_0_rgba(0,0,0,0.30),0_8px_8px_0_rgba(0,0,0,0.45)] overflow-hidden">
             {/* Header */}
             <div
-              className="flex items-center justify-between px-3 py-2 border-b border-white/[0.06] relative"
+              className="flex items-center justify-between px-3 py-2 border-b border-kol-border relative"
               style={{
                 background: 'radial-gradient(ellipse at 30% 50%, rgba(0,123,255,0.06) 0%, transparent 70%)',
               }}
@@ -263,7 +263,7 @@ export function MarketLighthousePopover({ children }: { children: React.ReactEle
                 </span>
                 <span className="text-[13px] font-display font-semibold text-white">Market Lighthouse</span>
               </div>
-              <div className="relative flex items-center gap-0.5 bg-white/[0.04] rounded p-0.5">
+              <div className="relative flex items-center gap-0.5 bg-kol-surface/50 rounded p-0.5">
                 {TIME_FRAMES.map((tf) => (
                   <button
                     key={tf}
@@ -317,7 +317,7 @@ export function MarketLighthousePopover({ children }: { children: React.ReactEle
 
                 {/* 24h Volume */}
                 <div
-                  className="bg-white/[0.03] border border-white/[0.06] rounded-lg px-3 py-2 relative overflow-hidden"
+                  className="bg-kol-surface border border-kol-border rounded-lg px-3 py-2 relative overflow-hidden"
                   style={{
                     background: 'radial-gradient(ellipse at 50% 100%, rgba(0,123,255,0.04) 0%, transparent 70%)',
                   }}
