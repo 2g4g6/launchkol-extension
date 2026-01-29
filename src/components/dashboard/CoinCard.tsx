@@ -230,10 +230,7 @@ function TradingStatsBar({
       {/* PnL */}
       <div className="flex min-w-[100px] flex-col items-center justify-center gap-1 px-1">
         <div className="flex h-4 flex-row items-center justify-center">
-          <button className="group flex flex-row items-center justify-center gap-1 rounded px-1.5 pl-2 transition-colors duration-150 ease-in-out hover:cursor-pointer hover:bg-kol-border/50">
-            <span className="text-[12px] font-normal leading-4 text-kol-text-muted transition-colors duration-150 ease-in-out group-hover:text-kol-text-secondary">PnL</span>
-            <i className="ri-exchange-dollar-line text-[14px] text-kol-text-muted transition-colors duration-150 ease-in-out group-hover:text-kol-text-secondary" />
-          </button>
+          <span className="text-[12px] font-normal leading-4 text-kol-text-muted">PnL</span>
         </div>
         <div className="flex flex-row items-center gap-1">
           <img alt="SOL" width="14" height="14" src="/images/solanaLogoMark.svg" />
