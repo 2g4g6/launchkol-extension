@@ -20,7 +20,7 @@ export interface ExpandableFilterPillProps {
 
 const COLLAPSED_SIZE = 28
 
-const spring = { type: 'spring' as const, stiffness: 300, damping: 28 }
+const spring = { type: 'spring' as const, stiffness: 380, damping: 26 }
 
 export function ExpandableFilterPill({
   icon,
@@ -39,7 +39,7 @@ export function ExpandableFilterPill({
 
   useEffect(() => {
     if (measureRef.current) {
-      setExpandedWidth(measureRef.current.scrollWidth + 16)
+      setExpandedWidth(measureRef.current.scrollWidth)
     }
   }, [label, children])
 
@@ -58,11 +58,12 @@ export function ExpandableFilterPill({
       onMouseLeave={() => setIsHovered(false)}
       onClick={onClick}
     >
-      {/* Hidden measure element */}
+      {/* Hidden measure element — matches visible layout exactly */}
       <div
         ref={measureRef}
         aria-hidden
-        className="h-0 overflow-hidden flex items-center gap-1.5 whitespace-nowrap"
+        className="h-0 overflow-hidden flex items-center whitespace-nowrap"
+        style={{ paddingLeft: 5, paddingRight: 8, gap: 6 }}
       >
         {iconSrc ? (
           <img src={iconSrc} alt="" className="w-[18px] h-[18px] rounded-sm" />
@@ -73,8 +74,11 @@ export function ExpandableFilterPill({
         {children}
       </div>
 
-      {/* Visible content — no gap, label uses ml when visible */}
-      <div className="flex items-center justify-center h-full px-[5px] whitespace-nowrap">
+      {/* Visible content — always fully laid out, revealed by button overflow:hidden */}
+      <div
+        className="flex items-center h-full whitespace-nowrap"
+        style={{ paddingLeft: 5, paddingRight: 8, gap: 6 }}
+      >
         <div className="flex-shrink-0 flex items-center justify-center w-[18px] h-[18px]">
           {iconSrc ? (
             <img src={iconSrc} alt="" className="w-[18px] h-[18px] rounded-sm" />
@@ -84,36 +88,20 @@ export function ExpandableFilterPill({
         </div>
 
         <motion.span
-          className="text-xs font-medium whitespace-nowrap overflow-hidden"
+          className="text-xs font-medium whitespace-nowrap"
           initial={false}
-          animate={{
-            width: expanded ? 'auto' : 0,
-            marginLeft: expanded ? 6 : 0,
-            opacity: expanded ? 1 : 0,
-          }}
-          transition={{
-            width: spring,
-            marginLeft: spring,
-            opacity: { duration: 0.12, delay: expanded ? 0.06 : 0 },
-          }}
+          animate={{ opacity: expanded ? 1 : 0 }}
+          transition={{ duration: 0.1, delay: expanded ? 0.02 : 0 }}
         >
           {label}
         </motion.span>
 
         {children && (
           <motion.span
-            className="flex items-center flex-shrink-0 overflow-hidden"
+            className="flex items-center flex-shrink-0"
             initial={false}
-            animate={{
-              width: expanded ? 'auto' : 0,
-              marginLeft: expanded ? 4 : 0,
-              opacity: expanded ? 1 : 0,
-            }}
-            transition={{
-              width: spring,
-              marginLeft: spring,
-              opacity: { duration: 0.12, delay: expanded ? 0.06 : 0 },
-            }}
+            animate={{ opacity: expanded ? 1 : 0 }}
+            transition={{ duration: 0.1, delay: expanded ? 0.02 : 0 }}
           >
             {children}
           </motion.span>
