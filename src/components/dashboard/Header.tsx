@@ -239,7 +239,7 @@ function WalletDropdown({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 4, scale: 0.95 }}
             transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
-            className="absolute right-0 top-full mt-2 w-64 bg-kol-bg border border-kol-border rounded-lg overflow-hidden z-50"
+            className="absolute right-0 top-full mt-2 w-64 bg-kol-bg border border-kol-border rounded-xl overflow-hidden z-50 shadow-[0_8px_32px_rgba(0,0,0,0.5)] ring-1 ring-white/[0.06] backdrop-blur-sm"
           >
             {/* Balance Header */}
             <div className="px-4 pt-4">
