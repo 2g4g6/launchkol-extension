@@ -326,58 +326,6 @@ function formatVolumeUsd(value: number): string {
   return `$${value.toFixed(0)}`
 }
 
-// Format price with subscript zero notation (e.g., 0.000003 -> $0.0₅3)
-const SUBSCRIPT_DIGITS = ['₀', '₁', '₂', '₃', '₄', '₅', '₆', '₇', '₈', '₉']
-
-function formatPrice(value: number): JSX.Element {
-  if (value >= 1) return <>${value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</>
-  if (value >= 0.01) return <>${value.toFixed(4)}</>
-
-  const str = value.toFixed(20)
-  const afterDot = str.split('.')[1] || ''
-  let leadingZeros = 0
-  for (const ch of afterDot) {
-    if (ch === '0') leadingZeros++
-    else break
-  }
-  if (leadingZeros < 2) return <>${value.toFixed(4)}</>
-
-  const significant = afterDot.slice(leadingZeros, leadingZeros + 3).replace(/0+$/, '') || '0'
-  const sub = String(leadingZeros).split('').map(d => SUBSCRIPT_DIGITS[parseInt(d)]).join('')
-  return <>$0.0{sub}{significant}</>
-}
-
-// Market Info Row (MC, Price, Liquidity)
-function MarketInfoRow({ marketCap, price, liquidity }: { marketCap?: number; price?: number; liquidity?: number }) {
-  if (marketCap === undefined && price === undefined && liquidity === undefined) return null
-
-  return (
-    <div className="flex items-center gap-4 px-3 pb-2 -mt-1">
-      {marketCap !== undefined && (
-        <span className="text-[14px] font-medium text-kol-text-secondary">
-          {formatVolumeUsd(marketCap)}
-        </span>
-      )}
-      {price !== undefined && (
-        <div className="flex flex-col items-center gap-0.5">
-          <span className="text-[10px] font-normal text-kol-text-muted leading-none">Price</span>
-          <span className="text-[12px] font-medium text-kol-text-secondary leading-none">
-            {formatPrice(price)}
-          </span>
-        </div>
-      )}
-      {liquidity !== undefined && (
-        <div className="flex flex-col items-center gap-0.5">
-          <span className="text-[10px] font-normal text-kol-text-muted leading-none">Liquidity</span>
-          <span className="text-[12px] font-medium text-kol-text-secondary leading-none">
-            {formatVolumeUsd(liquidity)}
-          </span>
-        </div>
-      )}
-    </div>
-  )
-}
-
 // TXN Stats Component (buy/sell transaction counts with full-width visual bar)
 function TxnStats({ buyTxns, sellTxns, buyVolumeUsd, sellVolumeUsd }: { buyTxns: number; sellTxns: number; buyVolumeUsd?: number; sellVolumeUsd?: number }) {
   const [hovered, setHovered] = useState(false)
@@ -551,6 +499,9 @@ function QuickLinks({ coin, onSearchToken, solPrice }: { coin: CoinData; onSearc
               <TokenInfoPopoverContent
                 security={coin.tokenSecurity}
                 axiomUrl={coin.axiomUrl}
+                marketCap={coin.marketCap}
+                price={coin.price}
+                liquidity={coin.liquidity}
               />
             ) : (
               <div className="p-3">
@@ -663,9 +614,6 @@ export function CoinCard({ coin, index, solPrice, onView, onDevPanel, onRelaunch
             />
           </div>
         )}
-
-        {/* Market Info Row (MC, Price, Liquidity) */}
-        <MarketInfoRow marketCap={coin.marketCap} price={coin.price} liquidity={coin.liquidity} />
 
         {/* TRADING STATS BAR */}
         {coin.tradingStats && (
