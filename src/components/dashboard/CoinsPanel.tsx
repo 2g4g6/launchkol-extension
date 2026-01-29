@@ -318,7 +318,7 @@ export function CoinsPanel({}: CoinsPanelProps) {
   }, [isResizing])
 
   const renderFilterRow = () => (
-    <div className="flex items-center justify-between gap-2 mt-2">
+    <div className="flex items-center justify-between gap-2">
       {/* Platform filter pills */}
       <div className="flex items-center gap-1 overflow-x-auto no-scrollbar">
         {PLATFORM_FILTERS.map((filter) => (
@@ -439,6 +439,10 @@ export function CoinsPanel({}: CoinsPanelProps) {
       >
         {/* Header with Search Bar */}
         <div className="px-3 pt-3 pb-2 border-b border-kol-border/30">
+          {/* Platform filters & sort */}
+          {renderFilterRow()}
+
+          <div className="mt-2" />
           {/* Focus glow effect */}
           <div
             className={`absolute inset-x-3 top-3 h-9 rounded-xl transition-opacity duration-500 blur-xl -z-10 ${
@@ -497,9 +501,6 @@ export function CoinsPanel({}: CoinsPanelProps) {
               </button>
             </div>
           </div>
-
-          {/* Platform filters & sort */}
-          {renderFilterRow()}
         </div>
 
         {/* Coins List */}
@@ -524,6 +525,10 @@ export function CoinsPanel({}: CoinsPanelProps) {
 
         {/* Header with Search Bar - larger on mobile for better touch targets */}
         <div className="px-3 pt-3 pb-2 flex-shrink-0 border-b border-kol-border/30 relative">
+          {/* Platform filters & sort */}
+          {renderFilterRow()}
+
+          <div className="mt-2" />
           {/* Focus glow effect */}
           <div
             className={`absolute inset-x-3 top-3 h-11 rounded-xl transition-opacity duration-500 blur-xl -z-10 ${
@@ -582,9 +587,6 @@ export function CoinsPanel({}: CoinsPanelProps) {
               </button>
             </div>
           </div>
-
-          {/* Platform filters & sort */}
-          {renderFilterRow()}
         </div>
 
         {/* Coins List - vertical scroll */}
