@@ -839,12 +839,12 @@ export function CoinsPanel({ solPrice }: CoinsPanelProps) {
         <div
           onMouseDown={handleMobileResizeStart}
           onTouchStart={handleMobileResizeStart}
-          className="h-4 cursor-row-resize flex items-center justify-center z-10 flex-shrink-0 border-t border-kol-border bg-kol-bg/80 backdrop-blur-sm"
+          className="h-5 cursor-row-resize flex items-center justify-center z-10 flex-shrink-0 border-t border-kol-border/50 bg-kol-surface-elevated/90 backdrop-blur-sm"
         >
-          <div className="w-10 h-1 rounded-full bg-kol-border/50 hover:bg-kol-blue/50 transition-colors" />
+          <div className="w-10 h-1 rounded-full bg-kol-text-muted/40 hover:bg-kol-blue/50 transition-colors" />
         </div>
         <div
-          className="border-t border-kol-border bg-kol-bg/80 backdrop-blur-sm flex flex-col overflow-hidden"
+          className="bg-kol-bg/80 backdrop-blur-sm flex flex-col overflow-hidden"
           style={{ height: panelHeight }}
         >
 
