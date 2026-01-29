@@ -4,6 +4,18 @@ import { SocialPost, SocialPostData } from './SocialPost'
 import { Tooltip } from '../ui/Tooltip'
 import { FeedSettingsModal } from './FeedSettings'
 
+type TweetTypeFilter = 'all' | 'posts' | 'replies' | 'quotes' | 'reposts' | 'deleted' | 'following'
+
+const TWEET_TYPE_FILTERS: { id: TweetTypeFilter; label: string; icon: string }[] = [
+  { id: 'all', label: 'All', icon: 'ri-list-check' },
+  { id: 'posts', label: 'Posts', icon: 'ri-chat-1-line' },
+  { id: 'replies', label: 'Replies', icon: 'ri-reply-line' },
+  { id: 'quotes', label: 'Quotes', icon: 'ri-double-quotes-l' },
+  { id: 'reposts', label: 'Reposts', icon: 'ri-repeat-line' },
+  { id: 'deleted', label: 'Deleted', icon: 'ri-delete-bin-line' },
+  { id: 'following', label: 'Following', icon: 'ri-user-follow-line' },
+]
+
 // Mock data - tweets with different types (normal, reply, repost, quote) and media
 const MOCK_POSTS: SocialPostData[] = [
   // Normal post with single image
@@ -245,85 +257,188 @@ export function TrackerFeed({ onDeploy }: TrackerFeedProps) {
   const [searchQuery, setSearchQuery] = useState('')
   const [isSearchFocused, setIsSearchFocused] = useState(false)
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
+  const [showFilters, setShowFilters] = useState(true)
+  const [tweetTypeFilter, setTweetTypeFilter] = useState<TweetTypeFilter>('all')
+  const [autoTranslate, setAutoTranslate] = useState(false)
+  const [pauseOnHover, setPauseOnHover] = useState(true)
 
-  const filteredPosts = posts.filter(post =>
-    post.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    post.author.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    post.author.handle.toLowerCase().includes(searchQuery.toLowerCase())
+  const TWEET_TYPE_MAP: Record<TweetTypeFilter, string | undefined> = {
+    all: undefined,
+    posts: 'post',
+    replies: 'reply',
+    quotes: 'quote',
+    reposts: 'repost',
+    deleted: undefined,
+    following: undefined,
+  }
+
+  const filteredPosts = posts.filter(post => {
+    const matchesSearch =
+      post.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      post.author.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      post.author.handle.toLowerCase().includes(searchQuery.toLowerCase())
+    const matchesType = tweetTypeFilter === 'all' || post.tweetType === TWEET_TYPE_MAP[tweetTypeFilter]
+    return matchesSearch && matchesType
+  })
+
+  const renderFeedFilterRow = () => (
+    <div className="flex items-center justify-between gap-2">
+      {/* Tweet type filter pills */}
+      <div className="flex items-center gap-1 overflow-x-auto no-scrollbar">
+        {TWEET_TYPE_FILTERS.map((filter) => (
+          <button
+            key={filter.id}
+            onClick={() => setTweetTypeFilter(filter.id)}
+            className={`flex items-center gap-1 h-6 px-2 rounded text-xs font-medium border whitespace-nowrap transition-colors ${
+              tweetTypeFilter === filter.id
+                ? 'bg-kol-blue/15 text-kol-blue border-kol-blue/50'
+                : 'bg-kol-surface/45 border-kol-border text-kol-text-muted hover:bg-kol-surface-elevated'
+            }`}
+          >
+            <i className={`${filter.icon} text-[10px]`} />
+            <span>{filter.label}</span>
+          </button>
+        ))}
+      </div>
+
+      {/* Right controls */}
+      <div className="flex items-center gap-0.5 flex-shrink-0">
+        <Tooltip content="Auto-translate tweets" position="bottom">
+          <button
+            onClick={() => setAutoTranslate(!autoTranslate)}
+            className={`w-6 h-6 rounded flex items-center justify-center transition-colors ${
+              autoTranslate
+                ? 'bg-kol-blue/15 text-kol-blue'
+                : 'text-kol-text-muted hover:bg-kol-surface-elevated'
+            }`}
+          >
+            <i className="ri-translate text-xs" />
+          </button>
+        </Tooltip>
+        <Tooltip content="Pause feed on hover" position="bottom">
+          <button
+            onClick={() => setPauseOnHover(!pauseOnHover)}
+            className={`w-6 h-6 rounded flex items-center justify-center transition-colors ${
+              pauseOnHover
+                ? 'bg-kol-blue/15 text-kol-blue'
+                : 'text-kol-text-muted hover:bg-kol-surface-elevated'
+            }`}
+          >
+            <i className="ri-pause-circle-line text-xs" />
+          </button>
+        </Tooltip>
+        <Tooltip content="Default launch platform" position="bottom">
+          <button
+            className="w-6 h-6 rounded flex items-center justify-center text-kol-text-muted hover:bg-kol-surface-elevated transition-colors"
+          >
+            <i className="ri-rocket-line text-xs" />
+          </button>
+        </Tooltip>
+      </div>
+    </div>
   )
 
   return (
     <div className="relative flex flex-col h-full overflow-hidden">
       {/* Container for search and feed */}
       <div className="flex flex-col h-full lg:bg-kol-surface/50 lg:backdrop-blur-sm lg:border lg:border-kol-border/70 lg:rounded-xl overflow-hidden">
-        {/* Search Bar */}
+        {/* Search Bar + Filters */}
         <motion.div
-          className="relative px-3 pt-3 pb-2"
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-      >
-        {/* Focus glow effect */}
-        <div
-          className={`absolute inset-x-3 top-3 h-11 lg:h-9 rounded-xl transition-opacity duration-500 blur-xl -z-10 ${
-            isSearchFocused ? 'opacity-100' : 'opacity-0'
-          }`}
-          style={{
-            background: 'radial-gradient(circle at 50% 50%, rgba(0, 123, 255, 0.15) 0%, transparent 70%)',
-          }}
-        />
-
-        <div className={`relative flex items-center bg-kol-surface/50 border rounded-xl transition-all duration-300 ${
-          isSearchFocused ? 'border-kol-blue/50' : 'border-kol-border/70'
-        }`}>
-          <i className={`ri-search-line absolute left-3.5 lg:left-3 text-base lg:text-sm transition-colors duration-200 ${
-            isSearchFocused ? 'text-kol-blue' : 'text-kol-text-tertiary'
-          }`} />
-          <input
-            type="text"
-            placeholder="Search feed..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onFocus={() => setIsSearchFocused(true)}
-            onBlur={() => setIsSearchFocused(false)}
-            className="flex-1 h-11 lg:h-9 pl-10 lg:pl-9 pr-2 bg-transparent border-0 rounded-xl text-base lg:text-sm text-white placeholder:text-kol-text-tertiary font-body focus:outline-none transition-all duration-300"
-          />
-
-          {/* Action Buttons */}
-          <div className="flex items-center gap-1 lg:gap-0.5 pr-2">
-            {/* Clear search */}
-            <AnimatePresence>
-              {searchQuery && (
-                <motion.button
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.8 }}
-                  onClick={() => setSearchQuery('')}
-                  className="w-9 h-9 lg:w-7 lg:h-7 rounded-lg flex items-center justify-center text-kol-text-muted hover:text-white hover:bg-white/5 transition-colors"
-                >
-                  <i className="ri-close-line text-base lg:text-sm" />
-                </motion.button>
-              )}
-            </AnimatePresence>
-
-            {/* Divider */}
-            <div className="w-px h-5 lg:h-4 bg-kol-border/40 mx-1" />
-
-            {/* Settings Button */}
-            <Tooltip content="Feed settings">
-              <motion.button
-                onClick={() => setIsSettingsModalOpen(true)}
-                className="flex items-center gap-2 lg:gap-1.5 px-3 lg:px-2.5 py-2 lg:py-1.5 rounded-lg text-kol-text-tertiary hover:text-white hover:bg-white/5 transition-colors"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+          className="relative px-3 pt-3 pb-2 space-y-2"
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+        >
+          {/* Tweet type filters & controls */}
+          <AnimatePresence>
+            {showFilters && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="overflow-hidden"
               >
-                <i className="ri-settings-3-line text-base lg:text-sm" />
-                <span className="text-sm lg:text-xs font-medium">Settings</span>
-              </motion.button>
-            </Tooltip>
+                {renderFeedFilterRow()}
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Search input */}
+          <div className="relative">
+            {/* Focus glow effect */}
+            <div
+              className={`absolute inset-0 rounded-xl transition-opacity duration-500 blur-xl -z-10 ${
+                isSearchFocused ? 'opacity-100' : 'opacity-0'
+              }`}
+              style={{
+                background: 'radial-gradient(circle at 50% 50%, rgba(0, 123, 255, 0.15) 0%, transparent 70%)',
+              }}
+            />
+
+            <div className={`relative flex items-center bg-kol-surface/50 border rounded-xl transition-all duration-300 ${
+              isSearchFocused ? 'border-kol-blue/50' : 'border-kol-border/70'
+            }`}>
+              {/* Chevron toggle for filters */}
+              <button
+                onClick={() => setShowFilters(!showFilters)}
+                className="absolute left-2 lg:left-2 top-1/2 -translate-y-1/2 w-6 h-6 lg:w-5 lg:h-5 rounded flex items-center justify-center text-kol-text-muted hover:text-white transition-colors z-10"
+              >
+                <motion.i
+                  className="ri-arrow-down-s-line text-base lg:text-sm"
+                  animate={{ rotate: showFilters ? 180 : 0 }}
+                  transition={{ duration: 0.2 }}
+                />
+              </button>
+              <i className={`ri-search-line absolute left-9 lg:left-8 top-1/2 -translate-y-1/2 text-base lg:text-sm transition-colors duration-200 ${
+                isSearchFocused ? 'text-kol-blue' : 'text-kol-text-tertiary'
+              }`} />
+              <input
+                type="text"
+                placeholder="Search feed..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onFocus={() => setIsSearchFocused(true)}
+                onBlur={() => setIsSearchFocused(false)}
+                className="flex-1 h-11 lg:h-9 pl-16 lg:pl-14 pr-2 bg-transparent border-0 rounded-xl text-base lg:text-sm text-white placeholder:text-kol-text-tertiary font-body focus:outline-none transition-all duration-300"
+              />
+
+              {/* Action Buttons */}
+              <div className="flex items-center gap-1 lg:gap-0.5 pr-2">
+                {/* Clear search */}
+                <AnimatePresence>
+                  {searchQuery && (
+                    <motion.button
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.8 }}
+                      onClick={() => setSearchQuery('')}
+                      className="w-9 h-9 lg:w-7 lg:h-7 rounded-lg flex items-center justify-center text-kol-text-muted hover:text-white hover:bg-white/5 transition-colors"
+                    >
+                      <i className="ri-close-line text-base lg:text-sm" />
+                    </motion.button>
+                  )}
+                </AnimatePresence>
+
+                {/* Divider */}
+                <div className="w-px h-5 lg:h-4 bg-kol-border/40 mx-1" />
+
+                {/* Settings Button */}
+                <Tooltip content="Feed settings">
+                  <motion.button
+                    onClick={() => setIsSettingsModalOpen(true)}
+                    className="flex items-center gap-2 lg:gap-1.5 px-3 lg:px-2.5 py-2 lg:py-1.5 rounded-lg text-kol-text-tertiary hover:text-white hover:bg-white/5 transition-colors"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <i className="ri-settings-3-line text-base lg:text-sm" />
+                    <span className="text-sm lg:text-xs font-medium">Settings</span>
+                  </motion.button>
+                </Tooltip>
+              </div>
+            </div>
           </div>
-        </div>
-      </motion.div>
+        </motion.div>
 
       {/* Feed Content */}
       <motion.div
