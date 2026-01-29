@@ -23,8 +23,9 @@ function getPercentColor(value: number | undefined, inverted = false): string {
   return 'text-kol-red'
 }
 
-function StatCell({ icon, iconSize, value, label, colorClass }: {
-  icon: string
+function StatCell({ icon, iconSvg, iconSize, value, label, colorClass }: {
+  icon?: string
+  iconSvg?: React.ReactNode
   iconSize?: number
   value: string
   label: string
@@ -34,7 +35,7 @@ function StatCell({ icon, iconSize, value, label, colorClass }: {
     <div className="flex h-[55px] w-full flex-col items-center justify-start gap-[8px] rounded-[4px] border border-kol-border/50 px-[8px] pb-[7px] pt-[6px]">
       <div className={`flex h-[18px] flex-1 flex-row items-center justify-start gap-[4px] ${colorClass}`}>
         <div className="flex h-[14px] max-h-[14px] min-h-[14px] w-[14px] min-w-[14px] max-w-[14px] items-center justify-center">
-          <i className={`${icon} text-[14px]`} style={{ fontSize: iconSize ?? 14 }} />
+          {iconSvg ?? <i className={`${icon} text-[14px]`} style={{ fontSize: iconSize ?? 14 }} />}
         </div>
         <span className="text-[14px] font-normal leading-[16px]">{value}</span>
       </div>
@@ -61,8 +62,11 @@ export function TokenInfoPopoverContent({ security, axiomUrl }: TokenInfoPopover
           colorClass={getPercentColor(security.top10HoldersPercent)}
         />
         <StatCell
-          icon="ri-user-settings-line"
-          iconSize={12}
+          iconSvg={
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2a3 3 0 0 0-3 3v1H4a1 1 0 0 0-.996 1.09l1 10A1 1 0 0 0 5 18h14a1 1 0 0 0 .996-.91l1-10A1 1 0 0 0 20 6h-5V5a3 3 0 0 0-3-3zm-1 3a1 1 0 1 1 2 0v1h-2V5zM3 20a1 1 0 0 1 1-1h16a1 1 0 1 1 0 2H4a1 1 0 0 1-1-1z"/>
+            </svg>
+          }
           value={fmt(security.devHoldersPercent)}
           label="Dev H."
           colorClass={getPercentColor(security.devHoldersPercent)}
@@ -84,7 +88,7 @@ export function TokenInfoPopoverContent({ security, axiomUrl }: TokenInfoPopover
           colorClass={getPercentColor(security.insidersPercent)}
         />
         <StatCell
-          icon="ri-stack-line"
+          icon="ri-link-m"
           iconSize={12}
           value={fmt(security.bundlersPercent)}
           label="Bundlers"
@@ -110,14 +114,14 @@ export function TokenInfoPopoverContent({ security, axiomUrl }: TokenInfoPopover
           colorClass="text-kol-text-secondary"
         />
         <StatCell
-          icon="ri-line-chart-line"
+          icon="ri-bar-chart-2-line"
           iconSize={12}
           value={security.proTradersCount !== undefined ? String(security.proTradersCount) : '--'}
           label="Pro Traders"
           colorClass="text-kol-text-secondary"
         />
         <StatCell
-          icon="ri-coins-line"
+          icon="ri-checkbox-circle-line"
           iconSize={13}
           value={security.dexPaid === undefined ? '--' : security.dexPaid ? 'Paid' : 'Unpaid'}
           label="Dex Paid"
