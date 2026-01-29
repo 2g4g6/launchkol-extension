@@ -251,16 +251,33 @@ export function CoinsPanel({}: CoinsPanelProps) {
   const [isResizing, setIsResizing] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [isSearchFocused, setIsSearchFocused] = useState(false)
-  const [platformFilter, setPlatformFilter] = useState<PlatformFilter>('all')
+  const [platformFilters, setPlatformFilters] = useState<Set<PlatformFilter>>(new Set(['all']))
   const [sortBy, setSortBy] = useState<SortOption>('time')
   const [showFilters, setShowFilters] = useState(true)
+
+  const togglePlatformFilter = (id: PlatformFilter) => {
+    if (id === 'all') {
+      setPlatformFilters(new Set(['all']))
+      return
+    }
+    setPlatformFilters(prev => {
+      const next = new Set(prev)
+      next.delete('all')
+      if (next.has(id)) {
+        next.delete(id)
+      } else {
+        next.add(id)
+      }
+      return next.size === 0 ? new Set<PlatformFilter>(['all']) : next
+    })
+  }
 
   const filteredCoins = coins.filter(coin => {
     const matchesSearch =
       coin.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       coin.symbol.toLowerCase().includes(searchQuery.toLowerCase()) ||
       coin.address.toLowerCase().includes(searchQuery.toLowerCase())
-    const matchesPlatform = platformFilter === 'all' || coin.platform === platformFilter
+    const matchesPlatform = platformFilters.has('all') || platformFilters.has(coin.platform)
     return matchesSearch && matchesPlatform
   })
 
@@ -326,9 +343,9 @@ export function CoinsPanel({}: CoinsPanelProps) {
         {PLATFORM_FILTERS.map((filter) => (
           <button
             key={filter.id}
-            onClick={() => setPlatformFilter(filter.id)}
+            onClick={() => togglePlatformFilter(filter.id)}
             className={`flex items-center gap-1 h-6 px-2 rounded text-xs font-medium border whitespace-nowrap transition-colors ${
-              platformFilter === filter.id
+              platformFilters.has(filter.id)
                 ? 'bg-kol-blue/15 text-kol-blue border-kol-blue/50'
                 : 'bg-kol-surface/45 border-kol-border text-kol-text-muted hover:bg-kol-surface-elevated'
             }`}
@@ -482,7 +499,7 @@ export function CoinsPanel({}: CoinsPanelProps) {
                   transition={{ duration: 0.2 }}
                 />
               </button>
-              <i className={`ri-search-line absolute left-8 top-1/2 -translate-y-1/2 text-sm transition-colors duration-200 ${
+              <i className={`ri-search-line absolute left-7 top-1/2 -translate-y-1/2 text-sm transition-colors duration-200 ${
                 isSearchFocused ? 'text-kol-blue' : 'text-kol-text-tertiary'
               }`} />
               <input
@@ -492,11 +509,11 @@ export function CoinsPanel({}: CoinsPanelProps) {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onFocus={() => setIsSearchFocused(true)}
                 onBlur={() => setIsSearchFocused(false)}
-                className="flex-1 h-9 pl-14 pr-2 bg-transparent border-0 rounded-xl text-sm text-white placeholder:text-kol-text-tertiary font-body focus:outline-none transition-all duration-300"
+                className="flex-1 h-9 pl-12 pr-1 bg-transparent border-0 rounded-xl text-sm text-white placeholder:text-kol-text-tertiary font-body focus:outline-none transition-all duration-300 min-w-0"
               />
 
               {/* Action Buttons */}
-              <div className="flex items-center gap-0.5 pr-2">
+              <div className="flex items-center gap-0.5 pr-1.5 flex-shrink-0">
                 {/* Clear search */}
                 <AnimatePresence>
                   {searchQuery && (
@@ -505,24 +522,24 @@ export function CoinsPanel({}: CoinsPanelProps) {
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.8 }}
                       onClick={() => setSearchQuery('')}
-                      className="w-7 h-7 rounded-lg flex items-center justify-center text-kol-text-muted hover:text-white hover:bg-white/5 transition-colors"
+                      className="w-6 h-6 rounded-md flex items-center justify-center text-kol-text-muted hover:text-white hover:bg-white/5 transition-colors"
                     >
-                      <i className="ri-close-line text-sm" />
+                      <i className="ri-close-line text-xs" />
                     </motion.button>
                   )}
                 </AnimatePresence>
 
                 {/* Divider */}
-                <div className="w-px h-4 bg-kol-border/40 mx-1" />
+                <div className="w-px h-4 bg-kol-border/40 mx-0.5" />
 
                 {/* Action buttons */}
-                <button className="h-7 px-2 rounded-lg flex items-center gap-1.5 text-kol-text-muted hover:text-white hover:bg-white/5 transition-colors">
-                  <i className="ri-file-copy-line text-sm" />
+                <button className="h-7 px-1.5 rounded-lg flex items-center gap-1 text-kol-text-muted hover:text-white hover:bg-white/5 transition-colors">
+                  <i className="ri-file-copy-line text-xs" />
                   <span className="text-xs font-medium whitespace-nowrap">Clone</span>
                 </button>
 
-                <button className="h-7 px-2 rounded-lg flex items-center gap-1.5 text-kol-text-muted hover:text-white hover:bg-white/5 transition-colors">
-                  <i className="ri-add-line text-sm" />
+                <button className="h-7 px-1.5 rounded-lg flex items-center gap-1 text-kol-text-muted hover:text-white hover:bg-white/5 transition-colors">
+                  <i className="ri-add-line text-xs" />
                   <span className="text-xs font-medium whitespace-nowrap">Create</span>
                 </button>
               </div>

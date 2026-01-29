@@ -269,7 +269,7 @@ export function TrackerFeed({ onDeploy }: TrackerFeedProps) {
   const [isSearchFocused, setIsSearchFocused] = useState(false)
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
   const [showFilters, setShowFilters] = useState(true)
-  const [tweetTypeFilter, setTweetTypeFilter] = useState<TweetTypeFilter>('all')
+  const [tweetTypeFilters, setTweetTypeFilters] = useState<Set<TweetTypeFilter>>(new Set(['all']))
   const [pauseOnHover, setPauseOnHover] = useState(true)
   const [launchPlatform, setLaunchPlatform] = useState<LaunchPlatform>('pump')
   const [isPlatformDropdownOpen, setIsPlatformDropdownOpen] = useState(false)
@@ -310,12 +310,29 @@ export function TrackerFeed({ onDeploy }: TrackerFeedProps) {
     following: undefined,
   }
 
+  const toggleTweetTypeFilter = (id: TweetTypeFilter) => {
+    if (id === 'all') {
+      setTweetTypeFilters(new Set(['all']))
+      return
+    }
+    setTweetTypeFilters(prev => {
+      const next = new Set(prev)
+      next.delete('all')
+      if (next.has(id)) {
+        next.delete(id)
+      } else {
+        next.add(id)
+      }
+      return next.size === 0 ? new Set<TweetTypeFilter>(['all']) : next
+    })
+  }
+
   const filteredPosts = posts.filter(post => {
     const matchesSearch =
       post.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
       post.author.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       post.author.handle.toLowerCase().includes(searchQuery.toLowerCase())
-    const matchesType = tweetTypeFilter === 'all' || post.tweetType === TWEET_TYPE_MAP[tweetTypeFilter]
+    const matchesType = tweetTypeFilters.has('all') || Array.from(tweetTypeFilters).some(f => post.tweetType === TWEET_TYPE_MAP[f])
     return matchesSearch && matchesType
   })
 
@@ -326,9 +343,9 @@ export function TrackerFeed({ onDeploy }: TrackerFeedProps) {
         {TWEET_TYPE_FILTERS.map((filter) => (
           <button
             key={filter.id}
-            onClick={() => setTweetTypeFilter(filter.id)}
+            onClick={() => toggleTweetTypeFilter(filter.id)}
             className={`flex items-center gap-1 h-6 px-2 rounded text-xs font-medium border whitespace-nowrap transition-colors ${
-              tweetTypeFilter === filter.id
+              tweetTypeFilters.has(filter.id)
                 ? 'bg-kol-blue/15 text-kol-blue border-kol-blue/50'
                 : 'bg-kol-surface/45 border-kol-border text-kol-text-muted hover:bg-kol-surface-elevated'
             }`}
