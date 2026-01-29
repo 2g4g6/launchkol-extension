@@ -39,7 +39,7 @@ export function ExpandableFilterPill({
 
   useEffect(() => {
     if (measureRef.current) {
-      setExpandedWidth(measureRef.current.scrollWidth + 16)
+      setExpandedWidth(measureRef.current.scrollWidth + 14)
     }
   }, [label, children])
 
@@ -74,7 +74,7 @@ export function ExpandableFilterPill({
       </div>
 
       {/* Visible content — no gap, label uses ml when visible */}
-      <div className="flex items-center justify-center h-full px-[5px] whitespace-nowrap">
+      <div className="flex items-center justify-center h-full px-[3px] whitespace-nowrap">
         <div className="flex-shrink-0 flex items-center justify-center w-[18px] h-[18px]">
           {iconSrc ? (
             <img src={iconSrc} alt="" className="w-[18px] h-[18px] rounded-sm" />
@@ -88,7 +88,7 @@ export function ExpandableFilterPill({
           initial={false}
           animate={{
             width: expanded ? 'auto' : 0,
-            marginLeft: expanded ? 6 : 0,
+            marginLeft: expanded ? 8 : 0,
             opacity: expanded ? 1 : 0,
           }}
           transition={{
