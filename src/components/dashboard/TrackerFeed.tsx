@@ -1,21 +1,13 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { SocialPost, SocialPostData } from './SocialPost'
 import { Tooltip } from '../ui/Tooltip'
 import { FeedSettingsModal } from './FeedSettings'
 
-type TweetTypeFilter = 'posts' | 'replies' | 'quotes' | 'reposts' | 'deleted' | 'following'
-type LaunchPlatform = 'pump' | 'bonk' | 'bags' | 'mayhem' | 'fourmeme'
-
-const LAUNCH_PLATFORMS: { id: LaunchPlatform; label: string; icon: string }[] = [
-  { id: 'pump', label: 'Pump', icon: '/images/pump.svg' },
-  { id: 'bonk', label: 'Bonk', icon: '/images/bonk.svg' },
-  { id: 'bags', label: 'Bags', icon: '/images/bags.svg' },
-  { id: 'mayhem', label: 'Mayhem', icon: '/images/mayhem.svg' },
-  { id: 'fourmeme', label: 'Four', icon: '/images/fourmeme.svg' },
-]
+type TweetTypeFilter = 'all' | 'posts' | 'replies' | 'quotes' | 'reposts' | 'deleted' | 'following'
 
 const TWEET_TYPE_FILTERS: { id: TweetTypeFilter; label: string; icon: string }[] = [
+  { id: 'all', label: 'All', icon: 'ri-list-check' },
   { id: 'posts', label: 'Posts', icon: 'ri-chat-1-line' },
   { id: 'replies', label: 'Replies', icon: 'ri-reply-line' },
   { id: 'quotes', label: 'Quotes', icon: 'ri-double-quotes-l' },
@@ -23,8 +15,6 @@ const TWEET_TYPE_FILTERS: { id: TweetTypeFilter; label: string; icon: string }[]
   { id: 'deleted', label: 'Deleted', icon: 'ri-delete-bin-line' },
   { id: 'following', label: 'Following', icon: 'ri-user-follow-line' },
 ]
-
-const ALL_TWEET_TYPES = new Set<TweetTypeFilter>(TWEET_TYPE_FILTERS.map(f => f.id))
 
 // Mock data - tweets with different types (normal, reply, repost, quote) and media
 const MOCK_POSTS: SocialPostData[] = [
@@ -268,29 +258,12 @@ export function TrackerFeed({ onDeploy }: TrackerFeedProps) {
   const [isSearchFocused, setIsSearchFocused] = useState(false)
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
   const [showFilters, setShowFilters] = useState(true)
-  const [tweetTypeFilters, setTweetTypeFilters] = useState<Set<TweetTypeFilter>>(new Set(ALL_TWEET_TYPES))
+  const [tweetTypeFilter, setTweetTypeFilter] = useState<TweetTypeFilter>('all')
   const [autoTranslate, setAutoTranslate] = useState(false)
   const [pauseOnHover, setPauseOnHover] = useState(true)
-  const [launchPlatform, setLaunchPlatform] = useState<LaunchPlatform>('pump')
-  const [isPlatformDropdownOpen, setIsPlatformDropdownOpen] = useState(false)
-  const platformDropdownRef = useRef<HTMLDivElement>(null)
-
-  // Close platform dropdown on outside click
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (platformDropdownRef.current && !platformDropdownRef.current.contains(e.target as Node)) {
-        setIsPlatformDropdownOpen(false)
-      }
-    }
-    if (isPlatformDropdownOpen) {
-      document.addEventListener('mousedown', handleClickOutside)
-      return () => document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [isPlatformDropdownOpen])
-
-  const selectedPlatform = LAUNCH_PLATFORMS.find(p => p.id === launchPlatform)!
 
   const TWEET_TYPE_MAP: Record<TweetTypeFilter, string | undefined> = {
+    all: undefined,
     posts: 'post',
     replies: 'reply',
     quotes: 'quote',
@@ -299,16 +272,12 @@ export function TrackerFeed({ onDeploy }: TrackerFeedProps) {
     following: undefined,
   }
 
-  const activeTweetTypes = new Set(
-    Array.from(tweetTypeFilters).map(f => TWEET_TYPE_MAP[f]).filter(Boolean)
-  )
-
   const filteredPosts = posts.filter(post => {
     const matchesSearch =
       post.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
       post.author.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       post.author.handle.toLowerCase().includes(searchQuery.toLowerCase())
-    const matchesType = tweetTypeFilters.size === ALL_TWEET_TYPES.size || activeTweetTypes.has(post.tweetType)
+    const matchesType = tweetTypeFilter === 'all' || post.tweetType === TWEET_TYPE_MAP[tweetTypeFilter]
     return matchesSearch && matchesType
   })
 
@@ -316,114 +285,55 @@ export function TrackerFeed({ onDeploy }: TrackerFeedProps) {
     <div className="flex items-center justify-between gap-2">
       {/* Tweet type filter pills */}
       <div className="flex items-center gap-1 overflow-x-auto no-scrollbar">
-        {TWEET_TYPE_FILTERS.map((filter) => {
-          const isActive = tweetTypeFilters.has(filter.id)
-          return (
-            <button
-              key={filter.id}
-              onClick={() => {
-                setTweetTypeFilters(prev => {
-                  const next = new Set(prev)
-                  if (next.has(filter.id)) {
-                    next.delete(filter.id)
-                  } else {
-                    next.add(filter.id)
-                  }
-                  return next
-                })
-              }}
-              className={`flex items-center gap-1 h-6 px-2 rounded text-xs font-medium border whitespace-nowrap transition-colors ${
-                isActive
-                  ? 'bg-kol-blue/15 text-kol-blue border-kol-blue/50'
-                  : 'bg-kol-surface/45 border-kol-border text-kol-text-muted hover:bg-kol-surface-elevated'
-              }`}
-            >
-              <i className={`${filter.icon} text-[10px]`} />
-              <span>{filter.label}</span>
-            </button>
-          )
-        })}
-      </div>
-
-      {/* Right controls */}
-      <div className="flex items-center gap-1.5 flex-shrink-0">
-        <Tooltip content="Auto-translate tweets" position="bottom">
+        {TWEET_TYPE_FILTERS.map((filter) => (
           <button
-            onClick={() => setAutoTranslate(!autoTranslate)}
+            key={filter.id}
+            onClick={() => setTweetTypeFilter(filter.id)}
             className={`flex items-center gap-1 h-6 px-2 rounded text-xs font-medium border whitespace-nowrap transition-colors ${
-              autoTranslate
+              tweetTypeFilter === filter.id
                 ? 'bg-kol-blue/15 text-kol-blue border-kol-blue/50'
                 : 'bg-kol-surface/45 border-kol-border text-kol-text-muted hover:bg-kol-surface-elevated'
             }`}
           >
-            <i className="ri-translate text-[10px]" />
-            <span>Translate</span>
+            <i className={`${filter.icon} text-[10px]`} />
+            <span>{filter.label}</span>
+          </button>
+        ))}
+      </div>
+
+      {/* Right controls */}
+      <div className="flex items-center gap-0.5 flex-shrink-0">
+        <Tooltip content="Auto-translate tweets" position="bottom">
+          <button
+            onClick={() => setAutoTranslate(!autoTranslate)}
+            className={`w-6 h-6 rounded flex items-center justify-center transition-colors ${
+              autoTranslate
+                ? 'bg-kol-blue/15 text-kol-blue'
+                : 'text-kol-text-muted hover:bg-kol-surface-elevated'
+            }`}
+          >
+            <i className="ri-translate text-xs" />
           </button>
         </Tooltip>
         <Tooltip content="Pause feed on hover" position="bottom">
           <button
             onClick={() => setPauseOnHover(!pauseOnHover)}
-            className={`flex items-center gap-1 h-6 px-2 rounded text-xs font-medium border whitespace-nowrap transition-colors ${
+            className={`w-6 h-6 rounded flex items-center justify-center transition-colors ${
               pauseOnHover
-                ? 'bg-kol-blue/15 text-kol-blue border-kol-blue/50'
-                : 'bg-kol-surface/45 border-kol-border text-kol-text-muted hover:bg-kol-surface-elevated'
+                ? 'bg-kol-blue/15 text-kol-blue'
+                : 'text-kol-text-muted hover:bg-kol-surface-elevated'
             }`}
           >
-            <i className="ri-pause-circle-line text-[10px]" />
-            <span>Pause</span>
+            <i className="ri-pause-circle-line text-xs" />
           </button>
         </Tooltip>
-
-        {/* Launch platform dropdown */}
-        <div ref={platformDropdownRef} className="relative">
-          <Tooltip content="Default launch platform" position="bottom" disabled={isPlatformDropdownOpen}>
-            <button
-              onClick={() => setIsPlatformDropdownOpen(!isPlatformDropdownOpen)}
-              className={`flex items-center gap-1 h-6 px-2 rounded text-xs font-medium border whitespace-nowrap transition-colors ${
-                isPlatformDropdownOpen
-                  ? 'bg-kol-blue/15 text-kol-blue border-kol-blue/50'
-                  : 'bg-kol-surface/45 border-kol-border text-kol-text-muted hover:bg-kol-surface-elevated'
-              }`}
-            >
-              <img src={selectedPlatform.icon} alt={selectedPlatform.label} className="w-3.5 h-3.5" />
-              <span>{selectedPlatform.label}</span>
-              <i className={`ri-arrow-down-s-line text-[10px] transition-transform ${isPlatformDropdownOpen ? 'rotate-180' : ''}`} />
-            </button>
-          </Tooltip>
-
-          <AnimatePresence>
-            {isPlatformDropdownOpen && (
-              <motion.div
-                initial={{ opacity: 0, y: -4, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -4, scale: 0.95 }}
-                transition={{ duration: 0.15 }}
-                className="absolute right-0 top-full mt-1 z-50 bg-kol-bg border border-kol-border rounded-lg shadow-lg shadow-black/40 ring-1 ring-white/5 overflow-hidden min-w-[120px]"
-              >
-                {LAUNCH_PLATFORMS.map((platform) => (
-                  <button
-                    key={platform.id}
-                    onClick={() => {
-                      setLaunchPlatform(platform.id)
-                      setIsPlatformDropdownOpen(false)
-                    }}
-                    className={`flex items-center gap-2 w-full px-3 py-1.5 text-xs font-medium transition-colors ${
-                      launchPlatform === platform.id
-                        ? 'bg-kol-blue/15 text-kol-blue'
-                        : 'text-kol-text-muted hover:bg-kol-surface-elevated hover:text-white'
-                    }`}
-                  >
-                    <img src={platform.icon} alt={platform.label} className="w-4 h-4" />
-                    <span>{platform.label}</span>
-                    {launchPlatform === platform.id && (
-                      <i className="ri-check-line text-kol-blue ml-auto text-sm" />
-                    )}
-                  </button>
-                ))}
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
+        <Tooltip content="Default launch platform" position="bottom">
+          <button
+            className="w-6 h-6 rounded flex items-center justify-center text-kol-text-muted hover:bg-kol-surface-elevated transition-colors"
+          >
+            <i className="ri-rocket-line text-xs" />
+          </button>
+        </Tooltip>
       </div>
     </div>
   )
