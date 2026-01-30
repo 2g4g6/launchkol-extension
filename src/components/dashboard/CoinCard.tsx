@@ -6,6 +6,7 @@ import { SocialPostData } from './SocialPost'
 import { SourceTweetPopoverContent } from './popovers/SourceTweetPopover'
 import { PlatformCreatorPopoverContent, CreatorInfo } from './popovers/PlatformCreatorPopover'
 import { TokenInfoPopoverContent, TokenSecurityInfo } from './popovers/TokenInfoPopover'
+import { SearchTweetPreviewPopoverContent } from './popovers/SearchTweetPreviewPopover'
 
 // Platform types
 export type PlatformType = 'pump' | 'bonk' | 'bags' | 'mayhem' | 'fourmeme'
@@ -51,6 +52,7 @@ export interface CoinData {
   buyVolumeUsd?: number
   sellVolumeUsd?: number
   sourceTweet?: SocialPostData
+  searchTweets?: SocialPostData[]
   creator?: CreatorInfo
   tokenSecurity?: TokenSecurityInfo
   recipients?: Recipient[]
@@ -455,8 +457,18 @@ function QuickLinks({ coin, onSearchToken, solPrice }: { coin: CoinData; onSearc
         </QuickLinkPopover>
       )}
 
-      {/* Search icon - click opens SearchTokensModal */}
-      <Tooltip content="Search token" position="top">
+      {/* Search icon - hover popover with tweet preview, click opens SearchTokensModal */}
+      <QuickLinkPopover
+        width={340}
+        triggerMode="hover"
+        content={
+          <SearchTweetPreviewPopoverContent
+            symbol={coin.symbol}
+            searchTweets={coin.searchTweets}
+            onSearchAll={() => onSearchToken?.(coin)}
+          />
+        }
+      >
         <button
           onClick={(e) => {
             e.stopPropagation()
@@ -466,7 +478,7 @@ function QuickLinks({ coin, onSearchToken, solPrice }: { coin: CoinData; onSearc
         >
           <i className="ri-search-line text-[20px]" />
         </button>
-      </Tooltip>
+      </QuickLinkPopover>
 
       {/* Platform logo - hover popover with creator info */}
       <QuickLinkPopover

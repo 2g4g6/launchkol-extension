@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { CoinCard, CoinData, Recipient } from './CoinCard'
+import { SocialPostData } from './SocialPost'
 import { ExpandableFilterPill } from '../ui/ExpandableFilterPill'
 import { HorizontalScrollContainer } from '../ui/HorizontalScrollContainer'
 import { SearchTokensModal } from '../ui/SearchTokensModal'
@@ -83,6 +84,35 @@ const MOCK_COINS: CoinData[] = [
       proTradersCount: 18,
       dexPaid: true,
     },
+    searchTweets: [
+      {
+        id: 'search-wif-1',
+        type: 'mention',
+        tweetType: 'post',
+        author: { name: 'Crypto Whale', handle: 'crypto_whale', followers: 95000 },
+        content: '$WIF just broke through resistance. This dog is running and the hat stays ON. Loading more.',
+        timestamp: new Date(Date.now() - 3600000 * 2),
+        tweetUrl: 'https://x.com/crypto_whale/status/1111111111',
+      },
+      {
+        id: 'search-wif-2',
+        type: 'alert',
+        tweetType: 'reply',
+        author: { name: 'Sol Tracker', handle: 'sol_tracker', followers: 42000 },
+        content: '@dogwifcoin $WIF is showing strong accumulation from smart wallets. 3 new whales in the last hour.',
+        timestamp: new Date(Date.now() - 3600000 * 4),
+        tweetUrl: 'https://x.com/sol_tracker/status/1111111112',
+      },
+      {
+        id: 'search-wif-3',
+        type: 'mention',
+        tweetType: 'quote',
+        author: { name: 'Meme Alpha', handle: 'meme_alpha', followers: 180000 },
+        content: 'The hat meta is real. $WIF leading the pack today.',
+        timestamp: new Date(Date.now() - 3600000 * 8),
+        tweetUrl: 'https://x.com/meme_alpha/status/1111111113',
+      },
+    ] as SocialPostData[],
   },
   {
     id: '2',
@@ -149,6 +179,26 @@ const MOCK_COINS: CoinData[] = [
       proTradersCount: 5,
       dexPaid: false,
     },
+    searchTweets: [
+      {
+        id: 'search-bonk-1',
+        type: 'mention',
+        tweetType: 'post',
+        author: { name: 'Bonk Army', handle: 'bonk_army', followers: 67000 },
+        content: '$BONK airdrop round 2 is going to be massive. If you missed round 1, this is your chance. Stack now.',
+        timestamp: new Date(Date.now() - 3600000 * 1),
+        tweetUrl: 'https://x.com/bonk_army/status/2222222221',
+      },
+      {
+        id: 'search-bonk-2',
+        type: 'alert',
+        tweetType: 'post',
+        author: { name: 'DeFi Alerts', handle: 'defi_alerts', followers: 220000 },
+        content: '$BONK liquidity just doubled on Raydium. Something is brewing.',
+        timestamp: new Date(Date.now() - 3600000 * 3),
+        tweetUrl: 'https://x.com/defi_alerts/status/2222222222',
+      },
+    ] as SocialPostData[],
   },
   {
     id: '3',
@@ -218,6 +268,35 @@ const MOCK_COINS: CoinData[] = [
       proTradersCount: 42,
       dexPaid: true,
     },
+    searchTweets: [
+      {
+        id: 'search-myro-1',
+        type: 'mention',
+        tweetType: 'post',
+        author: { name: 'Solana Daily', handle: 'solana_daily', followers: 310000 },
+        content: '$MYRO just hit ATH market cap. Raj Gokal co-sign is carrying this one hard. Community is electric.',
+        timestamp: new Date(Date.now() - 3600000 * 6),
+        tweetUrl: 'https://x.com/solana_daily/status/3333333331',
+      },
+      {
+        id: 'search-myro-2',
+        type: 'trade',
+        tweetType: 'reply',
+        author: { name: 'Whale Watcher', handle: 'whale_watcher', followers: 88000 },
+        content: '@myro_sol Top wallet just added another 500 SOL worth of $MYRO. Diamond hands only.',
+        timestamp: new Date(Date.now() - 3600000 * 12),
+        tweetUrl: 'https://x.com/whale_watcher/status/3333333332',
+      },
+      {
+        id: 'search-myro-3',
+        type: 'alert',
+        tweetType: 'post',
+        author: { name: 'CT Insider', handle: 'ct_insider', followers: 55000 },
+        content: 'Thread on why $MYRO is the most undervalued dog coin on Solana right now. LP burned, community owned, backed by the co-founder.',
+        timestamp: new Date(Date.now() - 3600000 * 24),
+        tweetUrl: 'https://x.com/ct_insider/status/3333333333',
+      },
+    ] as SocialPostData[],
   },
   {
     id: '4',
@@ -286,6 +365,26 @@ const MOCK_COINS: CoinData[] = [
       proTradersCount: 12,
       dexPaid: true,
     },
+    searchTweets: [
+      {
+        id: 'search-popcat-1',
+        type: 'mention',
+        tweetType: 'post',
+        author: { name: 'Meme Lord', handle: 'meme_lord', followers: 140000 },
+        content: '$POPCAT is the viral play of the week. Internet meme + Solana speed = easy 10x from here.',
+        timestamp: new Date(Date.now() - 3600000 * 3),
+        tweetUrl: 'https://x.com/meme_lord/status/4444444441',
+      },
+      {
+        id: 'search-popcat-2',
+        type: 'alert',
+        tweetType: 'post',
+        author: { name: 'Bags Alert', handle: 'bags_alert', followers: 45000 },
+        content: '$POPCAT on Bags is getting serious traction. 450+ txns in the last hour. Pop pop pop.',
+        timestamp: new Date(Date.now() - 3600000 * 5),
+        tweetUrl: 'https://x.com/bags_alert/status/4444444442',
+      },
+    ] as SocialPostData[],
     recipients: [
       {
         name: 'BarronTrump1',
