@@ -705,9 +705,10 @@ function TokenRow({
                 e.stopPropagation()
                 onManage?.(token)
               }}
-              className="flex h-[30px] w-[30px] items-center justify-center rounded-full bg-kol-blue hover:bg-kol-blue-hover transition-colors"
+              className="flex h-[30px] items-center justify-center gap-1.5 px-3 rounded-full bg-kol-blue/25 hover:bg-kol-blue/40 text-white text-sm font-semibold transition-all duration-300"
             >
-              <i className="ri-settings-3-line text-base text-black" />
+              <span>Manage</span>
+              <i className="ri-settings-3-line text-base" />
             </button>
           </Tooltip>
         ) : (
