@@ -2,11 +2,12 @@ import { motion } from 'framer-motion'
 import { useState } from 'react'
 import { Tooltip } from '../ui/Tooltip'
 import { QuickLinkPopover } from '../ui/QuickLinkPopover'
-import { SocialPostData } from './SocialPost'
+import { SocialPostData, LinkPreview } from './SocialPost'
 import { SourceTweetPopoverContent } from './popovers/SourceTweetPopover'
 import { PlatformCreatorPopoverContent, CreatorInfo } from './popovers/PlatformCreatorPopover'
 import { TokenInfoPopoverContent, TokenSecurityInfo } from './popovers/TokenInfoPopover'
 import { SearchTweetPreviewPopoverContent } from './popovers/SearchTweetPreviewPopover'
+import { WebsitePreviewPopoverContent } from './popovers/WebsitePreviewPopover'
 
 // Platform types
 export type PlatformType = 'pump' | 'bonk' | 'bags' | 'mayhem' | 'fourmeme'
@@ -43,6 +44,7 @@ export interface CoinData {
   platform: PlatformType
   twitterUrl?: string
   websiteUrl?: string
+  websitePreview?: LinkPreview
   tweetType?: TweetType
   launchedAt: Date
   progressPercent?: number
@@ -552,7 +554,16 @@ function QuickLinks({ coin, onSearchToken, solPrice }: { coin: CoinData; onSearc
 
       {/* Website link */}
       {coin.websiteUrl && (
-        <Tooltip content="Website" position="top">
+        <QuickLinkPopover
+          width={300}
+          triggerMode="hover"
+          content={
+            <WebsitePreviewPopoverContent
+              websitePreview={coin.websitePreview}
+              websiteUrl={coin.websiteUrl}
+            />
+          }
+        >
           <a
             href={coin.websiteUrl}
             target="_blank"
@@ -562,7 +573,7 @@ function QuickLinks({ coin, onSearchToken, solPrice }: { coin: CoinData; onSearc
           >
             <i className="ri-global-line text-[20px]" />
           </a>
-        </Tooltip>
+        </QuickLinkPopover>
       )}
     </div>
   )
