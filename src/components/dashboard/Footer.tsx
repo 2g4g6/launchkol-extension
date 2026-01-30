@@ -66,7 +66,7 @@ function RegionDropdown() {
         className="flex items-center gap-1 px-1.5 py-0.5 hover:bg-kol-border/40 rounded transition-colors duration-150"
       >
         <i className="ri-global-line text-[12px] text-kol-text-muted" />
-        <span className="text-[11px] text-kol-text-muted font-body whitespace-nowrap">
+        <span className="text-[11px] text-kol-text-muted font-body whitespace-nowrap hidden xs:inline">
           {selectedRegion.label}
         </span>
         <i className="ri-arrow-down-s-line text-[10px] text-kol-text-muted" />
@@ -187,9 +187,9 @@ export function Footer({
       <div className="flex items-center gap-1.5 justify-self-start col-start-1">
         <RegionDropdown />
 
-        <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-kol-green/10 border border-kol-green/20 flex-shrink-0">
+        <div className="flex items-center gap-1.5 px-1 xs:px-2 py-0.5 rounded-md bg-kol-green/10 border border-kol-green/20 flex-shrink-0">
           <span className="w-[6px] h-[6px] rounded-full bg-kol-green flex-shrink-0" />
-          <span className="text-[11px] text-kol-green font-body whitespace-nowrap lg:hidden">
+          <span className="text-[11px] text-kol-green font-body whitespace-nowrap hidden xs:inline lg:hidden">
             Connected
           </span>
           <span className="text-[11px] text-kol-green font-body whitespace-nowrap hidden lg:inline">

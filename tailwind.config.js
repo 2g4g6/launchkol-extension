@@ -5,6 +5,9 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
+    screens: {
+      'xs': '480px',
+    },
     extend: {
       colors: {
         'usd1': '#EAAC08',
