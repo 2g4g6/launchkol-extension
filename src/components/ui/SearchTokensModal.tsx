@@ -315,10 +315,9 @@ function TokenRow({
             e.stopPropagation()
             onManage?.(token)
           }}
-          className="hidden sm:flex h-[30px] items-center gap-1.5 px-3 rounded-full bg-kol-blue hover:bg-kol-blue-hover transition-colors"
+          className="hidden sm:flex h-[30px] w-[30px] items-center justify-center rounded-full bg-kol-blue hover:bg-kol-blue-hover transition-colors"
         >
-          <i className="ri-settings-3-line text-sm text-black" />
-          <span className="text-xs font-medium text-black">Manage</span>
+          <i className="ri-settings-3-line text-base text-black" />
         </button>
       ) : (
         <button
@@ -326,10 +325,9 @@ function TokenRow({
             e.stopPropagation()
             onClone?.(token)
           }}
-          className="hidden sm:flex h-[30px] items-center gap-1.5 px-3 rounded-full bg-kol-surface-elevated hover:bg-white/[12%] border border-kol-border transition-colors"
+          className="hidden sm:flex h-[30px] w-[30px] items-center justify-center rounded-full bg-kol-surface-elevated hover:bg-white/[12%] border border-kol-border transition-colors"
         >
-          <i className="ri-file-copy-line text-sm text-kol-text-muted" />
-          <span className="text-xs font-medium text-kol-text-muted">Clone</span>
+          <i className="ri-file-copy-line text-base text-kol-text-muted" />
         </button>
       )}
     </div>
