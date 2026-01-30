@@ -518,6 +518,9 @@ function TokenRow({
   onDoubleClick?: () => void
   solPrice?: number
 }) {
+  const [isHovered, setIsHovered] = useState(false)
+  const showActions = isHovered || isSelected
+
   const copyAddress = (e: React.MouseEvent) => {
     e.stopPropagation()
     navigator.clipboard.writeText(token.address)
@@ -527,6 +530,8 @@ function TokenRow({
     <div
       onClick={onClick}
       onDoubleClick={onDoubleClick}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
       className={`
         flex items-center gap-3 px-4 h-16 sm:h-[88px] cursor-pointer transition-colors
         ${isSelected ? 'bg-kol-surface-elevated' : 'hover:bg-white/[7%]'}
@@ -682,7 +687,8 @@ function TokenRow({
         </div>
       </div>
 
-      <div className="flex items-center gap-4">
+      {/* MC/V/L stats - hidden on small screens when hovered/selected, always visible on sm+ */}
+      <div className={`flex items-center gap-4 ${showActions ? 'hidden' : 'flex'} sm:flex`}>
         <div className="flex items-end gap-1">
           <span className="text-[10px] sm:text-xs text-kol-text-muted pb-[1.6px]">MC</span>
           <span className="text-xs sm:text-base text-white font-medium">{token.marketCap}</span>
@@ -697,7 +703,8 @@ function TokenRow({
         </div>
       </div>
 
-      <div className="hidden sm:flex items-center gap-1.5">
+      {/* Action buttons - shown on small screens when hovered/selected, always visible on sm+ */}
+      <div className={`${showActions ? 'flex' : 'hidden'} sm:flex items-center gap-1.5`}>
         <Tooltip content="Look up tweets" position="bottom" delayShow={200}>
           <button
             onClick={(e) => {
