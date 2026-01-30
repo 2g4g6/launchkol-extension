@@ -192,30 +192,27 @@ export function PlatformCreatorPopoverContent({
         </div>
       )}
 
-      {/* Bags: Royalties section */}
+      {/* Bags: Royalties + Recipients */}
       {isBags && (
         <div className="border-t border-kol-border pt-3 space-y-2">
-          <div className="flex items-center justify-between px-1">
-            <span className="text-[11px] text-kol-text-muted">Bags Royalties</span>
-          </div>
           {bagsRoyaltiesSol !== undefined && (
-            <div className="flex items-center gap-1 px-1">
-              <img alt="SOL" width="14" height="14" src="/images/solanaLogoMark.svg" />
-              <span className="text-[14px] font-bold text-white">
-                {bagsRoyaltiesSol < 0.01 ? '<0.01' : bagsRoyaltiesSol < 100 ? bagsRoyaltiesSol.toFixed(2) : bagsRoyaltiesSol < 10000 ? bagsRoyaltiesSol.toFixed(1) : Math.round(bagsRoyaltiesSol).toLocaleString()}
-              </span>
+            <div className="flex items-center justify-between px-1">
+              <span className="text-[11px] text-kol-text-muted">Total Royalties</span>
+              <div className="flex items-center gap-1">
+                <img alt="SOL" width="12" height="12" src="/images/solanaLogoMark.svg" />
+                <span className="text-[12px] font-bold text-kol-text-secondary">
+                  {bagsRoyaltiesSol < 0.01 ? '<0.01' : bagsRoyaltiesSol < 100 ? bagsRoyaltiesSol.toFixed(2) : bagsRoyaltiesSol < 10000 ? bagsRoyaltiesSol.toFixed(1) : Math.round(bagsRoyaltiesSol).toLocaleString()}
+                </span>
+              </div>
             </div>
           )}
-          <div className="text-[10px] text-kol-text-muted px-1">Total Royalties</div>
-
-          {/* Recipients */}
           {recipients && recipients.length > 0 && (
-            <div className="space-y-2 pt-1">
-              <div className="text-[11px] text-kol-text-muted px-1">Recipients</div>
+            <>
+              <div className="text-[11px] text-kol-text-muted px-1 pt-1">Recipients</div>
               {recipients.map((recipient, i) => (
                 <RecipientRow key={i} recipient={recipient} />
               ))}
-            </div>
+            </>
           )}
         </div>
       )}
