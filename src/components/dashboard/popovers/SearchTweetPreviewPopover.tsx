@@ -9,18 +9,27 @@ interface SearchTweetPreviewPopoverProps {
 export function SearchTweetPreviewPopoverContent({ symbol, searchTweets, onSearchAll }: SearchTweetPreviewPopoverProps) {
   if (!searchTweets || searchTweets.length === 0) {
     return (
-      <div className="p-3">
-        <div className="flex items-center gap-2 text-sm text-kol-text-muted">
-          <i className="ri-search-line text-base" />
-          <span>No tweets found for ${symbol}</span>
+      <div className="flex flex-col items-center py-6 px-5">
+        <div className="relative mb-3">
+          <div className="w-11 h-11 rounded-xl bg-kol-surface-elevated/60 border border-kol-border/40 flex items-center justify-center">
+            <i className="ri-search-line text-xl text-kol-text-muted" />
+          </div>
+          <div
+            className="absolute inset-0 rounded-xl opacity-40 blur-lg -z-10"
+            style={{ background: 'radial-gradient(circle, rgba(0, 123, 255, 0.2) 0%, transparent 70%)' }}
+          />
         </div>
+        <span className="text-sm font-medium text-white mb-0.5">No tweets yet</span>
+        <span className="text-xs text-kol-text-muted text-center mb-3">
+          No mentions of <span className="text-kol-text-secondary">${symbol}</span> found on X
+        </span>
         {onSearchAll && (
           <button
             onClick={onSearchAll}
-            className="mt-2 flex items-center gap-1.5 text-xs text-kol-blue hover:text-kol-blue-hover transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-kol-blue/10 border border-kol-blue/20 text-xs text-kol-blue hover:bg-kol-blue/20 transition-colors"
           >
-            <span>Search all tweets</span>
-            <i className="ri-arrow-right-line text-[11px]" />
+            <i className="ri-search-line text-[11px]" />
+            <span>Search on X</span>
           </button>
         )}
       </div>
