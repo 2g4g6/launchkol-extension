@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { LinkPreview } from '../SocialPost'
 
 interface WebsitePreviewPopoverProps {
@@ -6,6 +7,8 @@ interface WebsitePreviewPopoverProps {
 }
 
 export function WebsitePreviewPopoverContent({ websitePreview, websiteUrl }: WebsitePreviewPopoverProps) {
+  const [siteNameHovered, setSiteNameHovered] = useState(false)
+
   if (!websitePreview) {
     return (
       <div className="p-3">
@@ -24,6 +27,7 @@ export function WebsitePreviewPopoverContent({ websitePreview, websiteUrl }: Web
   }
 
   const displayUrl = websitePreview.url.replace(/^https?:\/\//, '').replace(/\/$/, '')
+  const siteName = websitePreview.siteName || new URL(websitePreview.url).hostname.replace(/^www\./, '')
 
   return (
     <a
@@ -33,47 +37,54 @@ export function WebsitePreviewPopoverContent({ websitePreview, websiteUrl }: Web
       className="block group"
       onClick={(e) => e.stopPropagation()}
     >
-      {/* Card content */}
       <div className="p-3 space-y-2">
-        {/* Site name / URL */}
+        {/* Site name / URL toggle row — outside inner card */}
         <div className="flex items-center gap-1.5">
           {websitePreview.favicon && (
             <img
               src={websitePreview.favicon}
               alt=""
-              className="w-3.5 h-3.5 rounded-sm object-cover"
+              className="w-3.5 h-3.5 rounded-sm object-cover flex-shrink-0"
               onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
             />
           )}
-          <span className="text-[11px] text-kol-text-muted truncate">
-            {websitePreview.siteName || displayUrl}
+          <span
+            className="text-[11px] text-kol-text-muted truncate inline-flex items-center gap-1 cursor-pointer"
+            onMouseEnter={() => setSiteNameHovered(true)}
+            onMouseLeave={() => setSiteNameHovered(false)}
+          >
+            {siteNameHovered ? displayUrl : siteName}
+            <i className="ri-link text-[10px] opacity-50" />
           </span>
         </div>
 
-        {/* Title */}
-        <div className="text-[13px] font-medium text-white group-hover:text-kol-blue-hover transition-colors leading-snug">
-          {websitePreview.title}
-        </div>
+        {/* Inner card: image + title + description */}
+        <div className="border border-kol-border/40 rounded-lg bg-kol-surface-elevated overflow-hidden">
+          {/* OG Image at top */}
+          {websitePreview.image && (
+            <img
+              src={websitePreview.image}
+              alt=""
+              className="w-full h-[140px] object-cover"
+              onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
+            />
+          )}
 
-        {/* Description */}
-        {websitePreview.description && (
-          <div className="text-[12px] text-kol-text-muted leading-relaxed line-clamp-2">
-            {websitePreview.description}
+          <div className="p-2.5 space-y-1.5">
+            {/* Title */}
+            <div className="text-[13px] font-medium text-white group-hover:text-kol-blue-hover transition-colors leading-snug">
+              {websitePreview.title}
+            </div>
+
+            {/* Description */}
+            {websitePreview.description && (
+              <div className="text-[12px] text-kol-text-muted leading-relaxed line-clamp-2">
+                {websitePreview.description}
+              </div>
+            )}
           </div>
-        )}
-      </div>
-
-      {/* OG Image */}
-      {websitePreview.image && (
-        <div className="border-t border-kol-border/40">
-          <img
-            src={websitePreview.image}
-            alt=""
-            className="w-full h-[140px] object-cover rounded-b-lg"
-            onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
-          />
         </div>
-      )}
+      </div>
     </a>
   )
 }
