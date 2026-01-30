@@ -194,7 +194,7 @@ export function PlatformCreatorPopoverContent({
 
       {/* Bags: Royalties + Recipients */}
       {isBags && (
-        <div className="border-t border-kol-border pt-3 space-y-2">
+        <div className="space-y-2">
           {bagsRoyaltiesSol !== undefined && (
             <div className="flex items-center justify-between px-1">
               <span className="text-[11px] text-kol-text-muted">Total Royalties</span>
