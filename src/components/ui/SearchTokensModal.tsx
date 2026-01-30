@@ -2,14 +2,23 @@ import { useEffect, useState, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { createPortal } from 'react-dom'
 import { Tooltip } from './Tooltip'
+import { QuickLinkPopover } from './QuickLinkPopover'
 import { WalletFilterDropdown, SavedWallet } from './WalletFilterDropdown'
 import { HorizontalScrollContainer } from './HorizontalScrollContainer'
+import { SourceTweetPopoverContent } from '../dashboard/popovers/SourceTweetPopover'
+import { PlatformCreatorPopoverContent } from '../dashboard/popovers/PlatformCreatorPopover'
+import { TokenInfoPopoverContent } from '../dashboard/popovers/TokenInfoPopover'
+import type { SocialPostData } from '../dashboard/SocialPost'
+import type { TokenSecurityInfo } from '../dashboard/popovers/TokenInfoPopover'
+import type { CreatorInfo } from '../dashboard/popovers/PlatformCreatorPopover'
+import type { Recipient } from '../dashboard/CoinCard'
 
 // ============================================================================
 // Types
 // ============================================================================
 
 export type PlatformType = 'pump' | 'bonk' | 'bags' | 'mayhem' | 'fourmeme'
+export type TweetType = 'tweet' | 'reply' | 'retweet' | 'quote' | 'pin' | 'follow' | 'delete' | 'profile'
 
 export interface TokenResult {
   address: string
@@ -22,11 +31,20 @@ export interface TokenResult {
   volume: string
   liquidity: string
   twitterUrl?: string
+  tweetType?: TweetType
   websiteUrl?: string
   telegramUrl?: string
   axiomUrl?: string
   creatorWallet?: string
   isOwned?: boolean
+  tokenSecurity?: TokenSecurityInfo
+  creator?: CreatorInfo
+  sourceTweet?: SocialPostData
+  progressPercent?: number
+  buyVolumeUsd?: number
+  sellVolumeUsd?: number
+  recipients?: Recipient[]
+  platformFee?: string
 }
 
 export interface SearchTokensModalProps {
@@ -37,6 +55,7 @@ export interface SearchTokensModalProps {
   onCloneToken?: (token: TokenResult) => void
   userWalletAddress?: string
   initialQuery?: string
+  solPrice?: number
 }
 
 // ============================================================================
@@ -112,6 +131,58 @@ function AxiomIcon({ className }: { className?: string }) {
   )
 }
 
+// Tweet Type Helpers
+function getTweetTypeIcon(type?: TweetType): string {
+  switch (type) {
+    case 'reply': return 'ri-reply-line'
+    case 'retweet': return 'ri-repeat-2-line'
+    case 'quote': return 'ri-chat-quote-line'
+    case 'pin': return 'ri-pushpin-line'
+    case 'follow': return 'ri-user-add-line'
+    case 'delete': return 'ri-delete-bin-line'
+    case 'profile': return 'ri-user-settings-line'
+    case 'tweet':
+    default: return 'ri-quill-pen-line'
+  }
+}
+
+function getTweetTypeColor(type?: TweetType): string {
+  switch (type) {
+    case 'reply': return '#00c46b'
+    case 'retweet': return '#00c46b'
+    case 'quote': return '#ff9500'
+    case 'pin': return '#ffd700'
+    case 'follow': return '#ff4d4f'
+    case 'delete': return '#ff6b6b'
+    case 'profile': return '#8b5cf6'
+    case 'tweet':
+    default: return '#00bfa6'
+  }
+}
+
+function getTweetTypeLabel(type?: TweetType): string {
+  switch (type) {
+    case 'reply': return 'View reply'
+    case 'retweet': return 'View retweet'
+    case 'quote': return 'View quote tweet'
+    case 'pin': return 'View pinned tweet'
+    case 'follow': return 'View follow'
+    case 'delete': return 'View deleted tweet'
+    case 'profile': return 'View profile update'
+    case 'tweet':
+    default: return 'View source tweet'
+  }
+}
+
+// Platform ring solid colors (for popover content)
+const PLATFORM_RING_COLORS: Record<PlatformType, string> = {
+  pump: '#00c46b',
+  bonk: '#f97316',
+  bags: '#047857',
+  mayhem: '#ff4d4f',
+  fourmeme: '#ec4899',
+}
+
 // Platform ring gradients (matching Axiom style)
 const PLATFORM_RING_GRADIENTS: Record<PlatformType, string> = {
   pump: 'linear-gradient(219deg, #00FF88 0%, #00c46b 49%, #009950 100%)',
@@ -133,10 +204,35 @@ const MOCK_TOKENS: TokenResult[] = [
     volume: '$3K',
     liquidity: '$8K',
     twitterUrl: 'https://twitter.com',
+    tweetType: 'tweet' as TweetType,
     websiteUrl: 'https://example.com',
     axiomUrl: 'https://axiom.trade/t/CBvno2t3bFRHpV3YoyuhA2eLaQ42WwUDE4a7d3C1xkSm',
     creatorWallet: '43HPNeS2FroDxUGRQKV1iNDrYFD1wo5rPVj5Qc9igLZN',
     isOwned: true,
+    tokenSecurity: {
+      top10HoldersPercent: 32,
+      devHoldersPercent: 5,
+      snipersHoldersPercent: 8,
+      insidersPercent: 12,
+      bundlersPercent: 3,
+      lpBurnedPercent: 100,
+      holdersCount: 1240,
+      proTradersCount: 18,
+      dexPaid: true,
+    },
+    creator: { name: 'SolDev', walletAddress: '43HPNeS2FroDxUGRQKV1iNDrYFD1wo5rPVj5Qc9igLZN' },
+    sourceTweet: {
+      id: 'mock-tweet-1',
+      type: 'mention',
+      author: { name: 'CryptoAlpha', handle: '@cryptoalpha', followers: 52000 },
+      content: 'Just launched $HELLO on Pump.fun! Community token for the culture. LFG!',
+      timestamp: new Date(Date.now() - 24 * 60 * 1000),
+      tweetUrl: 'https://twitter.com/cryptoalpha/status/123',
+    },
+    progressPercent: 67,
+    buyVolumeUsd: 2100,
+    sellVolumeUsd: 900,
+    platformFee: '1.5%',
   },
   {
     address: '7dNW2mhCtqoZcDuyRbj5LMoeFsS9TpaCdSkk4qMstGPm',
@@ -148,8 +244,25 @@ const MOCK_TOKENS: TokenResult[] = [
     volume: '$142',
     liquidity: '$61K',
     twitterUrl: 'https://twitter.com',
+    tweetType: 'quote' as TweetType,
     axiomUrl: 'https://axiom.trade/t/7dNW2mhCtqoZcDuyRbj5LMoeFsS9TpaCdSkk4qMstGPm',
     creatorWallet: 'DifferentWallet123456789012345678901234567890',
+    tokenSecurity: {
+      top10HoldersPercent: 45,
+      devHoldersPercent: 0,
+      snipersHoldersPercent: 15,
+      insidersPercent: 22,
+      bundlersPercent: 9,
+      lpBurnedPercent: 80,
+      holdersCount: 3500,
+      proTradersCount: 42,
+      dexPaid: false,
+    },
+    creator: { name: 'MayhemKing', walletAddress: 'DifferentWallet123456789012345678901234567890' },
+    progressPercent: 100,
+    buyVolumeUsd: 95000,
+    sellVolumeUsd: 47000,
+    platformFee: '1%',
   },
   {
     address: 'HsRtbRWaB29bPg6wESHz61y6VYbZvJJzoreGuqTupfM9',
@@ -164,6 +277,22 @@ const MOCK_TOKENS: TokenResult[] = [
     axiomUrl: 'https://axiom.trade/t/HsRtbRWaB29bPg6wESHz61y6VYbZvJJzoreGuqTupfM9',
     creatorWallet: '43HPNeS2FroDxUGRQKV1iNDrYFD1wo5rPVj5Qc9igLZN',
     isOwned: true,
+    tokenSecurity: {
+      top10HoldersPercent: 28,
+      devHoldersPercent: 2,
+      snipersHoldersPercent: 5,
+      insidersPercent: 8,
+      bundlersPercent: 1,
+      lpBurnedPercent: 100,
+      holdersCount: 5200,
+      proTradersCount: 65,
+      dexPaid: true,
+    },
+    creator: { name: 'BonkMaster', walletAddress: '43HPNeS2FroDxUGRQKV1iNDrYFD1wo5rPVj5Qc9igLZN' },
+    progressPercent: 100,
+    buyVolumeUsd: 40000,
+    sellVolumeUsd: 25000,
+    platformFee: '1%',
   },
   {
     address: 'FourMeme123456789012345678901234567890ABCD',
@@ -175,6 +304,11 @@ const MOCK_TOKENS: TokenResult[] = [
     volume: '$5K',
     liquidity: '$15K',
     creatorWallet: 'AnotherWallet12345678901234567890123456789012',
+    creator: { name: '4MemeDeployer', walletAddress: 'AnotherWallet12345678901234567890123456789012' },
+    progressPercent: 23,
+    buyVolumeUsd: 3500,
+    sellVolumeUsd: 1500,
+    platformFee: '1%',
   },
   {
     address: 'BagsToken123456789012345678901234567890EFGH',
@@ -186,6 +320,134 @@ const MOCK_TOKENS: TokenResult[] = [
     volume: '$2K',
     liquidity: '$40K',
     creatorWallet: 'BagsCreator12345678901234567890123456789012345',
+    creator: { name: 'BagsOG', rewardsPercent: 5, walletAddress: 'BagsCreator12345678901234567890123456789012345' },
+    progressPercent: 88,
+    buyVolumeUsd: 55000,
+    sellVolumeUsd: 30000,
+    platformFee: '1%',
+    recipients: [
+      { name: 'Creator', percent: 60, walletAddress: 'BagsCreator12345678901234567890123456789012345', earnedSol: 4.2 },
+      { name: 'Referrer', percent: 40, walletAddress: 'RefWallet12345678901234567890123456789012345678', earnedSol: 2.8 },
+    ],
+  },
+]
+
+// ============================================================================
+// Tweet Search Types & Data
+// ============================================================================
+
+type SearchTab = 'tokens' | 'tweets'
+
+interface TweetSearchResult {
+  post: SocialPostData
+  relatedTicker: string
+  relatedCA: string
+}
+
+function isContractAddress(q: string): boolean {
+  return /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(q.trim())
+}
+
+const MOCK_TWEETS: TweetSearchResult[] = [
+  {
+    relatedTicker: 'HELLO',
+    relatedCA: 'CBvno2t3bFRHpV3YoyuhA2eLaQ42WwUDE4a7d3C1xkSm',
+    post: {
+      id: 'tweet-1',
+      type: 'mention',
+      tweetType: 'post',
+      author: {
+        name: 'CryptoWhale',
+        handle: '@cryptowhale',
+        followers: 125000,
+      },
+      content: '$HELLO just launched on Pump.fun and already at $4K MC. This could be an easy 100x. Dev is based and locked liquidity. NFA 🚀',
+      timestamp: new Date(Date.now() - 1000 * 60 * 12),
+      tweetUrl: 'https://x.com/cryptowhale/status/1234567890',
+    },
+  },
+  {
+    relatedTicker: 'HELLO',
+    relatedCA: 'CBvno2t3bFRHpV3YoyuhA2eLaQ42WwUDE4a7d3C1xkSm',
+    post: {
+      id: 'tweet-2',
+      type: 'alert',
+      tweetType: 'reply',
+      author: {
+        name: 'SolanaAlpha',
+        handle: '@solalpha',
+        followers: 48000,
+      },
+      content: 'Grabbed a bag of $HELLO early. Chart looks clean, no rugs in dev history. DYOR but I\'m bullish.',
+      timestamp: new Date(Date.now() - 1000 * 60 * 30),
+      tweetUrl: 'https://x.com/solalpha/status/1234567891',
+      replyTo: {
+        author: { name: 'CryptoWhale', handle: '@cryptowhale' },
+        content: '$HELLO just launched on Pump.fun and already at $4K MC.',
+      },
+    },
+  },
+  {
+    relatedTicker: 'KITTY',
+    relatedCA: '7dNW2mhCtqoZcDuyRbj5LMoeFsS9TpaCdSkk4qMstGPm',
+    post: {
+      id: 'tweet-3',
+      type: 'mention',
+      tweetType: 'quote',
+      author: {
+        name: 'MemeKing',
+        handle: '@memeking_sol',
+        followers: 200000,
+      },
+      content: '$KITTY on Mayhem is pumping hard. Hello Kitty meta is back?? 🐱',
+      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2),
+      tweetUrl: 'https://x.com/memeking_sol/status/1234567892',
+      quotedTweet: {
+        author: { name: 'MayhemLaunches', handle: '@mayhem_launches' },
+        content: 'New token alert: Hello Kitty ($KITTY) just launched! Already trending on Mayhem.',
+      },
+    },
+  },
+  {
+    relatedTicker: 'FOUR',
+    relatedCA: 'FourMeme123456789012345678901234567890ABCD',
+    post: {
+      id: 'tweet-4',
+      type: 'trade',
+      tweetType: 'post',
+      author: {
+        name: 'DeFi Degen',
+        handle: '@defidegen',
+        followers: 75000,
+      },
+      content: 'Aping into $FOUR on four.meme. New platform, early opportunity. MC only $12K with solid volume. Let\'s ride 🏄',
+      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 5),
+      tweetUrl: 'https://x.com/defidegen/status/1234567893',
+      tradeInfo: { action: 'buy', amount: 2.5, price: 0.00012 },
+    },
+  },
+  {
+    relatedTicker: 'BAGS',
+    relatedCA: 'BagsToken123456789012345678901234567890EFGH',
+    post: {
+      id: 'tweet-5',
+      type: 'mention',
+      tweetType: 'post',
+      author: {
+        name: 'Bags Official',
+        handle: '@bags_fm',
+        followers: 15000,
+      },
+      content: '$BAGS is the native meme of the Bags platform. Community-driven, fair launch, no presale. Join the movement! bags.fm',
+      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24),
+      tweetUrl: 'https://x.com/bags_fm/status/1234567894',
+      linkPreview: {
+        url: 'https://bags.fm',
+        title: 'Bags - Fair Launch Platform',
+        description: 'The fairest way to launch meme tokens on Solana.',
+        siteName: 'Bags',
+      },
+    },
   },
 ]
 
@@ -244,7 +506,8 @@ function TokenRow({
   isOwned,
   onManage,
   onClone,
-  onClick
+  onClick,
+  solPrice
 }: {
   token: TokenResult
   isSelected?: boolean
@@ -252,6 +515,7 @@ function TokenRow({
   onManage?: (token: TokenResult) => void
   onClone?: (token: TokenResult) => void
   onClick: () => void
+  solPrice?: number
 }) {
   const copyAddress = (e: React.MouseEvent) => {
     e.stopPropagation()
@@ -287,24 +551,51 @@ function TokenRow({
         <div className="flex items-center gap-2 mt-1">
           <span className="text-xs sm:text-sm font-medium text-kol-green">{token.age}</span>
 
-          {/* Twitter link */}
+          {/* Tweet type link with popover */}
           {token.twitterUrl && (
-            <Tooltip content="Twitter" position="top" delayShow={200}>
+            <QuickLinkPopover
+              width={token.sourceTweet ? 356 : 220}
+              triggerMode="hover"
+              content={
+                <SourceTweetPopoverContent
+                  sourceTweet={token.sourceTweet}
+                  twitterUrl={token.twitterUrl}
+                  tweetLabel={getTweetTypeLabel(token.tweetType)}
+                />
+              }
+            >
               <a
                 href={token.twitterUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
-                className="flex items-center text-[#1d9bf0] hover:opacity-80 transition-opacity"
+                className="flex items-center transition-colors hover:opacity-80"
+                style={{ color: getTweetTypeColor(token.tweetType) }}
               >
-                <i className="ri-twitter-x-line text-xs sm:text-base" />
+                <i className={`${getTweetTypeIcon(token.tweetType)} text-xs sm:text-base`} />
               </a>
-            </Tooltip>
+            </QuickLinkPopover>
           )}
 
-          {/* Website link */}
+          {/* Website link with popover */}
           {token.websiteUrl && (
-            <Tooltip content="Website" position="top" delayShow={200}>
+            <QuickLinkPopover
+              width={220}
+              triggerMode="hover"
+              content={
+                <div className="p-3">
+                  <a
+                    href={token.websiteUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-sm text-kol-blue hover:text-kol-blue-hover transition-colors"
+                  >
+                    <i className="ri-external-link-line text-base" />
+                    <span className="truncate">{token.websiteUrl.replace(/^https?:\/\//, '')}</span>
+                  </a>
+                </div>
+              }
+            >
               <a
                 href={token.websiteUrl}
                 target="_blank"
@@ -314,11 +605,29 @@ function TokenRow({
               >
                 <i className="ri-global-line text-xs sm:text-base" />
               </a>
-            </Tooltip>
+            </QuickLinkPopover>
           )}
 
-          {/* Platform logo link */}
-          <Tooltip content={PLATFORM_NAMES[token.platform]} position="top" delayShow={200}>
+          {/* Platform logo link with popover */}
+          <QuickLinkPopover
+            width={280}
+            triggerMode="hover"
+            content={
+              <PlatformCreatorPopoverContent
+                platformName={PLATFORM_NAMES[token.platform]}
+                platformLogo={PLATFORM_ICONS[token.platform]}
+                platformColor={PLATFORM_RING_COLORS[token.platform]}
+                platformFee={token.platformFee}
+                creator={token.creator}
+                progressPercent={token.progressPercent}
+                totalVolumeUsd={token.buyVolumeUsd !== undefined && token.sellVolumeUsd !== undefined ? token.buyVolumeUsd + token.sellVolumeUsd : undefined}
+                solPrice={solPrice}
+                platformUrl={PLATFORM_URL_PATTERNS[token.platform].replace('{address}', token.address)}
+                platformType={token.platform}
+                recipients={token.recipients}
+              />
+            }
+          >
             <a
               href={PLATFORM_URL_PATTERNS[token.platform].replace('{address}', token.address)}
               target="_blank"
@@ -328,11 +637,35 @@ function TokenRow({
             >
               <img src={PLATFORM_ICONS[token.platform]} alt={PLATFORM_NAMES[token.platform]} className="w-3.5 h-3.5 sm:w-4 sm:h-4 object-contain" />
             </a>
-          </Tooltip>
+          </QuickLinkPopover>
 
-          {/* Axiom link */}
+          {/* Axiom link with popover */}
           {token.axiomUrl && (
-            <Tooltip content="Trade on Axiom" position="top" delayShow={200}>
+            <QuickLinkPopover
+              width={token.tokenSecurity ? 320 : 220}
+              triggerMode="hover"
+              content={
+                token.tokenSecurity ? (
+                  <TokenInfoPopoverContent
+                    security={token.tokenSecurity}
+                    axiomUrl={token.axiomUrl}
+                  />
+                ) : (
+                  <div className="p-3">
+                    <a
+                      href={token.axiomUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 text-sm text-white hover:text-kol-blue-hover transition-colors"
+                    >
+                      <AxiomIcon className="w-4 h-4" />
+                      <span>Trade on Axiom</span>
+                      <i className="ri-external-link-line text-[11px]" />
+                    </a>
+                  </div>
+                )
+              }
+            >
               <a
                 href={token.axiomUrl}
                 target="_blank"
@@ -342,7 +675,7 @@ function TokenRow({
               >
                 <AxiomIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </a>
-            </Tooltip>
+            </QuickLinkPopover>
           )}
         </div>
       </div>
@@ -363,25 +696,29 @@ function TokenRow({
       </div>
 
       {isOwned ? (
-        <button
-          onClick={(e) => {
-            e.stopPropagation()
-            onManage?.(token)
-          }}
-          className="hidden sm:flex h-[30px] w-[30px] items-center justify-center rounded-full bg-kol-blue hover:bg-kol-blue-hover transition-colors"
-        >
-          <i className="ri-settings-3-line text-base text-black" />
-        </button>
+        <Tooltip content="Manage token" position="bottom" delayShow={200}>
+          <button
+            onClick={(e) => {
+              e.stopPropagation()
+              onManage?.(token)
+            }}
+            className="hidden sm:flex h-[30px] w-[30px] items-center justify-center rounded-full bg-kol-blue hover:bg-kol-blue-hover transition-colors"
+          >
+            <i className="ri-settings-3-line text-base text-black" />
+          </button>
+        </Tooltip>
       ) : (
-        <button
-          onClick={(e) => {
-            e.stopPropagation()
-            onClone?.(token)
-          }}
-          className="hidden sm:flex h-[30px] w-[30px] items-center justify-center rounded-full bg-kol-surface-elevated hover:bg-white/[12%] border border-kol-border transition-colors"
-        >
-          <i className="ri-file-copy-line text-base text-kol-text-muted" />
-        </button>
+        <Tooltip content="Clone token" position="bottom" delayShow={200}>
+          <button
+            onClick={(e) => {
+              e.stopPropagation()
+              onClone?.(token)
+            }}
+            className="hidden sm:flex h-[30px] w-[30px] items-center justify-center rounded-full bg-kol-surface-elevated hover:bg-white/[12%] border border-kol-border transition-colors"
+          >
+            <i className="ri-file-copy-line text-base text-kol-text-muted" />
+          </button>
+        </Tooltip>
       )}
     </div>
   )
@@ -398,6 +735,7 @@ export function SearchTokensModal({
   onManageToken,
   onCloneToken,
   initialQuery,
+  solPrice,
 }: SearchTokensModalProps) {
   const [mounted, setMounted] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
@@ -406,6 +744,7 @@ export function SearchTokensModal({
   const [selectedIndex, setSelectedIndex] = useState(0)
   const [walletFilterOpen, setWalletFilterOpen] = useState(false)
   const [savedWallets, setSavedWallets] = useState<SavedWallet[]>([])
+  const [activeSearchTab, setActiveSearchTab] = useState<SearchTab>('tokens')
   const inputRef = useRef<HTMLInputElement>(null)
   const walletFilterRef = useRef<HTMLSpanElement>(null)
 
@@ -700,6 +1039,7 @@ export function SearchTokensModal({
                       isOwned={token.isOwned}
                       onManage={onManageToken}
                       onClone={onCloneToken}
+                      solPrice={solPrice}
                       onClick={() => {
                         onSelectToken(token)
                         onClose()
