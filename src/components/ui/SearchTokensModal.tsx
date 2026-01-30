@@ -853,12 +853,15 @@ export function SearchTokensModal({
   }, [isOpen])
 
   // Filter tokens based on search, platform, and wallet filter
+  const queryIsCA = isContractAddress(searchQuery.trim())
   const filteredTokens = MOCK_TOKENS.filter((token) => {
-    const matchesSearch =
-      searchQuery === '' ||
-      token.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      token.ticker.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      token.address.toLowerCase().includes(searchQuery.toLowerCase())
+    const matchesSearch = searchQuery === ''
+      ? true
+      : queryIsCA
+        ? token.address === searchQuery.trim()
+        : token.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          token.ticker.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          token.address.toLowerCase().includes(searchQuery.toLowerCase())
 
     const matchesPlatform =
       platformFilter === 'all' || token.platform === platformFilter
@@ -917,7 +920,7 @@ export function SearchTokensModal({
         e.preventDefault()
         setSelectedIndex((prev) => Math.max(prev - 1, 0))
       } else if (e.key === 'Enter' && filteredTokens[selectedIndex]) {
-        setSearchQuery(filteredTokens[selectedIndex].ticker)
+        setSearchQuery(filteredTokens[selectedIndex].address)
         inputRef.current?.focus()
       }
     }
@@ -1070,7 +1073,7 @@ export function SearchTokensModal({
                         onClone={onCloneToken}
                         solPrice={solPrice}
                         onClick={() => {
-                          setSearchQuery(token.ticker)
+                          setSearchQuery(token.address)
                           inputRef.current?.focus()
                         }}
                         onDoubleClick={() => {
