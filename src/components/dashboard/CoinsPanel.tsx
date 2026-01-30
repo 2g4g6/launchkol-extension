@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { CoinCard, CoinData } from './CoinCard'
+import { CoinCard, CoinData, Recipient } from './CoinCard'
 import { ExpandableFilterPill } from '../ui/ExpandableFilterPill'
 import { HorizontalScrollContainer } from '../ui/HorizontalScrollContainer'
 import { SearchTokensModal } from '../ui/SearchTokensModal'
@@ -284,6 +284,21 @@ const MOCK_COINS: CoinData[] = [
       proTradersCount: 12,
       dexPaid: true,
     },
+    recipients: [
+      {
+        name: 'BarronTrump1',
+        avatar: 'https://pbs.twimg.com/profile_images/1800000000000000001/barron_400x400.jpg',
+        percent: 100,
+        walletAddress: 'F237abc123XYZ789DEF456GHI012JKL345MNOKJHk',
+        earnedSol: 0,
+      },
+      {
+        name: 'steipete',
+        percent: 100,
+        walletAddress: '8weCdef456XYZ789ABC012DEF345GHI678JKLXHGD',
+        earnedSol: 0,
+      },
+    ] as Recipient[],
   },
   {
     id: '5',

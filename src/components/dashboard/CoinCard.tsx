@@ -10,6 +10,14 @@ import { TokenInfoPopoverContent, TokenSecurityInfo } from './popovers/TokenInfo
 // Platform types
 export type PlatformType = 'pump' | 'bonk' | 'bags' | 'mayhem' | 'fourmeme'
 
+export interface Recipient {
+  name: string
+  avatar?: string
+  percent: number
+  walletAddress: string
+  earnedSol: number
+}
+
 // Tweet types
 export type TweetType = 'tweet' | 'reply' | 'retweet' | 'quote' | 'pin' | 'follow' | 'delete' | 'profile'
 
@@ -44,6 +52,7 @@ export interface CoinData {
   sourceTweet?: SocialPostData
   creator?: CreatorInfo
   tokenSecurity?: TokenSecurityInfo
+  recipients?: Recipient[]
 }
 
 interface CoinCardProps {
@@ -473,6 +482,8 @@ function QuickLinks({ coin, onSearchToken, solPrice }: { coin: CoinData; onSearc
             totalVolumeUsd={coin.buyVolumeUsd !== undefined && coin.sellVolumeUsd !== undefined ? coin.buyVolumeUsd + coin.sellVolumeUsd : undefined}
             solPrice={solPrice}
             platformUrl={platformUrl}
+            platformType={coin.platform}
+            recipients={coin.recipients}
           />
         }
       >

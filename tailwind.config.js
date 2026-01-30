@@ -7,6 +7,7 @@ export default {
   theme: {
     extend: {
       colors: {
+        'usd1': '#3b82f6',
         'kol': {
           'bg': '#0a0a0a',
           'surface': '#101010',

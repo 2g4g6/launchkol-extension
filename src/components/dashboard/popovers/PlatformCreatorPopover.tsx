@@ -1,4 +1,5 @@
 import { useRef, useEffect } from 'react'
+import type { PlatformType, Recipient } from '../CoinCard'
 
 export interface CreatorInfo {
   name: string
@@ -17,6 +18,8 @@ interface PlatformCreatorPopoverProps {
   totalVolumeUsd?: number
   solPrice?: number
   platformUrl?: string
+  platformType?: PlatformType
+  recipients?: Recipient[]
 }
 
 export function PlatformCreatorPopoverContent({
@@ -29,6 +32,8 @@ export function PlatformCreatorPopoverContent({
   totalVolumeUsd,
   solPrice,
   platformUrl,
+  platformType,
+  recipients,
 }: PlatformCreatorPopoverProps) {
   const creatorRef = useRef<HTMLDivElement>(null)
   const nameRef = useRef<HTMLSpanElement>(null)
@@ -64,6 +69,18 @@ export function PlatformCreatorPopoverContent({
   const isMigrated = progressPercent !== undefined && progressPercent >= 100
   const creatorFeesEarnedSol =
     creator?.rewardsPercent !== undefined && totalVolumeUsd !== undefined && solPrice
+      ? (totalVolumeUsd * creator.rewardsPercent) / 100 / solPrice
+      : undefined
+
+  // Platform-specific visibility flags
+  const showCreatorRewards = platformType !== 'pump' && platformType !== 'bonk' && platformType !== 'mayhem' && platformType !== 'fourmeme' && platformType !== 'bags'
+  const showFeesEarned = platformType !== 'fourmeme' && platformType !== 'bags'
+  const isBags = platformType === 'bags'
+  const isBonk = platformType === 'bonk'
+
+  // Bags: calculate total royalties from volume
+  const bagsRoyaltiesSol =
+    isBags && creator?.rewardsPercent !== undefined && totalVolumeUsd !== undefined && solPrice
       ? (totalVolumeUsd * creator.rewardsPercent) / 100 / solPrice
       : undefined
 
@@ -153,7 +170,7 @@ export function PlatformCreatorPopoverContent({
               )}
             </div>
           </div>
-          {creator.rewardsPercent !== undefined && (
+          {showCreatorRewards && creator.rewardsPercent !== undefined && (
             <div className="flex items-center justify-between px-1">
               <span className="text-[11px] text-kol-text-muted">Creator rewards</span>
               <span className="text-[12px] font-medium text-kol-green">
@@ -161,7 +178,7 @@ export function PlatformCreatorPopoverContent({
               </span>
             </div>
           )}
-          {creatorFeesEarnedSol !== undefined && (
+          {showFeesEarned && creatorFeesEarnedSol !== undefined && (
             <div className="flex items-center justify-between px-1">
               <span className="text-[11px] text-kol-text-muted">Fees earned</span>
               <div className="flex items-center gap-1">
@@ -174,6 +191,92 @@ export function PlatformCreatorPopoverContent({
           )}
         </div>
       )}
+
+      {/* Bags: Royalties section */}
+      {isBags && (
+        <div className="border-t border-kol-border pt-3 space-y-2">
+          <div className="flex items-center justify-between px-1">
+            <span className="text-[11px] text-kol-text-muted">Bags Royalties</span>
+          </div>
+          {bagsRoyaltiesSol !== undefined && (
+            <div className="flex items-center gap-1 px-1">
+              <img alt="SOL" width="14" height="14" src="/images/solanaLogoMark.svg" />
+              <span className="text-[14px] font-bold text-white">
+                {bagsRoyaltiesSol < 0.01 ? '<0.01' : bagsRoyaltiesSol < 100 ? bagsRoyaltiesSol.toFixed(2) : bagsRoyaltiesSol < 10000 ? bagsRoyaltiesSol.toFixed(1) : Math.round(bagsRoyaltiesSol).toLocaleString()}
+              </span>
+            </div>
+          )}
+          <div className="text-[10px] text-kol-text-muted px-1">Total Royalties</div>
+
+          {/* Recipients */}
+          {recipients && recipients.length > 0 && (
+            <div className="space-y-2 pt-1">
+              <div className="text-[11px] text-kol-text-muted px-1">Recipients</div>
+              {recipients.map((recipient, i) => (
+                <RecipientRow key={i} recipient={recipient} />
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Bonk: USD1 badge */}
+      {isBonk && (
+        <div className="border-t border-kol-border pt-3 flex justify-center">
+          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-usd1/[0.075]">
+            <img src="/images/usd1.svg" alt="USD1" className="w-[18px] h-[18px]" />
+            <span className="text-[12px] font-medium text-usd1">USD1</span>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+function RecipientRow({ recipient }: { recipient: Recipient }) {
+  const handleCopy = () => {
+    navigator.clipboard.writeText(recipient.walletAddress)
+  }
+
+  return (
+    <div className="px-1 space-y-1">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-1.5">
+          {recipient.avatar ? (
+            <img
+              src={recipient.avatar}
+              alt={recipient.name}
+              className="w-4 h-4 rounded-full object-cover ring-1 ring-kol-border/50"
+            />
+          ) : (
+            <div className="w-4 h-4 rounded-full bg-kol-surface-elevated flex items-center justify-center ring-1 ring-kol-border/50">
+              <span className="text-[8px] font-bold text-kol-text-muted">
+                {recipient.name.charAt(0).toUpperCase()}
+              </span>
+            </div>
+          )}
+          <span className="text-[12px] font-medium text-white">{recipient.name}</span>
+        </div>
+        <div className="flex items-center gap-1">
+          <i className="ri-refresh-line text-[11px] text-kol-text-muted" />
+          <span className="text-[12px] font-medium text-kol-text-secondary">{recipient.percent}%</span>
+        </div>
+      </div>
+      <div className="flex items-center justify-between pl-[22px]">
+        <button
+          onClick={handleCopy}
+          className="flex items-center gap-1 text-[11px] font-mono text-kol-text-muted hover:text-white transition-colors"
+        >
+          <i className="ri-file-copy-line text-[10px]" />
+          <span>{recipient.walletAddress.slice(0, 4)}...{recipient.walletAddress.slice(-4)}</span>
+        </button>
+        <div className="flex items-center gap-1">
+          <img alt="SOL" width="11" height="11" src="/images/solanaLogoMark.svg" />
+          <span className="text-[11px] font-bold text-kol-text-secondary">
+            {recipient.earnedSol < 0.01 && recipient.earnedSol > 0 ? '<0.01' : recipient.earnedSol.toFixed(2)}
+          </span>
+        </div>
+      </div>
     </div>
   )
 }
