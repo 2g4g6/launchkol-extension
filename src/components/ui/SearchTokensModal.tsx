@@ -225,7 +225,7 @@ const MOCK_TOKENS: TokenResult[] = [
     sourceTweet: {
       id: 'mock-tweet-1',
       type: 'mention',
-      author: { name: 'CryptoAlpha', handle: '@cryptoalpha', followers: 52000 },
+      author: { name: 'CryptoAlpha', handle: 'cryptoalpha', followers: 52000 },
       content: 'Just launched $HELLO on Pump.fun! Community token for the culture. LFG!',
       timestamp: new Date(Date.now() - 24 * 60 * 1000),
       tweetUrl: 'https://twitter.com/cryptoalpha/status/123',
@@ -357,7 +357,7 @@ const MOCK_TWEETS: TweetSearchResult[] = [
       tweetType: 'post',
       author: {
         name: 'CryptoWhale',
-        handle: '@cryptowhale',
+        handle: 'cryptowhale',
         followers: 125000,
       },
       content: '$HELLO just launched on Pump.fun and already at $4K MC. This could be an easy 100x. Dev is based and locked liquidity. NFA 🚀',
@@ -374,14 +374,14 @@ const MOCK_TWEETS: TweetSearchResult[] = [
       tweetType: 'reply',
       author: {
         name: 'SolanaAlpha',
-        handle: '@solalpha',
+        handle: 'solalpha',
         followers: 48000,
       },
       content: 'Grabbed a bag of $HELLO early. Chart looks clean, no rugs in dev history. DYOR but I\'m bullish.',
       timestamp: new Date(Date.now() - 1000 * 60 * 30),
       tweetUrl: 'https://x.com/solalpha/status/1234567891',
       replyTo: {
-        author: { name: 'CryptoWhale', handle: '@cryptowhale' },
+        author: { name: 'CryptoWhale', handle: 'cryptowhale' },
         content: '$HELLO just launched on Pump.fun and already at $4K MC.',
       },
     },
@@ -395,14 +395,14 @@ const MOCK_TWEETS: TweetSearchResult[] = [
       tweetType: 'quote',
       author: {
         name: 'MemeKing',
-        handle: '@memeking_sol',
+        handle: 'memeking_sol',
         followers: 200000,
       },
       content: '$KITTY on Mayhem is pumping hard. Hello Kitty meta is back?? 🐱',
       timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2),
       tweetUrl: 'https://x.com/memeking_sol/status/1234567892',
       quotedTweet: {
-        author: { name: 'MayhemLaunches', handle: '@mayhem_launches' },
+        author: { name: 'MayhemLaunches', handle: 'mayhem_launches' },
         content: 'New token alert: Hello Kitty ($KITTY) just launched! Already trending on Mayhem.',
       },
     },
@@ -416,7 +416,7 @@ const MOCK_TWEETS: TweetSearchResult[] = [
       tweetType: 'post',
       author: {
         name: 'DeFi Degen',
-        handle: '@defidegen',
+        handle: 'defidegen',
         followers: 75000,
       },
       content: 'Aping into $FOUR on four.meme. New platform, early opportunity. MC only $12K with solid volume. Let\'s ride 🏄',
@@ -434,7 +434,7 @@ const MOCK_TWEETS: TweetSearchResult[] = [
       tweetType: 'post',
       author: {
         name: 'Bags Official',
-        handle: '@bags_fm',
+        handle: 'bags_fm',
         followers: 15000,
       },
       content: '$BAGS is the native meme of the Bags platform. Community-driven, fair launch, no presale. Join the movement! bags.fm',
