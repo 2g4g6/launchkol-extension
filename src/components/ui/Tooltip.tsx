@@ -426,7 +426,7 @@ export function Tooltip({
             ease: CUSTOM_EASE,
           }}
           className={`
-            fixed z-[9999] pointer-events-none
+            fixed z-[10001] pointer-events-none
             px-3 py-2 rounded-lg
             font-body text-xs leading-normal
             text-white

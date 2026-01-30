@@ -125,7 +125,7 @@ export function QuickLinkPopover({
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: position.below ? -6 : 6, transition: { duration: 0.12, ease: CUSTOM_EASE } }}
           transition={{ duration: 0.18, ease: CUSTOM_EASE }}
-          className="fixed z-[9999]"
+          className="fixed z-[10001]"
           style={{
             left: position.x,
             ...(position.below
