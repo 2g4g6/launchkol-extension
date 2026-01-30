@@ -978,7 +978,7 @@ export function SearchTokensModal({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.15 }}
-          className="fixed inset-0 z-[9998] flex items-start sm:items-center justify-center pt-6 sm:pt-0 px-4 sm:px-0 bg-black/70"
+          className="fixed inset-0 z-[10000] flex items-start sm:items-center justify-center pt-6 sm:pt-0 px-4 sm:px-0 bg-black/70"
           onClick={onClose}
         >
           <motion.div
