@@ -251,6 +251,12 @@ export function Dashboard({ user, onSignOut }: DashboardProps) {
         isOpen={isSearchModalOpen}
         onClose={() => setIsSearchModalOpen(false)}
         onSelectToken={handleSelectToken}
+        onManageToken={(token) => {
+          console.log('Manage token:', token)
+        }}
+        onCloneToken={(token) => {
+          console.log('Clone token:', token)
+        }}
         userWalletAddress={NETWORKS[0].address}
       />
 

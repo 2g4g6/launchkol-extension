@@ -977,6 +977,12 @@ export function CoinsPanel({ solPrice }: CoinsPanelProps) {
           console.log('Selected token:', token)
           setSearchModalOpen(false)
         }}
+        onManageToken={(token) => {
+          console.log('Manage token:', token)
+        }}
+        onCloneToken={(token) => {
+          console.log('Clone token:', token)
+        }}
         initialQuery={searchModalQuery}
       />
     </>

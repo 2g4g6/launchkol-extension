@@ -25,12 +25,15 @@ export interface TokenResult {
   websiteUrl?: string
   telegramUrl?: string
   creatorWallet?: string
+  isOwned?: boolean
 }
 
 export interface SearchTokensModalProps {
   isOpen: boolean
   onClose: () => void
   onSelectToken: (token: TokenResult) => void
+  onManageToken?: (token: TokenResult) => void
+  onCloneToken?: (token: TokenResult) => void
   userWalletAddress?: string
   initialQuery?: string
 }
@@ -112,6 +115,7 @@ const MOCK_TOKENS: TokenResult[] = [
     twitterUrl: 'https://twitter.com',
     websiteUrl: 'https://example.com',
     creatorWallet: '43HPNeS2FroDxUGRQKV1iNDrYFD1wo5rPVj5Qc9igLZN',
+    isOwned: true,
   },
   {
     address: '7dNW2mhCtqoZcDuyRbj5LMoeFsS9TpaCdSkk4qMstGPm',
@@ -136,6 +140,7 @@ const MOCK_TOKENS: TokenResult[] = [
     liquidity: '$50K',
     websiteUrl: 'https://example.com',
     creatorWallet: '43HPNeS2FroDxUGRQKV1iNDrYFD1wo5rPVj5Qc9igLZN',
+    isOwned: true,
   },
   {
     address: 'FourMeme123456789012345678901234567890ABCD',
@@ -213,10 +218,16 @@ function TokenAvatar({ token }: { token: TokenResult }) {
 function TokenRow({
   token,
   isSelected,
+  isOwned,
+  onManage,
+  onClone,
   onClick
 }: {
   token: TokenResult
   isSelected?: boolean
+  isOwned?: boolean
+  onManage?: (token: TokenResult) => void
+  onClone?: (token: TokenResult) => void
   onClick: () => void
 }) {
   const copyAddress = (e: React.MouseEvent) => {
@@ -298,15 +309,29 @@ function TokenRow({
         </div>
       </div>
 
-      <button
-        onClick={(e) => {
-          e.stopPropagation()
-          onClick()
-        }}
-        className="hidden sm:flex h-[30px] w-[30px] items-center justify-center rounded-full bg-kol-blue hover:bg-kol-blue-hover transition-colors"
-      >
-        <i className="ri-flashlight-fill text-base text-black" />
-      </button>
+      {isOwned ? (
+        <button
+          onClick={(e) => {
+            e.stopPropagation()
+            onManage?.(token)
+          }}
+          className="hidden sm:flex h-[30px] items-center gap-1.5 px-3 rounded-full bg-kol-blue hover:bg-kol-blue-hover transition-colors"
+        >
+          <i className="ri-settings-3-line text-sm text-black" />
+          <span className="text-xs font-medium text-black">Manage</span>
+        </button>
+      ) : (
+        <button
+          onClick={(e) => {
+            e.stopPropagation()
+            onClone?.(token)
+          }}
+          className="hidden sm:flex h-[30px] items-center gap-1.5 px-3 rounded-full bg-kol-surface-elevated hover:bg-white/[12%] border border-kol-border transition-colors"
+        >
+          <i className="ri-file-copy-line text-sm text-kol-text-muted" />
+          <span className="text-xs font-medium text-kol-text-muted">Clone</span>
+        </button>
+      )}
     </div>
   )
 }
@@ -319,6 +344,8 @@ export function SearchTokensModal({
   isOpen,
   onClose,
   onSelectToken,
+  onManageToken,
+  onCloneToken,
   initialQuery,
 }: SearchTokensModalProps) {
   const [mounted, setMounted] = useState(false)
@@ -619,6 +646,9 @@ export function SearchTokensModal({
                       key={token.address}
                       token={token}
                       isSelected={index === selectedIndex}
+                      isOwned={token.isOwned}
+                      onManage={onManageToken}
+                      onClone={onCloneToken}
                       onClick={() => {
                         onSelectToken(token)
                         onClose()
