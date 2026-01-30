@@ -8,6 +8,7 @@ import { HorizontalScrollContainer } from './HorizontalScrollContainer'
 import { SourceTweetPopoverContent } from '../dashboard/popovers/SourceTweetPopover'
 import { PlatformCreatorPopoverContent } from '../dashboard/popovers/PlatformCreatorPopover'
 import { TokenInfoPopoverContent } from '../dashboard/popovers/TokenInfoPopover'
+import { SocialPost } from '../dashboard/SocialPost'
 import type { SocialPostData } from '../dashboard/SocialPost'
 import type { TokenSecurityInfo } from '../dashboard/popovers/TokenInfoPopover'
 import type { CreatorInfo } from '../dashboard/popovers/PlatformCreatorPopover'
@@ -848,6 +849,7 @@ export function SearchTokensModal({
       setSearchQuery('')
       setSelectedIndex(0)
       setWalletFilterOpen(false)
+      setActiveSearchTab('tokens')
     }
   }, [isOpen])
 
@@ -880,6 +882,28 @@ export function SearchTokensModal({
     return matchesSearch && matchesPlatform && matchesWallet
   })
 
+  // Filter tweets based on search query
+  const filteredTweets = MOCK_TWEETS.filter((tweet) => {
+    if (searchQuery === '') return true
+    const q = searchQuery.trim()
+    if (isContractAddress(q)) {
+      return tweet.relatedCA === q
+    }
+    const lower = q.replace(/^\$/, '').toLowerCase()
+    return (
+      tweet.relatedTicker.toLowerCase().includes(lower) ||
+      tweet.post.content.toLowerCase().includes(lower) ||
+      tweet.post.author.handle.toLowerCase().includes(lower)
+    )
+  })
+
+  // Detect query type for badge
+  const queryType = searchQuery.trim()
+    ? isContractAddress(searchQuery.trim())
+      ? 'CA'
+      : 'Ticker'
+    : null
+
   // Handle keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -887,13 +911,13 @@ export function SearchTokensModal({
 
       if (e.key === 'Escape') {
         onClose()
-      } else if (e.key === 'ArrowDown') {
+      } else if (e.key === 'ArrowDown' && activeSearchTab === 'tokens') {
         e.preventDefault()
         setSelectedIndex((prev) => Math.min(prev + 1, filteredTokens.length - 1))
-      } else if (e.key === 'ArrowUp') {
+      } else if (e.key === 'ArrowUp' && activeSearchTab === 'tokens') {
         e.preventDefault()
         setSelectedIndex((prev) => Math.max(prev - 1, 0))
-      } else if (e.key === 'Enter' && filteredTokens[selectedIndex]) {
+      } else if (e.key === 'Enter' && activeSearchTab === 'tokens' && filteredTokens[selectedIndex]) {
         onSelectToken(filteredTokens[selectedIndex])
         onClose()
       }
@@ -901,7 +925,7 @@ export function SearchTokensModal({
 
     document.addEventListener('keydown', handleKeyDown)
     return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [isOpen, selectedIndex, filteredTokens, onClose, onSelectToken])
+  }, [isOpen, selectedIndex, filteredTokens, onClose, onSelectToken, activeSearchTab])
 
   // Lock body scroll when open
   useEffect(() => {
@@ -938,68 +962,110 @@ export function SearchTokensModal({
           >
             <div className="bg-kol-bg rounded-lg overflow-hidden border border-kol-border shadow-[0_4px_4px_0_rgba(0,0,0,0.30),0_8px_8px_0_rgba(0,0,0,0.45)] flex flex-col h-full">
               {/* Filters Row - Platform filters left, Sort icons right */}
-              <div className="flex items-center justify-between gap-4 px-4 pl-3 pt-3">
-                {/* Platform Filters - scrollable */}
-                <HorizontalScrollContainer className="flex items-center gap-2 overflow-x-auto scrollbar-hide -ml-2 pl-2 pr-0" gradientFrom="from-kol-bg">
-                  {PLATFORM_FILTERS.map((filter) => (
-                    <button
-                      key={filter.id}
-                      onClick={() => setPlatformFilter(filter.id)}
-                      className={`
-                        flex h-6 flex-shrink-0 items-center gap-[3px] px-1 rounded text-xs font-medium whitespace-nowrap transition-colors border
-                        ${platformFilter === filter.id
-                          ? 'bg-kol-blue/15 text-kol-blue border-kol-blue/50'
-                          : 'bg-kol-surface/45 border-kol-border text-kol-text-muted hover:bg-kol-surface-elevated'
-                        }
-                      `}
-                    >
-                      {filter.icon && <img src={filter.icon} alt={filter.label} className="w-3 h-3" />}
-                      <span className="font-medium">{filter.label}</span>
-                    </button>
-                  ))}
-                </HorizontalScrollContainer>
+              <AnimatePresence initial={false}>
+                {activeSearchTab === 'tokens' && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.2, ease: CUSTOM_EASE }}
+                    className="overflow-hidden"
+                  >
+                    <div className="flex items-center justify-between gap-4 px-4 pl-3 pt-3">
+                      {/* Platform Filters - scrollable */}
+                      <HorizontalScrollContainer className="flex items-center gap-2 overflow-x-auto scrollbar-hide -ml-2 pl-2 pr-0" gradientFrom="from-kol-bg">
+                        {PLATFORM_FILTERS.map((filter) => (
+                          <button
+                            key={filter.id}
+                            onClick={() => setPlatformFilter(filter.id)}
+                            className={`
+                              flex h-6 flex-shrink-0 items-center gap-[3px] px-1 rounded text-xs font-medium whitespace-nowrap transition-colors border
+                              ${platformFilter === filter.id
+                                ? 'bg-kol-blue/15 text-kol-blue border-kol-blue/50'
+                                : 'bg-kol-surface/45 border-kol-border text-kol-text-muted hover:bg-kol-surface-elevated'
+                              }
+                            `}
+                          >
+                            {filter.icon && <img src={filter.icon} alt={filter.label} className="w-3 h-3" />}
+                            <span className="font-medium">{filter.label}</span>
+                          </button>
+                        ))}
+                      </HorizontalScrollContainer>
 
-                {/* Sort Icons */}
-                <div className="flex items-center gap-2 flex-shrink-0">
-                  <span className="text-xs text-kol-text-muted">Sort by</span>
-                  {SORT_OPTIONS.map((option) => (
-                    <Tooltip key={option.id} content={option.label} position="bottom" delayShow={200}>
-                      <button
-                        onClick={() => setSortBy(option.id)}
-                        className={`
-                          h-6 w-6 flex items-center justify-center rounded transition-colors
-                          ${sortBy === option.id
-                            ? 'bg-kol-blue/15 text-kol-blue'
-                            : 'text-kol-text-muted hover:bg-kol-surface-elevated'
-                          }
-                        `}
-                      >
-                        <i className={`${option.icon} text-sm`} />
-                      </button>
-                    </Tooltip>
-                  ))}
+                      {/* Sort Icons */}
+                      <div className="flex items-center gap-2 flex-shrink-0">
+                        <span className="text-xs text-kol-text-muted">Sort by</span>
+                        {SORT_OPTIONS.map((option) => (
+                          <Tooltip key={option.id} content={option.label} position="bottom" delayShow={200}>
+                            <button
+                              onClick={() => setSortBy(option.id)}
+                              className={`
+                                h-6 w-6 flex items-center justify-center rounded transition-colors
+                                ${sortBy === option.id
+                                  ? 'bg-kol-blue/15 text-kol-blue'
+                                  : 'text-kol-text-muted hover:bg-kol-surface-elevated'
+                                }
+                              `}
+                            >
+                              <i className={`${option.icon} text-sm`} />
+                            </button>
+                          </Tooltip>
+                        ))}
 
-                  {/* Wallet Filter Button */}
-                  <span ref={walletFilterRef}>
-                    <Tooltip content="Filter by Wallet" position="bottom" delayShow={200}>
-                      <button
-                        onClick={() => setWalletFilterOpen((prev) => !prev)}
-                        className={`
-                          relative h-6 w-6 flex items-center justify-center rounded transition-colors
-                          ${savedWallets.length > 0
-                            ? 'bg-kol-blue/15 text-kol-blue'
-                            : 'text-kol-text-muted hover:bg-kol-surface-elevated'
-                          }
-                        `}
-                      >
-                        <i className="ri-wallet-3-line text-sm" />
-                        {savedWallets.length > 0 && (
-                          <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-kol-blue" />
-                        )}
-                      </button>
-                    </Tooltip>
-                  </span>
-                </div>
+                        {/* Wallet Filter Button */}
+                        <span ref={walletFilterRef}>
+                          <Tooltip content="Filter by Wallet" position="bottom" delayShow={200}>
+                            <button
+                              onClick={() => setWalletFilterOpen((prev) => !prev)}
+                              className={`
+                                relative h-6 w-6 flex items-center justify-center rounded transition-colors
+                                ${savedWallets.length > 0
+                                  ? 'bg-kol-blue/15 text-kol-blue'
+                                  : 'text-kol-text-muted hover:bg-kol-surface-elevated'
+                                }
+                              `}
+                            >
+                              <i className="ri-wallet-3-line text-sm" />
+                              {savedWallets.length > 0 && (
+                                <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-kol-blue" />
+                              )}
+                            </button>
+                          </Tooltip>
+                        </span>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* Tab Bar */}
+              <div className="flex items-center gap-2 px-4 pt-2 pb-1">
+                <button
+                  onClick={() => setActiveSearchTab('tokens')}
+                  className={`
+                    flex items-center gap-1.5 h-7 px-3 rounded-full text-xs font-medium transition-colors border
+                    ${activeSearchTab === 'tokens'
+                      ? 'bg-kol-surface-elevated text-white border-kol-border/50'
+                      : 'text-kol-text-muted border-transparent hover:text-white hover:bg-kol-surface/45'
+                    }
+                  `}
+                >
+                  <i className="ri-coin-line text-sm" />
+                  <span>Tokens</span>
+                </button>
+                <button
+                  onClick={() => setActiveSearchTab('tweets')}
+                  className={`
+                    flex items-center gap-1.5 h-7 px-3 rounded-full text-xs font-medium transition-colors border
+                    ${activeSearchTab === 'tweets'
+                      ? 'bg-kol-surface-elevated text-white border-kol-border/50'
+                      : 'text-kol-text-muted border-transparent hover:text-white hover:bg-kol-surface/45'
+                    }
+                  `}
+                >
+                  <i className="ri-twitter-x-line text-sm" />
+                  <span>Tweets</span>
+                </button>
               </div>
 
               {/* Search Input */}
@@ -1010,9 +1076,14 @@ export function SearchTokensModal({
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search by name, ticker, or CA..."
+                  placeholder={activeSearchTab === 'tokens' ? 'Search by name, ticker, or CA...' : 'Search tweets by ticker or CA...'}
                   className="flex-1 bg-transparent text-xl text-white placeholder:text-xl placeholder:text-kol-text-muted outline-none"
                 />
+                {queryType && (
+                  <span className="flex-shrink-0 h-5 px-2 rounded bg-kol-surface-elevated border border-kol-border/50 text-[10px] font-medium text-kol-text-muted flex items-center">
+                    {queryType}
+                  </span>
+                )}
                 <button
                   onClick={onClose}
                   className="flex h-5 items-center px-2 rounded-full border border-kol-border bg-kol-surface text-xs text-white hover:bg-kol-surface-elevated transition-colors"
@@ -1024,35 +1095,92 @@ export function SearchTokensModal({
               {/* Results Header */}
               <div className="flex h-10 items-center justify-between px-4 pr-2">
                 <span className="text-xs text-kol-text-secondary">
-                  {filteredTokens.length > 0 ? `${filteredTokens.length} Results` : 'History'}
+                  {activeSearchTab === 'tokens'
+                    ? filteredTokens.length > 0
+                      ? `${filteredTokens.length} Results`
+                      : 'History'
+                    : filteredTweets.length > 0
+                      ? `${filteredTweets.length} Tweets`
+                      : 'Recent Tweets'
+                  }
                 </span>
               </div>
 
               {/* Results List */}
               <div className="flex-1 overflow-y-auto">
-                {filteredTokens.length > 0 ? (
-                  filteredTokens.map((token, index) => (
-                    <TokenRow
-                      key={token.address}
-                      token={token}
-                      isSelected={index === selectedIndex}
-                      isOwned={token.isOwned}
-                      onManage={onManageToken}
-                      onClone={onCloneToken}
-                      solPrice={solPrice}
-                      onClick={() => {
-                        onSelectToken(token)
-                        onClose()
-                      }}
-                    />
-                  ))
-                ) : (
-                  <div className="flex flex-col items-center justify-center py-12 text-kol-text-muted">
-                    <i className="ri-search-line text-3xl mb-2 opacity-50" />
-                    <p className="text-sm">No tokens found</p>
-                    <p className="text-xs mt-1">Try a different search term</p>
-                  </div>
-                )}
+                <AnimatePresence mode="wait">
+                  {activeSearchTab === 'tokens' ? (
+                    <motion.div
+                      key="tokens-tab"
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -20 }}
+                      transition={{ duration: 0.15, ease: CUSTOM_EASE }}
+                    >
+                      {filteredTokens.length > 0 ? (
+                        filteredTokens.map((token, index) => (
+                          <TokenRow
+                            key={token.address}
+                            token={token}
+                            isSelected={index === selectedIndex}
+                            isOwned={token.isOwned}
+                            onManage={onManageToken}
+                            onClone={onCloneToken}
+                            solPrice={solPrice}
+                            onClick={() => {
+                              onSelectToken(token)
+                              onClose()
+                            }}
+                          />
+                        ))
+                      ) : (
+                        <div className="flex flex-col items-center justify-center py-12 text-kol-text-muted">
+                          <i className="ri-search-line text-3xl mb-2 opacity-50" />
+                          <p className="text-sm">No tokens found</p>
+                          <p className="text-xs mt-1">Try a different search term</p>
+                        </div>
+                      )}
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="tweets-tab"
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: 20 }}
+                      transition={{ duration: 0.15, ease: CUSTOM_EASE }}
+                      className="px-2 py-2 space-y-1"
+                    >
+                      {filteredTweets.length > 0 ? (
+                        filteredTweets.map((tweet, index) => (
+                          <SocialPost
+                            key={tweet.post.id}
+                            post={tweet.post}
+                            index={index}
+                            flat={false}
+                          />
+                        ))
+                      ) : (
+                        <div className="flex flex-col items-center justify-center py-12 text-kol-text-muted">
+                          <i className="ri-twitter-x-line text-3xl mb-2 opacity-50" />
+                          <p className="text-sm">
+                            {searchQuery.trim()
+                              ? isContractAddress(searchQuery.trim())
+                                ? 'No tweets mention this contract address'
+                                : 'No tweets found for this ticker'
+                              : 'Search for a ticker or CA to find tweets'
+                            }
+                          </p>
+                          <p className="text-xs mt-1">
+                            {searchQuery.trim()
+                              ? 'Try a different search term'
+                              : 'e.g. $HELLO or paste a contract address'
+                            }
+                          </p>
+                        </div>
+                      )}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             </div>
           </motion.div>
