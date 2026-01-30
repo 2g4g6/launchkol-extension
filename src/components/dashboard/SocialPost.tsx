@@ -169,8 +169,7 @@ export function SocialPost({ post, index, onDeploy, flat, highlights, onTokenCli
                 color: tickerColor,
                 border: `1px solid ${tickerColor}40`,
               }}
-              onClick={(e) => {
-                e.stopPropagation();
+              onClick={() => {
                 onTokenClick?.(seg.text);
               }}
             >
@@ -192,8 +191,7 @@ export function SocialPost({ post, index, onDeploy, flat, highlights, onTokenCli
                 border: `1px solid ${caColor}40`,
               }}
               title={seg.text}
-              onClick={(e) => {
-                e.stopPropagation();
+              onClick={() => {
                 onTokenClick?.(seg.text);
               }}
             >
