@@ -5,6 +5,8 @@ import { ImageLightbox } from "../ui/ImageLightbox";
 import type { LightboxMedia } from "../ui/ImageLightbox";
 import { formatFollowers, formatTime, formatTimeShort, getInitials } from "../../utils/format";
 import { extractUrls, getDomain, getTruncatedPath } from "../../utils/url";
+import { tokenizeText } from "../../utils/textHighlight";
+import type { TextHighlight } from "../../utils/textHighlight";
 
 export interface MediaItem {
   type: "image" | "video";
@@ -87,9 +89,10 @@ interface SocialPostProps {
   index: number;
   onDeploy?: (post: SocialPostData) => void;
   flat?: boolean;
+  highlights?: TextHighlight[];
 }
 
-export function SocialPost({ post, index, onDeploy, flat }: SocialPostProps) {
+export function SocialPost({ post, index, onDeploy, flat, highlights }: SocialPostProps) {
   const [lightboxMedia, setLightboxMedia] = useState<LightboxMedia[]>([]);
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
@@ -122,39 +125,87 @@ export function SocialPost({ post, index, onDeploy, flat }: SocialPostProps) {
     console.log("Hide user:", post.author.handle);
   };
 
-  // Render content with @mentions and URLs highlighted in blue
+  // Render content with @mentions, URLs, $TICKER, and CA highlighted
   const renderContent = (text: string) => {
-    const parts = text.split(/(@\w+|https?:\/\/[^\s]+)/g);
-    return parts.map((part, i) => {
-      if (part.startsWith("@")) {
-        const handle = part.slice(1);
-        return (
-          <a
-            key={i}
-            href={`https://x.com/${handle}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-kol-blue hover:underline"
-          >
-            {part}
-          </a>
-        );
+    const segments = tokenizeText(text, highlights);
+    return segments.map((seg, i) => {
+      switch (seg.type) {
+        case 'mention': {
+          const handle = seg.text.slice(1);
+          return (
+            <a
+              key={i}
+              href={`https://x.com/${handle}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-kol-blue hover:underline"
+            >
+              {seg.text}
+            </a>
+          );
+        }
+        case 'url': {
+          const displayUrl = seg.text.length > 50 ? seg.text.slice(0, 47) + "..." : seg.text;
+          return (
+            <a
+              key={i}
+              href={seg.text}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-kol-blue hover:underline break-all"
+            >
+              {displayUrl}
+            </a>
+          );
+        }
+        case 'ticker':
+          return (
+            <span
+              key={i}
+              className="font-semibold"
+              style={{ color: seg.color || '#f59e0b' }}
+            >
+              {seg.text}
+            </span>
+          );
+        case 'ca': {
+          const truncated = seg.text.length > 12
+            ? `${seg.text.slice(0, 6)}...${seg.text.slice(-4)}`
+            : seg.text;
+          return (
+            <span
+              key={i}
+              className="font-mono cursor-pointer hover:opacity-80 transition-opacity"
+              style={{ color: seg.color || '#8b5cf6' }}
+              title={seg.text}
+              onClick={(e) => {
+                e.stopPropagation();
+                navigator.clipboard.writeText(seg.text);
+              }}
+            >
+              {truncated}
+            </span>
+          );
+        }
+        case 'search': {
+          const color = seg.color || '#f59e0b';
+          return (
+            <span
+              key={i}
+              className="font-semibold rounded px-0.5"
+              style={{
+                color,
+                backgroundColor: `${color}26`,
+                boxShadow: `0 0 0 1px ${color}33`,
+              }}
+            >
+              {seg.text}
+            </span>
+          );
+        }
+        default:
+          return <span key={i}>{seg.text}</span>;
       }
-      if (part.startsWith("http://") || part.startsWith("https://")) {
-        const displayUrl = part.length > 50 ? part.slice(0, 47) + "..." : part;
-        return (
-          <a
-            key={i}
-            href={part}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-kol-blue hover:underline break-all"
-          >
-            {displayUrl}
-          </a>
-        );
-      }
-      return part;
     });
   };
 

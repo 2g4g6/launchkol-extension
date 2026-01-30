@@ -13,6 +13,8 @@ import type { SocialPostData } from '../dashboard/SocialPost'
 import type { TokenSecurityInfo } from '../dashboard/popovers/TokenInfoPopover'
 import type { CreatorInfo } from '../dashboard/popovers/PlatformCreatorPopover'
 import type { Recipient } from '../dashboard/CoinCard'
+import { isContractAddress } from '../../utils/textHighlight'
+import type { TextHighlight } from '../../utils/textHighlight'
 
 // ============================================================================
 // Types
@@ -341,10 +343,6 @@ interface TweetSearchResult {
   post: SocialPostData
   relatedTicker: string
   relatedCA: string
-}
-
-function isContractAddress(q: string): boolean {
-  return /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(q.trim())
 }
 
 const MOCK_TWEETS: TweetSearchResult[] = [
@@ -921,6 +919,20 @@ export function SearchTokensModal({
       : 'Ticker'
     : null
 
+  // Compute search highlights for tweet content
+  const searchHighlights: TextHighlight[] = (() => {
+    const q = searchQuery.trim()
+    if (!q) return []
+    if (isContractAddress(q)) {
+      return [{ pattern: q, color: '#8b5cf6', type: 'ca' as const }]
+    }
+    const ticker = q.replace(/^\$/, '')
+    return [
+      { pattern: `$${ticker}`, color: '#f59e0b', type: 'ticker' as const },
+      { pattern: ticker, color: '#f59e0b', type: 'search' as const },
+    ]
+  })()
+
   // Handle keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -1118,6 +1130,7 @@ export function SearchTokensModal({
                               post={tweet.post}
                               index={index}
                               flat={false}
+                              highlights={searchHighlights}
                             />
                           ))}
                         </div>
@@ -1143,6 +1156,7 @@ export function SearchTokensModal({
                           post={tweet.post}
                           index={index}
                           flat={false}
+                          highlights={searchHighlights}
                         />
                       ))}
                     </div>

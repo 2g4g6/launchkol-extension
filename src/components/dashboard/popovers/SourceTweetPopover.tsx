@@ -1,12 +1,14 @@
 import { SocialPost, SocialPostData } from '../SocialPost'
+import type { TextHighlight } from '../../../utils/textHighlight'
 
 interface SourceTweetPopoverProps {
   sourceTweet?: SocialPostData
   twitterUrl?: string
   tweetLabel: string
+  highlights?: TextHighlight[]
 }
 
-export function SourceTweetPopoverContent({ sourceTweet, twitterUrl, tweetLabel }: SourceTweetPopoverProps) {
+export function SourceTweetPopoverContent({ sourceTweet, twitterUrl, tweetLabel, highlights }: SourceTweetPopoverProps) {
   if (!sourceTweet) {
     return (
       <div className="p-3">
@@ -25,7 +27,7 @@ export function SourceTweetPopoverContent({ sourceTweet, twitterUrl, tweetLabel 
 
   return (
     <div className="max-h-[400px] overflow-y-auto scrollbar-styled">
-      <SocialPost post={sourceTweet} index={0} flat />
+      <SocialPost post={sourceTweet} index={0} flat highlights={highlights} />
     </div>
   )
 }

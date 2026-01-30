@@ -42,7 +42,7 @@ const MOCK_POSTS: SocialPostData[] = [
       followers: 8500000,
       avatar: 'https://i.pravatar.cc/150?img=1',
     },
-    content: 'New token detected with unusual wallet activity. Multiple fresh wallets accumulating. Check out this chart 📊',
+    content: 'New token $DOGE detected with unusual wallet activity. CA: CBvno2t3bFRHpV3YoyuhA2eLaQ42WwUDE4a7d3C1xkSm — Multiple fresh wallets accumulating. Check out this chart 📊',
     timestamp: new Date(Date.now() - 13000),
     media: [
       { type: 'image', url: 'https://picsum.photos/seed/chart1/400/300' }
@@ -101,7 +101,7 @@ const MOCK_POSTS: SocialPostData[] = [
       followers: 2100000,
       avatar: 'https://i.pravatar.cc/150?img=4',
     },
-    content: 'Bundle detected on recent pump.fun launch. 15 wallets, 40% supply. Here are the receipts 🧾',
+    content: 'Bundle detected on $PEPE pump.fun launch. 15 wallets, 40% supply. Contract: 7dNW2mhCtqoZcDuyRbj5LMoeFsS9TpaCdSkk4qMstGPm. Here are the receipts 🧾',
     timestamp: new Date(Date.now() - 600000),
     media: [
       { type: 'image', url: 'https://picsum.photos/seed/bundle1/400/300' },
@@ -130,7 +130,7 @@ const MOCK_POSTS: SocialPostData[] = [
         followers: 890000,
         avatar: 'https://i.pravatar.cc/150?img=6',
       },
-      content: 'Just launched our new token with LaunchKOL. The fees are insanely low compared to competitors. 🚀',
+      content: 'Just launched $KOL on LaunchKOL. The fees are insanely low compared to competitors. 🚀',
       timestamp: new Date(Date.now() - 1800000),
       media: [
         { type: 'image', url: 'https://picsum.photos/seed/launch/400/200' }
@@ -193,7 +193,7 @@ const MOCK_POSTS: SocialPostData[] = [
       followers: 3400000,
       avatar: 'https://i.pravatar.cc/150?img=10',
     },
-    content: '🚨 50,000 SOL ($8.2M) transferred from unknown wallet to Binance. Potential sell pressure incoming.',
+    content: '🚨 50,000 SOL ($8.2M) transferred from unknown wallet to Binance. $WIF and $BONK both dumping. Whale wallet: HsRtbRWaB29bPg6wESHz61y6VYbZvJJzoreGuqTupfM9. Potential sell pressure incoming.',
     timestamp: new Date(Date.now() - 4500000),
     tweetUrl: 'https://x.com/whale_alert/status/129',
   },

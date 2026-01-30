@@ -8,6 +8,7 @@ import { PlatformCreatorPopoverContent, CreatorInfo } from './popovers/PlatformC
 import { TokenInfoPopoverContent, TokenSecurityInfo } from './popovers/TokenInfoPopover'
 import { SearchTweetPreviewPopoverContent } from './popovers/SearchTweetPreviewPopover'
 import { WebsitePreviewPopoverContent } from './popovers/WebsitePreviewPopover'
+import type { TextHighlight } from '../../utils/textHighlight'
 
 // Platform types
 export type PlatformType = 'pump' | 'bonk' | 'bags' | 'mayhem' | 'fourmeme'
@@ -431,6 +432,13 @@ function QuickLinks({ coin, onSearchToken, solPrice }: { coin: CoinData; onSearc
   const platformConfig = PLATFORM_CONFIG[coin.platform]
   const platformUrl = platformConfig.urlPattern.replace('{address}', coin.address)
 
+  // Build highlights for ticker + CA so popovers highlight matching text
+  const tickerHighlights: TextHighlight[] = [
+    { pattern: `$${coin.symbol}`, color: '#f59e0b', type: 'ticker' },
+    { pattern: coin.symbol, color: '#f59e0b', type: 'search' },
+    { pattern: coin.address, color: '#8b5cf6', type: 'ca' },
+  ]
+
   return (
     <div className="flex items-center gap-2 flex-shrink-0">
       {/* Tweet type icon - hover popover with embedded tweet */}
@@ -443,6 +451,7 @@ function QuickLinks({ coin, onSearchToken, solPrice }: { coin: CoinData; onSearc
               sourceTweet={coin.sourceTweet}
               twitterUrl={coin.twitterUrl}
               tweetLabel={tweetLabel}
+              highlights={tickerHighlights}
             />
           }
         >
@@ -468,6 +477,7 @@ function QuickLinks({ coin, onSearchToken, solPrice }: { coin: CoinData; onSearc
             symbol={coin.symbol}
             searchTweets={coin.searchTweets}
             onSearchAll={() => onSearchToken?.(coin)}
+            highlights={tickerHighlights}
           />
         }
       >
