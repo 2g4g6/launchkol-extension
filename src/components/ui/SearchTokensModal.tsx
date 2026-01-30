@@ -24,6 +24,7 @@ export interface TokenResult {
   twitterUrl?: string
   websiteUrl?: string
   telegramUrl?: string
+  axiomUrl?: string
   creatorWallet?: string
   isOwned?: boolean
 }
@@ -92,6 +93,25 @@ const PLATFORM_NAMES: Record<PlatformType, string> = {
   fourmeme: 'Four.meme',
 }
 
+// Platform URL patterns
+const PLATFORM_URL_PATTERNS: Record<PlatformType, string> = {
+  pump: 'https://pump.fun/{address}',
+  bonk: 'https://bonk.fun/{address}',
+  bags: 'https://bags.fm/{address}',
+  mayhem: 'https://mayhem.fun/{address}',
+  fourmeme: 'https://4meme.fun/{address}',
+}
+
+// Axiom Icon Component
+function AxiomIcon({ className }: { className?: string }) {
+  return (
+    <svg width="12" height="12" viewBox="0 0 36 36" fill="currentColor" className={className}>
+      <path d="M24.1384 17.3876H11.8623L18.0001 7.00012L24.1384 17.3876Z" />
+      <path d="M31 29.0003L5 29.0003L9.96764 20.5933L26.0324 20.5933L31 29.0003Z" />
+    </svg>
+  )
+}
+
 // Platform ring gradients (matching Axiom style)
 const PLATFORM_RING_GRADIENTS: Record<PlatformType, string> = {
   pump: 'linear-gradient(219deg, #00FF88 0%, #00c46b 49%, #009950 100%)',
@@ -114,6 +134,7 @@ const MOCK_TOKENS: TokenResult[] = [
     liquidity: '$8K',
     twitterUrl: 'https://twitter.com',
     websiteUrl: 'https://example.com',
+    axiomUrl: 'https://axiom.trade/t/CBvno2t3bFRHpV3YoyuhA2eLaQ42WwUDE4a7d3C1xkSm',
     creatorWallet: '43HPNeS2FroDxUGRQKV1iNDrYFD1wo5rPVj5Qc9igLZN',
     isOwned: true,
   },
@@ -127,6 +148,7 @@ const MOCK_TOKENS: TokenResult[] = [
     volume: '$142',
     liquidity: '$61K',
     twitterUrl: 'https://twitter.com',
+    axiomUrl: 'https://axiom.trade/t/7dNW2mhCtqoZcDuyRbj5LMoeFsS9TpaCdSkk4qMstGPm',
     creatorWallet: 'DifferentWallet123456789012345678901234567890',
   },
   {
@@ -139,6 +161,7 @@ const MOCK_TOKENS: TokenResult[] = [
     volume: '$128',
     liquidity: '$50K',
     websiteUrl: 'https://example.com',
+    axiomUrl: 'https://axiom.trade/t/HsRtbRWaB29bPg6wESHz61y6VYbZvJJzoreGuqTupfM9',
     creatorWallet: '43HPNeS2FroDxUGRQKV1iNDrYFD1wo5rPVj5Qc9igLZN',
     isOwned: true,
   },
@@ -264,6 +287,7 @@ function TokenRow({
         <div className="flex items-center gap-2 mt-1">
           <span className="text-xs sm:text-sm font-medium text-kol-green">{token.age}</span>
 
+          {/* Twitter link */}
           {token.twitterUrl && (
             <Tooltip content="Twitter" position="top" delayShow={200}>
               <a
@@ -271,13 +295,14 @@ function TokenRow({
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
-                className="text-kol-text-muted hover:text-kol-blue transition-colors"
+                className="flex items-center text-[#1d9bf0] hover:opacity-80 transition-opacity"
               >
-                <i className="ri-user-line text-xs sm:text-base" />
+                <i className="ri-twitter-x-line text-xs sm:text-base" />
               </a>
             </Tooltip>
           )}
 
+          {/* Website link */}
           {token.websiteUrl && (
             <Tooltip content="Website" position="top" delayShow={200}>
               <a
@@ -285,9 +310,37 @@ function TokenRow({
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
-                className="text-kol-text-muted hover:text-kol-blue transition-colors"
+                className="flex items-center text-kol-text-muted hover:text-white transition-colors"
               >
                 <i className="ri-global-line text-xs sm:text-base" />
+              </a>
+            </Tooltip>
+          )}
+
+          {/* Platform logo link */}
+          <Tooltip content={PLATFORM_NAMES[token.platform]} position="top" delayShow={200}>
+            <a
+              href={PLATFORM_URL_PATTERNS[token.platform].replace('{address}', token.address)}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="flex items-center hover:opacity-80 transition-opacity"
+            >
+              <img src={PLATFORM_ICONS[token.platform]} alt={PLATFORM_NAMES[token.platform]} className="w-3.5 h-3.5 sm:w-4 sm:h-4 object-contain" />
+            </a>
+          </Tooltip>
+
+          {/* Axiom link */}
+          {token.axiomUrl && (
+            <Tooltip content="Trade on Axiom" position="top" delayShow={200}>
+              <a
+                href={token.axiomUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="flex items-center text-white hover:opacity-80 transition-opacity"
+              >
+                <AxiomIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </a>
             </Tooltip>
           )}

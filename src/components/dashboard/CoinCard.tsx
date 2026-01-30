@@ -41,6 +41,7 @@ export interface CoinData {
   tradingStats?: TradingStats
   platform: PlatformType
   twitterUrl?: string
+  websiteUrl?: string
   tweetType?: TweetType
   launchedAt: Date
   progressPercent?: number
@@ -535,6 +536,21 @@ function QuickLinks({ coin, onSearchToken, solPrice }: { coin: CoinData; onSearc
             <AxiomIcon className="w-6 h-6" />
           </a>
         </QuickLinkPopover>
+      )}
+
+      {/* Website link */}
+      {coin.websiteUrl && (
+        <Tooltip content="Website" position="top">
+          <a
+            href={coin.websiteUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            className="flex items-center text-kol-text-muted hover:text-white transition-colors"
+          >
+            <i className="ri-global-line text-[20px]" />
+          </a>
+        </Tooltip>
       )}
     </div>
   )
