@@ -168,25 +168,20 @@ export function SocialPost({ post, index, onDeploy, flat, highlights }: SocialPo
               {seg.text}
             </span>
           );
-        case 'ca': {
-          const truncated = seg.text.length > 12
-            ? `${seg.text.slice(0, 6)}...${seg.text.slice(-4)}`
-            : seg.text;
+        case 'ca':
           return (
             <span
               key={i}
-              className="font-mono cursor-pointer hover:opacity-80 transition-opacity"
+              className="cursor-pointer hover:opacity-80 transition-opacity"
               style={{ color: seg.color || '#8b5cf6' }}
-              title={seg.text}
               onClick={(e) => {
                 e.stopPropagation();
                 navigator.clipboard.writeText(seg.text);
               }}
             >
-              {truncated}
+              {seg.text}
             </span>
           );
-        }
         case 'search': {
           const color = seg.color || '#f59e0b';
           return (
