@@ -21,6 +21,8 @@ export interface ExpandableButtonProps {
   disabled?: boolean
   /** Additional className */
   className?: string
+  /** When true, never expand — always show tooltip instead */
+  tooltipOnly?: boolean
 }
 
 const sizeConfig = {
@@ -86,6 +88,7 @@ export function ExpandableButton({
   onClick,
   disabled = false,
   className = '',
+  tooltipOnly = false,
 }: ExpandableButtonProps) {
   const [isHovered, setIsHovered] = useState(false)
   const isSmall = useIsSmallScreen()
@@ -99,11 +102,12 @@ export function ExpandableButton({
   const config = sizeConfig[size]
   const expandedWidth = getExpandedWidth(label, size)
 
-  const isExpanded = !isSmall && isHovered
+  const collapsed = isSmall || tooltipOnly
+  const isExpanded = !collapsed && isHovered
   const transition = didBreakpointChange ? instantTransition : springTransition
 
   return (
-    <Tooltip content={label} position="top" delayShow={200} disabled={!isSmall}>
+    <Tooltip content={label} position="top" delayShow={200} disabled={!collapsed}>
       <motion.button
         className={`
           group relative ${config.height} rounded-lg flex items-center justify-center overflow-hidden

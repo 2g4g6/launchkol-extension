@@ -229,34 +229,37 @@ export function Footer({
 
       {/* Right section */}
       <div className="flex items-center gap-0.5 justify-self-end col-start-3">
-        <ExpandableButton icon="ri-percent-line" label="Fees" variant="subtle" onClick={onFeesClick} />
+        <ExpandableButton icon="ri-percent-line" label="Fees" variant="subtle" tooltipOnly onClick={onFeesClick} />
         <div className="relative">
-          <ExpandableButton icon="ri-chat-3-line" label="Chat" variant="subtle" onClick={onChatClick} />
+          <ExpandableButton icon="ri-chat-3-line" label="Chat" variant="subtle" tooltipOnly onClick={onChatClick} />
           {chatUnreadCount > 0 && (
             <span className="w-[7px] h-[7px] rounded-full bg-kol-red absolute -top-0.5 -right-0.5 pointer-events-none" />
           )}
         </div>
-        <ExpandableButton icon="ri-volume-up-line" label="Sound" variant="subtle" />
-        <ExpandableButton icon="ri-translate-2" label="Language" variant="subtle" />
-        <ExpandableButton icon="ri-palette-line" label="Theme" variant="subtle" />
-        <ExpandableButton icon="ri-settings-3-line" label="Settings" variant="subtle" />
+        <ExpandableButton icon="ri-volume-up-line" label="Sound" variant="subtle" tooltipOnly />
+        <ExpandableButton icon="ri-translate-2" label="Language" variant="subtle" tooltipOnly />
+        <ExpandableButton icon="ri-palette-line" label="Theme" variant="subtle" tooltipOnly />
+        <ExpandableButton icon="ri-settings-3-line" label="Settings" variant="subtle" tooltipOnly />
         <VerticalDivider />
         <ExpandableButton
           icon="ri-discord-fill"
           label="Discord"
           variant="subtle"
+          tooltipOnly
           onClick={() => window.open('https://discord.gg/launchkol', '_blank')}
         />
         <ExpandableButton
           icon="ri-twitter-x-line"
           label="X"
           variant="subtle"
+          tooltipOnly
           onClick={() => window.open('https://x.com/launchkol', '_blank')}
         />
         <ExpandableButton
           icon="ri-file-text-line"
           label="Docs"
           variant="subtle"
+          tooltipOnly
           onClick={() => window.open('https://docs.launchkol.com', '_blank')}
         />
       </div>
