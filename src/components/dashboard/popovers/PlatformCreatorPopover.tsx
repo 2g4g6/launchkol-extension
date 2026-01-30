@@ -33,20 +33,24 @@ export function PlatformCreatorPopoverContent({
   const creatorRef = useRef<HTMLDivElement>(null)
   const nameRef = useRef<HTMLSpanElement>(null)
   const walletRef = useRef<HTMLSpanElement>(null)
+  const walletIconRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
     const el = creatorRef.current
     const nameEl = nameRef.current
     const walletEl = walletRef.current
+    const walletIconEl = walletIconRef.current
     if (!el || !nameEl || !walletEl) return
 
     const onEnter = () => {
       nameEl.style.display = 'none'
       walletEl.style.display = 'inline'
+      if (walletIconEl) walletIconEl.style.display = 'inline'
     }
     const onLeave = () => {
       nameEl.style.display = 'inline'
       walletEl.style.display = 'none'
+      if (walletIconEl) walletIconEl.style.display = 'none'
     }
 
     el.addEventListener('mouseenter', onEnter)
@@ -140,9 +144,12 @@ export function PlatformCreatorPopoverContent({
               )}
               <span ref={nameRef} className="text-[12px] font-medium text-white">{creator.name}</span>
               {creator.walletAddress && (
-                <span ref={walletRef} style={{ display: 'none' }} className="text-[11px] font-mono text-kol-text-muted">
-                  {creator.walletAddress.slice(0, 6)}...{creator.walletAddress.slice(-4)}
-                </span>
+                <>
+                  <i ref={walletIconRef} style={{ display: 'none' }} className="ri-wallet-3-line text-[12px] text-white" />
+                  <span ref={walletRef} style={{ display: 'none' }} className="text-[11px] font-mono text-white">
+                    {creator.walletAddress.slice(0, 6)}...{creator.walletAddress.slice(-4)}
+                  </span>
+                </>
               )}
             </div>
           </div>
