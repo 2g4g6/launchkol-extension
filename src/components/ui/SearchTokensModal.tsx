@@ -337,8 +337,6 @@ const MOCK_TOKENS: TokenResult[] = [
 // Tweet Search Types & Data
 // ============================================================================
 
-type SearchTab = 'tokens' | 'tweets'
-
 interface TweetSearchResult {
   post: SocialPostData
   relatedTicker: string
@@ -745,7 +743,7 @@ export function SearchTokensModal({
   const [selectedIndex, setSelectedIndex] = useState(0)
   const [walletFilterOpen, setWalletFilterOpen] = useState(false)
   const [savedWallets, setSavedWallets] = useState<SavedWallet[]>([])
-  const [activeSearchTab, setActiveSearchTab] = useState<SearchTab>('tokens')
+  const [selectedToken, setSelectedToken] = useState<TokenResult | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const walletFilterRef = useRef<HTMLSpanElement>(null)
 
@@ -849,7 +847,7 @@ export function SearchTokensModal({
       setSearchQuery('')
       setSelectedIndex(0)
       setWalletFilterOpen(false)
-      setActiveSearchTab('tokens')
+      setSelectedToken(null)
     }
   }, [isOpen])
 
@@ -884,7 +882,7 @@ export function SearchTokensModal({
 
   // Filter tweets based on search query
   const filteredTweets = MOCK_TWEETS.filter((tweet) => {
-    if (searchQuery === '') return true
+    if (searchQuery === '') return false
     const q = searchQuery.trim()
     if (isContractAddress(q)) {
       return tweet.relatedCA === q
@@ -896,6 +894,14 @@ export function SearchTokensModal({
       tweet.post.author.handle.toLowerCase().includes(lower)
     )
   })
+
+  // Tweets for selected token detail view
+  const selectedTokenTweets = selectedToken
+    ? MOCK_TWEETS.filter((tweet) =>
+        tweet.relatedCA === selectedToken.address ||
+        tweet.relatedTicker.toLowerCase() === selectedToken.ticker.toLowerCase()
+      )
+    : []
 
   // Detect query type for badge
   const queryType = searchQuery.trim()
@@ -910,22 +916,25 @@ export function SearchTokensModal({
       if (!isOpen) return
 
       if (e.key === 'Escape') {
-        onClose()
-      } else if (e.key === 'ArrowDown' && activeSearchTab === 'tokens') {
+        if (selectedToken) {
+          setSelectedToken(null)
+        } else {
+          onClose()
+        }
+      } else if (e.key === 'ArrowDown' && !selectedToken) {
         e.preventDefault()
         setSelectedIndex((prev) => Math.min(prev + 1, filteredTokens.length - 1))
-      } else if (e.key === 'ArrowUp' && activeSearchTab === 'tokens') {
+      } else if (e.key === 'ArrowUp' && !selectedToken) {
         e.preventDefault()
         setSelectedIndex((prev) => Math.max(prev - 1, 0))
-      } else if (e.key === 'Enter' && activeSearchTab === 'tokens' && filteredTokens[selectedIndex]) {
-        onSelectToken(filteredTokens[selectedIndex])
-        onClose()
+      } else if (e.key === 'Enter' && !selectedToken && filteredTokens[selectedIndex]) {
+        setSelectedToken(filteredTokens[selectedIndex])
       }
     }
 
     document.addEventListener('keydown', handleKeyDown)
     return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [isOpen, selectedIndex, filteredTokens, onClose, onSelectToken, activeSearchTab])
+  }, [isOpen, selectedIndex, filteredTokens, onClose, selectedToken])
 
   // Lock body scroll when open
   useEffect(() => {
@@ -961,16 +970,93 @@ export function SearchTokensModal({
             onClick={(e) => e.stopPropagation()}
           >
             <div className="bg-kol-bg rounded-lg overflow-hidden border border-kol-border shadow-[0_4px_4px_0_rgba(0,0,0,0.30),0_8px_8px_0_rgba(0,0,0,0.45)] flex flex-col h-full">
-              {/* Filters Row - Platform filters left, Sort icons right */}
-              <AnimatePresence initial={false}>
-                {activeSearchTab === 'tokens' && (
+              <AnimatePresence mode="wait">
+                {selectedToken ? (
                   <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.2, ease: CUSTOM_EASE }}
-                    className="overflow-hidden"
+                    key="detail-view"
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    transition={{ duration: 0.15, ease: CUSTOM_EASE }}
+                    className="flex flex-col h-full"
                   >
+                    {/* Detail Header */}
+                    <div className="flex items-center gap-3 px-4 pt-3 pb-2 border-b border-kol-border/50">
+                      <button
+                        onClick={() => setSelectedToken(null)}
+                        className="flex h-7 w-7 items-center justify-center rounded-full bg-kol-surface-elevated hover:bg-white/[12%] border border-kol-border transition-colors"
+                      >
+                        <i className="ri-arrow-left-s-line text-base text-white" />
+                      </button>
+                      <TokenAvatar token={selectedToken} />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-sm sm:text-base font-medium text-white tracking-[-0.02em]">
+                            {selectedToken.ticker}
+                          </span>
+                          <span className="text-xs sm:text-sm text-kol-text-muted truncate">
+                            {selectedToken.name}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-3 mt-0.5">
+                          <span className="text-xs text-kol-text-muted">MC {selectedToken.marketCap}</span>
+                          <span className="text-xs text-kol-text-muted">V {selectedToken.volume}</span>
+                          <span className="text-xs text-kol-text-muted">L {selectedToken.liquidity}</span>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => {
+                          onSelectToken(selectedToken)
+                          onClose()
+                        }}
+                        className="flex h-7 items-center gap-1 px-3 rounded-full bg-kol-blue hover:bg-kol-blue-hover text-xs font-medium text-black transition-colors"
+                      >
+                        <i className="ri-arrow-right-up-line text-sm" />
+                        Trade
+                      </button>
+                    </div>
+
+                    {/* Related Tweets */}
+                    <div className="flex h-8 items-center px-4">
+                      <span className="text-xs text-kol-text-muted flex items-center gap-1.5">
+                        <i className="ri-twitter-x-line text-sm" />
+                        {selectedTokenTweets.length > 0
+                          ? `${selectedTokenTweets.length} Related Tweets`
+                          : 'No Related Tweets'
+                        }
+                      </span>
+                    </div>
+
+                    <div className="flex-1 overflow-y-auto">
+                      {selectedTokenTweets.length > 0 ? (
+                        <div className="px-2 pb-2 space-y-1">
+                          {selectedTokenTweets.map((tweet, index) => (
+                            <SocialPost
+                              key={tweet.post.id}
+                              post={tweet.post}
+                              index={index}
+                              flat={false}
+                            />
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="flex flex-col items-center justify-center py-12 text-kol-text-muted">
+                          <i className="ri-twitter-x-line text-3xl mb-2 opacity-50" />
+                          <p className="text-sm">No tweets found for ${selectedToken.ticker}</p>
+                        </div>
+                      )}
+                    </div>
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="search-view"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 20 }}
+                    transition={{ duration: 0.15, ease: CUSTOM_EASE }}
+                    className="flex flex-col h-full"
+                  >
+                    {/* Filters Row - Platform filters left, Sort icons right */}
                     <div className="flex items-center justify-between gap-4 px-4 pl-3 pt-3">
                       {/* Platform Filters - scrollable */}
                       <HorizontalScrollContainer className="flex items-center gap-2 overflow-x-auto scrollbar-hide -ml-2 pl-2 pr-0" gradientFrom="from-kol-bg">
@@ -1034,105 +1120,100 @@ export function SearchTokensModal({
                         </span>
                       </div>
                     </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
 
-              {/* Tab Bar */}
-              <div className="flex items-center gap-2 px-4 pt-2 pb-1">
-                <button
-                  onClick={() => setActiveSearchTab('tokens')}
-                  className={`
-                    flex items-center gap-1.5 h-7 px-3 rounded-full text-xs font-medium transition-colors border
-                    ${activeSearchTab === 'tokens'
-                      ? 'bg-kol-surface-elevated text-white border-kol-border/50'
-                      : 'text-kol-text-muted border-transparent hover:text-white hover:bg-kol-surface/45'
-                    }
-                  `}
-                >
-                  <i className="ri-coin-line text-sm" />
-                  <span>Tokens</span>
-                </button>
-                <button
-                  onClick={() => setActiveSearchTab('tweets')}
-                  className={`
-                    flex items-center gap-1.5 h-7 px-3 rounded-full text-xs font-medium transition-colors border
-                    ${activeSearchTab === 'tweets'
-                      ? 'bg-kol-surface-elevated text-white border-kol-border/50'
-                      : 'text-kol-text-muted border-transparent hover:text-white hover:bg-kol-surface/45'
-                    }
-                  `}
-                >
-                  <i className="ri-twitter-x-line text-sm" />
-                  <span>Tweets</span>
-                </button>
-              </div>
+                    {/* Search Input */}
+                    <div className="flex h-16 items-center gap-2 px-4 border-b border-kol-border/50">
+                      <i className="ri-search-line text-xl text-kol-text-muted" />
+                      <input
+                        ref={inputRef}
+                        type="text"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder="Search by name, ticker, or CA..."
+                        className="flex-1 bg-transparent text-xl text-white placeholder:text-xl placeholder:text-kol-text-muted outline-none"
+                      />
+                      {queryType && (
+                        <span className="flex-shrink-0 h-5 px-2 rounded bg-kol-surface-elevated border border-kol-border/50 text-[10px] font-medium text-kol-text-muted flex items-center">
+                          {queryType}
+                        </span>
+                      )}
+                      <button
+                        onClick={onClose}
+                        className="flex h-5 items-center px-2 rounded-full border border-kol-border bg-kol-surface text-xs text-white hover:bg-kol-surface-elevated transition-colors"
+                      >
+                        Esc
+                      </button>
+                    </div>
 
-              {/* Search Input */}
-              <div className="flex h-16 items-center gap-2 px-4 border-b border-kol-border/50">
-                <i className="ri-search-line text-xl text-kol-text-muted" />
-                <input
-                  ref={inputRef}
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder={activeSearchTab === 'tokens' ? 'Search by name, ticker, or CA...' : 'Search tweets by ticker or CA...'}
-                  className="flex-1 bg-transparent text-xl text-white placeholder:text-xl placeholder:text-kol-text-muted outline-none"
-                />
-                {queryType && (
-                  <span className="flex-shrink-0 h-5 px-2 rounded bg-kol-surface-elevated border border-kol-border/50 text-[10px] font-medium text-kol-text-muted flex items-center">
-                    {queryType}
-                  </span>
-                )}
-                <button
-                  onClick={onClose}
-                  className="flex h-5 items-center px-2 rounded-full border border-kol-border bg-kol-surface text-xs text-white hover:bg-kol-surface-elevated transition-colors"
-                >
-                  Esc
-                </button>
-              </div>
+                    {/* Results Header */}
+                    <div className="flex h-10 items-center justify-between px-4 pr-2">
+                      <span className="text-xs text-kol-text-secondary">
+                        {filteredTokens.length > 0 ? `${filteredTokens.length} Results` : 'History'}
+                      </span>
+                    </div>
 
-              {/* Results Header */}
-              <div className="flex h-10 items-center justify-between px-4 pr-2">
-                <span className="text-xs text-kol-text-secondary">
-                  {activeSearchTab === 'tokens'
-                    ? filteredTokens.length > 0
-                      ? `${filteredTokens.length} Results`
-                      : 'History'
-                    : filteredTweets.length > 0
-                      ? `${filteredTweets.length} Tweets`
-                      : 'Recent Tweets'
-                  }
-                </span>
-              </div>
-
-              {/* Results List */}
-              <div className="flex-1 overflow-y-auto">
-                <AnimatePresence mode="wait">
-                  {activeSearchTab === 'tokens' ? (
-                    <motion.div
-                      key="tokens-tab"
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -20 }}
-                      transition={{ duration: 0.15, ease: CUSTOM_EASE }}
-                    >
+                    {/* Results List */}
+                    <div className="flex-1 overflow-y-auto">
                       {filteredTokens.length > 0 ? (
-                        filteredTokens.map((token, index) => (
-                          <TokenRow
-                            key={token.address}
-                            token={token}
-                            isSelected={index === selectedIndex}
-                            isOwned={token.isOwned}
-                            onManage={onManageToken}
-                            onClone={onCloneToken}
-                            solPrice={solPrice}
-                            onClick={() => {
-                              onSelectToken(token)
-                              onClose()
-                            }}
-                          />
-                        ))
+                        <>
+                          {filteredTokens.map((token, index) => (
+                            <TokenRow
+                              key={token.address}
+                              token={token}
+                              isSelected={index === selectedIndex}
+                              isOwned={token.isOwned}
+                              onManage={onManageToken}
+                              onClone={onCloneToken}
+                              solPrice={solPrice}
+                              onClick={() => setSelectedToken(token)}
+                            />
+                          ))}
+
+                          {/* Related Tweets Section (shown when searching) */}
+                          {searchQuery.trim() && filteredTweets.length > 0 && (
+                            <>
+                              <div className="flex h-8 items-center px-4 mt-2 border-t border-kol-border/30">
+                                <span className="text-xs text-kol-text-muted flex items-center gap-1.5">
+                                  <i className="ri-twitter-x-line text-sm" />
+                                  {filteredTweets.length} Related Tweets
+                                </span>
+                              </div>
+                              <div className="px-2 pb-2 space-y-1">
+                                {filteredTweets.map((tweet, index) => (
+                                  <SocialPost
+                                    key={tweet.post.id}
+                                    post={tweet.post}
+                                    index={index}
+                                    flat={false}
+                                  />
+                                ))}
+                              </div>
+                            </>
+                          )}
+                        </>
+                      ) : searchQuery.trim() && filteredTweets.length > 0 ? (
+                        <>
+                          <div className="flex flex-col items-center justify-center py-6 text-kol-text-muted">
+                            <i className="ri-search-line text-2xl mb-1 opacity-50" />
+                            <p className="text-xs">No tokens found</p>
+                          </div>
+                          <div className="flex h-8 items-center px-4 border-t border-kol-border/30">
+                            <span className="text-xs text-kol-text-muted flex items-center gap-1.5">
+                              <i className="ri-twitter-x-line text-sm" />
+                              {filteredTweets.length} Related Tweets
+                            </span>
+                          </div>
+                          <div className="px-2 pb-2 space-y-1">
+                            {filteredTweets.map((tweet, index) => (
+                              <SocialPost
+                                key={tweet.post.id}
+                                post={tweet.post}
+                                index={index}
+                                flat={false}
+                              />
+                            ))}
+                          </div>
+                        </>
                       ) : (
                         <div className="flex flex-col items-center justify-center py-12 text-kol-text-muted">
                           <i className="ri-search-line text-3xl mb-2 opacity-50" />
@@ -1140,48 +1221,10 @@ export function SearchTokensModal({
                           <p className="text-xs mt-1">Try a different search term</p>
                         </div>
                       )}
-                    </motion.div>
-                  ) : (
-                    <motion.div
-                      key="tweets-tab"
-                      initial={{ opacity: 0, x: 20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: 20 }}
-                      transition={{ duration: 0.15, ease: CUSTOM_EASE }}
-                      className="px-2 py-2 space-y-1"
-                    >
-                      {filteredTweets.length > 0 ? (
-                        filteredTweets.map((tweet, index) => (
-                          <SocialPost
-                            key={tweet.post.id}
-                            post={tweet.post}
-                            index={index}
-                            flat={false}
-                          />
-                        ))
-                      ) : (
-                        <div className="flex flex-col items-center justify-center py-12 text-kol-text-muted">
-                          <i className="ri-twitter-x-line text-3xl mb-2 opacity-50" />
-                          <p className="text-sm">
-                            {searchQuery.trim()
-                              ? isContractAddress(searchQuery.trim())
-                                ? 'No tweets mention this contract address'
-                                : 'No tweets found for this ticker'
-                              : 'Search for a ticker or CA to find tweets'
-                            }
-                          </p>
-                          <p className="text-xs mt-1">
-                            {searchQuery.trim()
-                              ? 'Try a different search term'
-                              : 'e.g. $HELLO or paste a contract address'
-                            }
-                          </p>
-                        </div>
-                      )}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           </motion.div>
 
