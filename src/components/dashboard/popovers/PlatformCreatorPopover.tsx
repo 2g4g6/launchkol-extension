@@ -217,23 +217,18 @@ export function PlatformCreatorPopoverContent({
         </div>
       )}
 
-      {/* Quote currency */}
-      <div className="border-t border-kol-border pt-3">
-        <div className="flex items-center justify-between px-1">
-          <span className="text-[11px] text-kol-text-muted">Quote</span>
-          {isBonk ? (
+      {/* Quote currency (Bonk only) */}
+      {isBonk && (
+        <div className="border-t border-kol-border pt-3">
+          <div className="flex items-center justify-between px-1">
+            <span className="text-[11px] text-kol-text-muted">Quote</span>
             <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-usd1/[0.075]">
               <img src="/images/usd1.svg" alt="USD1" className="w-[14px] h-[14px]" />
               <span className="text-[12px] font-medium text-usd1">USD1</span>
             </div>
-          ) : (
-            <div className="flex items-center gap-1">
-              <img alt="SOL" width="14" height="14" src="/images/solanaLogoMark.svg" />
-              <span className="text-[12px] font-medium text-white">SOL</span>
-            </div>
-          )}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }
