@@ -698,6 +698,17 @@ function TokenRow({
       </div>
 
       <div className="hidden sm:flex items-center gap-1.5">
+        <Tooltip content="Look up tweets" position="bottom" delayShow={200}>
+          <button
+            onClick={(e) => {
+              e.stopPropagation()
+              onSearch?.(token)
+            }}
+            className="flex h-[30px] w-[30px] items-center justify-center rounded-full bg-kol-surface-elevated hover:bg-white/[12%] border border-kol-border transition-colors"
+          >
+            <i className="ri-search-line text-base text-kol-text-muted" />
+          </button>
+        </Tooltip>
         {isOwned ? (
           <Tooltip content="Manage token" position="bottom" delayShow={200}>
             <button
@@ -723,17 +734,6 @@ function TokenRow({
             </button>
           </Tooltip>
         )}
-        <Tooltip content="Look up tweets" position="bottom" delayShow={200}>
-          <button
-            onClick={(e) => {
-              e.stopPropagation()
-              onSearch?.(token)
-            }}
-            className="flex h-[30px] w-[30px] items-center justify-center rounded-full bg-kol-surface-elevated hover:bg-white/[12%] border border-kol-border transition-colors"
-          >
-            <i className="ri-search-line text-base text-kol-text-muted" />
-          </button>
-        </Tooltip>
       </div>
     </div>
   )
