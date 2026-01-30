@@ -505,6 +505,7 @@ function TokenRow({
   isOwned,
   onManage,
   onClone,
+  onSearch,
   onClick,
   onDoubleClick,
   solPrice
@@ -514,6 +515,7 @@ function TokenRow({
   isOwned?: boolean
   onManage?: (token: TokenResult) => void
   onClone?: (token: TokenResult) => void
+  onSearch?: (token: TokenResult) => void
   onClick: () => void
   onDoubleClick?: () => void
   solPrice?: number
@@ -697,31 +699,44 @@ function TokenRow({
         </div>
       </div>
 
-      {isOwned ? (
-        <Tooltip content="Manage token" position="bottom" delayShow={200}>
+      <div className="hidden sm:flex items-center gap-1.5">
+        {isOwned ? (
+          <Tooltip content="Manage token" position="bottom" delayShow={200}>
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                onManage?.(token)
+              }}
+              className="flex h-[30px] w-[30px] items-center justify-center rounded-full bg-kol-blue hover:bg-kol-blue-hover transition-colors"
+            >
+              <i className="ri-settings-3-line text-base text-black" />
+            </button>
+          </Tooltip>
+        ) : (
+          <Tooltip content="Clone token" position="bottom" delayShow={200}>
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                onClone?.(token)
+              }}
+              className="flex h-[30px] w-[30px] items-center justify-center rounded-full bg-kol-blue hover:bg-kol-blue-hover transition-colors"
+            >
+              <i className="ri-file-copy-line text-base text-black" />
+            </button>
+          </Tooltip>
+        )}
+        <Tooltip content="Look up tweets" position="bottom" delayShow={200}>
           <button
             onClick={(e) => {
               e.stopPropagation()
-              onManage?.(token)
+              onSearch?.(token)
             }}
-            className="hidden sm:flex h-[30px] w-[30px] items-center justify-center rounded-full bg-kol-blue hover:bg-kol-blue-hover transition-colors"
+            className="flex h-[30px] w-[30px] items-center justify-center rounded-full bg-kol-surface-elevated hover:bg-white/[12%] border border-kol-border transition-colors"
           >
-            <i className="ri-settings-3-line text-base text-black" />
+            <i className="ri-search-line text-base text-kol-text-muted" />
           </button>
         </Tooltip>
-      ) : (
-        <Tooltip content="Clone token" position="bottom" delayShow={200}>
-          <button
-            onClick={(e) => {
-              e.stopPropagation()
-              onClone?.(token)
-            }}
-            className="hidden sm:flex h-[30px] w-[30px] items-center justify-center rounded-full bg-kol-surface-elevated hover:bg-white/[12%] border border-kol-border transition-colors"
-          >
-            <i className="ri-file-copy-line text-base text-kol-text-muted" />
-          </button>
-        </Tooltip>
-      )}
+      </div>
     </div>
   )
 }
@@ -1071,6 +1086,10 @@ export function SearchTokensModal({
                         isOwned={token.isOwned}
                         onManage={onManageToken}
                         onClone={onCloneToken}
+                        onSearch={(t) => {
+                          setSearchQuery(t.address)
+                          inputRef.current?.focus()
+                        }}
                         solPrice={solPrice}
                         onClick={() => {
                           setSearchQuery(token.address)
