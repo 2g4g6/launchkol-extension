@@ -506,6 +506,7 @@ function TokenRow({
   onManage,
   onClone,
   onClick,
+  onDoubleClick,
   solPrice
 }: {
   token: TokenResult
@@ -514,6 +515,7 @@ function TokenRow({
   onManage?: (token: TokenResult) => void
   onClone?: (token: TokenResult) => void
   onClick: () => void
+  onDoubleClick?: () => void
   solPrice?: number
 }) {
   const copyAddress = (e: React.MouseEvent) => {
@@ -524,6 +526,7 @@ function TokenRow({
   return (
     <div
       onClick={onClick}
+      onDoubleClick={onDoubleClick}
       className={`
         flex items-center gap-3 px-4 h-16 sm:h-[88px] cursor-pointer transition-colors
         ${isSelected ? 'bg-kol-surface-elevated' : 'hover:bg-white/[7%]'}
@@ -743,7 +746,6 @@ export function SearchTokensModal({
   const [selectedIndex, setSelectedIndex] = useState(0)
   const [walletFilterOpen, setWalletFilterOpen] = useState(false)
   const [savedWallets, setSavedWallets] = useState<SavedWallet[]>([])
-  const [selectedToken, setSelectedToken] = useState<TokenResult | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const walletFilterRef = useRef<HTMLSpanElement>(null)
 
@@ -847,7 +849,6 @@ export function SearchTokensModal({
       setSearchQuery('')
       setSelectedIndex(0)
       setWalletFilterOpen(false)
-      setSelectedToken(null)
     }
   }, [isOpen])
 
@@ -895,14 +896,6 @@ export function SearchTokensModal({
     )
   })
 
-  // Tweets for selected token detail view
-  const selectedTokenTweets = selectedToken
-    ? MOCK_TWEETS.filter((tweet) =>
-        tweet.relatedCA === selectedToken.address ||
-        tweet.relatedTicker.toLowerCase() === selectedToken.ticker.toLowerCase()
-      )
-    : []
-
   // Detect query type for badge
   const queryType = searchQuery.trim()
     ? isContractAddress(searchQuery.trim())
@@ -916,25 +909,22 @@ export function SearchTokensModal({
       if (!isOpen) return
 
       if (e.key === 'Escape') {
-        if (selectedToken) {
-          setSelectedToken(null)
-        } else {
-          onClose()
-        }
-      } else if (e.key === 'ArrowDown' && !selectedToken) {
+        onClose()
+      } else if (e.key === 'ArrowDown') {
         e.preventDefault()
         setSelectedIndex((prev) => Math.min(prev + 1, filteredTokens.length - 1))
-      } else if (e.key === 'ArrowUp' && !selectedToken) {
+      } else if (e.key === 'ArrowUp') {
         e.preventDefault()
         setSelectedIndex((prev) => Math.max(prev - 1, 0))
-      } else if (e.key === 'Enter' && !selectedToken && filteredTokens[selectedIndex]) {
-        setSelectedToken(filteredTokens[selectedIndex])
+      } else if (e.key === 'Enter' && filteredTokens[selectedIndex]) {
+        setSearchQuery(filteredTokens[selectedIndex].ticker)
+        inputRef.current?.focus()
       }
     }
 
     document.addEventListener('keydown', handleKeyDown)
     return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [isOpen, selectedIndex, filteredTokens, onClose, selectedToken])
+  }, [isOpen, selectedIndex, filteredTokens, onClose])
 
   // Lock body scroll when open
   useEffect(() => {
@@ -970,67 +960,137 @@ export function SearchTokensModal({
             onClick={(e) => e.stopPropagation()}
           >
             <div className="bg-kol-bg rounded-lg overflow-hidden border border-kol-border shadow-[0_4px_4px_0_rgba(0,0,0,0.30),0_8px_8px_0_rgba(0,0,0,0.45)] flex flex-col h-full">
-              <AnimatePresence mode="wait">
-                {selectedToken ? (
-                  <motion.div
-                    key="detail-view"
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
-                    transition={{ duration: 0.15, ease: CUSTOM_EASE }}
-                    className="flex flex-col h-full"
-                  >
-                    {/* Detail Header */}
-                    <div className="flex items-center gap-3 px-4 pt-3 pb-2 border-b border-kol-border/50">
+              {/* Filters Row - Platform filters left, Sort icons right */}
+              <div className="flex items-center justify-between gap-4 px-4 pl-3 pt-3">
+                {/* Platform Filters - scrollable */}
+                <HorizontalScrollContainer className="flex items-center gap-2 overflow-x-auto scrollbar-hide -ml-2 pl-2 pr-0" gradientFrom="from-kol-bg">
+                  {PLATFORM_FILTERS.map((filter) => (
+                    <button
+                      key={filter.id}
+                      onClick={() => setPlatformFilter(filter.id)}
+                      className={`
+                        flex h-6 flex-shrink-0 items-center gap-[3px] px-1 rounded text-xs font-medium whitespace-nowrap transition-colors border
+                        ${platformFilter === filter.id
+                          ? 'bg-kol-blue/15 text-kol-blue border-kol-blue/50'
+                          : 'bg-kol-surface/45 border-kol-border text-kol-text-muted hover:bg-kol-surface-elevated'
+                        }
+                      `}
+                    >
+                      {filter.icon && <img src={filter.icon} alt={filter.label} className="w-3 h-3" />}
+                      <span className="font-medium">{filter.label}</span>
+                    </button>
+                  ))}
+                </HorizontalScrollContainer>
+
+                {/* Sort Icons */}
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <span className="text-xs text-kol-text-muted">Sort by</span>
+                  {SORT_OPTIONS.map((option) => (
+                    <Tooltip key={option.id} content={option.label} position="bottom" delayShow={200}>
                       <button
-                        onClick={() => setSelectedToken(null)}
-                        className="flex h-7 w-7 items-center justify-center rounded-full bg-kol-surface-elevated hover:bg-white/[12%] border border-kol-border transition-colors"
+                        onClick={() => setSortBy(option.id)}
+                        className={`
+                          h-6 w-6 flex items-center justify-center rounded transition-colors
+                          ${sortBy === option.id
+                            ? 'bg-kol-blue/15 text-kol-blue'
+                            : 'text-kol-text-muted hover:bg-kol-surface-elevated'
+                          }
+                        `}
                       >
-                        <i className="ri-arrow-left-s-line text-base text-white" />
+                        <i className={`${option.icon} text-sm`} />
                       </button>
-                      <TokenAvatar token={selectedToken} />
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-1.5">
-                          <span className="text-sm sm:text-base font-medium text-white tracking-[-0.02em]">
-                            {selectedToken.ticker}
-                          </span>
-                          <span className="text-xs sm:text-sm text-kol-text-muted truncate">
-                            {selectedToken.name}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-3 mt-0.5">
-                          <span className="text-xs text-kol-text-muted">MC {selectedToken.marketCap}</span>
-                          <span className="text-xs text-kol-text-muted">V {selectedToken.volume}</span>
-                          <span className="text-xs text-kol-text-muted">L {selectedToken.liquidity}</span>
-                        </div>
-                      </div>
+                    </Tooltip>
+                  ))}
+
+                  {/* Wallet Filter Button */}
+                  <span ref={walletFilterRef}>
+                    <Tooltip content="Filter by Wallet" position="bottom" delayShow={200}>
                       <button
+                        onClick={() => setWalletFilterOpen((prev) => !prev)}
+                        className={`
+                          relative h-6 w-6 flex items-center justify-center rounded transition-colors
+                          ${savedWallets.length > 0
+                            ? 'bg-kol-blue/15 text-kol-blue'
+                            : 'text-kol-text-muted hover:bg-kol-surface-elevated'
+                          }
+                        `}
+                      >
+                        <i className="ri-wallet-3-line text-sm" />
+                        {savedWallets.length > 0 && (
+                          <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-kol-blue" />
+                        )}
+                      </button>
+                    </Tooltip>
+                  </span>
+                </div>
+              </div>
+
+              {/* Search Input */}
+              <div className="flex h-16 items-center gap-2 px-4 border-b border-kol-border/50">
+                <i className="ri-search-line text-xl text-kol-text-muted" />
+                <input
+                  ref={inputRef}
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search by name, ticker, or CA..."
+                  className="flex-1 bg-transparent text-xl text-white placeholder:text-xl placeholder:text-kol-text-muted outline-none"
+                />
+                {queryType && (
+                  <span className="flex-shrink-0 h-5 px-2 rounded bg-kol-surface-elevated border border-kol-border/50 text-[10px] font-medium text-kol-text-muted flex items-center">
+                    {queryType}
+                  </span>
+                )}
+                <button
+                  onClick={onClose}
+                  className="flex h-5 items-center px-2 rounded-full border border-kol-border bg-kol-surface text-xs text-white hover:bg-kol-surface-elevated transition-colors"
+                >
+                  Esc
+                </button>
+              </div>
+
+              {/* Results Header */}
+              <div className="flex h-10 items-center justify-between px-4 pr-2">
+                <span className="text-xs text-kol-text-secondary">
+                  {filteredTokens.length > 0 ? `${filteredTokens.length} Results` : 'History'}
+                </span>
+              </div>
+
+              {/* Results List */}
+              <div className="flex-1 overflow-y-auto">
+                {filteredTokens.length > 0 ? (
+                  <>
+                    {filteredTokens.map((token, index) => (
+                      <TokenRow
+                        key={token.address}
+                        token={token}
+                        isSelected={index === selectedIndex}
+                        isOwned={token.isOwned}
+                        onManage={onManageToken}
+                        onClone={onCloneToken}
+                        solPrice={solPrice}
                         onClick={() => {
-                          onSelectToken(selectedToken)
+                          setSearchQuery(token.ticker)
+                          inputRef.current?.focus()
+                        }}
+                        onDoubleClick={() => {
+                          onSelectToken(token)
                           onClose()
                         }}
-                        className="flex h-7 items-center gap-1 px-3 rounded-full bg-kol-blue hover:bg-kol-blue-hover text-xs font-medium text-black transition-colors"
-                      >
-                        <i className="ri-arrow-right-up-line text-sm" />
-                        Trade
-                      </button>
-                    </div>
+                      />
+                    ))}
 
-                    {/* Related Tweets */}
-                    <div className="flex h-8 items-center px-4">
-                      <span className="text-xs text-kol-text-muted flex items-center gap-1.5">
-                        <i className="ri-twitter-x-line text-sm" />
-                        {selectedTokenTweets.length > 0
-                          ? `${selectedTokenTweets.length} Related Tweets`
-                          : 'No Related Tweets'
-                        }
-                      </span>
-                    </div>
-
-                    <div className="flex-1 overflow-y-auto">
-                      {selectedTokenTweets.length > 0 ? (
+                    {/* Related Tweets Section (shown when searching) */}
+                    {searchQuery.trim() && filteredTweets.length > 0 && (
+                      <>
+                        <div className="flex h-8 items-center px-4 mt-2 border-t border-kol-border/30">
+                          <span className="text-xs text-kol-text-muted flex items-center gap-1.5">
+                            <i className="ri-twitter-x-line text-sm" />
+                            {filteredTweets.length} Related Tweets
+                          </span>
+                        </div>
                         <div className="px-2 pb-2 space-y-1">
-                          {selectedTokenTweets.map((tweet, index) => (
+                          {filteredTweets.map((tweet, index) => (
                             <SocialPost
                               key={tweet.post.id}
                               post={tweet.post}
@@ -1039,192 +1099,40 @@ export function SearchTokensModal({
                             />
                           ))}
                         </div>
-                      ) : (
-                        <div className="flex flex-col items-center justify-center py-12 text-kol-text-muted">
-                          <i className="ri-twitter-x-line text-3xl mb-2 opacity-50" />
-                          <p className="text-sm">No tweets found for ${selectedToken.ticker}</p>
-                        </div>
-                      )}
+                      </>
+                    )}
+                  </>
+                ) : searchQuery.trim() && filteredTweets.length > 0 ? (
+                  <>
+                    <div className="flex flex-col items-center justify-center py-6 text-kol-text-muted">
+                      <i className="ri-search-line text-2xl mb-1 opacity-50" />
+                      <p className="text-xs">No tokens found</p>
                     </div>
-                  </motion.div>
-                ) : (
-                  <motion.div
-                    key="search-view"
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: 20 }}
-                    transition={{ duration: 0.15, ease: CUSTOM_EASE }}
-                    className="flex flex-col h-full"
-                  >
-                    {/* Filters Row - Platform filters left, Sort icons right */}
-                    <div className="flex items-center justify-between gap-4 px-4 pl-3 pt-3">
-                      {/* Platform Filters - scrollable */}
-                      <HorizontalScrollContainer className="flex items-center gap-2 overflow-x-auto scrollbar-hide -ml-2 pl-2 pr-0" gradientFrom="from-kol-bg">
-                        {PLATFORM_FILTERS.map((filter) => (
-                          <button
-                            key={filter.id}
-                            onClick={() => setPlatformFilter(filter.id)}
-                            className={`
-                              flex h-6 flex-shrink-0 items-center gap-[3px] px-1 rounded text-xs font-medium whitespace-nowrap transition-colors border
-                              ${platformFilter === filter.id
-                                ? 'bg-kol-blue/15 text-kol-blue border-kol-blue/50'
-                                : 'bg-kol-surface/45 border-kol-border text-kol-text-muted hover:bg-kol-surface-elevated'
-                              }
-                            `}
-                          >
-                            {filter.icon && <img src={filter.icon} alt={filter.label} className="w-3 h-3" />}
-                            <span className="font-medium">{filter.label}</span>
-                          </button>
-                        ))}
-                      </HorizontalScrollContainer>
-
-                      {/* Sort Icons */}
-                      <div className="flex items-center gap-2 flex-shrink-0">
-                        <span className="text-xs text-kol-text-muted">Sort by</span>
-                        {SORT_OPTIONS.map((option) => (
-                          <Tooltip key={option.id} content={option.label} position="bottom" delayShow={200}>
-                            <button
-                              onClick={() => setSortBy(option.id)}
-                              className={`
-                                h-6 w-6 flex items-center justify-center rounded transition-colors
-                                ${sortBy === option.id
-                                  ? 'bg-kol-blue/15 text-kol-blue'
-                                  : 'text-kol-text-muted hover:bg-kol-surface-elevated'
-                                }
-                              `}
-                            >
-                              <i className={`${option.icon} text-sm`} />
-                            </button>
-                          </Tooltip>
-                        ))}
-
-                        {/* Wallet Filter Button */}
-                        <span ref={walletFilterRef}>
-                          <Tooltip content="Filter by Wallet" position="bottom" delayShow={200}>
-                            <button
-                              onClick={() => setWalletFilterOpen((prev) => !prev)}
-                              className={`
-                                relative h-6 w-6 flex items-center justify-center rounded transition-colors
-                                ${savedWallets.length > 0
-                                  ? 'bg-kol-blue/15 text-kol-blue'
-                                  : 'text-kol-text-muted hover:bg-kol-surface-elevated'
-                                }
-                              `}
-                            >
-                              <i className="ri-wallet-3-line text-sm" />
-                              {savedWallets.length > 0 && (
-                                <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-kol-blue" />
-                              )}
-                            </button>
-                          </Tooltip>
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Search Input */}
-                    <div className="flex h-16 items-center gap-2 px-4 border-b border-kol-border/50">
-                      <i className="ri-search-line text-xl text-kol-text-muted" />
-                      <input
-                        ref={inputRef}
-                        type="text"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        placeholder="Search by name, ticker, or CA..."
-                        className="flex-1 bg-transparent text-xl text-white placeholder:text-xl placeholder:text-kol-text-muted outline-none"
-                      />
-                      {queryType && (
-                        <span className="flex-shrink-0 h-5 px-2 rounded bg-kol-surface-elevated border border-kol-border/50 text-[10px] font-medium text-kol-text-muted flex items-center">
-                          {queryType}
-                        </span>
-                      )}
-                      <button
-                        onClick={onClose}
-                        className="flex h-5 items-center px-2 rounded-full border border-kol-border bg-kol-surface text-xs text-white hover:bg-kol-surface-elevated transition-colors"
-                      >
-                        Esc
-                      </button>
-                    </div>
-
-                    {/* Results Header */}
-                    <div className="flex h-10 items-center justify-between px-4 pr-2">
-                      <span className="text-xs text-kol-text-secondary">
-                        {filteredTokens.length > 0 ? `${filteredTokens.length} Results` : 'History'}
+                    <div className="flex h-8 items-center px-4 border-t border-kol-border/30">
+                      <span className="text-xs text-kol-text-muted flex items-center gap-1.5">
+                        <i className="ri-twitter-x-line text-sm" />
+                        {filteredTweets.length} Related Tweets
                       </span>
                     </div>
-
-                    {/* Results List */}
-                    <div className="flex-1 overflow-y-auto">
-                      {filteredTokens.length > 0 ? (
-                        <>
-                          {filteredTokens.map((token, index) => (
-                            <TokenRow
-                              key={token.address}
-                              token={token}
-                              isSelected={index === selectedIndex}
-                              isOwned={token.isOwned}
-                              onManage={onManageToken}
-                              onClone={onCloneToken}
-                              solPrice={solPrice}
-                              onClick={() => setSelectedToken(token)}
-                            />
-                          ))}
-
-                          {/* Related Tweets Section (shown when searching) */}
-                          {searchQuery.trim() && filteredTweets.length > 0 && (
-                            <>
-                              <div className="flex h-8 items-center px-4 mt-2 border-t border-kol-border/30">
-                                <span className="text-xs text-kol-text-muted flex items-center gap-1.5">
-                                  <i className="ri-twitter-x-line text-sm" />
-                                  {filteredTweets.length} Related Tweets
-                                </span>
-                              </div>
-                              <div className="px-2 pb-2 space-y-1">
-                                {filteredTweets.map((tweet, index) => (
-                                  <SocialPost
-                                    key={tweet.post.id}
-                                    post={tweet.post}
-                                    index={index}
-                                    flat={false}
-                                  />
-                                ))}
-                              </div>
-                            </>
-                          )}
-                        </>
-                      ) : searchQuery.trim() && filteredTweets.length > 0 ? (
-                        <>
-                          <div className="flex flex-col items-center justify-center py-6 text-kol-text-muted">
-                            <i className="ri-search-line text-2xl mb-1 opacity-50" />
-                            <p className="text-xs">No tokens found</p>
-                          </div>
-                          <div className="flex h-8 items-center px-4 border-t border-kol-border/30">
-                            <span className="text-xs text-kol-text-muted flex items-center gap-1.5">
-                              <i className="ri-twitter-x-line text-sm" />
-                              {filteredTweets.length} Related Tweets
-                            </span>
-                          </div>
-                          <div className="px-2 pb-2 space-y-1">
-                            {filteredTweets.map((tweet, index) => (
-                              <SocialPost
-                                key={tweet.post.id}
-                                post={tweet.post}
-                                index={index}
-                                flat={false}
-                              />
-                            ))}
-                          </div>
-                        </>
-                      ) : (
-                        <div className="flex flex-col items-center justify-center py-12 text-kol-text-muted">
-                          <i className="ri-search-line text-3xl mb-2 opacity-50" />
-                          <p className="text-sm">No tokens found</p>
-                          <p className="text-xs mt-1">Try a different search term</p>
-                        </div>
-                      )}
+                    <div className="px-2 pb-2 space-y-1">
+                      {filteredTweets.map((tweet, index) => (
+                        <SocialPost
+                          key={tweet.post.id}
+                          post={tweet.post}
+                          index={index}
+                          flat={false}
+                        />
+                      ))}
                     </div>
-                  </motion.div>
+                  </>
+                ) : (
+                  <div className="flex flex-col items-center justify-center py-12 text-kol-text-muted">
+                    <i className="ri-search-line text-3xl mb-2 opacity-50" />
+                    <p className="text-sm">No tokens found</p>
+                    <p className="text-xs mt-1">Try a different search term</p>
+                  </div>
                 )}
-              </AnimatePresence>
+              </div>
             </div>
           </motion.div>
 
