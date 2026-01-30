@@ -1061,7 +1061,7 @@ export function CoinsPanel({ solPrice }: CoinsPanelProps) {
                 </button>
 
                 <button className="h-7 px-2 rounded-lg flex items-center gap-1.5 text-kol-text-muted hover:text-white hover:bg-white/5 transition-colors">
-                  <i className="ri-add-line text-sm" />
+                  <i className="ri-sparkling-line text-sm" />
                   <span className="text-xs font-medium whitespace-nowrap">
                     Create
                   </span>
@@ -1181,7 +1181,7 @@ export function CoinsPanel({ solPrice }: CoinsPanelProps) {
                   </button>
 
                   <button className="h-9 px-2.5 rounded-lg flex items-center gap-2 text-kol-text-muted hover:text-white hover:bg-white/5 transition-colors">
-                    <i className="ri-add-line text-base" />
+                    <i className="ri-sparkling-line text-base" />
                     <span className="text-sm font-medium whitespace-nowrap">
                       Create
                     </span>
