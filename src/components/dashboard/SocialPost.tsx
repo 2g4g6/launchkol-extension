@@ -186,7 +186,7 @@ export function SocialPost({ post, index, onDeploy, flat, highlights, onTokenCli
           return (
             <span
               key={i}
-              className="rounded px-0.5 cursor-pointer hover:opacity-80 transition-opacity inline-block"
+              className="rounded px-0.5 cursor-pointer hover:opacity-80 transition-opacity inline-block max-w-full break-all"
               style={{
                 color: caColor,
                 border: `1px solid ${caColor}40`,

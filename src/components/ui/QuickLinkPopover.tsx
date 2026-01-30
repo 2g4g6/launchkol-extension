@@ -139,7 +139,7 @@ export function QuickLinkPopover({
           <div
             className="bg-kol-bg border border-kol-border rounded-xl shadow-[0_4px_4px_0_rgba(0,0,0,0.30),0_8px_8px_0_rgba(0,0,0,0.45)] overflow-hidden overflow-y-auto"
             style={{ maxHeight: `calc(100vh - ${VIEWPORT_PADDING * 2}px)` }}
-            onClick={() => { if (triggerMode === 'hover') setIsOpen(false) }}
+            onClick={(e) => { e.stopPropagation(); if (triggerMode === 'hover') setIsOpen(false) }}
           >
             {content}
           </div>
