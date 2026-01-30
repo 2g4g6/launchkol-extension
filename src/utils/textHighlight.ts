@@ -71,7 +71,7 @@ export function tokenizeText(text: string, highlights?: TextHighlight[]): TextSe
       )
       segments.push({
         text: matchedText,
-        type: tickerHighlight ? 'search' : 'ticker',
+        type: 'ticker',
         color: tickerHighlight?.color ?? '#f59e0b',
       })
     } else if (match[4]) {
@@ -81,7 +81,7 @@ export function tokenizeText(text: string, highlights?: TextHighlight[]): TextSe
       )
       segments.push({
         text: matchedText,
-        type: caHighlight ? 'search' : 'ca',
+        type: 'ca',
         color: caHighlight?.color ?? '#8b5cf6',
       })
     }
