@@ -6,9 +6,10 @@ interface SearchTweetPreviewPopoverProps {
   searchTweets?: SocialPostData[]
   onSearchAll?: () => void
   highlights?: TextHighlight[]
+  onTokenClick?: (query: string) => void
 }
 
-export function SearchTweetPreviewPopoverContent({ symbol, searchTweets, onSearchAll, highlights }: SearchTweetPreviewPopoverProps) {
+export function SearchTweetPreviewPopoverContent({ symbol, searchTweets, onSearchAll, highlights, onTokenClick }: SearchTweetPreviewPopoverProps) {
   if (!searchTweets || searchTweets.length === 0) {
     return (
       <div className="flex flex-col items-center py-6 px-5">
@@ -53,7 +54,7 @@ export function SearchTweetPreviewPopoverContent({ symbol, searchTweets, onSearc
         {searchTweets.map((tweet, index) => (
           <div key={tweet.id}>
             {index > 0 && <div className="border-t border-kol-border/30" />}
-            <SocialPost post={tweet} index={0} flat highlights={highlights} />
+            <SocialPost post={tweet} index={0} flat highlights={highlights} onTokenClick={onTokenClick} />
           </div>
         ))}
       </div>

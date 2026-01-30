@@ -69,6 +69,7 @@ interface CoinCardProps {
   onDevPanel?: (coin: CoinData) => void
   onRelaunch?: (coin: CoinData) => void
   onSearchToken?: (coin: CoinData) => void
+  onTokenClick?: (query: string) => void
 }
 
 // Platform configuration with colors matching Axiom
@@ -425,7 +426,7 @@ function getTweetTypeLabel(type?: TweetType): string {
 }
 
 // Quick Links Component
-function QuickLinks({ coin, onSearchToken, solPrice }: { coin: CoinData; onSearchToken?: (coin: CoinData) => void; solPrice?: number }) {
+function QuickLinks({ coin, onSearchToken, solPrice, onTokenClick }: { coin: CoinData; onSearchToken?: (coin: CoinData) => void; solPrice?: number; onTokenClick?: (query: string) => void }) {
   const tweetIcon = getTweetTypeIcon(coin.tweetType)
   const tweetColor = getTweetTypeColor(coin.tweetType)
   const tweetLabel = getTweetTypeLabel(coin.tweetType)
@@ -452,6 +453,7 @@ function QuickLinks({ coin, onSearchToken, solPrice }: { coin: CoinData; onSearc
               twitterUrl={coin.twitterUrl}
               tweetLabel={tweetLabel}
               highlights={tickerHighlights}
+              onTokenClick={onTokenClick}
             />
           }
         >
@@ -478,6 +480,7 @@ function QuickLinks({ coin, onSearchToken, solPrice }: { coin: CoinData; onSearc
             searchTweets={coin.searchTweets}
             onSearchAll={() => onSearchToken?.(coin)}
             highlights={tickerHighlights}
+            onTokenClick={onTokenClick}
           />
         }
       >
@@ -589,7 +592,7 @@ function QuickLinks({ coin, onSearchToken, solPrice }: { coin: CoinData; onSearc
   )
 }
 
-export function CoinCard({ coin, index, solPrice, onView, onDevPanel, onRelaunch: _onRelaunch, onSearchToken }: CoinCardProps) {
+export function CoinCard({ coin, index, solPrice, onView, onDevPanel, onRelaunch: _onRelaunch, onSearchToken, onTokenClick }: CoinCardProps) {
   return (
     <motion.div
       className="group relative mx-3 my-2"
@@ -638,7 +641,7 @@ export function CoinCard({ coin, index, solPrice, onView, onDevPanel, onRelaunch
             {/* Row 2: Time + Quick Links */}
             <div className="flex items-center gap-3">
               <TimeBadge date={coin.launchedAt} />
-              <QuickLinks coin={coin} onSearchToken={onSearchToken} solPrice={solPrice} />
+              <QuickLinks coin={coin} onSearchToken={onSearchToken} solPrice={solPrice} onTokenClick={onTokenClick} />
             </div>
           </div>
 

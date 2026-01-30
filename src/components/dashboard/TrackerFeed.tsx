@@ -245,6 +245,7 @@ const MOCK_POSTS: SocialPostData[] = [
 
 interface TrackerFeedProps {
   onDeploy?: (post: SocialPostData) => void
+  onTokenClick?: (query: string) => void
 }
 
 // Animation variants
@@ -265,7 +266,7 @@ const itemVariants = {
   }
 }
 
-export function TrackerFeed({ onDeploy }: TrackerFeedProps) {
+export function TrackerFeed({ onDeploy, onTokenClick }: TrackerFeedProps) {
   const [posts] = useState<SocialPostData[]>(MOCK_POSTS)
   const [searchQuery, setSearchQuery] = useState('')
   const [isSearchFocused, setIsSearchFocused] = useState(false)
@@ -547,6 +548,7 @@ export function TrackerFeed({ onDeploy }: TrackerFeedProps) {
                 post={post}
                 index={index}
                 onDeploy={onDeploy}
+                onTokenClick={onTokenClick}
               />
             ))
           ) : (

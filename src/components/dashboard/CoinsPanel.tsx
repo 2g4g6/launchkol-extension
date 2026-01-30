@@ -761,6 +761,11 @@ export function CoinsPanel({ solPrice }: CoinsPanelProps) {
     setSearchModalOpen(true);
   };
 
+  const handleTokenClick = (query: string) => {
+    setSearchModalQuery(query);
+    setSearchModalOpen(true);
+  };
+
   const togglePlatformFilter = (id: PlatformFilter) => {
     if (id === "all") {
       setPlatformFilters(new Set(["all"]));
@@ -896,6 +901,7 @@ export function CoinsPanel({ solPrice }: CoinsPanelProps) {
             onDevPanel={handleDevPanel}
             onRelaunch={handleRelaunch}
             onSearchToken={handleSearchToken}
+            onTokenClick={handleTokenClick}
           />
         ))
       ) : (

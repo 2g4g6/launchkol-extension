@@ -6,9 +6,10 @@ interface SourceTweetPopoverProps {
   twitterUrl?: string
   tweetLabel: string
   highlights?: TextHighlight[]
+  onTokenClick?: (query: string) => void
 }
 
-export function SourceTweetPopoverContent({ sourceTweet, twitterUrl, tweetLabel, highlights }: SourceTweetPopoverProps) {
+export function SourceTweetPopoverContent({ sourceTweet, twitterUrl, tweetLabel, highlights, onTokenClick }: SourceTweetPopoverProps) {
   if (!sourceTweet) {
     return (
       <div className="p-3">
@@ -27,7 +28,7 @@ export function SourceTweetPopoverContent({ sourceTweet, twitterUrl, tweetLabel,
 
   return (
     <div className="max-h-[400px] overflow-y-auto scrollbar-styled">
-      <SocialPost post={sourceTweet} index={0} flat highlights={highlights} />
+      <SocialPost post={sourceTweet} index={0} flat highlights={highlights} onTokenClick={onTokenClick} />
     </div>
   )
 }

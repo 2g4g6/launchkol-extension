@@ -90,9 +90,10 @@ interface SocialPostProps {
   onDeploy?: (post: SocialPostData) => void;
   flat?: boolean;
   highlights?: TextHighlight[];
+  onTokenClick?: (query: string) => void;
 }
 
-export function SocialPost({ post, index, onDeploy, flat, highlights }: SocialPostProps) {
+export function SocialPost({ post, index, onDeploy, flat, highlights, onTokenClick }: SocialPostProps) {
   const [lightboxMedia, setLightboxMedia] = useState<LightboxMedia[]>([]);
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
@@ -158,30 +159,48 @@ export function SocialPost({ post, index, onDeploy, flat, highlights }: SocialPo
             </a>
           );
         }
-        case 'ticker':
+        case 'ticker': {
+          const tickerColor = seg.color || '#f59e0b';
           return (
             <span
               key={i}
-              className="font-semibold"
-              style={{ color: seg.color || '#f59e0b' }}
-            >
-              {seg.text}
-            </span>
-          );
-        case 'ca':
-          return (
-            <span
-              key={i}
-              className="cursor-pointer hover:opacity-80 transition-opacity"
-              style={{ color: seg.color || '#8b5cf6' }}
+              className="font-semibold rounded px-0.5 cursor-pointer hover:opacity-80 transition-opacity inline-block"
+              style={{
+                color: tickerColor,
+                border: `1px solid ${tickerColor}40`,
+              }}
               onClick={(e) => {
                 e.stopPropagation();
-                navigator.clipboard.writeText(seg.text);
+                onTokenClick?.(seg.text);
               }}
             >
               {seg.text}
             </span>
           );
+        }
+        case 'ca': {
+          const caColor = seg.color || '#8b5cf6';
+          const truncatedCA = seg.text.length > 12
+            ? `${seg.text.slice(0, 6)}...${seg.text.slice(-4)}`
+            : seg.text;
+          return (
+            <span
+              key={i}
+              className="rounded px-0.5 cursor-pointer hover:opacity-80 transition-opacity inline-block"
+              style={{
+                color: caColor,
+                border: `1px solid ${caColor}40`,
+              }}
+              title={seg.text}
+              onClick={(e) => {
+                e.stopPropagation();
+                onTokenClick?.(seg.text);
+              }}
+            >
+              {truncatedCA}
+            </span>
+          );
+        }
         case 'search': {
           const color = seg.color || '#f59e0b';
           return (

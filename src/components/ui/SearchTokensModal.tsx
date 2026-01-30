@@ -1131,6 +1131,10 @@ export function SearchTokensModal({
                               index={index}
                               flat={false}
                               highlights={searchHighlights}
+                              onTokenClick={(query) => {
+                                setSearchQuery(query)
+                                inputRef.current?.focus()
+                              }}
                             />
                           ))}
                         </div>
@@ -1157,6 +1161,10 @@ export function SearchTokensModal({
                           index={index}
                           flat={false}
                           highlights={searchHighlights}
+                          onTokenClick={(query) => {
+                            setSearchQuery(query)
+                            inputRef.current?.focus()
+                          }}
                         />
                       ))}
                     </div>

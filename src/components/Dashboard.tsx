@@ -46,6 +46,7 @@ export function Dashboard({ user, onSignOut }: DashboardProps) {
   const [isDepositModalOpen, setIsDepositModalOpen] = useState(false)
   const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false)
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false)
+  const [searchModalQuery, setSearchModalQuery] = useState('')
   const [isCoinsOpen, setIsCoinsOpen] = useState(true)
 
   // Simulated balance & price fetch
@@ -249,8 +250,12 @@ export function Dashboard({ user, onSignOut }: DashboardProps) {
       {/* Search Tokens Modal */}
       <SearchTokensModal
         isOpen={isSearchModalOpen}
-        onClose={() => setIsSearchModalOpen(false)}
+        onClose={() => {
+          setIsSearchModalOpen(false)
+          setSearchModalQuery('')
+        }}
         onSelectToken={handleSelectToken}
+        initialQuery={searchModalQuery}
         onManageToken={(token) => {
           console.log('Manage token:', token)
         }}
@@ -264,7 +269,10 @@ export function Dashboard({ user, onSignOut }: DashboardProps) {
       <div className="flex-1 min-h-0 overflow-hidden relative z-10 flex flex-col lg:flex-row lg:gap-3 lg:p-3">
         {/* Feed - takes most space */}
         <div className="flex-1 min-h-0 min-w-0 overflow-hidden">
-          <TrackerFeed onDeploy={handleDeploy} />
+          <TrackerFeed onDeploy={handleDeploy} onTokenClick={(query) => {
+            setSearchModalQuery(query)
+            setIsSearchModalOpen(true)
+          }} />
         </div>
 
         {/* Coins Panel - sidebar on lg (resizable width), bottom on smaller (resizable height) */}
