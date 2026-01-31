@@ -48,10 +48,14 @@ const sizeConfig = {
   },
 }
 
-// Calculate expanded width based on label length and size
+// Calculate expanded width: padding (both sides) + icon + gap + label
 const getExpandedWidth = (label: string, size: ExpandableButtonSize) => {
+  const padding = size === 'large' ? 20 : 16  // px-2.5 or px-2 (both sides)
+  const iconWidth = size === 'large' ? 18 : 14
+  const gap = size === 'large' ? 10 : 8       // gap-2.5 or gap-2
   const config = sizeConfig[size]
-  return Math.max(size === 'large' ? 72 : 60, config.baseWidth + label.length * config.charWidth + 12)
+  const labelWidth = label.length * config.charWidth
+  return Math.ceil(padding + iconWidth + gap + labelWidth)
 }
 
 const variantStyles: Record<
@@ -144,15 +148,8 @@ export function ExpandableButton({
         disabled={disabled}
         whileTap={disabled ? undefined : { scale: 0.97 }}
       >
-        <motion.div
-          className="flex items-center"
-          animate={{
-            gap: isExpanded ? (size === 'large' ? 8 : 6) : 0,
-            paddingLeft: isExpanded ? (size === 'large' ? 10 : 8) : 0,
-            paddingRight: isExpanded ? (size === 'large' ? 10 : 8) : 0,
-          }}
-          transition={transition}
-        >
+        <div className={`flex items-center ${isExpanded ? (size === 'large' ? 'gap-2.5 px-2.5' : 'gap-2 px-2') : 'gap-0'}`}>
+
           {/* Icon */}
           <motion.i
             className={`${icon} ${config.iconSize} flex-shrink-0`}
@@ -180,7 +177,7 @@ export function ExpandableButton({
           >
             {label}
           </motion.span>
-        </motion.div>
+        </div>
       </motion.button>
     </Tooltip>
   )
