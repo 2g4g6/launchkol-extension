@@ -131,7 +131,7 @@ export function KeywordRow({ keyword, onChange, onDelete, disabled }: KeywordRow
             onClick={onDelete}
             className="w-6 h-6 max-sm:w-9 max-sm:h-9 rounded flex items-center justify-center text-kol-text-muted hover:text-kol-red hover:bg-kol-red/10 transition-colors"
           >
-            <i className="ri-delete-bin-line text-sm" />
+            <i className="ri-close-line text-sm" />
           </button>
         </Tooltip>
       </div>
