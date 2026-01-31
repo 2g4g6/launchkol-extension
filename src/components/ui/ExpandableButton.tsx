@@ -111,12 +111,10 @@ export function ExpandableButton({
           ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
           ${className}
         `}
-        style={{
-          width: isExpanded ? 'auto' : config.collapsedWidth,
-          minWidth: config.collapsedWidth,
-        }}
+        style={{ minWidth: config.collapsedWidth }}
         initial={false}
         animate={{
+          width: isExpanded ? 'auto' : config.collapsedWidth,
           backgroundColor: toggled
             ? 'rgba(0, 196, 107, 0.12)'
             : isExpanded
