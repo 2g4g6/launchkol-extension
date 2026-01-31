@@ -741,7 +741,7 @@ export function SocialPost({ post, index, onDeploy, flat, highlights, onTokenCli
         <div className="flex items-center border-t border-kol-border/40 h-9">
           {/* Left actions - Hide & Notify */}
           <div className="flex items-center h-full">
-            <Tooltip content="Hide" position="top">
+            <Tooltip content={`Hide @${post.author.handle}`} position="top">
               <button
                 onClick={handleHide}
                 className="flex items-center justify-center w-9 h-full text-gray-400 hover:text-white hover:bg-kol-surface/60 transition-all duration-200"
