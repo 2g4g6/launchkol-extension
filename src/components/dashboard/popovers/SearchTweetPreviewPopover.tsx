@@ -19,7 +19,7 @@ export function SearchTweetPreviewPopoverContent({ symbol, searchTweets, onSearc
           </div>
           <div
             className="absolute inset-0 rounded-xl opacity-40 blur-lg -z-10"
-            style={{ background: 'radial-gradient(circle, rgba(0, 123, 255, 0.2) 0%, transparent 70%)' }}
+            style={{ background: 'radial-gradient(circle, color-mix(in srgb, var(--kol-blue) 20%, transparent) 0%, transparent 70%)' }}
           />
         </div>
         <span className="text-sm font-medium text-white mb-0.5">No tweets yet</span>

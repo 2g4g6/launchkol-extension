@@ -50,7 +50,7 @@ export function Logo({ size = 'md', showText = true, animated = true }: LogoProp
         <div
           className="absolute inset-0 blur-xl opacity-40"
           style={{
-            background: 'radial-gradient(circle, rgba(0, 123, 255, 0.6) 0%, transparent 70%)',
+            background: 'radial-gradient(circle, var(--kol-blue-glow) 0%, transparent 70%)',
             transform: 'scale(1.5)',
           }}
         />
@@ -64,7 +64,7 @@ export function Logo({ size = 'md', showText = true, animated = true }: LogoProp
           xmlns="http://www.w3.org/2000/svg"
           className="relative z-10"
           style={{
-            filter: 'drop-shadow(0 0 8px rgba(0, 123, 255, 0.3))',
+            filter: 'drop-shadow(0 0 8px var(--kol-blue-glow))',
             shapeRendering: 'geometricPrecision',
             fillRule: 'evenodd',
             clipRule: 'evenodd',

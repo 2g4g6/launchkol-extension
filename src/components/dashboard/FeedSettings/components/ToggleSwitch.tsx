@@ -30,7 +30,7 @@ export function ToggleSwitch({ enabled, onChange, disabled }: ToggleSwitchProps)
         relative rounded-full transition-all duration-200
         w-10 h-[22px] max-sm:w-12 max-sm:h-7
         ${enabled
-          ? 'bg-kol-blue shadow-[0_0_8px_rgba(0,123,255,0.4)]'
+          ? 'bg-kol-blue toggle-glow'
           : 'bg-kol-border'
         }
         ${disabled ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'}

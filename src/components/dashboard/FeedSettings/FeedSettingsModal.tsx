@@ -760,7 +760,7 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                       isAccountSearchFocused ? 'opacity-100' : 'opacity-0'
                     }`}
                     style={{
-                      background: 'radial-gradient(circle at 50% 50%, rgba(0, 123, 255, 0.15) 0%, transparent 70%)',
+                      background: 'radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--kol-blue) 15%, transparent) 0%, transparent 70%)',
                     }}
                   />
                   <i className={`ri-search-line absolute left-2.5 top-1/2 -translate-y-1/2 text-sm transition-colors duration-200 ${
@@ -796,7 +796,7 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                           <div
                             className="absolute inset-0 rounded-2xl opacity-50 blur-xl -z-10"
                             style={{
-                              background: 'radial-gradient(circle, rgba(0, 123, 255, 0.15) 0%, transparent 70%)',
+                              background: 'radial-gradient(circle, color-mix(in srgb, var(--kol-blue) 15%, transparent) 0%, transparent 70%)',
                             }}
                           />
                           <motion.div
@@ -1125,7 +1125,7 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                         isNewAccountFocused ? 'opacity-100' : 'opacity-0'
                       }`}
                       style={{
-                        background: 'radial-gradient(circle at 30% 50%, rgba(0, 123, 255, 0.15) 0%, transparent 70%)',
+                        background: 'radial-gradient(circle at 30% 50%, color-mix(in srgb, var(--kol-blue) 15%, transparent) 0%, transparent 70%)',
                       }}
                     />
                     <input
@@ -1148,7 +1148,7 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                       className={`
                         px-4 max-sm:px-5 h-9 max-sm:h-11 rounded-lg text-xs font-medium transition-all
                         ${newAccountHandle.trim()
-                          ? 'bg-kol-blue hover:bg-kol-blue-hover text-white shadow-[0_0_12px_rgba(0,123,255,0.3)]'
+                          ? 'bg-kol-blue hover:bg-kol-blue-hover text-white glow-blue'
                           : 'bg-kol-surface border border-kol-border/50 text-kol-text-muted cursor-not-allowed'
                         }
                       `}

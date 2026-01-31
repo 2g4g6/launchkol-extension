@@ -923,7 +923,7 @@ export function CoinsPanel({ solPrice }: CoinsPanelProps) {
               className="absolute inset-0 rounded-2xl opacity-50 blur-xl -z-10"
               style={{
                 background:
-                  "radial-gradient(circle, rgba(0, 123, 255, 0.15) 0%, transparent 70%)",
+                  "radial-gradient(circle, color-mix(in srgb, var(--kol-blue) 15%, transparent) 0%, transparent 70%)",
               }}
             />
             {!searchQuery && (

@@ -2,6 +2,26 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --kol-bg: #0a0a0a;
+  --kol-surface: #101010;
+  --kol-surface-elevated: #1a1a1a;
+  --kol-border: #2a2a2a;
+  --kol-border-hover: #3a3a3a;
+  --kol-blue: #007bff;
+  --kol-blue-hover: #3390ff;
+  --kol-blue-glow: rgba(0, 123, 255, 0.4);
+  --kol-green: #00c46b;
+  --kol-green-light: #4ade80;
+  --kol-red: #ff4d4f;
+  --kol-text: #ffffff;
+  --kol-text-secondary: #cfcfcf;
+  --kol-text-tertiary: #999999;
+  --kol-text-muted: #888888;
+  --font-display: "Clash Display";
+  --font-body: "Satoshi";
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -14,9 +34,9 @@ html, body, #root {
 }
 
 body {
-  font-family: 'Satoshi', system-ui, sans-serif;
-  background: #0a0a0a;
-  color: #ffffff;
+  font-family: var(--font-body), system-ui, sans-serif;
+  background: var(--kol-bg);
+  color: var(--kol-text);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -89,8 +109,8 @@ body {
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus {
-  -webkit-text-fill-color: #cfcfcf;
-  -webkit-box-shadow: 0 0 0px 1000px #1a1a1a inset;
+  -webkit-text-fill-color: var(--kol-text-secondary);
+  -webkit-box-shadow: 0 0 0px 1000px var(--kol-surface-elevated) inset;
   transition: background-color 5000s ease-in-out 0s;
 }
 
@@ -101,8 +121,8 @@ input:-webkit-autofill:focus {
 
 /* Custom selection color */
 ::selection {
-  background: rgba(0, 123, 255, 0.3);
-  color: #ffffff;
+  background: var(--kol-blue-glow);
+  color: var(--kol-text);
 }
 
 /* Subtle noise texture overlay - adds film grain quality */
@@ -120,7 +140,7 @@ input:-webkit-autofill:focus {
 
 /* Glass morphism effect */
 .glass {
-  background: rgba(26, 26, 26, 0.8);
+  background: color-mix(in srgb, var(--kol-surface-elevated) 80%, transparent);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
 }
@@ -136,7 +156,7 @@ input:-webkit-autofill:focus {
   inset: 0;
   padding: 1px;
   border-radius: inherit;
-  background: linear-gradient(135deg, rgba(0, 123, 255, 0.5), rgba(0, 196, 107, 0.3), rgba(0, 123, 255, 0.1));
+  background: linear-gradient(135deg, var(--kol-blue-glow), rgba(0, 196, 107, 0.3), color-mix(in srgb, var(--kol-blue) 10%, transparent));
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
@@ -164,13 +184,18 @@ input:-webkit-autofill:focus {
 
 /* Glow effects */
 .glow-blue {
-  box-shadow: 0 0 20px rgba(0, 123, 255, 0.3),
-              0 0 40px rgba(0, 123, 255, 0.1);
+  box-shadow: 0 0 20px var(--kol-blue-glow),
+              0 0 40px color-mix(in srgb, var(--kol-blue) 10%, transparent);
 }
 
 .glow-blue-hover:hover {
-  box-shadow: 0 0 30px rgba(0, 123, 255, 0.4),
-              0 0 60px rgba(0, 123, 255, 0.2);
+  box-shadow: 0 0 30px var(--kol-blue-glow),
+              0 0 60px color-mix(in srgb, var(--kol-blue) 20%, transparent);
+}
+
+/* Toggle glow - used on toggle switches */
+.toggle-glow {
+  box-shadow: 0 0 8px var(--kol-blue-glow);
 }
 
 /* Shimmer effect for loading states */

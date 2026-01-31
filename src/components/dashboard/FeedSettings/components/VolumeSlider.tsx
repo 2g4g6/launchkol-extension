@@ -17,11 +17,11 @@ export function VolumeSlider({ value, onChange }: VolumeSliderProps) {
           [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3
           max-sm:[&::-webkit-slider-thumb]:w-5 max-sm:[&::-webkit-slider-thumb]:h-5
           [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-kol-blue [&::-webkit-slider-thumb]:cursor-pointer
-          [&::-webkit-slider-thumb]:shadow-[0_0_6px_rgba(0,123,255,0.4)]
+          [&::-webkit-slider-thumb]:shadow-[0_0_6px_var(--kol-blue-glow)]
           [&::-moz-range-thumb]:w-3 [&::-moz-range-thumb]:h-3 max-sm:[&::-moz-range-thumb]:w-5 max-sm:[&::-moz-range-thumb]:h-5
           [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-kol-blue [&::-moz-range-thumb]:border-0"
         style={{
-          background: `linear-gradient(to right, #007bff ${value}%, #1a1a1a ${value}%)`
+          background: `linear-gradient(to right, var(--kol-blue) ${value}%, var(--kol-surface-elevated) ${value}%)`
         }}
       />
       <span className="text-xs max-sm:text-sm text-kol-text-muted w-8 text-right">{value}%</span>
