@@ -495,8 +495,8 @@ function QuickLinks({ coin, onSearchToken, solPrice, onTokenClick }: { coin: Coi
         </button>
       </QuickLinkPopover>
 
-      {/* Platform logo - hover popover with creator info */}
-      <QuickLinkPopover
+      {/* Platform logo - hover popover with creator info (hidden when website exists) */}
+      {!coin.websiteUrl && <QuickLinkPopover
         width={280}
         triggerMode="hover"
         content={
@@ -524,7 +524,7 @@ function QuickLinks({ coin, onSearchToken, solPrice, onTokenClick }: { coin: Coi
         >
           <img src={platformConfig.logo} alt={platformConfig.name} className="w-5 h-5 object-contain" />
         </a>
-      </QuickLinkPopover>
+      </QuickLinkPopover>}
 
       {/* Axiom icon - hover popover with token security stats */}
       {coin.axiomUrl && (
