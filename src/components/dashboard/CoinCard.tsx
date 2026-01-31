@@ -604,61 +604,62 @@ export function CoinCard({ coin, index, solPrice, onView, onDevPanel, onRelaunch
         className="relative bg-kol-surface border border-kol-border rounded-lg hover:bg-kol-surface-elevated hover:border-kol-border-hover transition-colors duration-200 cursor-pointer overflow-hidden"
         onClick={() => onView(coin)}
       >
-        {/* MAIN CONTENT - 3 column layout */}
-        <div className="flex items-start gap-3 p-3">
+        {/* MAIN CONTENT - Header row with stretch for corner button */}
+        <div className="flex items-stretch">
+          {/* Left: Image + Info with padding */}
+          <div className="flex items-start gap-3 p-3 flex-1 min-w-0">
 
-          {/* LEFT: Image + Address */}
-          <div className="flex flex-col items-center gap-2 flex-shrink-0">
-            <TokenImage
-              image={coin.image}
-              symbol={coin.symbol}
-              platform={coin.platform}
-            />
-            <CompactContractAddress address={coin.address} />
-          </div>
-
-          {/* MIDDLE: Token Info */}
-          <div className="flex-1 min-w-0 flex flex-col gap-1 pt-0.5">
-            {/* Row 1: Ticker (white) + Name (grey) with copy */}
-            <div className="flex items-center gap-1.5">
-              <span className="text-[16px] font-medium text-white truncate tracking-[-0.02em]">
-                {coin.symbol}
-              </span>
-              <Tooltip content={`${coin.name} (click to copy)`} position="top">
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    navigator.clipboard.writeText(coin.name)
-                  }}
-                  className="flex items-center gap-1 text-[16px] font-medium text-kol-text-muted hover:text-kol-blue-hover transition-colors min-w-0"
-                >
-                  <span className="truncate">{coin.name}</span>
-                  <i className="ri-file-copy-line text-[14px]" />
-                </button>
-              </Tooltip>
+            {/* LEFT: Image + Address */}
+            <div className="flex flex-col items-center gap-2 flex-shrink-0">
+              <TokenImage
+                image={coin.image}
+                symbol={coin.symbol}
+                platform={coin.platform}
+              />
+              <CompactContractAddress address={coin.address} />
             </div>
 
-            {/* Row 2: Time + Quick Links */}
-            <div className="flex items-center gap-3">
-              <TimeBadge date={coin.launchedAt} />
-              <QuickLinks coin={coin} onSearchToken={onSearchToken} solPrice={solPrice} onTokenClick={onTokenClick} />
+            {/* MIDDLE: Token Info */}
+            <div className="flex-1 min-w-0 flex flex-col gap-1 pt-0.5">
+              {/* Row 1: Ticker (white) + Name (grey) with copy */}
+              <div className="flex items-center gap-1.5">
+                <span className="text-[16px] font-medium text-white truncate tracking-[-0.02em]">
+                  {coin.symbol}
+                </span>
+                <Tooltip content={`${coin.name} (click to copy)`} position="top">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      navigator.clipboard.writeText(coin.name)
+                    }}
+                    className="flex items-center gap-1 text-[16px] font-medium text-kol-text-muted hover:text-kol-blue-hover transition-colors min-w-0"
+                  >
+                    <span className="truncate">{coin.name}</span>
+                    <i className="ri-file-copy-line text-[14px]" />
+                  </button>
+                </Tooltip>
+              </div>
+
+              {/* Row 2: Time + Quick Links */}
+              <div className="flex items-center gap-3">
+                <TimeBadge date={coin.launchedAt} />
+                <QuickLinks coin={coin} onSearchToken={onSearchToken} solPrice={solPrice} onTokenClick={onTokenClick} />
+              </div>
             </div>
           </div>
 
-          {/* RIGHT: Action Buttons */}
-          <div className="flex items-center flex-shrink-0">
-            <motion.button
-              onClick={(e) => {
-                e.stopPropagation()
-                onDevPanel?.(coin)
-              }}
-              className="flex items-center justify-center gap-2 px-8 py-4 rounded-tr-xl border-l border-kol-border/40 bg-kol-blue hover:bg-kol-blue-hover text-white text-sm font-semibold transition-all duration-300"
-              whileTap={{ scale: 0.98 }}
-            >
-              <span>Manage</span>
-              <i className="ri-settings-3-line text-[16px]" />
-            </motion.button>
-          </div>
+          {/* RIGHT: Action Button - fills to card edge/corner */}
+          <motion.button
+            onClick={(e) => {
+              e.stopPropagation()
+              onDevPanel?.(coin)
+            }}
+            className="flex items-center justify-center gap-2 px-8 flex-shrink-0 border-l border-kol-border/40 bg-kol-blue hover:bg-kol-blue-hover text-white text-sm font-semibold transition-all duration-300"
+            whileTap={{ scale: 0.98 }}
+          >
+            <span>Manage</span>
+            <i className="ri-settings-3-line text-[16px]" />
+          </motion.button>
         </div>
 
         {/* TXN Stats Row - aligned with middle content */}
