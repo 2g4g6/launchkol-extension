@@ -25,6 +25,8 @@ export interface ExpandableButtonProps {
   tooltipOnly?: boolean
   /** When true, button stays expanded with an active/toggled-on appearance */
   active?: boolean
+  /** Show a small indicator dot in the given color (e.g. "#00c46b") */
+  indicatorColor?: string
 }
 
 const sizeConfig = {
@@ -92,6 +94,7 @@ export function ExpandableButton({
   className = '',
   tooltipOnly = false,
   active = false,
+  indicatorColor,
 }: ExpandableButtonProps) {
   const [isHovered, setIsHovered] = useState(false)
   const isSmall = useIsSmallScreen()
@@ -137,6 +140,14 @@ export function ExpandableButton({
         disabled={disabled}
         whileTap={disabled ? undefined : { scale: 0.97 }}
       >
+        {/* Indicator dot */}
+        {indicatorColor && (
+          <span
+            className="absolute top-1 right-1 w-[5px] h-[5px] rounded-full"
+            style={{ backgroundColor: indicatorColor }}
+          />
+        )}
+
         <div className={`flex items-center ${size === 'large' ? 'gap-2 px-2.5' : 'gap-1.5 px-2'}`}>
           {/* Icon */}
           <motion.i

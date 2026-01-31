@@ -264,14 +264,16 @@ export function Footer({
           label="Coins"
           variant="subtle"
           onClick={onToggleCoins}
-          className={isCoinsVisible ? '' : 'opacity-40'}
+          indicatorColor={isCoinsVisible ? '#00c46b' : undefined}
+          className={isCoinsVisible ? 'opacity-100' : 'opacity-40'}
         />
         <ExpandableButton
           icon="ri-rss-line"
           label="Feed"
           variant="subtle"
           onClick={onToggleFeed}
-          className={isFeedVisible ? '' : 'opacity-40'}
+          indicatorColor={isFeedVisible ? '#00c46b' : undefined}
+          className={isFeedVisible ? 'opacity-100' : 'opacity-40'}
         />
         <VerticalDivider />
         <ExpandableButton
