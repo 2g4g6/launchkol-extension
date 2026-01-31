@@ -642,36 +642,16 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                     </span>
                   </div>
                   <div className="space-y-3">
-                    <div className="py-1">
-                      <div className="flex items-center justify-between">
-                        <div className="flex-1">
-                          <p className="text-sm max-sm:text-base font-medium text-white flex items-center gap-1.5">
-                            <i className="ri-coin-line text-kol-text-muted" />
-                            Token Symbols
-                          </p>
-                          <p className="text-xs max-sm:text-sm text-kol-text-muted mt-0.5">Highlight tweets with $TOKEN mentions</p>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          {(globalSettings.filters?.filterTokenSymbols ?? false) && (
-                            <ColorPicker
-                              currentColor={globalSettings.filters?.tokenSymbolsColor ?? DEFAULT_TOKEN_SYMBOLS_COLOR}
-                              onSelect={(color) => setGlobalSettings({
-                                ...globalSettings,
-                                filters: buildFilters(globalSettings.filters, { tokenSymbolsColor: color }),
-                              })}
-                            />
-                          )}
-                          <ToggleSwitch
-                            enabled={globalSettings.filters?.filterTokenSymbols ?? false}
-                            onChange={(v) => setGlobalSettings({
-                              ...globalSettings,
-                              filters: buildFilters(globalSettings.filters, { filterTokenSymbols: v }),
-                            })}
-                          />
-                        </div>
+                    <div className="flex items-center justify-between py-1">
+                      <div className="flex-1">
+                        <p className="text-sm max-sm:text-base font-medium text-white flex items-center gap-1.5">
+                          <i className="ri-coin-line text-kol-text-muted" />
+                          Token Symbols
+                        </p>
+                        <p className="text-xs max-sm:text-sm text-kol-text-muted mt-0.5">Highlight tweets with $TOKEN mentions</p>
                       </div>
-                      {(globalSettings.filters?.filterTokenSymbols ?? false) && (
-                        <div className="flex items-center gap-1.5 mt-2 ml-6">
+                      <div className="flex items-center gap-1.5">
+                        {(globalSettings.filters?.filterTokenSymbols ?? false) && (<>
                           <Tooltip content="Desktop notification" position="top">
                             <button
                               onClick={() => {
@@ -729,39 +709,33 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                             }}
                             enabled={globalSettings.filters?.tokenSymbolsNotification?.sound ?? DEFAULT_TOKEN_SYMBOLS_NOTIFICATION.sound}
                           />
-                        </div>
-                      )}
-                    </div>
-                    <div className="py-1">
-                      <div className="flex items-center justify-between">
-                        <div className="flex-1">
-                          <p className="text-sm max-sm:text-base font-medium text-white flex items-center gap-1.5">
-                            <i className="ri-file-code-line text-kol-text-muted" />
-                            Mint Addresses
-                          </p>
-                          <p className="text-xs max-sm:text-sm text-kol-text-muted mt-0.5">Highlight tweets with contract addresses</p>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          {(globalSettings.filters?.filterMintAddresses ?? false) && (
-                            <ColorPicker
-                              currentColor={globalSettings.filters?.mintAddressesColor ?? DEFAULT_MINT_ADDRESSES_COLOR}
-                              onSelect={(color) => setGlobalSettings({
-                                ...globalSettings,
-                                filters: buildFilters(globalSettings.filters, { mintAddressesColor: color }),
-                              })}
-                            />
-                          )}
-                          <ToggleSwitch
-                            enabled={globalSettings.filters?.filterMintAddresses ?? false}
-                            onChange={(v) => setGlobalSettings({
+                          <ColorPicker
+                            currentColor={globalSettings.filters?.tokenSymbolsColor ?? DEFAULT_TOKEN_SYMBOLS_COLOR}
+                            onSelect={(color) => setGlobalSettings({
                               ...globalSettings,
-                              filters: buildFilters(globalSettings.filters, { filterMintAddresses: v }),
+                              filters: buildFilters(globalSettings.filters, { tokenSymbolsColor: color }),
                             })}
                           />
-                        </div>
+                        </>)}
+                        <ToggleSwitch
+                          enabled={globalSettings.filters?.filterTokenSymbols ?? false}
+                          onChange={(v) => setGlobalSettings({
+                            ...globalSettings,
+                            filters: buildFilters(globalSettings.filters, { filterTokenSymbols: v }),
+                          })}
+                        />
                       </div>
-                      {(globalSettings.filters?.filterMintAddresses ?? false) && (
-                        <div className="flex items-center gap-1.5 mt-2 ml-6">
+                    </div>
+                    <div className="flex items-center justify-between py-1">
+                      <div className="flex-1">
+                        <p className="text-sm max-sm:text-base font-medium text-white flex items-center gap-1.5">
+                          <i className="ri-file-code-line text-kol-text-muted" />
+                          Mint Addresses
+                        </p>
+                        <p className="text-xs max-sm:text-sm text-kol-text-muted mt-0.5">Highlight tweets with contract addresses</p>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        {(globalSettings.filters?.filterMintAddresses ?? false) && (<>
                           <Tooltip content="Desktop notification" position="top">
                             <button
                               onClick={() => {
@@ -819,8 +793,22 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                             }}
                             enabled={globalSettings.filters?.mintAddressesNotification?.sound ?? DEFAULT_MINT_ADDRESSES_NOTIFICATION.sound}
                           />
-                        </div>
-                      )}
+                          <ColorPicker
+                            currentColor={globalSettings.filters?.mintAddressesColor ?? DEFAULT_MINT_ADDRESSES_COLOR}
+                            onSelect={(color) => setGlobalSettings({
+                              ...globalSettings,
+                              filters: buildFilters(globalSettings.filters, { mintAddressesColor: color }),
+                            })}
+                          />
+                        </>)}
+                        <ToggleSwitch
+                          enabled={globalSettings.filters?.filterMintAddresses ?? false}
+                          onChange={(v) => setGlobalSettings({
+                            ...globalSettings,
+                            filters: buildFilters(globalSettings.filters, { filterMintAddresses: v }),
+                          })}
+                        />
+                      </div>
                     </div>
                     <KeywordInput
                       keywords={globalSettings.filters?.keywords ?? []}
@@ -1112,27 +1100,13 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                                       </div>
 
                                       <div className="space-y-2">
-                                        <div>
-                                          <div className="flex items-center justify-between">
-                                            <div className="flex items-center gap-1.5">
-                                              <i className="ri-coin-line text-kol-text-muted text-xs" />
-                                              <p className="text-xs font-medium text-white">Token Symbols</p>
-                                            </div>
-                                            <div className="flex items-center gap-2">
-                                              {(account.settings?.filters?.filterTokenSymbols ?? groupSettings.filters?.filterTokenSymbols ?? false) && (
-                                                <ColorPicker
-                                                  currentColor={account.settings?.filters?.tokenSymbolsColor ?? groupSettings.filters?.tokenSymbolsColor ?? DEFAULT_TOKEN_SYMBOLS_COLOR}
-                                                  onSelect={(color) => updateAccountFilters(selectedGroupId, account.id, buildFilters(account.settings?.filters, { tokenSymbolsColor: color }))}
-                                                />
-                                              )}
-                                              <ToggleSwitch
-                                                enabled={account.settings?.filters?.filterTokenSymbols ?? groupSettings.filters?.filterTokenSymbols ?? false}
-                                                onChange={(v) => updateAccountFilters(selectedGroupId, account.id, buildFilters(account.settings?.filters, { filterTokenSymbols: v }))}
-                                              />
-                                            </div>
+                                        <div className="flex items-center justify-between">
+                                          <div className="flex items-center gap-1.5">
+                                            <i className="ri-coin-line text-kol-text-muted text-xs" />
+                                            <p className="text-xs font-medium text-white">Token Symbols</p>
                                           </div>
-                                          {(account.settings?.filters?.filterTokenSymbols ?? groupSettings.filters?.filterTokenSymbols ?? false) && (
-                                            <div className="flex items-center gap-1.5 mt-1.5 ml-5">
+                                          <div className="flex items-center gap-1.5">
+                                            {(account.settings?.filters?.filterTokenSymbols ?? groupSettings.filters?.filterTokenSymbols ?? false) && (<>
                                               <Tooltip content="Desktop notification" position="top">
                                                 <button
                                                   onClick={() => {
@@ -1181,30 +1155,24 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                                                 }}
                                                 enabled={account.settings?.filters?.tokenSymbolsNotification?.sound ?? groupSettings.filters?.tokenSymbolsNotification?.sound ?? DEFAULT_TOKEN_SYMBOLS_NOTIFICATION.sound}
                                               />
-                                            </div>
-                                          )}
-                                        </div>
-                                        <div>
-                                          <div className="flex items-center justify-between">
-                                            <div className="flex items-center gap-1.5">
-                                              <i className="ri-file-code-line text-kol-text-muted text-xs" />
-                                              <p className="text-xs font-medium text-white">Mint Addresses</p>
-                                            </div>
-                                            <div className="flex items-center gap-2">
-                                              {(account.settings?.filters?.filterMintAddresses ?? groupSettings.filters?.filterMintAddresses ?? false) && (
-                                                <ColorPicker
-                                                  currentColor={account.settings?.filters?.mintAddressesColor ?? groupSettings.filters?.mintAddressesColor ?? DEFAULT_MINT_ADDRESSES_COLOR}
-                                                  onSelect={(color) => updateAccountFilters(selectedGroupId, account.id, buildFilters(account.settings?.filters, { mintAddressesColor: color }))}
-                                                />
-                                              )}
-                                              <ToggleSwitch
-                                                enabled={account.settings?.filters?.filterMintAddresses ?? groupSettings.filters?.filterMintAddresses ?? false}
-                                                onChange={(v) => updateAccountFilters(selectedGroupId, account.id, buildFilters(account.settings?.filters, { filterMintAddresses: v }))}
+                                              <ColorPicker
+                                                currentColor={account.settings?.filters?.tokenSymbolsColor ?? groupSettings.filters?.tokenSymbolsColor ?? DEFAULT_TOKEN_SYMBOLS_COLOR}
+                                                onSelect={(color) => updateAccountFilters(selectedGroupId, account.id, buildFilters(account.settings?.filters, { tokenSymbolsColor: color }))}
                                               />
-                                            </div>
+                                            </>)}
+                                            <ToggleSwitch
+                                              enabled={account.settings?.filters?.filterTokenSymbols ?? groupSettings.filters?.filterTokenSymbols ?? false}
+                                              onChange={(v) => updateAccountFilters(selectedGroupId, account.id, buildFilters(account.settings?.filters, { filterTokenSymbols: v }))}
+                                            />
                                           </div>
-                                          {(account.settings?.filters?.filterMintAddresses ?? groupSettings.filters?.filterMintAddresses ?? false) && (
-                                            <div className="flex items-center gap-1.5 mt-1.5 ml-5">
+                                        </div>
+                                        <div className="flex items-center justify-between">
+                                          <div className="flex items-center gap-1.5">
+                                            <i className="ri-file-code-line text-kol-text-muted text-xs" />
+                                            <p className="text-xs font-medium text-white">Mint Addresses</p>
+                                          </div>
+                                          <div className="flex items-center gap-1.5">
+                                            {(account.settings?.filters?.filterMintAddresses ?? groupSettings.filters?.filterMintAddresses ?? false) && (<>
                                               <Tooltip content="Desktop notification" position="top">
                                                 <button
                                                   onClick={() => {
@@ -1253,8 +1221,16 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                                                 }}
                                                 enabled={account.settings?.filters?.mintAddressesNotification?.sound ?? groupSettings.filters?.mintAddressesNotification?.sound ?? DEFAULT_MINT_ADDRESSES_NOTIFICATION.sound}
                                               />
-                                            </div>
-                                          )}
+                                              <ColorPicker
+                                                currentColor={account.settings?.filters?.mintAddressesColor ?? groupSettings.filters?.mintAddressesColor ?? DEFAULT_MINT_ADDRESSES_COLOR}
+                                                onSelect={(color) => updateAccountFilters(selectedGroupId, account.id, buildFilters(account.settings?.filters, { mintAddressesColor: color }))}
+                                              />
+                                            </>)}
+                                            <ToggleSwitch
+                                              enabled={account.settings?.filters?.filterMintAddresses ?? groupSettings.filters?.filterMintAddresses ?? false}
+                                              onChange={(v) => updateAccountFilters(selectedGroupId, account.id, buildFilters(account.settings?.filters, { filterMintAddresses: v }))}
+                                            />
+                                          </div>
                                         </div>
                                         <KeywordInput
                                           keywords={account.settings?.filters?.keywords ?? groupSettings.filters?.keywords ?? []}
@@ -1476,31 +1452,16 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                     </div>
 
                     <div className="space-y-3">
-                      <div className="py-1">
-                        <div className="flex items-center justify-between">
-                          <div className="flex-1">
-                            <p className="text-sm max-sm:text-base font-medium text-white flex items-center gap-1.5">
-                              <i className="ri-coin-line text-kol-text-muted" />
-                              Token Symbols
-                            </p>
-                            <p className="text-xs max-sm:text-sm text-kol-text-muted mt-0.5">Highlight tweets with $TOKEN mentions</p>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            {(displaySettings?.filters?.filterTokenSymbols ?? false) && !selectedGroup.settings.useGlobalSettings && (
-                              <ColorPicker
-                                currentColor={displaySettings?.filters?.tokenSymbolsColor ?? DEFAULT_TOKEN_SYMBOLS_COLOR}
-                                onSelect={(color) => updateGroupFilters(selectedGroupId, buildFilters(selectedGroup.settings.filters, { tokenSymbolsColor: color }))}
-                              />
-                            )}
-                            <ToggleSwitch
-                              enabled={displaySettings?.filters?.filterTokenSymbols ?? false}
-                              onChange={(v) => updateGroupFilters(selectedGroupId, buildFilters(selectedGroup.settings.filters, { filterTokenSymbols: v }))}
-                              disabled={selectedGroup.settings.useGlobalSettings}
-                            />
-                          </div>
+                      <div className="flex items-center justify-between py-1">
+                        <div className="flex-1">
+                          <p className="text-sm max-sm:text-base font-medium text-white flex items-center gap-1.5">
+                            <i className="ri-coin-line text-kol-text-muted" />
+                            Token Symbols
+                          </p>
+                          <p className="text-xs max-sm:text-sm text-kol-text-muted mt-0.5">Highlight tweets with $TOKEN mentions</p>
                         </div>
-                        {(displaySettings?.filters?.filterTokenSymbols ?? false) && !selectedGroup.settings.useGlobalSettings && (
-                          <div className="flex items-center gap-1.5 mt-2 ml-6">
+                        <div className="flex items-center gap-1.5">
+                          {(displaySettings?.filters?.filterTokenSymbols ?? false) && !selectedGroup.settings.useGlobalSettings && (<>
                             <Tooltip content="Desktop notification" position="top">
                               <button
                                 onClick={() => {
@@ -1549,34 +1510,28 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                               }}
                               enabled={displaySettings?.filters?.tokenSymbolsNotification?.sound ?? DEFAULT_TOKEN_SYMBOLS_NOTIFICATION.sound}
                             />
-                          </div>
-                        )}
-                      </div>
-                      <div className="py-1">
-                        <div className="flex items-center justify-between">
-                          <div className="flex-1">
-                            <p className="text-sm max-sm:text-base font-medium text-white flex items-center gap-1.5">
-                              <i className="ri-file-code-line text-kol-text-muted" />
-                              Mint Addresses
-                            </p>
-                            <p className="text-xs max-sm:text-sm text-kol-text-muted mt-0.5">Highlight tweets with contract addresses</p>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            {(displaySettings?.filters?.filterMintAddresses ?? false) && !selectedGroup.settings.useGlobalSettings && (
-                              <ColorPicker
-                                currentColor={displaySettings?.filters?.mintAddressesColor ?? DEFAULT_MINT_ADDRESSES_COLOR}
-                                onSelect={(color) => updateGroupFilters(selectedGroupId, buildFilters(selectedGroup.settings.filters, { mintAddressesColor: color }))}
-                              />
-                            )}
-                            <ToggleSwitch
-                              enabled={displaySettings?.filters?.filterMintAddresses ?? false}
-                              onChange={(v) => updateGroupFilters(selectedGroupId, buildFilters(selectedGroup.settings.filters, { filterMintAddresses: v }))}
-                              disabled={selectedGroup.settings.useGlobalSettings}
+                            <ColorPicker
+                              currentColor={displaySettings?.filters?.tokenSymbolsColor ?? DEFAULT_TOKEN_SYMBOLS_COLOR}
+                              onSelect={(color) => updateGroupFilters(selectedGroupId, buildFilters(selectedGroup.settings.filters, { tokenSymbolsColor: color }))}
                             />
-                          </div>
+                          </>)}
+                          <ToggleSwitch
+                            enabled={displaySettings?.filters?.filterTokenSymbols ?? false}
+                            onChange={(v) => updateGroupFilters(selectedGroupId, buildFilters(selectedGroup.settings.filters, { filterTokenSymbols: v }))}
+                            disabled={selectedGroup.settings.useGlobalSettings}
+                          />
                         </div>
-                        {(displaySettings?.filters?.filterMintAddresses ?? false) && !selectedGroup.settings.useGlobalSettings && (
-                          <div className="flex items-center gap-1.5 mt-2 ml-6">
+                      </div>
+                      <div className="flex items-center justify-between py-1">
+                        <div className="flex-1">
+                          <p className="text-sm max-sm:text-base font-medium text-white flex items-center gap-1.5">
+                            <i className="ri-file-code-line text-kol-text-muted" />
+                            Mint Addresses
+                          </p>
+                          <p className="text-xs max-sm:text-sm text-kol-text-muted mt-0.5">Highlight tweets with contract addresses</p>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          {(displaySettings?.filters?.filterMintAddresses ?? false) && !selectedGroup.settings.useGlobalSettings && (<>
                             <Tooltip content="Desktop notification" position="top">
                               <button
                                 onClick={() => {
@@ -1625,8 +1580,17 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                               }}
                               enabled={displaySettings?.filters?.mintAddressesNotification?.sound ?? DEFAULT_MINT_ADDRESSES_NOTIFICATION.sound}
                             />
-                          </div>
-                        )}
+                            <ColorPicker
+                              currentColor={displaySettings?.filters?.mintAddressesColor ?? DEFAULT_MINT_ADDRESSES_COLOR}
+                              onSelect={(color) => updateGroupFilters(selectedGroupId, buildFilters(selectedGroup.settings.filters, { mintAddressesColor: color }))}
+                            />
+                          </>)}
+                          <ToggleSwitch
+                            enabled={displaySettings?.filters?.filterMintAddresses ?? false}
+                            onChange={(v) => updateGroupFilters(selectedGroupId, buildFilters(selectedGroup.settings.filters, { filterMintAddresses: v }))}
+                            disabled={selectedGroup.settings.useGlobalSettings}
+                          />
+                        </div>
                       </div>
                       <KeywordInput
                         keywords={displaySettings?.filters?.keywords ?? []}
