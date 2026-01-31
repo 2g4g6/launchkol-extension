@@ -1,17 +1,20 @@
 import { useState } from 'react'
+import { motion } from 'framer-motion'
 
-function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) {
+function ToggleSwitch({ enabled, onChange }: { enabled: boolean; onChange: (v: boolean) => void }) {
   return (
     <button
-      onClick={() => onChange(!checked)}
-      className={`relative w-9 h-5 rounded-full transition-colors duration-200 ${
-        checked ? 'bg-kol-blue' : 'bg-kol-border'
+      onClick={() => onChange(!enabled)}
+      className={`relative rounded-full transition-all duration-200 w-10 h-[22px] flex-shrink-0 cursor-pointer ${
+        enabled
+          ? 'bg-kol-blue shadow-[0_0_8px_rgba(0,123,255,0.4)]'
+          : 'bg-kol-border'
       }`}
     >
-      <span
-        className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white transition-transform duration-200 ${
-          checked ? 'translate-x-4' : 'translate-x-0'
-        }`}
+      <motion.div
+        className="absolute w-4 h-4 rounded-full bg-white shadow-sm top-[3px]"
+        animate={{ left: enabled ? 21 : 3 }}
+        transition={{ type: 'spring', stiffness: 500, damping: 30 }}
       />
     </button>
   )
@@ -45,7 +48,7 @@ export function SoundCardContent() {
           <i className={`ri-volume-up-line text-base ${masterSound ? 'text-kol-blue' : 'text-kol-text-muted'}`} />
           <span className="text-sm text-white font-medium">Master Sound</span>
         </div>
-        <Toggle checked={masterSound} onChange={setMasterSound} />
+        <ToggleSwitch enabled={masterSound} onChange={setMasterSound} />
       </div>
 
       <div className="h-px bg-kol-border" />
@@ -58,7 +61,7 @@ export function SoundCardContent() {
               <i className={`${opt.icon} text-sm text-kol-text-muted`} />
               <span className="text-[13px] text-kol-text-muted">{opt.label}</span>
             </div>
-            <Toggle checked={sounds[opt.key]} onChange={() => toggleSound(opt.key)} />
+            <ToggleSwitch enabled={sounds[opt.key]} onChange={() => toggleSound(opt.key)} />
           </div>
         ))}
       </div>
