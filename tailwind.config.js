@@ -5,10 +5,10 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    screens: {
-      'xs': '480px',
-    },
     extend: {
+      screens: {
+        'xs': '480px',
+      },
       colors: {
         'usd1': '#EAAC08',
         'kol': {
