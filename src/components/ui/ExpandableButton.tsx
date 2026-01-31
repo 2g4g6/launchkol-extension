@@ -35,28 +35,15 @@ const sizeConfig = {
     height: 'h-7',
     iconSize: 'text-sm',
     labelSize: 'text-xs',
-    baseWidth: 32,
-    charWidth: 6.5,
   },
   large: {
     collapsedWidth: 36,
     height: 'h-9',
     iconSize: 'text-base',
     labelSize: 'text-sm',
-    baseWidth: 40,
-    charWidth: 7.5,
   },
 }
 
-// Calculate expanded width: padding (both sides) + icon + gap + label
-const getExpandedWidth = (label: string, size: ExpandableButtonSize) => {
-  const padding = size === 'large' ? 20 : 16  // px-2.5 or px-2 (both sides)
-  const iconWidth = size === 'large' ? 18 : 14
-  const gap = size === 'large' ? 10 : 8       // gap-2.5 or gap-2
-  const config = sizeConfig[size]
-  const labelWidth = label.length * config.charWidth
-  return Math.ceil(padding + iconWidth + gap + labelWidth)
-}
 
 const variantStyles: Record<
   ExpandableButtonVariant,
@@ -110,7 +97,6 @@ export function ExpandableButton({
 
   const styles = variantStyles[variant]
   const config = sizeConfig[size]
-  const expandedWidth = getExpandedWidth(label, size)
 
   const collapsed = isSmall || tooltipOnly
   const isExpanded = active || (!collapsed && isHovered)
@@ -125,9 +111,12 @@ export function ExpandableButton({
           ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
           ${className}
         `}
+        style={{
+          width: isExpanded ? 'auto' : config.collapsedWidth,
+          minWidth: config.collapsedWidth,
+        }}
         initial={false}
         animate={{
-          width: isExpanded ? expandedWidth : config.collapsedWidth,
           backgroundColor: toggled
             ? 'rgba(0, 196, 107, 0.12)'
             : isExpanded
@@ -148,12 +137,11 @@ export function ExpandableButton({
         disabled={disabled}
         whileTap={disabled ? undefined : { scale: 0.97 }}
       >
-        <div className={`flex items-center ${isExpanded ? (size === 'large' ? 'gap-2.5 px-2.5' : 'gap-2 px-2') : 'gap-0'}`}>
-
+        <div className={`flex items-center ${isExpanded ? (size === 'large' ? 'gap-2 px-2.5' : 'gap-1.5 px-2') : ''}`}>
           {/* Icon */}
-          <motion.i
+          <i
             className={`${icon} ${config.iconSize} flex-shrink-0`}
-            animate={{
+            style={{
               color: toggled
                 ? '#00c46b'
                 : isExpanded
@@ -162,21 +150,12 @@ export function ExpandableButton({
             }}
           />
 
-          {/* Label - fades in smoothly */}
-          <motion.span
-            className={`${config.labelSize} font-medium whitespace-nowrap ${styles.label}`}
-            initial={false}
-            animate={{
-              opacity: isExpanded ? 1 : 0,
-              width: isExpanded ? 'auto' : 0,
-            }}
-            transition={didBreakpointChange ? instantTransition : {
-              opacity: { duration: 0.15, delay: isExpanded ? 0.03 : 0 },
-              width: springTransition,
-            }}
-          >
-            {label}
-          </motion.span>
+          {/* Label - only rendered when expanded */}
+          {isExpanded && (
+            <span className={`${config.labelSize} font-medium whitespace-nowrap ${styles.label}`}>
+              {label}
+            </span>
+          )}
         </div>
       </motion.button>
     </Tooltip>
