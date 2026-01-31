@@ -16,24 +16,24 @@ function FeeInput({
   icon: React.ReactNode
 }) {
   return (
-    <div className="group flex h-[52px] flex-1 cursor-text flex-col items-center justify-center rounded-lg border border-kol-border transition-colors duration-150 focus-within:border-white/10 hover:border-white/10">
-      <div className="relative flex h-[28px] w-full flex-row items-center justify-center border-b border-kol-border bg-kol-border/50">
+    <div className="group flex h-[52px] flex-1 cursor-text flex-col items-center justify-center rounded-lg border border-kol-border/50 bg-kol-surface/50 backdrop-blur-sm transition-all duration-200 focus-within:border-kol-blue/50 hover:border-kol-border-hover">
+      <div className="relative flex h-[28px] w-full flex-row items-center justify-center border-b border-kol-border/30">
         <input
           placeholder={placeholder ?? '0.0'}
           type="text"
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="w-[calc(100%-20px)] bg-transparent px-3 text-center align-middle text-[14px] font-mono tabular-nums leading-[28px] text-white outline-none placeholder:text-kol-text-muted"
+          className="w-[calc(100%-20px)] bg-transparent px-2 text-center align-middle text-[13px] font-mono tabular-nums leading-[28px] text-white outline-none placeholder:text-kol-text-muted/50"
         />
         {suffix && (
-          <span className="pointer-events-none absolute right-0 w-5 text-[14px] text-kol-text-muted">
+          <span className="pointer-events-none absolute right-1 w-4 text-[12px] text-kol-text-muted">
             {suffix}
           </span>
         )}
       </div>
-      <div className="flex h-[24px] w-full flex-row items-center justify-center">
+      <div className="flex h-[24px] w-full flex-row items-center justify-center gap-1">
         {icon}
-        <span className="text-[12px] font-normal leading-4 text-kol-text-muted">{label}</span>
+        <span className="text-[10px] font-medium uppercase tracking-wider leading-4 text-kol-text-muted">{label}</span>
       </div>
     </div>
   )
@@ -47,68 +47,72 @@ export function FeesCardContent() {
   const [maxFee, setMaxFee] = useState('0.1')
 
   return (
-    <div className="flex flex-1 flex-col justify-start gap-4 p-4">
+    <div className="flex flex-col gap-3 p-3">
       {/* Three fee inputs in a row */}
-      <div className="flex w-full flex-row items-center justify-start gap-4">
+      <div className="flex w-full flex-row items-center gap-2">
         <FeeInput
           value={slippage}
           onChange={setSlippage}
           suffix="%"
-          label="SLIPPAGE"
+          label="Slippage"
           icon={
-            <img src="/images/slippage.svg" alt="Slippage" width={12} height={12} className="mr-1 opacity-60" />
+            <img src="/images/slippage.svg" alt="" width={11} height={11} className="opacity-50" />
           }
         />
         <FeeInput
           value={priority}
           onChange={setPriority}
-          label="PRIORITY"
+          label="Priority"
           icon={
-            <i className="ri-gas-station-line mr-1 text-[12px] text-kol-text-muted" />
+            <i className="ri-gas-station-line text-[11px] text-kol-text-muted" />
           }
         />
         <FeeInput
           value={bribe}
           onChange={setBribe}
-          label="BRIBE"
+          label="Bribe"
           icon={
-            <i className="ri-coin-line mr-1 text-[12px] text-kol-text-muted" />
+            <i className="ri-coin-line text-[11px] text-kol-text-muted" />
           }
         />
       </div>
 
       {/* Auto Fee + Max Fee row */}
-      <div className="flex h-8 w-full flex-row items-center justify-start gap-4">
-        <div className="flex h-8 w-full min-w-[100px] max-w-[100px] flex-row items-center justify-start">
-          <button
-            onClick={() => setAutoFee(!autoFee)}
-            className="inline-flex h-4 flex-row gap-2 items-center justify-start cursor-pointer"
+      <div className="flex h-8 w-full flex-row items-center gap-3">
+        <button
+          onClick={() => setAutoFee(!autoFee)}
+          className="flex items-center gap-2 flex-shrink-0 cursor-pointer group"
+        >
+          <div
+            className={`flex h-4 w-4 items-center justify-center rounded border transition-all duration-200 ${
+              autoFee
+                ? 'border-kol-blue bg-kol-blue/20'
+                : 'border-kol-border/70 hover:border-kol-border-hover'
+            }`}
           >
-            <div className="border border-kol-border flex h-4 w-4 flex-row items-center justify-center p-0.5 rounded cursor-pointer">
-              <div
-                className={`h-2.5 w-2.5 rounded-sm transition-colors duration-150 ${
-                  autoFee ? 'bg-kol-blue' : 'bg-transparent'
-                }`}
-              />
-            </div>
-            <span className="text-white text-[12px] text-nowrap font-medium">Auto Fee</span>
-          </button>
-        </div>
+            {autoFee && (
+              <i className="ri-check-line text-[10px] text-kol-blue" />
+            )}
+          </div>
+          <span className="text-[12px] font-medium text-kol-text-secondary whitespace-nowrap group-hover:text-white transition-colors">
+            Auto Fee
+          </span>
+        </button>
 
         <div
-          className={`relative overflow-hidden border-kol-border flex h-8 w-full flex-row items-center justify-start gap-2 border pl-3 font-normal rounded-full transition-colors duration-150 ${
+          className={`flex h-8 w-full flex-row items-center gap-2 rounded-lg border border-kol-border/50 bg-kol-surface/50 backdrop-blur-sm pl-3 pr-1 transition-all duration-200 ${
             autoFee
-              ? 'focus-within:border-white/10 focus-within:bg-kol-border/10 hover:border-white/10 hover:bg-kol-border/10'
-              : 'pointer-events-none cursor-not-allowed opacity-50'
+              ? 'focus-within:border-kol-blue/50 hover:border-kol-border-hover'
+              : 'pointer-events-none opacity-40'
           }`}
         >
-          <span className="flex-shrink-0 text-[14px] text-kol-text-muted font-medium">MAX FEE</span>
+          <span className="flex-shrink-0 text-[11px] text-kol-text-muted font-medium uppercase tracking-wider">Max Fee</span>
           <input
             placeholder="0.0"
             type="text"
             value={maxFee}
             onChange={(e) => setMaxFee(e.target.value)}
-            className="min-w-0 flex-1 text-[14px] font-mono tabular-nums text-white placeholder:text-kol-text-muted bg-transparent font-normal outline-none"
+            className="min-w-0 flex-1 text-[13px] font-mono tabular-nums text-white placeholder:text-kol-text-muted/50 bg-transparent outline-none text-right pr-1"
           />
         </div>
       </div>
