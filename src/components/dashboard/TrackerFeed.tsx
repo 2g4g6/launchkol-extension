@@ -435,13 +435,28 @@ export function TrackerFeed({ onDeploy, onTokenClick }: TrackerFeedProps) {
     <div className="relative flex flex-col h-full overflow-hidden">
       {/* Container for search and feed */}
       <div className="flex flex-col h-full lg:bg-kol-surface/50 lg:backdrop-blur-sm lg:border lg:border-kol-border/70 lg:rounded-xl overflow-hidden">
-        {/* Search Bar + Filters */}
+        {/* Filters + Search Bar */}
         <motion.div
           className="relative"
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
         >
+          {/* Tweet type filters & controls */}
+          <AnimatePresence>
+            {showFilters && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="overflow-hidden px-3 pt-3"
+              >
+                {renderFeedFilterRow()}
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           {/* Search input */}
           <div className={`flex h-12 items-center gap-2 px-3 border-b transition-colors duration-300 ${
             isSearchFocused ? 'border-kol-blue/50' : 'border-kol-border/50'
@@ -504,21 +519,6 @@ export function TrackerFeed({ onDeploy, onTokenClick }: TrackerFeedProps) {
               </Tooltip>
             </div>
           </div>
-
-          {/* Tweet type filters & controls */}
-          <AnimatePresence>
-            {showFilters && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 'auto', opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.2 }}
-                className="overflow-hidden px-3 py-2"
-              >
-                {renderFeedFilterRow()}
-              </motion.div>
-            )}
-          </AnimatePresence>
         </motion.div>
 
       {/* Feed Content */}

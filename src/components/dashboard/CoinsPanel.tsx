@@ -971,8 +971,23 @@ export function CoinsPanel({ solPrice }: CoinsPanelProps) {
         className="hidden lg:flex lg:flex-col h-full bg-kol-surface/50 backdrop-blur-sm border border-kol-border/70 rounded-xl overflow-hidden relative"
         style={{ width: DESKTOP_WIDTH }}
       >
-        {/* Header: search + filters container */}
+        {/* Header: filters + search container */}
         <div>
+          {/* Platform filters & sort */}
+          <AnimatePresence>
+            {showFilters && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="overflow-hidden px-3 pt-3"
+              >
+                {renderFilterRow()}
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           {/* Search bar */}
           <div className={`flex h-12 items-center gap-2 px-3 border-b transition-colors duration-300 ${
             isSearchFocused ? "border-kol-blue/50" : "border-kol-border/50"
@@ -1039,21 +1054,6 @@ export function CoinsPanel({ solPrice }: CoinsPanelProps) {
               </button>
             </div>
           </div>
-
-          {/* Platform filters & sort */}
-          <AnimatePresence>
-            {showFilters && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: "auto", opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.2 }}
-                className="overflow-hidden px-3 py-2"
-              >
-                {renderFilterRow()}
-              </motion.div>
-            )}
-          </AnimatePresence>
         </div>
 
         {/* Coins List */}
@@ -1076,8 +1076,23 @@ export function CoinsPanel({ solPrice }: CoinsPanelProps) {
           className="bg-kol-bg/80 backdrop-blur-sm flex flex-col overflow-hidden"
           style={{ height: panelHeight }}
         >
-          {/* Header: search + filters container - larger on mobile for better touch targets */}
+          {/* Header: filters + search container */}
           <div className="flex-shrink-0">
+            {/* Platform filters & sort */}
+            <AnimatePresence>
+              {showFilters && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="overflow-hidden px-3 pt-3"
+                >
+                  {renderFilterRow()}
+                </motion.div>
+              )}
+            </AnimatePresence>
+
             {/* Search bar */}
             <div className={`flex h-12 items-center gap-2 px-3 border-b transition-colors duration-300 ${
               isSearchFocused ? "border-kol-blue/50" : "border-kol-border/50"
@@ -1144,21 +1159,6 @@ export function CoinsPanel({ solPrice }: CoinsPanelProps) {
                 </button>
               </div>
             </div>
-
-            {/* Platform filters & sort */}
-            <AnimatePresence>
-              {showFilters && (
-                <motion.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: "auto", opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.2 }}
-                  className="overflow-hidden px-3 py-2"
-                >
-                  {renderFilterRow()}
-                </motion.div>
-              )}
-            </AnimatePresence>
           </div>
 
           {/* Coins List - vertical scroll */}
