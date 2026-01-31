@@ -94,7 +94,7 @@ export function ExpandableButton({
   className = '',
   tooltipOnly = false,
   active = false,
-  indicatorColor,
+  toggled = false,
 }: ExpandableButtonProps) {
   const [isHovered, setIsHovered] = useState(false)
   const isSmall = useIsSmallScreen()
@@ -124,12 +124,16 @@ export function ExpandableButton({
         initial={false}
         animate={{
           width: isExpanded ? expandedWidth : config.collapsedWidth,
-          backgroundColor: isExpanded
-            ? (variant === 'primary' ? 'rgba(0, 123, 255, 0.2)' : 'rgba(255, 255, 255, 0.05)')
-            : (variant === 'primary' ? 'rgba(0, 123, 255, 0.1)' : 'transparent'),
-          borderColor: isExpanded
-            ? (variant === 'primary' ? 'rgba(0, 123, 255, 0.4)' : 'rgba(255, 255, 255, 0.1)')
-            : (variant === 'primary' ? 'rgba(0, 123, 255, 0.2)' : 'transparent'),
+          backgroundColor: toggled
+            ? 'rgba(0, 196, 107, 0.12)'
+            : isExpanded
+              ? (variant === 'primary' ? 'rgba(0, 123, 255, 0.2)' : 'rgba(255, 255, 255, 0.05)')
+              : (variant === 'primary' ? 'rgba(0, 123, 255, 0.1)' : 'transparent'),
+          borderColor: toggled
+            ? 'rgba(0, 196, 107, 0.25)'
+            : isExpanded
+              ? (variant === 'primary' ? 'rgba(0, 123, 255, 0.4)' : 'rgba(255, 255, 255, 0.1)')
+              : (variant === 'primary' ? 'rgba(0, 123, 255, 0.2)' : 'transparent'),
         }}
         transition={transition}
         onMouseEnter={() => !disabled && setIsHovered(true)}
@@ -140,14 +144,6 @@ export function ExpandableButton({
         disabled={disabled}
         whileTap={disabled ? undefined : { scale: 0.97 }}
       >
-        {/* Indicator dot */}
-        {indicatorColor && (
-          <span
-            className="absolute top-1 right-1 w-[5px] h-[5px] rounded-full"
-            style={{ backgroundColor: indicatorColor }}
-          />
-        )}
-
         <motion.div
           className={`flex items-center ${size === 'large' ? 'gap-2' : 'gap-1.5'}`}
           animate={{ paddingLeft: isExpanded ? (size === 'large' ? 10 : 8) : 0, paddingRight: isExpanded ? (size === 'large' ? 10 : 8) : 0 }}
@@ -157,12 +153,11 @@ export function ExpandableButton({
           <motion.i
             className={`${icon} ${config.iconSize} flex-shrink-0`}
             animate={{
-              color: isExpanded ? styles.iconExpanded : styles.icon,
-            }}
-            style={{
-              color: isExpanded
-                ? (variant === 'primary' ? '#007bff' : '#ffffff')
-                : (variant === 'primary' ? '#007bff' : '#888888'),
+              color: toggled
+                ? '#00c46b'
+                : isExpanded
+                  ? (variant === 'primary' ? '#007bff' : '#ffffff')
+                  : (variant === 'primary' ? '#007bff' : '#888888'),
             }}
           />
 
