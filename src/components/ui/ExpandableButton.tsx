@@ -129,12 +129,12 @@ export function ExpandableButton({
         animate={{
           width: isExpanded ? expandedWidth : config.collapsedWidth,
           backgroundColor: toggled
-            ? 'rgba(0, 196, 107, 0.12)'
+            ? 'rgba(255, 255, 255, 0.06)'
             : isExpanded
               ? (variant === 'primary' ? 'rgba(0, 123, 255, 0.2)' : 'rgba(255, 255, 255, 0.05)')
               : (variant === 'primary' ? 'rgba(0, 123, 255, 0.1)' : 'transparent'),
           borderColor: toggled
-            ? 'rgba(0, 196, 107, 0.25)'
+            ? 'rgba(255, 255, 255, 0.08)'
             : isExpanded
               ? (variant === 'primary' ? 'rgba(0, 123, 255, 0.4)' : 'rgba(255, 255, 255, 0.1)')
               : (variant === 'primary' ? 'rgba(0, 123, 255, 0.2)' : 'transparent'),
@@ -154,7 +154,7 @@ export function ExpandableButton({
             className={`${icon} ${config.iconSize} flex-shrink-0`}
             style={{
               color: toggled
-                ? '#00c46b'
+                ? '#ffffff'
                 : isExpanded
                   ? (variant === 'primary' ? '#007bff' : '#ffffff')
                   : (variant === 'primary' ? '#007bff' : '#888888'),
