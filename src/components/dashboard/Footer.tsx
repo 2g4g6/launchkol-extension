@@ -241,37 +241,34 @@ export function Footer({
       {/* Right section */}
       <div className="flex items-center gap-0.5 justify-self-end col-start-3">
         <QuickLinkPopover triggerMode="click" width={300} content={<FeesCardContent />}>
-          <ExpandableButton icon="ri-percent-line" label="Fees" variant="subtle" tooltipOnly />
+          <ExpandableButton icon="ri-percent-line" label="Fees" variant="subtle" />
         </QuickLinkPopover>
         <QuickLinkPopover triggerMode="click" width={260} content={<SoundCardContent />}>
-          <ExpandableButton icon="ri-volume-up-line" label="Sound" variant="subtle" tooltipOnly />
+          <ExpandableButton icon="ri-volume-up-line" label="Sound" variant="subtle" />
         </QuickLinkPopover>
         <QuickLinkPopover triggerMode="click" width={240} content={<LanguageCardContent />}>
-          <ExpandableButton icon="ri-translate-2" label="Language" variant="subtle" tooltipOnly />
+          <ExpandableButton icon="ri-translate-2" label="Language" variant="subtle" />
         </QuickLinkPopover>
         <QuickLinkPopover triggerMode="click" width={240} content={<ThemeCardContent />}>
-          <ExpandableButton icon="ri-palette-line" label="Theme" variant="subtle" tooltipOnly />
+          <ExpandableButton icon="ri-palette-line" label="Theme" variant="subtle" />
         </QuickLinkPopover>
         <VerticalDivider />
         <ExpandableButton
           icon="ri-discord-fill"
           label="Discord"
           variant="subtle"
-          tooltipOnly
           onClick={() => window.open('https://discord.gg/launchkol', '_blank')}
         />
         <ExpandableButton
           icon="ri-twitter-x-line"
           label="X"
           variant="subtle"
-          tooltipOnly
           onClick={() => window.open('https://x.com/launchkol', '_blank')}
         />
         <ExpandableButton
           icon="ri-file-text-line"
           label="Docs"
           variant="subtle"
-          tooltipOnly
           onClick={() => window.open('https://docs.launchkol.com', '_blank')}
         />
       </div>
