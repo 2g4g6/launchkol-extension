@@ -766,6 +766,7 @@ export function SearchTokensModal({
   const [selectedIndex, setSelectedIndex] = useState(0)
   const [walletFilterOpen, setWalletFilterOpen] = useState(false)
   const [savedWallets, setSavedWallets] = useState<SavedWallet[]>([])
+  const [showFilters, setShowFilters] = useState(true)
   const inputRef = useRef<HTMLInputElement>(null)
   const walletFilterRef = useRef<HTMLSpanElement>(null)
 
@@ -998,72 +999,94 @@ export function SearchTokensModal({
           >
             <div className="bg-kol-bg rounded-lg overflow-hidden border border-kol-border shadow-[0_4px_4px_0_rgba(0,0,0,0.30),0_8px_8px_0_rgba(0,0,0,0.45)] flex flex-col h-full">
               {/* Filters Row - Platform filters left, Sort icons right */}
-              <div className="flex items-center justify-between gap-4 px-4 pl-3 pt-3">
-                {/* Platform Filters - scrollable */}
-                <HorizontalScrollContainer className="flex items-center gap-2 overflow-x-auto scrollbar-hide -ml-2 pl-2 pr-0" gradientFrom="from-kol-bg">
-                  {PLATFORM_FILTERS.map((filter) => (
-                    <button
-                      key={filter.id}
-                      onClick={() => setPlatformFilter(filter.id)}
-                      className={`
-                        flex h-6 flex-shrink-0 items-center gap-[3px] px-1 rounded text-xs font-medium whitespace-nowrap transition-colors border
-                        ${platformFilter === filter.id
-                          ? 'bg-kol-blue/15 text-kol-blue border-kol-blue/50'
-                          : 'bg-kol-surface/45 border-kol-border text-kol-text-muted hover:bg-kol-surface-elevated'
-                        }
-                      `}
-                    >
-                      {filter.icon && <img src={filter.icon} alt={filter.label} className="w-3 h-3" />}
-                      <span className="font-medium">{filter.label}</span>
-                    </button>
-                  ))}
-                </HorizontalScrollContainer>
+              <AnimatePresence initial={false}>
+                {showFilters && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="flex items-center justify-between gap-4 px-4 pl-3 pt-3">
+                      {/* Platform Filters - scrollable */}
+                      <HorizontalScrollContainer className="flex items-center gap-2 overflow-x-auto scrollbar-hide -ml-2 pl-2 pr-0" gradientFrom="from-kol-bg">
+                        {PLATFORM_FILTERS.map((filter) => (
+                          <button
+                            key={filter.id}
+                            onClick={() => setPlatformFilter(filter.id)}
+                            className={`
+                              flex h-6 flex-shrink-0 items-center gap-[3px] px-1 rounded text-xs font-medium whitespace-nowrap transition-colors border
+                              ${platformFilter === filter.id
+                                ? 'bg-kol-blue/15 text-kol-blue border-kol-blue/50'
+                                : 'bg-kol-surface/45 border-kol-border text-kol-text-muted hover:bg-kol-surface-elevated'
+                              }
+                            `}
+                          >
+                            {filter.icon && <img src={filter.icon} alt={filter.label} className="w-3 h-3" />}
+                            <span className="font-medium">{filter.label}</span>
+                          </button>
+                        ))}
+                      </HorizontalScrollContainer>
 
-                {/* Sort Icons */}
-                <div className="flex items-center gap-2 flex-shrink-0">
-                  <span className="text-xs text-kol-text-muted">Sort by</span>
-                  {SORT_OPTIONS.map((option) => (
-                    <Tooltip key={option.id} content={option.label} position="bottom" delayShow={200}>
-                      <button
-                        onClick={() => setSortBy(option.id)}
-                        className={`
-                          h-6 w-6 flex items-center justify-center rounded transition-colors
-                          ${sortBy === option.id
-                            ? 'bg-kol-blue/15 text-kol-blue'
-                            : 'text-kol-text-muted hover:bg-kol-surface-elevated'
-                          }
-                        `}
-                      >
-                        <i className={`${option.icon} text-sm`} />
-                      </button>
-                    </Tooltip>
-                  ))}
+                      {/* Sort Icons */}
+                      <div className="flex items-center gap-2 flex-shrink-0">
+                        <span className="text-xs text-kol-text-muted">Sort by</span>
+                        {SORT_OPTIONS.map((option) => (
+                          <Tooltip key={option.id} content={option.label} position="bottom" delayShow={200}>
+                            <button
+                              onClick={() => setSortBy(option.id)}
+                              className={`
+                                h-6 w-6 flex items-center justify-center rounded transition-colors
+                                ${sortBy === option.id
+                                  ? 'bg-kol-blue/15 text-kol-blue'
+                                  : 'text-kol-text-muted hover:bg-kol-surface-elevated'
+                                }
+                              `}
+                            >
+                              <i className={`${option.icon} text-sm`} />
+                            </button>
+                          </Tooltip>
+                        ))}
 
-                  {/* Wallet Filter Button */}
-                  <span ref={walletFilterRef}>
-                    <Tooltip content="Filter by Wallet" position="bottom" delayShow={200}>
-                      <button
-                        onClick={() => setWalletFilterOpen((prev) => !prev)}
-                        className={`
-                          relative h-6 w-6 flex items-center justify-center rounded transition-colors
-                          ${savedWallets.length > 0
-                            ? 'bg-kol-blue/15 text-kol-blue'
-                            : 'text-kol-text-muted hover:bg-kol-surface-elevated'
-                          }
-                        `}
-                      >
-                        <i className="ri-wallet-3-line text-sm" />
-                        {savedWallets.length > 0 && (
-                          <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-kol-blue" />
-                        )}
-                      </button>
-                    </Tooltip>
-                  </span>
-                </div>
-              </div>
+                        {/* Wallet Filter Button */}
+                        <span ref={walletFilterRef}>
+                          <Tooltip content="Filter by Wallet" position="bottom" delayShow={200}>
+                            <button
+                              onClick={() => setWalletFilterOpen((prev) => !prev)}
+                              className={`
+                                relative h-6 w-6 flex items-center justify-center rounded transition-colors
+                                ${savedWallets.length > 0
+                                  ? 'bg-kol-blue/15 text-kol-blue'
+                                  : 'text-kol-text-muted hover:bg-kol-surface-elevated'
+                                }
+                              `}
+                            >
+                              <i className="ri-wallet-3-line text-sm" />
+                              {savedWallets.length > 0 && (
+                                <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-kol-blue" />
+                              )}
+                            </button>
+                          </Tooltip>
+                        </span>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
               {/* Search Input */}
               <div className="flex h-16 items-center gap-2 px-4 border-b border-kol-border/50">
+                <button
+                  onClick={() => setShowFilters(!showFilters)}
+                  className="flex-shrink-0 w-6 h-6 rounded flex items-center justify-center text-kol-text-muted hover:text-white transition-colors"
+                >
+                  <motion.i
+                    className="ri-arrow-down-s-line text-lg"
+                    animate={{ rotate: showFilters ? 180 : 0 }}
+                    transition={{ duration: 0.2 }}
+                  />
+                </button>
                 <i className="ri-search-line text-xl text-kol-text-muted" />
                 <input
                   ref={inputRef}
