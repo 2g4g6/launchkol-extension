@@ -9,6 +9,7 @@ export interface Keyword {
   caseSensitive: boolean  // Match case exactly
   wholeWord: boolean      // Match whole words only
   enabled: boolean        // Toggle without deleting
+  notification: TweetTypeNotificationSettings  // Desktop & sound notification settings
 }
 
 // Per tweet type notification settings
@@ -22,8 +23,10 @@ export interface TweetTypeNotificationSettings {
 export interface ContentFilters {
   filterTokenSymbols: boolean    // Highlight tweets containing token symbols ($XXX)
   tokenSymbolsColor: string      // Hex color for token symbol highlights
+  tokenSymbolsNotification: TweetTypeNotificationSettings  // Desktop & sound for token symbols
   filterMintAddresses: boolean   // Highlight tweets containing mint addresses
   mintAddressesColor: string     // Hex color for mint address highlights
+  mintAddressesNotification: TweetTypeNotificationSettings  // Desktop & sound for mint addresses
   keywords: Keyword[]            // Custom keywords to highlight with rich options
 }
 

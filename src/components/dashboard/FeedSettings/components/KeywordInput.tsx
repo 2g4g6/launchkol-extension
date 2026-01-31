@@ -34,6 +34,7 @@ export function KeywordInput({
       caseSensitive: keywordData.caseSensitive,
       wholeWord: keywordData.wholeWord,
       enabled: keywordData.enabled,
+      notification: keywordData.notification,
     }
     onChange([...keywords, newKeyword])
   }

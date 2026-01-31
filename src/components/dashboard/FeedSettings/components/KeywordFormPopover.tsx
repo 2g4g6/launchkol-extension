@@ -2,8 +2,9 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { createPortal } from 'react-dom'
 import { ColorPicker } from './ColorPicker'
+import { SoundPicker } from './SoundPicker'
 import { ToggleSwitch } from './ToggleSwitch'
-import { DEFAULT_KEYWORD_COLOR } from '../constants'
+import { DEFAULT_KEYWORD_COLOR, DEFAULT_FILTER_NOTIFICATION } from '../constants'
 import type { Keyword } from '../types'
 
 export interface KeywordFormPopoverProps {
@@ -27,6 +28,9 @@ export function KeywordFormPopover({
   const [color, setColor] = useState(DEFAULT_KEYWORD_COLOR)
   const [caseSensitive, setCaseSensitive] = useState(false)
   const [wholeWord, setWholeWord] = useState(false)
+  const [desktopNotif, setDesktopNotif] = useState(DEFAULT_FILTER_NOTIFICATION.desktop)
+  const [soundNotif, setSoundNotif] = useState(DEFAULT_FILTER_NOTIFICATION.sound)
+  const [soundId, setSoundId] = useState(DEFAULT_FILTER_NOTIFICATION.soundId)
   const [error, setError] = useState<string | null>(null)
   const [mounted, setMounted] = useState(false)
   const [position, setPosition] = useState({ top: 0, left: 0 })
@@ -48,11 +52,18 @@ export function KeywordFormPopover({
         setColor(editingKeyword.color)
         setCaseSensitive(editingKeyword.caseSensitive)
         setWholeWord(editingKeyword.wholeWord)
+        const notif = editingKeyword.notification ?? DEFAULT_FILTER_NOTIFICATION
+        setDesktopNotif(notif.desktop)
+        setSoundNotif(notif.sound)
+        setSoundId(notif.soundId)
       } else {
         setText('')
         setColor(DEFAULT_KEYWORD_COLOR)
         setCaseSensitive(false)
         setWholeWord(false)
+        setDesktopNotif(DEFAULT_FILTER_NOTIFICATION.desktop)
+        setSoundNotif(DEFAULT_FILTER_NOTIFICATION.sound)
+        setSoundId(DEFAULT_FILTER_NOTIFICATION.soundId)
       }
       setError(null)
       // Focus input after a short delay to ensure it's rendered
@@ -155,6 +166,7 @@ export function KeywordFormPopover({
       caseSensitive,
       wholeWord,
       enabled: editingKeyword?.enabled ?? true,
+      notification: { desktop: desktopNotif, sound: soundNotif, soundId },
     })
     onClose()
   }
@@ -239,6 +251,31 @@ export function KeywordFormPopover({
                   Whole words only
                 </label>
                 <ToggleSwitch enabled={wholeWord} onChange={setWholeWord} />
+              </div>
+            </div>
+
+            {/* Notification settings */}
+            <div className="space-y-3 pt-2 border-t border-kol-border/20">
+              <div className="flex items-center justify-between">
+                <label className="text-xs text-kol-text-muted flex items-center gap-1.5">
+                  <i className={desktopNotif ? 'ri-notification-3-fill' : 'ri-notification-3-line'} />
+                  Desktop notification
+                </label>
+                <ToggleSwitch enabled={desktopNotif} onChange={setDesktopNotif} />
+              </div>
+              <div className="flex items-center justify-between">
+                <label className="text-xs text-kol-text-muted flex items-center gap-1.5">
+                  <i className={soundNotif ? 'ri-volume-up-fill' : 'ri-volume-mute-line'} />
+                  Sound notification
+                </label>
+                <div className="flex items-center gap-1.5">
+                  <SoundPicker
+                    currentSound={soundId}
+                    onSelect={setSoundId}
+                    enabled={soundNotif}
+                  />
+                  <ToggleSwitch enabled={soundNotif} onChange={setSoundNotif} />
+                </div>
               </div>
             </div>
 

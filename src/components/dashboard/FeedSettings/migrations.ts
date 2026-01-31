@@ -1,5 +1,5 @@
 import type { ContentFilters, PlatformType, FeedGroupSettings, AccountSettings, GlobalFeedSettings, Keyword } from './types'
-import { DEFAULT_KEYWORD_COLOR, DEFAULT_TOKEN_SYMBOLS_COLOR, DEFAULT_MINT_ADDRESSES_COLOR } from './constants'
+import { DEFAULT_KEYWORD_COLOR, DEFAULT_TOKEN_SYMBOLS_COLOR, DEFAULT_MINT_ADDRESSES_COLOR, DEFAULT_FILTER_NOTIFICATION, DEFAULT_TOKEN_SYMBOLS_NOTIFICATION, DEFAULT_MINT_ADDRESSES_NOTIFICATION } from './constants'
 
 // Generate a unique ID for keywords
 function generateKeywordId(): string {
@@ -15,7 +15,7 @@ export function migrateKeywords(keywords: unknown): Keyword[] {
   return keywords.map((kw): Keyword => {
     // Already in new format (has text property)
     if (typeof kw === 'object' && kw !== null && 'text' in kw) {
-      const existing = kw as Partial<Keyword>
+      const existing = kw as Partial<Keyword> & { notification?: Partial<Keyword['notification']> }
       return {
         id: existing.id || generateKeywordId(),
         text: existing.text || '',
@@ -23,6 +23,11 @@ export function migrateKeywords(keywords: unknown): Keyword[] {
         caseSensitive: existing.caseSensitive ?? false,
         wholeWord: existing.wholeWord ?? false,
         enabled: existing.enabled ?? true,
+        notification: {
+          desktop: existing.notification?.desktop ?? DEFAULT_FILTER_NOTIFICATION.desktop,
+          sound: existing.notification?.sound ?? DEFAULT_FILTER_NOTIFICATION.sound,
+          soundId: existing.notification?.soundId ?? DEFAULT_FILTER_NOTIFICATION.soundId,
+        },
       }
     }
 
@@ -35,6 +40,7 @@ export function migrateKeywords(keywords: unknown): Keyword[] {
         caseSensitive: false,
         wholeWord: false,
         enabled: true,
+        notification: { ...DEFAULT_FILTER_NOTIFICATION },
       }
     }
 
@@ -51,11 +57,23 @@ export function migrateFilters(oldFilters: Record<string, unknown> | undefined):
   if (typeof oldFilters.filterTokenSymbols === 'boolean') {
     // Still need to migrate keywords if they're in old string[] format
     const existingFilters = oldFilters as unknown as ContentFilters
+    const existingTokenNotif = (oldFilters as Record<string, unknown>).tokenSymbolsNotification as Partial<ContentFilters['tokenSymbolsNotification']> | undefined
+    const existingMintNotif = (oldFilters as Record<string, unknown>).mintAddressesNotification as Partial<ContentFilters['mintAddressesNotification']> | undefined
     return {
       ...existingFilters,
       // Ensure color fields exist (for migration from before colors were added)
       tokenSymbolsColor: existingFilters.tokenSymbolsColor || DEFAULT_TOKEN_SYMBOLS_COLOR,
+      tokenSymbolsNotification: {
+        desktop: existingTokenNotif?.desktop ?? DEFAULT_TOKEN_SYMBOLS_NOTIFICATION.desktop,
+        sound: existingTokenNotif?.sound ?? DEFAULT_TOKEN_SYMBOLS_NOTIFICATION.sound,
+        soundId: existingTokenNotif?.soundId ?? DEFAULT_TOKEN_SYMBOLS_NOTIFICATION.soundId,
+      },
       mintAddressesColor: existingFilters.mintAddressesColor || DEFAULT_MINT_ADDRESSES_COLOR,
+      mintAddressesNotification: {
+        desktop: existingMintNotif?.desktop ?? DEFAULT_MINT_ADDRESSES_NOTIFICATION.desktop,
+        sound: existingMintNotif?.sound ?? DEFAULT_MINT_ADDRESSES_NOTIFICATION.sound,
+        soundId: existingMintNotif?.soundId ?? DEFAULT_MINT_ADDRESSES_NOTIFICATION.soundId,
+      },
       keywords: migrateKeywords(existingFilters.keywords),
     }
   }
@@ -68,8 +86,10 @@ export function migrateFilters(oldFilters: Record<string, unknown> | undefined):
   return {
     filterTokenSymbols: Boolean(oldTokenSymbols && oldTokenSymbols.length > 0),
     tokenSymbolsColor: DEFAULT_TOKEN_SYMBOLS_COLOR,
+    tokenSymbolsNotification: { ...DEFAULT_TOKEN_SYMBOLS_NOTIFICATION },
     filterMintAddresses: Boolean(oldMintAddresses && oldMintAddresses.length > 0),
     mintAddressesColor: DEFAULT_MINT_ADDRESSES_COLOR,
+    mintAddressesNotification: { ...DEFAULT_MINT_ADDRESSES_NOTIFICATION },
     keywords: migrateKeywords(oldKeywords),
   }
 }

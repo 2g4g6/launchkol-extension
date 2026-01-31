@@ -45,12 +45,29 @@ import {
   MobileGroupTrigger,
   GroupsDropdown,
   ColorPicker,
+  SoundPicker,
 } from './components'
 
 import {
   DEFAULT_TOKEN_SYMBOLS_COLOR,
   DEFAULT_MINT_ADDRESSES_COLOR,
+  DEFAULT_TOKEN_SYMBOLS_NOTIFICATION,
+  DEFAULT_MINT_ADDRESSES_NOTIFICATION,
 } from './constants'
+
+// Helper to build a complete ContentFilters object with notification defaults
+function buildFilters(existing: ContentFilters | undefined, overrides: Partial<ContentFilters>): ContentFilters {
+  return {
+    filterTokenSymbols: existing?.filterTokenSymbols ?? false,
+    tokenSymbolsColor: existing?.tokenSymbolsColor ?? DEFAULT_TOKEN_SYMBOLS_COLOR,
+    tokenSymbolsNotification: existing?.tokenSymbolsNotification ?? { ...DEFAULT_TOKEN_SYMBOLS_NOTIFICATION },
+    filterMintAddresses: existing?.filterMintAddresses ?? false,
+    mintAddressesColor: existing?.mintAddressesColor ?? DEFAULT_MINT_ADDRESSES_COLOR,
+    mintAddressesNotification: existing?.mintAddressesNotification ?? { ...DEFAULT_MINT_ADDRESSES_NOTIFICATION },
+    keywords: existing?.keywords ?? [],
+    ...overrides,
+  }
+}
 
 export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
   const [groups, setGroups] = useState<FeedGroup[]>([])
@@ -625,100 +642,191 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                     </span>
                   </div>
                   <div className="space-y-3">
-                    <div className="flex items-center justify-between py-1">
-                      <div className="flex-1">
-                        <p className="text-sm max-sm:text-base font-medium text-white flex items-center gap-1.5">
-                          <i className="ri-coin-line text-kol-text-muted" />
-                          Token Symbols
-                        </p>
-                        <p className="text-xs max-sm:text-sm text-kol-text-muted mt-0.5">Highlight tweets with $TOKEN mentions</p>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        {(globalSettings.filters?.filterTokenSymbols ?? false) && (
-                          <ColorPicker
-                            currentColor={globalSettings.filters?.tokenSymbolsColor ?? DEFAULT_TOKEN_SYMBOLS_COLOR}
-                            onSelect={(color) => setGlobalSettings({
+                    <div className="py-1">
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1">
+                          <p className="text-sm max-sm:text-base font-medium text-white flex items-center gap-1.5">
+                            <i className="ri-coin-line text-kol-text-muted" />
+                            Token Symbols
+                          </p>
+                          <p className="text-xs max-sm:text-sm text-kol-text-muted mt-0.5">Highlight tweets with $TOKEN mentions</p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {(globalSettings.filters?.filterTokenSymbols ?? false) && (
+                            <ColorPicker
+                              currentColor={globalSettings.filters?.tokenSymbolsColor ?? DEFAULT_TOKEN_SYMBOLS_COLOR}
+                              onSelect={(color) => setGlobalSettings({
+                                ...globalSettings,
+                                filters: buildFilters(globalSettings.filters, { tokenSymbolsColor: color }),
+                              })}
+                            />
+                          )}
+                          <ToggleSwitch
+                            enabled={globalSettings.filters?.filterTokenSymbols ?? false}
+                            onChange={(v) => setGlobalSettings({
                               ...globalSettings,
-                              filters: {
-                                ...globalSettings.filters,
-                                filterTokenSymbols: globalSettings.filters?.filterTokenSymbols ?? false,
-                                tokenSymbolsColor: color,
-                                filterMintAddresses: globalSettings.filters?.filterMintAddresses ?? false,
-                                mintAddressesColor: globalSettings.filters?.mintAddressesColor ?? DEFAULT_MINT_ADDRESSES_COLOR,
-                                keywords: globalSettings.filters?.keywords ?? [],
-                              }
+                              filters: buildFilters(globalSettings.filters, { filterTokenSymbols: v }),
                             })}
                           />
-                        )}
-                        <ToggleSwitch
-                          enabled={globalSettings.filters?.filterTokenSymbols ?? false}
-                          onChange={(v) => setGlobalSettings({
-                            ...globalSettings,
-                            filters: {
-                              ...globalSettings.filters,
-                              filterTokenSymbols: v,
-                              tokenSymbolsColor: globalSettings.filters?.tokenSymbolsColor ?? DEFAULT_TOKEN_SYMBOLS_COLOR,
-                              filterMintAddresses: globalSettings.filters?.filterMintAddresses ?? false,
-                              mintAddressesColor: globalSettings.filters?.mintAddressesColor ?? DEFAULT_MINT_ADDRESSES_COLOR,
-                              keywords: globalSettings.filters?.keywords ?? [],
-                            }
-                          })}
-                        />
+                        </div>
                       </div>
+                      {(globalSettings.filters?.filterTokenSymbols ?? false) && (
+                        <div className="flex items-center gap-1.5 mt-2 ml-6">
+                          <Tooltip content="Desktop notification" position="top">
+                            <button
+                              onClick={() => {
+                                const notif = globalSettings.filters?.tokenSymbolsNotification ?? DEFAULT_TOKEN_SYMBOLS_NOTIFICATION
+                                setGlobalSettings({
+                                  ...globalSettings,
+                                  filters: buildFilters(globalSettings.filters, {
+                                    tokenSymbolsNotification: { ...notif, desktop: !notif.desktop },
+                                  }),
+                                })
+                              }}
+                              className={`
+                                w-6 h-6 max-sm:w-9 max-sm:h-9 rounded flex items-center justify-center transition-colors
+                                ${(globalSettings.filters?.tokenSymbolsNotification?.desktop ?? DEFAULT_TOKEN_SYMBOLS_NOTIFICATION.desktop)
+                                  ? 'text-kol-blue bg-kol-blue/10'
+                                  : 'text-kol-text-muted/40 hover:text-kol-text-muted'
+                                }
+                              `}
+                            >
+                              <i className={(globalSettings.filters?.tokenSymbolsNotification?.desktop ?? DEFAULT_TOKEN_SYMBOLS_NOTIFICATION.desktop) ? 'ri-notification-3-fill' : 'ri-notification-3-line'} />
+                            </button>
+                          </Tooltip>
+                          <Tooltip content="Sound notification" position="top">
+                            <button
+                              onClick={() => {
+                                const notif = globalSettings.filters?.tokenSymbolsNotification ?? DEFAULT_TOKEN_SYMBOLS_NOTIFICATION
+                                setGlobalSettings({
+                                  ...globalSettings,
+                                  filters: buildFilters(globalSettings.filters, {
+                                    tokenSymbolsNotification: { ...notif, sound: !notif.sound },
+                                  }),
+                                })
+                              }}
+                              className={`
+                                w-6 h-6 max-sm:w-9 max-sm:h-9 rounded flex items-center justify-center transition-colors
+                                ${(globalSettings.filters?.tokenSymbolsNotification?.sound ?? DEFAULT_TOKEN_SYMBOLS_NOTIFICATION.sound)
+                                  ? 'text-kol-blue bg-kol-blue/10'
+                                  : 'text-kol-text-muted/40 hover:text-kol-text-muted'
+                                }
+                              `}
+                            >
+                              <i className={(globalSettings.filters?.tokenSymbolsNotification?.sound ?? DEFAULT_TOKEN_SYMBOLS_NOTIFICATION.sound) ? 'ri-volume-up-fill' : 'ri-volume-mute-line'} />
+                            </button>
+                          </Tooltip>
+                          <SoundPicker
+                            currentSound={globalSettings.filters?.tokenSymbolsNotification?.soundId ?? DEFAULT_TOKEN_SYMBOLS_NOTIFICATION.soundId}
+                            onSelect={(soundId) => {
+                              const notif = globalSettings.filters?.tokenSymbolsNotification ?? DEFAULT_TOKEN_SYMBOLS_NOTIFICATION
+                              setGlobalSettings({
+                                ...globalSettings,
+                                filters: buildFilters(globalSettings.filters, {
+                                  tokenSymbolsNotification: { ...notif, soundId },
+                                }),
+                              })
+                            }}
+                            enabled={globalSettings.filters?.tokenSymbolsNotification?.sound ?? DEFAULT_TOKEN_SYMBOLS_NOTIFICATION.sound}
+                          />
+                        </div>
+                      )}
                     </div>
-                    <div className="flex items-center justify-between py-1">
-                      <div className="flex-1">
-                        <p className="text-sm max-sm:text-base font-medium text-white flex items-center gap-1.5">
-                          <i className="ri-file-code-line text-kol-text-muted" />
-                          Mint Addresses
-                        </p>
-                        <p className="text-xs max-sm:text-sm text-kol-text-muted mt-0.5">Highlight tweets with contract addresses</p>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        {(globalSettings.filters?.filterMintAddresses ?? false) && (
-                          <ColorPicker
-                            currentColor={globalSettings.filters?.mintAddressesColor ?? DEFAULT_MINT_ADDRESSES_COLOR}
-                            onSelect={(color) => setGlobalSettings({
+                    <div className="py-1">
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1">
+                          <p className="text-sm max-sm:text-base font-medium text-white flex items-center gap-1.5">
+                            <i className="ri-file-code-line text-kol-text-muted" />
+                            Mint Addresses
+                          </p>
+                          <p className="text-xs max-sm:text-sm text-kol-text-muted mt-0.5">Highlight tweets with contract addresses</p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {(globalSettings.filters?.filterMintAddresses ?? false) && (
+                            <ColorPicker
+                              currentColor={globalSettings.filters?.mintAddressesColor ?? DEFAULT_MINT_ADDRESSES_COLOR}
+                              onSelect={(color) => setGlobalSettings({
+                                ...globalSettings,
+                                filters: buildFilters(globalSettings.filters, { mintAddressesColor: color }),
+                              })}
+                            />
+                          )}
+                          <ToggleSwitch
+                            enabled={globalSettings.filters?.filterMintAddresses ?? false}
+                            onChange={(v) => setGlobalSettings({
                               ...globalSettings,
-                              filters: {
-                                ...globalSettings.filters,
-                                filterTokenSymbols: globalSettings.filters?.filterTokenSymbols ?? false,
-                                tokenSymbolsColor: globalSettings.filters?.tokenSymbolsColor ?? DEFAULT_TOKEN_SYMBOLS_COLOR,
-                                filterMintAddresses: globalSettings.filters?.filterMintAddresses ?? false,
-                                mintAddressesColor: color,
-                                keywords: globalSettings.filters?.keywords ?? [],
-                              }
+                              filters: buildFilters(globalSettings.filters, { filterMintAddresses: v }),
                             })}
                           />
-                        )}
-                        <ToggleSwitch
-                          enabled={globalSettings.filters?.filterMintAddresses ?? false}
-                          onChange={(v) => setGlobalSettings({
-                            ...globalSettings,
-                            filters: {
-                              ...globalSettings.filters,
-                              filterTokenSymbols: globalSettings.filters?.filterTokenSymbols ?? false,
-                              tokenSymbolsColor: globalSettings.filters?.tokenSymbolsColor ?? DEFAULT_TOKEN_SYMBOLS_COLOR,
-                              filterMintAddresses: v,
-                              mintAddressesColor: globalSettings.filters?.mintAddressesColor ?? DEFAULT_MINT_ADDRESSES_COLOR,
-                              keywords: globalSettings.filters?.keywords ?? [],
-                            }
-                          })}
-                        />
+                        </div>
                       </div>
+                      {(globalSettings.filters?.filterMintAddresses ?? false) && (
+                        <div className="flex items-center gap-1.5 mt-2 ml-6">
+                          <Tooltip content="Desktop notification" position="top">
+                            <button
+                              onClick={() => {
+                                const notif = globalSettings.filters?.mintAddressesNotification ?? DEFAULT_MINT_ADDRESSES_NOTIFICATION
+                                setGlobalSettings({
+                                  ...globalSettings,
+                                  filters: buildFilters(globalSettings.filters, {
+                                    mintAddressesNotification: { ...notif, desktop: !notif.desktop },
+                                  }),
+                                })
+                              }}
+                              className={`
+                                w-6 h-6 max-sm:w-9 max-sm:h-9 rounded flex items-center justify-center transition-colors
+                                ${(globalSettings.filters?.mintAddressesNotification?.desktop ?? DEFAULT_MINT_ADDRESSES_NOTIFICATION.desktop)
+                                  ? 'text-kol-blue bg-kol-blue/10'
+                                  : 'text-kol-text-muted/40 hover:text-kol-text-muted'
+                                }
+                              `}
+                            >
+                              <i className={(globalSettings.filters?.mintAddressesNotification?.desktop ?? DEFAULT_MINT_ADDRESSES_NOTIFICATION.desktop) ? 'ri-notification-3-fill' : 'ri-notification-3-line'} />
+                            </button>
+                          </Tooltip>
+                          <Tooltip content="Sound notification" position="top">
+                            <button
+                              onClick={() => {
+                                const notif = globalSettings.filters?.mintAddressesNotification ?? DEFAULT_MINT_ADDRESSES_NOTIFICATION
+                                setGlobalSettings({
+                                  ...globalSettings,
+                                  filters: buildFilters(globalSettings.filters, {
+                                    mintAddressesNotification: { ...notif, sound: !notif.sound },
+                                  }),
+                                })
+                              }}
+                              className={`
+                                w-6 h-6 max-sm:w-9 max-sm:h-9 rounded flex items-center justify-center transition-colors
+                                ${(globalSettings.filters?.mintAddressesNotification?.sound ?? DEFAULT_MINT_ADDRESSES_NOTIFICATION.sound)
+                                  ? 'text-kol-blue bg-kol-blue/10'
+                                  : 'text-kol-text-muted/40 hover:text-kol-text-muted'
+                                }
+                              `}
+                            >
+                              <i className={(globalSettings.filters?.mintAddressesNotification?.sound ?? DEFAULT_MINT_ADDRESSES_NOTIFICATION.sound) ? 'ri-volume-up-fill' : 'ri-volume-mute-line'} />
+                            </button>
+                          </Tooltip>
+                          <SoundPicker
+                            currentSound={globalSettings.filters?.mintAddressesNotification?.soundId ?? DEFAULT_MINT_ADDRESSES_NOTIFICATION.soundId}
+                            onSelect={(soundId) => {
+                              const notif = globalSettings.filters?.mintAddressesNotification ?? DEFAULT_MINT_ADDRESSES_NOTIFICATION
+                              setGlobalSettings({
+                                ...globalSettings,
+                                filters: buildFilters(globalSettings.filters, {
+                                  mintAddressesNotification: { ...notif, soundId },
+                                }),
+                              })
+                            }}
+                            enabled={globalSettings.filters?.mintAddressesNotification?.sound ?? DEFAULT_MINT_ADDRESSES_NOTIFICATION.sound}
+                          />
+                        </div>
+                      )}
                     </div>
                     <KeywordInput
                       keywords={globalSettings.filters?.keywords ?? []}
                       onChange={(v) => setGlobalSettings({
                         ...globalSettings,
-                        filters: {
-                          ...globalSettings.filters,
-                          filterTokenSymbols: globalSettings.filters?.filterTokenSymbols ?? false,
-                          tokenSymbolsColor: globalSettings.filters?.tokenSymbolsColor ?? DEFAULT_TOKEN_SYMBOLS_COLOR,
-                          filterMintAddresses: globalSettings.filters?.filterMintAddresses ?? false,
-                          mintAddressesColor: globalSettings.filters?.mintAddressesColor ?? DEFAULT_MINT_ADDRESSES_COLOR,
-                          keywords: v,
-                        }
+                        filters: buildFilters(globalSettings.filters, { keywords: v }),
                       })}
                     />
                   </div>
@@ -1004,80 +1112,153 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                                       </div>
 
                                       <div className="space-y-2">
-                                        <div className="flex items-center justify-between">
-                                          <div className="flex items-center gap-1.5">
-                                            <i className="ri-coin-line text-kol-text-muted text-xs" />
-                                            <p className="text-xs font-medium text-white">Token Symbols</p>
-                                          </div>
-                                          <div className="flex items-center gap-2">
-                                            {(account.settings?.filters?.filterTokenSymbols ?? groupSettings.filters?.filterTokenSymbols ?? false) && (
-                                              <ColorPicker
-                                                currentColor={account.settings?.filters?.tokenSymbolsColor ?? groupSettings.filters?.tokenSymbolsColor ?? DEFAULT_TOKEN_SYMBOLS_COLOR}
-                                                onSelect={(color) => updateAccountFilters(selectedGroupId, account.id, {
-                                                  ...account.settings?.filters,
-                                                  filterTokenSymbols: account.settings?.filters?.filterTokenSymbols ?? false,
-                                                  tokenSymbolsColor: color,
-                                                  filterMintAddresses: account.settings?.filters?.filterMintAddresses ?? false,
-                                                  mintAddressesColor: account.settings?.filters?.mintAddressesColor ?? DEFAULT_MINT_ADDRESSES_COLOR,
-                                                  keywords: account.settings?.filters?.keywords ?? [],
-                                                })}
+                                        <div>
+                                          <div className="flex items-center justify-between">
+                                            <div className="flex items-center gap-1.5">
+                                              <i className="ri-coin-line text-kol-text-muted text-xs" />
+                                              <p className="text-xs font-medium text-white">Token Symbols</p>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                              {(account.settings?.filters?.filterTokenSymbols ?? groupSettings.filters?.filterTokenSymbols ?? false) && (
+                                                <ColorPicker
+                                                  currentColor={account.settings?.filters?.tokenSymbolsColor ?? groupSettings.filters?.tokenSymbolsColor ?? DEFAULT_TOKEN_SYMBOLS_COLOR}
+                                                  onSelect={(color) => updateAccountFilters(selectedGroupId, account.id, buildFilters(account.settings?.filters, { tokenSymbolsColor: color }))}
+                                                />
+                                              )}
+                                              <ToggleSwitch
+                                                enabled={account.settings?.filters?.filterTokenSymbols ?? groupSettings.filters?.filterTokenSymbols ?? false}
+                                                onChange={(v) => updateAccountFilters(selectedGroupId, account.id, buildFilters(account.settings?.filters, { filterTokenSymbols: v }))}
                                               />
-                                            )}
-                                            <ToggleSwitch
-                                              enabled={account.settings?.filters?.filterTokenSymbols ?? groupSettings.filters?.filterTokenSymbols ?? false}
-                                              onChange={(v) => updateAccountFilters(selectedGroupId, account.id, {
-                                                ...account.settings?.filters,
-                                                filterTokenSymbols: v,
-                                                tokenSymbolsColor: account.settings?.filters?.tokenSymbolsColor ?? DEFAULT_TOKEN_SYMBOLS_COLOR,
-                                                filterMintAddresses: account.settings?.filters?.filterMintAddresses ?? false,
-                                                mintAddressesColor: account.settings?.filters?.mintAddressesColor ?? DEFAULT_MINT_ADDRESSES_COLOR,
-                                                keywords: account.settings?.filters?.keywords ?? [],
-                                              })}
-                                            />
+                                            </div>
                                           </div>
+                                          {(account.settings?.filters?.filterTokenSymbols ?? groupSettings.filters?.filterTokenSymbols ?? false) && (
+                                            <div className="flex items-center gap-1.5 mt-1.5 ml-5">
+                                              <Tooltip content="Desktop notification" position="top">
+                                                <button
+                                                  onClick={() => {
+                                                    const notif = account.settings?.filters?.tokenSymbolsNotification ?? groupSettings.filters?.tokenSymbolsNotification ?? DEFAULT_TOKEN_SYMBOLS_NOTIFICATION
+                                                    updateAccountFilters(selectedGroupId, account.id, buildFilters(account.settings?.filters, {
+                                                      tokenSymbolsNotification: { ...notif, desktop: !notif.desktop },
+                                                    }))
+                                                  }}
+                                                  className={`
+                                                    w-6 h-6 max-sm:w-9 max-sm:h-9 rounded flex items-center justify-center transition-colors
+                                                    ${(account.settings?.filters?.tokenSymbolsNotification?.desktop ?? groupSettings.filters?.tokenSymbolsNotification?.desktop ?? DEFAULT_TOKEN_SYMBOLS_NOTIFICATION.desktop)
+                                                      ? 'text-kol-blue bg-kol-blue/10'
+                                                      : 'text-kol-text-muted/40 hover:text-kol-text-muted'
+                                                    }
+                                                  `}
+                                                >
+                                                  <i className={(account.settings?.filters?.tokenSymbolsNotification?.desktop ?? groupSettings.filters?.tokenSymbolsNotification?.desktop ?? DEFAULT_TOKEN_SYMBOLS_NOTIFICATION.desktop) ? 'ri-notification-3-fill' : 'ri-notification-3-line'} />
+                                                </button>
+                                              </Tooltip>
+                                              <Tooltip content="Sound notification" position="top">
+                                                <button
+                                                  onClick={() => {
+                                                    const notif = account.settings?.filters?.tokenSymbolsNotification ?? groupSettings.filters?.tokenSymbolsNotification ?? DEFAULT_TOKEN_SYMBOLS_NOTIFICATION
+                                                    updateAccountFilters(selectedGroupId, account.id, buildFilters(account.settings?.filters, {
+                                                      tokenSymbolsNotification: { ...notif, sound: !notif.sound },
+                                                    }))
+                                                  }}
+                                                  className={`
+                                                    w-6 h-6 max-sm:w-9 max-sm:h-9 rounded flex items-center justify-center transition-colors
+                                                    ${(account.settings?.filters?.tokenSymbolsNotification?.sound ?? groupSettings.filters?.tokenSymbolsNotification?.sound ?? DEFAULT_TOKEN_SYMBOLS_NOTIFICATION.sound)
+                                                      ? 'text-kol-blue bg-kol-blue/10'
+                                                      : 'text-kol-text-muted/40 hover:text-kol-text-muted'
+                                                    }
+                                                  `}
+                                                >
+                                                  <i className={(account.settings?.filters?.tokenSymbolsNotification?.sound ?? groupSettings.filters?.tokenSymbolsNotification?.sound ?? DEFAULT_TOKEN_SYMBOLS_NOTIFICATION.sound) ? 'ri-volume-up-fill' : 'ri-volume-mute-line'} />
+                                                </button>
+                                              </Tooltip>
+                                              <SoundPicker
+                                                currentSound={account.settings?.filters?.tokenSymbolsNotification?.soundId ?? groupSettings.filters?.tokenSymbolsNotification?.soundId ?? DEFAULT_TOKEN_SYMBOLS_NOTIFICATION.soundId}
+                                                onSelect={(soundId) => {
+                                                  const notif = account.settings?.filters?.tokenSymbolsNotification ?? groupSettings.filters?.tokenSymbolsNotification ?? DEFAULT_TOKEN_SYMBOLS_NOTIFICATION
+                                                  updateAccountFilters(selectedGroupId, account.id, buildFilters(account.settings?.filters, {
+                                                    tokenSymbolsNotification: { ...notif, soundId },
+                                                  }))
+                                                }}
+                                                enabled={account.settings?.filters?.tokenSymbolsNotification?.sound ?? groupSettings.filters?.tokenSymbolsNotification?.sound ?? DEFAULT_TOKEN_SYMBOLS_NOTIFICATION.sound}
+                                              />
+                                            </div>
+                                          )}
                                         </div>
-                                        <div className="flex items-center justify-between">
-                                          <div className="flex items-center gap-1.5">
-                                            <i className="ri-file-code-line text-kol-text-muted text-xs" />
-                                            <p className="text-xs font-medium text-white">Mint Addresses</p>
-                                          </div>
-                                          <div className="flex items-center gap-2">
-                                            {(account.settings?.filters?.filterMintAddresses ?? groupSettings.filters?.filterMintAddresses ?? false) && (
-                                              <ColorPicker
-                                                currentColor={account.settings?.filters?.mintAddressesColor ?? groupSettings.filters?.mintAddressesColor ?? DEFAULT_MINT_ADDRESSES_COLOR}
-                                                onSelect={(color) => updateAccountFilters(selectedGroupId, account.id, {
-                                                  ...account.settings?.filters,
-                                                  filterTokenSymbols: account.settings?.filters?.filterTokenSymbols ?? false,
-                                                  tokenSymbolsColor: account.settings?.filters?.tokenSymbolsColor ?? DEFAULT_TOKEN_SYMBOLS_COLOR,
-                                                  filterMintAddresses: account.settings?.filters?.filterMintAddresses ?? false,
-                                                  mintAddressesColor: color,
-                                                  keywords: account.settings?.filters?.keywords ?? [],
-                                                })}
+                                        <div>
+                                          <div className="flex items-center justify-between">
+                                            <div className="flex items-center gap-1.5">
+                                              <i className="ri-file-code-line text-kol-text-muted text-xs" />
+                                              <p className="text-xs font-medium text-white">Mint Addresses</p>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                              {(account.settings?.filters?.filterMintAddresses ?? groupSettings.filters?.filterMintAddresses ?? false) && (
+                                                <ColorPicker
+                                                  currentColor={account.settings?.filters?.mintAddressesColor ?? groupSettings.filters?.mintAddressesColor ?? DEFAULT_MINT_ADDRESSES_COLOR}
+                                                  onSelect={(color) => updateAccountFilters(selectedGroupId, account.id, buildFilters(account.settings?.filters, { mintAddressesColor: color }))}
+                                                />
+                                              )}
+                                              <ToggleSwitch
+                                                enabled={account.settings?.filters?.filterMintAddresses ?? groupSettings.filters?.filterMintAddresses ?? false}
+                                                onChange={(v) => updateAccountFilters(selectedGroupId, account.id, buildFilters(account.settings?.filters, { filterMintAddresses: v }))}
                                               />
-                                            )}
-                                            <ToggleSwitch
-                                              enabled={account.settings?.filters?.filterMintAddresses ?? groupSettings.filters?.filterMintAddresses ?? false}
-                                              onChange={(v) => updateAccountFilters(selectedGroupId, account.id, {
-                                                ...account.settings?.filters,
-                                                filterTokenSymbols: account.settings?.filters?.filterTokenSymbols ?? false,
-                                                tokenSymbolsColor: account.settings?.filters?.tokenSymbolsColor ?? DEFAULT_TOKEN_SYMBOLS_COLOR,
-                                                filterMintAddresses: v,
-                                                mintAddressesColor: account.settings?.filters?.mintAddressesColor ?? DEFAULT_MINT_ADDRESSES_COLOR,
-                                                keywords: account.settings?.filters?.keywords ?? [],
-                                              })}
-                                            />
+                                            </div>
                                           </div>
+                                          {(account.settings?.filters?.filterMintAddresses ?? groupSettings.filters?.filterMintAddresses ?? false) && (
+                                            <div className="flex items-center gap-1.5 mt-1.5 ml-5">
+                                              <Tooltip content="Desktop notification" position="top">
+                                                <button
+                                                  onClick={() => {
+                                                    const notif = account.settings?.filters?.mintAddressesNotification ?? groupSettings.filters?.mintAddressesNotification ?? DEFAULT_MINT_ADDRESSES_NOTIFICATION
+                                                    updateAccountFilters(selectedGroupId, account.id, buildFilters(account.settings?.filters, {
+                                                      mintAddressesNotification: { ...notif, desktop: !notif.desktop },
+                                                    }))
+                                                  }}
+                                                  className={`
+                                                    w-6 h-6 max-sm:w-9 max-sm:h-9 rounded flex items-center justify-center transition-colors
+                                                    ${(account.settings?.filters?.mintAddressesNotification?.desktop ?? groupSettings.filters?.mintAddressesNotification?.desktop ?? DEFAULT_MINT_ADDRESSES_NOTIFICATION.desktop)
+                                                      ? 'text-kol-blue bg-kol-blue/10'
+                                                      : 'text-kol-text-muted/40 hover:text-kol-text-muted'
+                                                    }
+                                                  `}
+                                                >
+                                                  <i className={(account.settings?.filters?.mintAddressesNotification?.desktop ?? groupSettings.filters?.mintAddressesNotification?.desktop ?? DEFAULT_MINT_ADDRESSES_NOTIFICATION.desktop) ? 'ri-notification-3-fill' : 'ri-notification-3-line'} />
+                                                </button>
+                                              </Tooltip>
+                                              <Tooltip content="Sound notification" position="top">
+                                                <button
+                                                  onClick={() => {
+                                                    const notif = account.settings?.filters?.mintAddressesNotification ?? groupSettings.filters?.mintAddressesNotification ?? DEFAULT_MINT_ADDRESSES_NOTIFICATION
+                                                    updateAccountFilters(selectedGroupId, account.id, buildFilters(account.settings?.filters, {
+                                                      mintAddressesNotification: { ...notif, sound: !notif.sound },
+                                                    }))
+                                                  }}
+                                                  className={`
+                                                    w-6 h-6 max-sm:w-9 max-sm:h-9 rounded flex items-center justify-center transition-colors
+                                                    ${(account.settings?.filters?.mintAddressesNotification?.sound ?? groupSettings.filters?.mintAddressesNotification?.sound ?? DEFAULT_MINT_ADDRESSES_NOTIFICATION.sound)
+                                                      ? 'text-kol-blue bg-kol-blue/10'
+                                                      : 'text-kol-text-muted/40 hover:text-kol-text-muted'
+                                                    }
+                                                  `}
+                                                >
+                                                  <i className={(account.settings?.filters?.mintAddressesNotification?.sound ?? groupSettings.filters?.mintAddressesNotification?.sound ?? DEFAULT_MINT_ADDRESSES_NOTIFICATION.sound) ? 'ri-volume-up-fill' : 'ri-volume-mute-line'} />
+                                                </button>
+                                              </Tooltip>
+                                              <SoundPicker
+                                                currentSound={account.settings?.filters?.mintAddressesNotification?.soundId ?? groupSettings.filters?.mintAddressesNotification?.soundId ?? DEFAULT_MINT_ADDRESSES_NOTIFICATION.soundId}
+                                                onSelect={(soundId) => {
+                                                  const notif = account.settings?.filters?.mintAddressesNotification ?? groupSettings.filters?.mintAddressesNotification ?? DEFAULT_MINT_ADDRESSES_NOTIFICATION
+                                                  updateAccountFilters(selectedGroupId, account.id, buildFilters(account.settings?.filters, {
+                                                    mintAddressesNotification: { ...notif, soundId },
+                                                  }))
+                                                }}
+                                                enabled={account.settings?.filters?.mintAddressesNotification?.sound ?? groupSettings.filters?.mintAddressesNotification?.sound ?? DEFAULT_MINT_ADDRESSES_NOTIFICATION.sound}
+                                              />
+                                            </div>
+                                          )}
                                         </div>
                                         <KeywordInput
                                           keywords={account.settings?.filters?.keywords ?? groupSettings.filters?.keywords ?? []}
-                                          onChange={(v) => updateAccountFilters(selectedGroupId, account.id, {
-                                            ...account.settings?.filters,
-                                            filterTokenSymbols: account.settings?.filters?.filterTokenSymbols ?? false,
-                                            tokenSymbolsColor: account.settings?.filters?.tokenSymbolsColor ?? DEFAULT_TOKEN_SYMBOLS_COLOR,
-                                            filterMintAddresses: account.settings?.filters?.filterMintAddresses ?? false,
-                                            mintAddressesColor: account.settings?.filters?.mintAddressesColor ?? DEFAULT_MINT_ADDRESSES_COLOR,
-                                            keywords: v,
-                                          })}
+                                          onChange={(v) => updateAccountFilters(selectedGroupId, account.id, buildFilters(account.settings?.filters, { keywords: v }))}
                                         />
                                       </div>
                                     </div>
@@ -1295,88 +1476,161 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                     </div>
 
                     <div className="space-y-3">
-                      <div className="flex items-center justify-between py-1">
-                        <div className="flex-1">
-                          <p className="text-sm max-sm:text-base font-medium text-white flex items-center gap-1.5">
-                            <i className="ri-coin-line text-kol-text-muted" />
-                            Token Symbols
-                          </p>
-                          <p className="text-xs max-sm:text-sm text-kol-text-muted mt-0.5">Highlight tweets with $TOKEN mentions</p>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          {(displaySettings?.filters?.filterTokenSymbols ?? false) && !selectedGroup.settings.useGlobalSettings && (
-                            <ColorPicker
-                              currentColor={displaySettings?.filters?.tokenSymbolsColor ?? DEFAULT_TOKEN_SYMBOLS_COLOR}
-                              onSelect={(color) => updateGroupFilters(selectedGroupId, {
-                                ...selectedGroup.settings.filters,
-                                filterTokenSymbols: selectedGroup.settings.filters?.filterTokenSymbols ?? false,
-                                tokenSymbolsColor: color,
-                                filterMintAddresses: selectedGroup.settings.filters?.filterMintAddresses ?? false,
-                                mintAddressesColor: selectedGroup.settings.filters?.mintAddressesColor ?? DEFAULT_MINT_ADDRESSES_COLOR,
-                                keywords: selectedGroup.settings.filters?.keywords ?? [],
-                              })}
+                      <div className="py-1">
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1">
+                            <p className="text-sm max-sm:text-base font-medium text-white flex items-center gap-1.5">
+                              <i className="ri-coin-line text-kol-text-muted" />
+                              Token Symbols
+                            </p>
+                            <p className="text-xs max-sm:text-sm text-kol-text-muted mt-0.5">Highlight tweets with $TOKEN mentions</p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            {(displaySettings?.filters?.filterTokenSymbols ?? false) && !selectedGroup.settings.useGlobalSettings && (
+                              <ColorPicker
+                                currentColor={displaySettings?.filters?.tokenSymbolsColor ?? DEFAULT_TOKEN_SYMBOLS_COLOR}
+                                onSelect={(color) => updateGroupFilters(selectedGroupId, buildFilters(selectedGroup.settings.filters, { tokenSymbolsColor: color }))}
+                              />
+                            )}
+                            <ToggleSwitch
+                              enabled={displaySettings?.filters?.filterTokenSymbols ?? false}
+                              onChange={(v) => updateGroupFilters(selectedGroupId, buildFilters(selectedGroup.settings.filters, { filterTokenSymbols: v }))}
+                              disabled={selectedGroup.settings.useGlobalSettings}
                             />
-                          )}
-                          <ToggleSwitch
-                            enabled={displaySettings?.filters?.filterTokenSymbols ?? false}
-                            onChange={(v) => updateGroupFilters(selectedGroupId, {
-                              ...selectedGroup.settings.filters,
-                              filterTokenSymbols: v,
-                              tokenSymbolsColor: selectedGroup.settings.filters?.tokenSymbolsColor ?? DEFAULT_TOKEN_SYMBOLS_COLOR,
-                              filterMintAddresses: selectedGroup.settings.filters?.filterMintAddresses ?? false,
-                              mintAddressesColor: selectedGroup.settings.filters?.mintAddressesColor ?? DEFAULT_MINT_ADDRESSES_COLOR,
-                              keywords: selectedGroup.settings.filters?.keywords ?? [],
-                            })}
-                            disabled={selectedGroup.settings.useGlobalSettings}
-                          />
+                          </div>
                         </div>
+                        {(displaySettings?.filters?.filterTokenSymbols ?? false) && !selectedGroup.settings.useGlobalSettings && (
+                          <div className="flex items-center gap-1.5 mt-2 ml-6">
+                            <Tooltip content="Desktop notification" position="top">
+                              <button
+                                onClick={() => {
+                                  const notif = selectedGroup.settings.filters?.tokenSymbolsNotification ?? DEFAULT_TOKEN_SYMBOLS_NOTIFICATION
+                                  updateGroupFilters(selectedGroupId, buildFilters(selectedGroup.settings.filters, {
+                                    tokenSymbolsNotification: { ...notif, desktop: !notif.desktop },
+                                  }))
+                                }}
+                                className={`
+                                  w-6 h-6 max-sm:w-9 max-sm:h-9 rounded flex items-center justify-center transition-colors
+                                  ${(displaySettings?.filters?.tokenSymbolsNotification?.desktop ?? DEFAULT_TOKEN_SYMBOLS_NOTIFICATION.desktop)
+                                    ? 'text-kol-blue bg-kol-blue/10'
+                                    : 'text-kol-text-muted/40 hover:text-kol-text-muted'
+                                  }
+                                `}
+                              >
+                                <i className={(displaySettings?.filters?.tokenSymbolsNotification?.desktop ?? DEFAULT_TOKEN_SYMBOLS_NOTIFICATION.desktop) ? 'ri-notification-3-fill' : 'ri-notification-3-line'} />
+                              </button>
+                            </Tooltip>
+                            <Tooltip content="Sound notification" position="top">
+                              <button
+                                onClick={() => {
+                                  const notif = selectedGroup.settings.filters?.tokenSymbolsNotification ?? DEFAULT_TOKEN_SYMBOLS_NOTIFICATION
+                                  updateGroupFilters(selectedGroupId, buildFilters(selectedGroup.settings.filters, {
+                                    tokenSymbolsNotification: { ...notif, sound: !notif.sound },
+                                  }))
+                                }}
+                                className={`
+                                  w-6 h-6 max-sm:w-9 max-sm:h-9 rounded flex items-center justify-center transition-colors
+                                  ${(displaySettings?.filters?.tokenSymbolsNotification?.sound ?? DEFAULT_TOKEN_SYMBOLS_NOTIFICATION.sound)
+                                    ? 'text-kol-blue bg-kol-blue/10'
+                                    : 'text-kol-text-muted/40 hover:text-kol-text-muted'
+                                  }
+                                `}
+                              >
+                                <i className={(displaySettings?.filters?.tokenSymbolsNotification?.sound ?? DEFAULT_TOKEN_SYMBOLS_NOTIFICATION.sound) ? 'ri-volume-up-fill' : 'ri-volume-mute-line'} />
+                              </button>
+                            </Tooltip>
+                            <SoundPicker
+                              currentSound={displaySettings?.filters?.tokenSymbolsNotification?.soundId ?? DEFAULT_TOKEN_SYMBOLS_NOTIFICATION.soundId}
+                              onSelect={(soundId) => {
+                                const notif = selectedGroup.settings.filters?.tokenSymbolsNotification ?? DEFAULT_TOKEN_SYMBOLS_NOTIFICATION
+                                updateGroupFilters(selectedGroupId, buildFilters(selectedGroup.settings.filters, {
+                                  tokenSymbolsNotification: { ...notif, soundId },
+                                }))
+                              }}
+                              enabled={displaySettings?.filters?.tokenSymbolsNotification?.sound ?? DEFAULT_TOKEN_SYMBOLS_NOTIFICATION.sound}
+                            />
+                          </div>
+                        )}
                       </div>
-                      <div className="flex items-center justify-between py-1">
-                        <div className="flex-1">
-                          <p className="text-sm max-sm:text-base font-medium text-white flex items-center gap-1.5">
-                            <i className="ri-file-code-line text-kol-text-muted" />
-                            Mint Addresses
-                          </p>
-                          <p className="text-xs max-sm:text-sm text-kol-text-muted mt-0.5">Highlight tweets with contract addresses</p>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          {(displaySettings?.filters?.filterMintAddresses ?? false) && !selectedGroup.settings.useGlobalSettings && (
-                            <ColorPicker
-                              currentColor={displaySettings?.filters?.mintAddressesColor ?? DEFAULT_MINT_ADDRESSES_COLOR}
-                              onSelect={(color) => updateGroupFilters(selectedGroupId, {
-                                ...selectedGroup.settings.filters,
-                                filterTokenSymbols: selectedGroup.settings.filters?.filterTokenSymbols ?? false,
-                                tokenSymbolsColor: selectedGroup.settings.filters?.tokenSymbolsColor ?? DEFAULT_TOKEN_SYMBOLS_COLOR,
-                                filterMintAddresses: selectedGroup.settings.filters?.filterMintAddresses ?? false,
-                                mintAddressesColor: color,
-                                keywords: selectedGroup.settings.filters?.keywords ?? [],
-                              })}
+                      <div className="py-1">
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1">
+                            <p className="text-sm max-sm:text-base font-medium text-white flex items-center gap-1.5">
+                              <i className="ri-file-code-line text-kol-text-muted" />
+                              Mint Addresses
+                            </p>
+                            <p className="text-xs max-sm:text-sm text-kol-text-muted mt-0.5">Highlight tweets with contract addresses</p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            {(displaySettings?.filters?.filterMintAddresses ?? false) && !selectedGroup.settings.useGlobalSettings && (
+                              <ColorPicker
+                                currentColor={displaySettings?.filters?.mintAddressesColor ?? DEFAULT_MINT_ADDRESSES_COLOR}
+                                onSelect={(color) => updateGroupFilters(selectedGroupId, buildFilters(selectedGroup.settings.filters, { mintAddressesColor: color }))}
+                              />
+                            )}
+                            <ToggleSwitch
+                              enabled={displaySettings?.filters?.filterMintAddresses ?? false}
+                              onChange={(v) => updateGroupFilters(selectedGroupId, buildFilters(selectedGroup.settings.filters, { filterMintAddresses: v }))}
+                              disabled={selectedGroup.settings.useGlobalSettings}
                             />
-                          )}
-                          <ToggleSwitch
-                            enabled={displaySettings?.filters?.filterMintAddresses ?? false}
-                            onChange={(v) => updateGroupFilters(selectedGroupId, {
-                              ...selectedGroup.settings.filters,
-                              filterTokenSymbols: selectedGroup.settings.filters?.filterTokenSymbols ?? false,
-                              tokenSymbolsColor: selectedGroup.settings.filters?.tokenSymbolsColor ?? DEFAULT_TOKEN_SYMBOLS_COLOR,
-                              filterMintAddresses: v,
-                              mintAddressesColor: selectedGroup.settings.filters?.mintAddressesColor ?? DEFAULT_MINT_ADDRESSES_COLOR,
-                              keywords: selectedGroup.settings.filters?.keywords ?? [],
-                            })}
-                            disabled={selectedGroup.settings.useGlobalSettings}
-                          />
+                          </div>
                         </div>
+                        {(displaySettings?.filters?.filterMintAddresses ?? false) && !selectedGroup.settings.useGlobalSettings && (
+                          <div className="flex items-center gap-1.5 mt-2 ml-6">
+                            <Tooltip content="Desktop notification" position="top">
+                              <button
+                                onClick={() => {
+                                  const notif = selectedGroup.settings.filters?.mintAddressesNotification ?? DEFAULT_MINT_ADDRESSES_NOTIFICATION
+                                  updateGroupFilters(selectedGroupId, buildFilters(selectedGroup.settings.filters, {
+                                    mintAddressesNotification: { ...notif, desktop: !notif.desktop },
+                                  }))
+                                }}
+                                className={`
+                                  w-6 h-6 max-sm:w-9 max-sm:h-9 rounded flex items-center justify-center transition-colors
+                                  ${(displaySettings?.filters?.mintAddressesNotification?.desktop ?? DEFAULT_MINT_ADDRESSES_NOTIFICATION.desktop)
+                                    ? 'text-kol-blue bg-kol-blue/10'
+                                    : 'text-kol-text-muted/40 hover:text-kol-text-muted'
+                                  }
+                                `}
+                              >
+                                <i className={(displaySettings?.filters?.mintAddressesNotification?.desktop ?? DEFAULT_MINT_ADDRESSES_NOTIFICATION.desktop) ? 'ri-notification-3-fill' : 'ri-notification-3-line'} />
+                              </button>
+                            </Tooltip>
+                            <Tooltip content="Sound notification" position="top">
+                              <button
+                                onClick={() => {
+                                  const notif = selectedGroup.settings.filters?.mintAddressesNotification ?? DEFAULT_MINT_ADDRESSES_NOTIFICATION
+                                  updateGroupFilters(selectedGroupId, buildFilters(selectedGroup.settings.filters, {
+                                    mintAddressesNotification: { ...notif, sound: !notif.sound },
+                                  }))
+                                }}
+                                className={`
+                                  w-6 h-6 max-sm:w-9 max-sm:h-9 rounded flex items-center justify-center transition-colors
+                                  ${(displaySettings?.filters?.mintAddressesNotification?.sound ?? DEFAULT_MINT_ADDRESSES_NOTIFICATION.sound)
+                                    ? 'text-kol-blue bg-kol-blue/10'
+                                    : 'text-kol-text-muted/40 hover:text-kol-text-muted'
+                                  }
+                                `}
+                              >
+                                <i className={(displaySettings?.filters?.mintAddressesNotification?.sound ?? DEFAULT_MINT_ADDRESSES_NOTIFICATION.sound) ? 'ri-volume-up-fill' : 'ri-volume-mute-line'} />
+                              </button>
+                            </Tooltip>
+                            <SoundPicker
+                              currentSound={displaySettings?.filters?.mintAddressesNotification?.soundId ?? DEFAULT_MINT_ADDRESSES_NOTIFICATION.soundId}
+                              onSelect={(soundId) => {
+                                const notif = selectedGroup.settings.filters?.mintAddressesNotification ?? DEFAULT_MINT_ADDRESSES_NOTIFICATION
+                                updateGroupFilters(selectedGroupId, buildFilters(selectedGroup.settings.filters, {
+                                  mintAddressesNotification: { ...notif, soundId },
+                                }))
+                              }}
+                              enabled={displaySettings?.filters?.mintAddressesNotification?.sound ?? DEFAULT_MINT_ADDRESSES_NOTIFICATION.sound}
+                            />
+                          </div>
+                        )}
                       </div>
                       <KeywordInput
                         keywords={displaySettings?.filters?.keywords ?? []}
-                        onChange={(v) => updateGroupFilters(selectedGroupId, {
-                          ...selectedGroup.settings.filters,
-                          filterTokenSymbols: selectedGroup.settings.filters?.filterTokenSymbols ?? false,
-                          tokenSymbolsColor: selectedGroup.settings.filters?.tokenSymbolsColor ?? DEFAULT_TOKEN_SYMBOLS_COLOR,
-                          filterMintAddresses: selectedGroup.settings.filters?.filterMintAddresses ?? false,
-                          mintAddressesColor: selectedGroup.settings.filters?.mintAddressesColor ?? DEFAULT_MINT_ADDRESSES_COLOR,
-                          keywords: v,
-                        })}
+                        onChange={(v) => updateGroupFilters(selectedGroupId, buildFilters(selectedGroup.settings.filters, { keywords: v }))}
                         disabled={selectedGroup.settings.useGlobalSettings}
                       />
                     </div>

@@ -1,7 +1,9 @@
 import { ColorPicker } from './ColorPicker'
+import { SoundPicker } from './SoundPicker'
 import { ToggleSwitch } from './ToggleSwitch'
 import { Tooltip } from '../../../ui/Tooltip'
 import type { Keyword } from '../types'
+import { DEFAULT_FILTER_NOTIFICATION } from '../constants'
 
 export interface KeywordRowProps {
   keyword: Keyword
@@ -11,6 +13,8 @@ export interface KeywordRowProps {
 }
 
 export function KeywordRow({ keyword, onChange, onDelete, disabled }: KeywordRowProps) {
+  const notification = keyword.notification ?? DEFAULT_FILTER_NOTIFICATION
+
   return (
     <div
       className={`
@@ -39,7 +43,7 @@ export function KeywordRow({ keyword, onChange, onDelete, disabled }: KeywordRow
       </span>
 
       {/* Options */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-1.5">
         {/* Case sensitive */}
         <Tooltip content="Match case exactly" position="top">
           <div className="flex items-center gap-1.5">
@@ -61,6 +65,49 @@ export function KeywordRow({ keyword, onChange, onDelete, disabled }: KeywordRow
             />
           </div>
         </Tooltip>
+
+        {/* Desktop notification toggle */}
+        <Tooltip content="Desktop notification" position="top">
+          <button
+            onClick={() => onChange({
+              notification: { ...notification, desktop: !notification.desktop }
+            })}
+            className={`
+              w-6 h-6 max-sm:w-9 max-sm:h-9 rounded flex items-center justify-center transition-colors
+              ${notification.desktop
+                ? 'text-kol-blue bg-kol-blue/10'
+                : 'text-kol-text-muted/40 hover:text-kol-text-muted'
+              }
+            `}
+          >
+            <i className={notification.desktop ? 'ri-notification-3-fill' : 'ri-notification-3-line'} />
+          </button>
+        </Tooltip>
+
+        {/* Sound toggle */}
+        <Tooltip content="Sound notification" position="top">
+          <button
+            onClick={() => onChange({
+              notification: { ...notification, sound: !notification.sound }
+            })}
+            className={`
+              w-6 h-6 max-sm:w-9 max-sm:h-9 rounded flex items-center justify-center transition-colors
+              ${notification.sound
+                ? 'text-kol-blue bg-kol-blue/10'
+                : 'text-kol-text-muted/40 hover:text-kol-text-muted'
+              }
+            `}
+          >
+            <i className={notification.sound ? 'ri-volume-up-fill' : 'ri-volume-mute-line'} />
+          </button>
+        </Tooltip>
+        <SoundPicker
+          currentSound={notification.soundId}
+          onSelect={(soundId) => onChange({
+            notification: { ...notification, soundId }
+          })}
+          enabled={notification.sound}
+        />
 
         {/* Enabled toggle */}
         <Tooltip content={keyword.enabled ? 'Disable keyword' : 'Enable keyword'} position="top">

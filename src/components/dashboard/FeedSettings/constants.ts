@@ -271,3 +271,7 @@ export const HIGHLIGHT_COLORS = [
 export const DEFAULT_KEYWORD_COLOR = '#007bff'
 export const DEFAULT_TOKEN_SYMBOLS_COLOR = '#f59e0b'  // Orange
 export const DEFAULT_MINT_ADDRESSES_COLOR = '#8b5cf6' // Purple
+
+export const DEFAULT_FILTER_NOTIFICATION = { desktop: true, sound: true, soundId: 'default' }
+export const DEFAULT_TOKEN_SYMBOLS_NOTIFICATION = { desktop: true, sound: true, soundId: 'coin' }
+export const DEFAULT_MINT_ADDRESSES_NOTIFICATION = { desktop: true, sound: true, soundId: 'alert' }
