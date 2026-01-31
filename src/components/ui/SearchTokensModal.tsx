@@ -1147,8 +1147,8 @@ export function SearchTokensModal({
                     {/* Related Tweets Section (shown when searching) */}
                     {searchQuery.trim() && filteredTweets.length > 0 && (
                       <>
-                        <div className="flex h-8 items-center px-4 mt-2 border-t border-kol-border/30">
-                          <span className="text-xs text-kol-text-muted flex items-center gap-1.5">
+                        <div className="flex h-10 items-center px-4 mt-2 border-t border-kol-border/30">
+                          <span className="text-xs text-kol-text-secondary flex items-center gap-1.5">
                             <i className="ri-twitter-x-line text-sm" />
                             {filteredTweets.length} Related Tweets
                           </span>
@@ -1177,8 +1177,8 @@ export function SearchTokensModal({
                       <i className="ri-search-line text-2xl mb-1 opacity-50" />
                       <p className="text-xs">No tokens found</p>
                     </div>
-                    <div className="flex h-8 items-center px-4 border-t border-kol-border/30">
-                      <span className="text-xs text-kol-text-muted flex items-center gap-1.5">
+                    <div className="flex h-10 items-center px-4 border-t border-kol-border/30">
+                      <span className="text-xs text-kol-text-secondary flex items-center gap-1.5">
                         <i className="ri-twitter-x-line text-sm" />
                         {filteredTweets.length} Related Tweets
                       </span>
