@@ -1,22 +1,14 @@
 import { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react'
-import { THEMES, getThemeById, generateAccentVariants, CSS_VAR_KEYS } from './themes'
+import { THEMES, getThemeById, CSS_VAR_KEYS } from './themes'
 import type { ThemeDefinition } from './themes'
 
 interface ThemeState {
   themeId: string
-  customAccentColor?: string
-  customFontUrl?: string
-  customFontFamily?: string
 }
 
 interface ThemeContextValue {
   themeId: string
   setThemeId: (id: string) => void
-  customAccentColor: string | undefined
-  setCustomAccentColor: (color: string | undefined) => void
-  customFontUrl: string | undefined
-  customFontFamily: string | undefined
-  setCustomFont: (url: string | undefined, family: string | undefined) => void
   activeTheme: ThemeDefinition
 }
 
@@ -49,57 +41,11 @@ function getStorage(): {
   }
 }
 
-function applyThemeToDOM(theme: ThemeDefinition, customAccent?: string, customFontUrl?: string, customFontFamily?: string) {
+function applyThemeToDOM(theme: ThemeDefinition) {
   const root = document.documentElement
-  const vars = { ...theme.variables }
-
-  if (customAccent) {
-    const variants = generateAccentVariants(customAccent)
-    vars['--kol-blue'] = variants.blue
-    vars['--kol-blue-hover'] = variants.blueHover
-    vars['--kol-blue-glow'] = variants.blueGlow
-  }
-
-  if (customFontFamily) {
-    vars['--font-display'] = `"${customFontFamily}"`
-    vars['--font-body'] = `"${customFontFamily}"`
-  }
-
   for (const key of CSS_VAR_KEYS) {
-    root.style.setProperty(key, vars[key])
+    root.style.setProperty(key, theme.variables[key])
   }
-
-  // Inject Google Font link if needed
-  const existingLink = document.getElementById('kol-custom-font') as HTMLLinkElement | null
-  if (customFontUrl) {
-    if (existingLink) {
-      if (existingLink.href !== customFontUrl) {
-        existingLink.href = customFontUrl
-      }
-    } else {
-      const link = document.createElement('link')
-      link.id = 'kol-custom-font'
-      link.rel = 'stylesheet'
-      link.href = customFontUrl
-      document.head.appendChild(link)
-    }
-  } else if (existingLink) {
-    existingLink.remove()
-  }
-}
-
-function parseFontFamilyFromUrl(url: string): string | undefined {
-  try {
-    const u = new URL(url)
-    const family = u.searchParams.get('family')
-    if (family) {
-      // "Roboto:wght@400;700" -> "Roboto"
-      return family.split(':')[0].replace(/\+/g, ' ')
-    }
-  } catch {
-    // ignore
-  }
-  return undefined
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
@@ -123,7 +69,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!loaded) return
     const theme = getThemeById(state.themeId) ?? THEMES[0]
-    applyThemeToDOM(theme, state.customAccentColor, state.customFontUrl, state.customFontFamily)
+    applyThemeToDOM(theme)
   }, [state, loaded])
 
   // Persist to storage (debounced)
@@ -154,37 +100,13 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   const setThemeId = useCallback((id: string) => {
-    setState((prev) => ({ ...prev, themeId: id, customAccentColor: undefined }))
-  }, [])
-
-  const setCustomAccentColor = useCallback((color: string | undefined) => {
-    setState((prev) => ({ ...prev, customAccentColor: color }))
-  }, [])
-
-  const setCustomFont = useCallback((url: string | undefined, family: string | undefined) => {
-    const parsedFamily = url ? (family || parseFontFamilyFromUrl(url)) : undefined
-    setState((prev) => ({
-      ...prev,
-      customFontUrl: url,
-      customFontFamily: parsedFamily,
-    }))
+    setState({ themeId: id })
   }, [])
 
   const activeTheme = getThemeById(state.themeId) ?? THEMES[0]
 
   return (
-    <ThemeContext.Provider
-      value={{
-        themeId: state.themeId,
-        setThemeId,
-        customAccentColor: state.customAccentColor,
-        setCustomAccentColor,
-        customFontUrl: state.customFontUrl,
-        customFontFamily: state.customFontFamily,
-        setCustomFont,
-        activeTheme,
-      }}
-    >
+    <ThemeContext.Provider value={{ themeId: state.themeId, setThemeId, activeTheme }}>
       {children}
     </ThemeContext.Provider>
   )

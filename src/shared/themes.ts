@@ -24,7 +24,7 @@ function lightenHex(hex: string, amount: number): string {
   return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`
 }
 
-export function generateAccentVariants(hex: string): {
+function generateAccentVariants(hex: string): {
   blue: string
   blueHover: string
   blueGlow: string
@@ -139,12 +139,6 @@ export const THEMES: ThemeDefinition[] = [
     '--kol-border': '#30241a',
     '--kol-border-hover': '#403024',
   }),
-  {
-    id: 'custom',
-    name: 'Custom',
-    accent: '#007bff',
-    variables: { ...DARK_BASE },
-  },
 ]
 
 export function getThemeById(id: string): ThemeDefinition | undefined {

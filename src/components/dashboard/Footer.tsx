@@ -249,7 +249,7 @@ export function Footer({
         <QuickLinkPopover triggerMode="click" width={240} content={<LanguageCardContent />}>
           <ExpandableButton icon="ri-translate-2" label="Language" variant="subtle" />
         </QuickLinkPopover>
-        <QuickLinkPopover triggerMode="click" width={320} content={<ThemeCardContent />}>
+        <QuickLinkPopover triggerMode="click" width={240} content={<ThemeCardContent />}>
           <ExpandableButton icon="ri-palette-line" label="Theme" variant="subtle" />
         </QuickLinkPopover>
         <VerticalDivider />
