@@ -262,6 +262,7 @@ export function Footer({
           label="Coins"
           variant="subtle"
           onClick={onToggleCoins}
+          active={isCoinsVisible}
           className={isCoinsVisible ? '' : 'opacity-40'}
         />
         <ExpandableButton
@@ -269,6 +270,7 @@ export function Footer({
           label="Feed"
           variant="subtle"
           onClick={onToggleFeed}
+          active={isFeedVisible}
           className={isFeedVisible ? '' : 'opacity-40'}
         />
         <VerticalDivider />

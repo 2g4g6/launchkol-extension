@@ -23,6 +23,8 @@ export interface ExpandableButtonProps {
   className?: string
   /** When true, never expand — always show tooltip instead */
   tooltipOnly?: boolean
+  /** When true, button stays expanded with an active/toggled-on appearance */
+  active?: boolean
 }
 
 const sizeConfig = {
@@ -89,6 +91,7 @@ export function ExpandableButton({
   disabled = false,
   className = '',
   tooltipOnly = false,
+  active = false,
 }: ExpandableButtonProps) {
   const [isHovered, setIsHovered] = useState(false)
   const isSmall = useIsSmallScreen()
@@ -103,7 +106,7 @@ export function ExpandableButton({
   const expandedWidth = getExpandedWidth(label, size)
 
   const collapsed = isSmall || tooltipOnly
-  const isExpanded = !collapsed && isHovered
+  const isExpanded = active || (!collapsed && isHovered)
   const transition = didBreakpointChange ? instantTransition : springTransition
 
   return (
