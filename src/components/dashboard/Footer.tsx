@@ -221,7 +221,7 @@ export function Footer({
       </div>
 
       {/* Center - platform pill with hover popover - hidden on small screens */}
-      <div className="justify-self-center hidden sm:block col-start-2">
+      <div className="justify-self-center hidden md:block col-start-2">
         <MarketLighthousePopover>
           <PlatformPill />
         </MarketLighthousePopover>
