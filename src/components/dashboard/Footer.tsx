@@ -45,7 +45,7 @@ function getPingColor(ping: number): string {
 }
 
 function VerticalDivider() {
-  return <div className="self-stretch my-2 w-px bg-kol-border flex-shrink-0 mx-1" />
+  return <div className="self-stretch my-2 w-px bg-kol-border flex-shrink-0" />
 }
 
 function RegionDropdown() {
@@ -248,7 +248,7 @@ export function Footer({
       </div>
 
       {/* Right section */}
-      <div className="flex items-center gap-0.5 justify-self-end col-start-3">
+      <div className="flex items-center gap-1 justify-self-end col-start-3">
         <QuickLinkPopover triggerMode="click" width={300} content={<FeesCardContent />}>
           <ExpandableButton icon="ri-percent-line" label="Fees" variant="subtle" />
         </QuickLinkPopover>
