@@ -83,7 +83,18 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
   const [expandedAccountId, setExpandedAccountId] = useState<string | null>(null)
   const [isMobile, setIsMobile] = useState(false)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const [collapsedSections, setCollapsedSections] = useState<Set<string>>(new Set())
   const triggerRef = useRef<HTMLButtonElement>(null)
+
+  const toggleSection = (key: string) => {
+    setCollapsedSections(prev => {
+      const next = new Set(prev)
+      if (next.has(key)) next.delete(key)
+      else next.add(key)
+      return next
+    })
+  }
+  const isSectionOpen = (key: string) => !collapsedSections.has(key)
 
   // Mobile detection
   useEffect(() => {
@@ -536,13 +547,32 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
 
                 {/* General Settings Section */}
                 <div>
-                  <span className="text-[10px] max-sm:text-xs text-kol-text-muted uppercase tracking-wide font-medium flex items-center gap-1.5">
-                    <i className="ri-settings-3-line" />
-                    General Settings
-                  </span>
+                  <button
+                    onClick={() => toggleSection('global-general')}
+                    className="w-full flex items-center justify-between group/section cursor-pointer"
+                  >
+                    <span className="text-[10px] max-sm:text-xs text-kol-text-muted uppercase tracking-wide font-medium flex items-center gap-1.5">
+                      <i className="ri-settings-3-line" />
+                      General Settings
+                    </span>
+                    <motion.i
+                      animate={{ rotate: isSectionOpen('global-general') ? 0 : -90 }}
+                      transition={{ duration: 0.2 }}
+                      className="ri-arrow-down-s-line text-kol-text-muted text-sm"
+                    />
+                  </button>
                 </div>
 
                 {/* Toggle Settings */}
+                <AnimatePresence initial={false}>
+                  {isSectionOpen('global-general') && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="overflow-hidden"
+                    >
                 <div className="space-y-4">
                   <div className="flex items-center justify-between py-1">
                     <div className="flex-1">
@@ -632,15 +662,37 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                     />
                   </div>
                 </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
 
                 {/* Filters Section */}
                 <div className="pt-2 border-t border-kol-border/20">
                   <div className="mb-3">
-                    <span className="text-[10px] max-sm:text-xs text-kol-text-muted uppercase tracking-wide font-medium flex items-center gap-1.5">
-                      <i className="ri-filter-3-line" />
-                      Highlight Filters
-                    </span>
+                    <button
+                      onClick={() => toggleSection('global-filters')}
+                      className="w-full flex items-center justify-between cursor-pointer"
+                    >
+                      <span className="text-[10px] max-sm:text-xs text-kol-text-muted uppercase tracking-wide font-medium flex items-center gap-1.5">
+                        <i className="ri-filter-3-line" />
+                        Highlight Filters
+                      </span>
+                      <motion.i
+                        animate={{ rotate: isSectionOpen('global-filters') ? 0 : -90 }}
+                        transition={{ duration: 0.2 }}
+                        className="ri-arrow-down-s-line text-kol-text-muted text-sm"
+                      />
+                    </button>
                   </div>
+                  <AnimatePresence initial={false}>
+                    {isSectionOpen('global-filters') && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.2 }}
+                        className="overflow-hidden"
+                      >
                   <div className="space-y-3">
                     <div className="flex items-center justify-between py-1">
                       <div className="flex-1">
@@ -818,16 +870,38 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                       })}
                     />
                   </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
 
                 {/* Tweet Types Section */}
                 <div className="pt-2 border-t border-kol-border/20">
                   <div className="mb-2">
-                    <span className="text-[10px] max-sm:text-xs text-kol-text-muted uppercase tracking-wide font-medium flex items-center gap-1.5">
-                      <i className="ri-chat-3-line" />
-                      Tweet Types
-                    </span>
+                    <button
+                      onClick={() => toggleSection('global-tweets')}
+                      className="w-full flex items-center justify-between cursor-pointer"
+                    >
+                      <span className="text-[10px] max-sm:text-xs text-kol-text-muted uppercase tracking-wide font-medium flex items-center gap-1.5">
+                        <i className="ri-chat-3-line" />
+                        Tweet Types
+                      </span>
+                      <motion.i
+                        animate={{ rotate: isSectionOpen('global-tweets') ? 0 : -90 }}
+                        transition={{ duration: 0.2 }}
+                        className="ri-arrow-down-s-line text-kol-text-muted text-sm"
+                      />
+                    </button>
                   </div>
+                  <AnimatePresence initial={false}>
+                    {isSectionOpen('global-tweets') && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.2 }}
+                        className="overflow-hidden"
+                      >
                   <div className="space-y-0.5">
                     {(Object.keys(TWEET_TYPE_LABELS) as TweetTypeKey[]).map(typeKey => (
                       <TweetTypeRow
@@ -841,6 +915,9 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                       />
                     ))}
                   </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
               </div>
             )}
@@ -1010,12 +1087,31 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                                     {/* General Settings Section */}
                                     <div>
                                       <div className="mb-2">
-                                        <span className="text-[9px] text-kol-text-muted uppercase tracking-wide font-medium flex items-center gap-1">
-                                          <i className="ri-settings-3-line" />
-                                          General Settings
-                                        </span>
+                                        <button
+                                          onClick={() => toggleSection(`account-${account.id}-general`)}
+                                          className="w-full flex items-center justify-between cursor-pointer"
+                                        >
+                                          <span className="text-[9px] text-kol-text-muted uppercase tracking-wide font-medium flex items-center gap-1">
+                                            <i className="ri-settings-3-line" />
+                                            General Settings
+                                          </span>
+                                          <motion.i
+                                            animate={{ rotate: isSectionOpen(`account-${account.id}-general`) ? 0 : -90 }}
+                                            transition={{ duration: 0.2 }}
+                                            className="ri-arrow-down-s-line text-kol-text-muted text-xs"
+                                          />
+                                        </button>
                                       </div>
 
+                                      <AnimatePresence initial={false}>
+                                        {isSectionOpen(`account-${account.id}-general`) && (
+                                          <motion.div
+                                            initial={{ opacity: 0, height: 0 }}
+                                            animate={{ opacity: 1, height: 'auto' }}
+                                            exit={{ opacity: 0, height: 0 }}
+                                            transition={{ duration: 0.2 }}
+                                            className="overflow-hidden"
+                                          >
                                       <div className="space-y-3">
                                         {/* Auto-translate */}
                                         <div className="flex items-center justify-between">
@@ -1088,17 +1184,39 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                                           />
                                         </div>
                                       </div>
+                                          </motion.div>
+                                        )}
+                                      </AnimatePresence>
                                     </div>
 
                                     {/* Filters Section */}
                                     <div>
                                       <div className="mb-2">
-                                        <span className="text-[9px] text-kol-text-muted uppercase tracking-wide font-medium flex items-center gap-1">
-                                          <i className="ri-filter-3-line" />
-                                          Highlight Filters
-                                        </span>
+                                        <button
+                                          onClick={() => toggleSection(`account-${account.id}-filters`)}
+                                          className="w-full flex items-center justify-between cursor-pointer"
+                                        >
+                                          <span className="text-[9px] text-kol-text-muted uppercase tracking-wide font-medium flex items-center gap-1">
+                                            <i className="ri-filter-3-line" />
+                                            Highlight Filters
+                                          </span>
+                                          <motion.i
+                                            animate={{ rotate: isSectionOpen(`account-${account.id}-filters`) ? 0 : -90 }}
+                                            transition={{ duration: 0.2 }}
+                                            className="ri-arrow-down-s-line text-kol-text-muted text-xs"
+                                          />
+                                        </button>
                                       </div>
 
+                                      <AnimatePresence initial={false}>
+                                        {isSectionOpen(`account-${account.id}-filters`) && (
+                                          <motion.div
+                                            initial={{ opacity: 0, height: 0 }}
+                                            animate={{ opacity: 1, height: 'auto' }}
+                                            exit={{ opacity: 0, height: 0 }}
+                                            transition={{ duration: 0.2 }}
+                                            className="overflow-hidden"
+                                          >
                                       <div className="space-y-2">
                                         <div className="flex items-center justify-between">
                                           <div className="flex items-center gap-1.5">
@@ -1237,17 +1355,39 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                                           onChange={(v) => updateAccountFilters(selectedGroupId, account.id, buildFilters(account.settings?.filters, { keywords: v }))}
                                         />
                                       </div>
+                                          </motion.div>
+                                        )}
+                                      </AnimatePresence>
                                     </div>
 
                                     {/* Tweet Types Section */}
                                     <div>
                                       <div className="mb-2">
-                                        <span className="text-[9px] text-kol-text-muted uppercase tracking-wide font-medium flex items-center gap-1">
-                                          <i className="ri-chat-3-line" />
-                                          Tweet Types
-                                        </span>
+                                        <button
+                                          onClick={() => toggleSection(`account-${account.id}-tweets`)}
+                                          className="w-full flex items-center justify-between cursor-pointer"
+                                        >
+                                          <span className="text-[9px] text-kol-text-muted uppercase tracking-wide font-medium flex items-center gap-1">
+                                            <i className="ri-chat-3-line" />
+                                            Tweet Types
+                                          </span>
+                                          <motion.i
+                                            animate={{ rotate: isSectionOpen(`account-${account.id}-tweets`) ? 0 : -90 }}
+                                            transition={{ duration: 0.2 }}
+                                            className="ri-arrow-down-s-line text-kol-text-muted text-xs"
+                                          />
+                                        </button>
                                       </div>
 
+                                      <AnimatePresence initial={false}>
+                                        {isSectionOpen(`account-${account.id}-tweets`) && (
+                                          <motion.div
+                                            initial={{ opacity: 0, height: 0 }}
+                                            animate={{ opacity: 1, height: 'auto' }}
+                                            exit={{ opacity: 0, height: 0 }}
+                                            transition={{ duration: 0.2 }}
+                                            className="overflow-hidden"
+                                          >
                                       <div className="space-y-0.5">
                                         {(Object.keys(TWEET_TYPE_LABELS) as TweetTypeKey[]).map(typeKey => (
                                           <TweetTypeRow
@@ -1261,6 +1401,9 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                                           />
                                         ))}
                                       </div>
+                                          </motion.div>
+                                        )}
+                                      </AnimatePresence>
                                     </div>
                                   </div>
                                 </motion.div>
@@ -1340,12 +1483,31 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                   {/* General Settings Section */}
                   <div className="mb-4">
                     <div className="mb-3">
-                      <span className="text-[10px] max-sm:text-xs text-kol-text-muted uppercase tracking-wide font-medium flex items-center gap-1.5">
-                        <i className="ri-settings-3-line" />
-                        General Settings
-                      </span>
+                      <button
+                        onClick={() => toggleSection('group-general')}
+                        className="w-full flex items-center justify-between cursor-pointer"
+                      >
+                        <span className="text-[10px] max-sm:text-xs text-kol-text-muted uppercase tracking-wide font-medium flex items-center gap-1.5">
+                          <i className="ri-settings-3-line" />
+                          General Settings
+                        </span>
+                        <motion.i
+                          animate={{ rotate: isSectionOpen('group-general') ? 0 : -90 }}
+                          transition={{ duration: 0.2 }}
+                          className="ri-arrow-down-s-line text-kol-text-muted text-sm"
+                        />
+                      </button>
                     </div>
 
+                    <AnimatePresence initial={false}>
+                      {isSectionOpen('group-general') && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          exit={{ opacity: 0, height: 0 }}
+                          transition={{ duration: 0.2 }}
+                          className="overflow-hidden"
+                        >
                     <div className="space-y-4">
                       <div className="flex items-center justify-between py-1">
                         <div className="flex-1">
@@ -1440,17 +1602,39 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                         />
                       </div>
                     </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
 
                   {/* Filters Section */}
                   <div className="mb-4 pt-2 border-t border-kol-border/20">
                     <div className="mb-3">
-                      <span className="text-[10px] max-sm:text-xs text-kol-text-muted uppercase tracking-wide font-medium flex items-center gap-1.5">
-                        <i className="ri-filter-3-line" />
-                        Highlight Filters
-                      </span>
+                      <button
+                        onClick={() => toggleSection('group-filters')}
+                        className="w-full flex items-center justify-between cursor-pointer"
+                      >
+                        <span className="text-[10px] max-sm:text-xs text-kol-text-muted uppercase tracking-wide font-medium flex items-center gap-1.5">
+                          <i className="ri-filter-3-line" />
+                          Highlight Filters
+                        </span>
+                        <motion.i
+                          animate={{ rotate: isSectionOpen('group-filters') ? 0 : -90 }}
+                          transition={{ duration: 0.2 }}
+                          className="ri-arrow-down-s-line text-kol-text-muted text-sm"
+                        />
+                      </button>
                     </div>
 
+                    <AnimatePresence initial={false}>
+                      {isSectionOpen('group-filters') && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          exit={{ opacity: 0, height: 0 }}
+                          transition={{ duration: 0.2 }}
+                          className="overflow-hidden"
+                        >
                     <div className="space-y-3">
                       <div className="flex items-center justify-between py-1">
                         <div className="flex-1">
@@ -1598,16 +1782,38 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                         disabled={selectedGroup.settings.useGlobalSettings}
                       />
                     </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
 
                   {/* Tweet Types Section */}
                   <div className="pt-2 border-t border-kol-border/20">
                     <div className="mb-2">
-                      <span className="text-[10px] max-sm:text-xs text-kol-text-muted uppercase tracking-wide font-medium flex items-center gap-1.5">
-                        <i className="ri-chat-3-line" />
-                        Tweet Types
-                      </span>
+                      <button
+                        onClick={() => toggleSection('group-tweets')}
+                        className="w-full flex items-center justify-between cursor-pointer"
+                      >
+                        <span className="text-[10px] max-sm:text-xs text-kol-text-muted uppercase tracking-wide font-medium flex items-center gap-1.5">
+                          <i className="ri-chat-3-line" />
+                          Tweet Types
+                        </span>
+                        <motion.i
+                          animate={{ rotate: isSectionOpen('group-tweets') ? 0 : -90 }}
+                          transition={{ duration: 0.2 }}
+                          className="ri-arrow-down-s-line text-kol-text-muted text-sm"
+                        />
+                      </button>
                     </div>
+                    <AnimatePresence initial={false}>
+                      {isSectionOpen('group-tweets') && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          exit={{ opacity: 0, height: 0 }}
+                          transition={{ duration: 0.2 }}
+                          className="overflow-hidden"
+                        >
                     <div className="space-y-0.5">
                       {(Object.keys(TWEET_TYPE_LABELS) as TweetTypeKey[]).map(typeKey => (
                         <TweetTypeRow
@@ -1621,6 +1827,9 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                         />
                       ))}
                     </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
                 </div>
               </div>
