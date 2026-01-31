@@ -702,19 +702,17 @@ function TokenRow({
             </button>
           </Tooltip>
         )}
-        {token.axiomUrl && (
-          <Tooltip content="Trade on Axiom" position="bottom" delayShow={200}>
-            <a
-              href={token.axiomUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
-              className="flex h-[30px] w-[30px] items-center justify-center rounded-full border border-kol-blue/30 text-white hover:text-kol-blue-hover hover:border-kol-blue/60 transition-colors"
-            >
-              <AxiomIcon className="w-4 h-4" />
-            </a>
-          </Tooltip>
-        )}
+        <Tooltip content="Trade on Axiom" position="bottom" delayShow={200}>
+          <a
+            href={token.axiomUrl || `https://axiom.trade/t/${token.address}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            className="flex h-[30px] w-[30px] items-center justify-center rounded-full border border-kol-blue/30 text-white hover:text-kol-blue-hover hover:border-kol-blue/60 transition-colors"
+          >
+            <AxiomIcon className="w-4 h-4" />
+          </a>
+        </Tooltip>
       </div>
     </div>
   )
