@@ -1366,6 +1366,7 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                                         <KeywordInput
                                           keywords={account.settings?.filters?.keywords ?? groupSettings.filters?.keywords ?? []}
                                           onChange={(v) => updateAccountFilters(selectedGroupId, account.id, buildFilters(account.settings?.filters, { keywords: v }))}
+                                          showAutoBuy
                                         />
                                       </div>
                                           </motion.div>

@@ -1,6 +1,13 @@
 // Platform types for launch platforms
 export type PlatformType = 'pump' | 'bonk' | 'bags' | 'mayhem' | 'fourmeme'
 
+// Auto-buy trigger settings for keywords (account-level only)
+export interface KeywordAutoBuy {
+  enabled: boolean        // Whether auto-buy is active for this keyword
+  tokenAddress: string    // Token mint address to buy
+  buyAmount: string       // Amount in SOL to spend
+}
+
 // Keyword type for rich keyword management
 export interface Keyword {
   id: string              // Unique ID for React keys and editing
@@ -10,6 +17,7 @@ export interface Keyword {
   wholeWord: boolean      // Match whole words only
   enabled: boolean        // Toggle without deleting
   notification: TweetTypeNotificationSettings  // Desktop & sound notification settings
+  autoBuy?: KeywordAutoBuy // Auto-buy trigger (account-level only)
 }
 
 // Per tweet type notification settings

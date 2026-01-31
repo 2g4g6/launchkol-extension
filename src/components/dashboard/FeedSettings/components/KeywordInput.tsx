@@ -9,6 +9,7 @@ export interface KeywordInputProps {
   disabled?: boolean
   title?: string
   description?: string
+  showAutoBuy?: boolean
 }
 
 // Generate a unique ID for keywords
@@ -22,6 +23,7 @@ export function KeywordInput({
   disabled,
   title = 'Keywords',
   description = 'Highlight tweets containing these keywords',
+  showAutoBuy,
 }: KeywordInputProps) {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false)
   const addButtonRef = useRef<HTMLButtonElement>(null)
@@ -35,6 +37,7 @@ export function KeywordInput({
       wholeWord: keywordData.wholeWord,
       enabled: keywordData.enabled,
       notification: keywordData.notification,
+      ...(keywordData.autoBuy ? { autoBuy: keywordData.autoBuy } : {}),
     }
     onChange([...keywords, newKeyword])
   }
@@ -91,6 +94,7 @@ export function KeywordInput({
               onChange={(updates) => handleUpdateKeyword(keyword.id, updates)}
               onDelete={() => handleDeleteKeyword(keyword.id)}
               disabled={disabled}
+              showAutoBuy={showAutoBuy}
             />
           ))}
         </div>

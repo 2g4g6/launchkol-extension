@@ -1,4 +1,4 @@
-import type { ContentFilters, PlatformType, FeedGroupSettings, AccountSettings, GlobalFeedSettings, Keyword } from './types'
+import type { ContentFilters, PlatformType, FeedGroupSettings, AccountSettings, GlobalFeedSettings, Keyword, KeywordAutoBuy } from './types'
 import { DEFAULT_KEYWORD_COLOR, DEFAULT_TOKEN_SYMBOLS_COLOR, DEFAULT_MINT_ADDRESSES_COLOR, DEFAULT_FILTER_NOTIFICATION, DEFAULT_TOKEN_SYMBOLS_NOTIFICATION, DEFAULT_MINT_ADDRESSES_NOTIFICATION } from './constants'
 
 // Generate a unique ID for keywords
@@ -15,7 +15,7 @@ export function migrateKeywords(keywords: unknown): Keyword[] {
   return keywords.map((kw): Keyword => {
     // Already in new format (has text property)
     if (typeof kw === 'object' && kw !== null && 'text' in kw) {
-      const existing = kw as Partial<Keyword> & { notification?: Partial<Keyword['notification']> }
+      const existing = kw as Partial<Keyword> & { notification?: Partial<Keyword['notification']>, autoBuy?: Partial<KeywordAutoBuy> }
       return {
         id: existing.id || generateKeywordId(),
         text: existing.text || '',
@@ -28,6 +28,13 @@ export function migrateKeywords(keywords: unknown): Keyword[] {
           sound: existing.notification?.sound ?? DEFAULT_FILTER_NOTIFICATION.sound,
           soundId: existing.notification?.soundId ?? DEFAULT_FILTER_NOTIFICATION.soundId,
         },
+        ...(existing.autoBuy ? {
+          autoBuy: {
+            enabled: existing.autoBuy.enabled ?? false,
+            tokenAddress: existing.autoBuy.tokenAddress ?? '',
+            buyAmount: existing.autoBuy.buyAmount ?? '',
+          },
+        } : {}),
       }
     }
 
