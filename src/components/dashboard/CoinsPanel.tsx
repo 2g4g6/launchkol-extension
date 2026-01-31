@@ -1079,22 +1079,22 @@ export function CoinsPanel({ solPrice }: CoinsPanelProps) {
           {/* Header: search + filters container - larger on mobile for better touch targets */}
           <div className="flex-shrink-0">
             {/* Search bar */}
-            <div className={`flex h-12 sm:h-16 items-center gap-2 px-3 border-b transition-colors duration-300 ${
+            <div className={`flex h-12 items-center gap-2 px-3 border-b transition-colors duration-300 ${
               isSearchFocused ? "border-kol-blue/50" : "border-kol-border/50"
             }`}>
               {/* Chevron toggle for filters */}
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className="w-6 h-6 rounded flex items-center justify-center text-kol-text-muted hover:text-white transition-colors flex-shrink-0"
+                className="w-5 h-5 rounded flex items-center justify-center text-kol-text-muted hover:text-white transition-colors flex-shrink-0"
               >
                 <motion.i
-                  className="ri-arrow-down-s-line text-base"
+                  className="ri-arrow-down-s-line text-sm"
                   animate={{ rotate: showFilters ? 180 : 0 }}
                   transition={{ duration: 0.2 }}
                 />
               </button>
               <i
-                className={`ri-search-line text-base transition-colors duration-200 flex-shrink-0 ${
+                className={`ri-search-line text-sm transition-colors duration-200 flex-shrink-0 ${
                   isSearchFocused ? "text-kol-blue" : "text-kol-text-tertiary"
                 }`}
               />
@@ -1105,7 +1105,7 @@ export function CoinsPanel({ solPrice }: CoinsPanelProps) {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onFocus={() => setIsSearchFocused(true)}
                 onBlur={() => setIsSearchFocused(false)}
-                className="flex-1 min-w-0 bg-transparent text-base sm:text-xl text-white placeholder:text-kol-text-tertiary font-body focus:outline-none transition-all duration-300"
+                className="flex-1 min-w-0 bg-transparent text-base text-white placeholder:text-kol-text-tertiary font-body focus:outline-none transition-all duration-300"
               />
 
               {/* Action Buttons */}

@@ -443,21 +443,21 @@ export function TrackerFeed({ onDeploy, onTokenClick }: TrackerFeedProps) {
           transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
         >
           {/* Search input */}
-          <div className={`flex h-12 sm:h-16 items-center gap-2 px-3 border-b transition-colors duration-300 ${
+          <div className={`flex h-12 items-center gap-2 px-3 border-b transition-colors duration-300 ${
             isSearchFocused ? 'border-kol-blue/50' : 'border-kol-border/50'
           }`}>
             {/* Chevron toggle for filters */}
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className="w-6 h-6 lg:w-5 lg:h-5 rounded flex items-center justify-center text-kol-text-muted hover:text-white transition-colors flex-shrink-0"
+              className="w-5 h-5 rounded flex items-center justify-center text-kol-text-muted hover:text-white transition-colors flex-shrink-0"
             >
               <motion.i
-                className="ri-arrow-down-s-line text-base lg:text-sm"
+                className="ri-arrow-down-s-line text-sm"
                 animate={{ rotate: showFilters ? 180 : 0 }}
                 transition={{ duration: 0.2 }}
               />
             </button>
-            <i className={`ri-search-line text-base lg:text-sm transition-colors duration-200 flex-shrink-0 ${
+            <i className={`ri-search-line text-sm transition-colors duration-200 flex-shrink-0 ${
               isSearchFocused ? 'text-kol-blue' : 'text-kol-text-tertiary'
             }`} />
             <input
@@ -467,11 +467,11 @@ export function TrackerFeed({ onDeploy, onTokenClick }: TrackerFeedProps) {
               onChange={(e) => setSearchQuery(e.target.value)}
               onFocus={() => setIsSearchFocused(true)}
               onBlur={() => setIsSearchFocused(false)}
-              className="flex-1 min-w-0 bg-transparent text-base sm:text-xl text-white placeholder:text-kol-text-tertiary font-body focus:outline-none transition-all duration-300"
+              className="flex-1 min-w-0 bg-transparent text-base text-white placeholder:text-kol-text-tertiary font-body focus:outline-none transition-all duration-300"
             />
 
             {/* Action Buttons */}
-            <div className="flex items-center gap-1 lg:gap-0.5 flex-shrink-0">
+            <div className="flex items-center gap-0.5 flex-shrink-0">
               {/* Clear search */}
               <AnimatePresence>
                 {searchQuery && (
@@ -480,26 +480,26 @@ export function TrackerFeed({ onDeploy, onTokenClick }: TrackerFeedProps) {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.8 }}
                     onClick={() => setSearchQuery('')}
-                    className="w-9 h-9 lg:w-7 lg:h-7 rounded-lg flex items-center justify-center text-kol-text-muted hover:text-white hover:bg-white/5 transition-colors"
+                    className="w-7 h-7 rounded-lg flex items-center justify-center text-kol-text-muted hover:text-white hover:bg-white/5 transition-colors"
                   >
-                    <i className="ri-close-line text-base lg:text-sm" />
+                    <i className="ri-close-line text-sm" />
                   </motion.button>
                 )}
               </AnimatePresence>
 
               {/* Divider */}
-              <div className="w-px h-5 lg:h-4 bg-kol-border/40 mx-1" />
+              <div className="w-px h-4 bg-kol-border/40 mx-1" />
 
               {/* Settings Button */}
               <Tooltip content="Feed settings">
                 <motion.button
                   onClick={() => setIsSettingsModalOpen(true)}
-                  className="flex items-center gap-2 lg:gap-1.5 px-3 lg:px-2.5 py-2 lg:py-1.5 rounded-lg text-kol-text-tertiary hover:text-white hover:bg-white/5 transition-colors"
+                  className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-kol-text-tertiary hover:text-white hover:bg-white/5 transition-colors"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
-                  <i className="ri-settings-3-line text-base lg:text-sm" />
-                  <span className="text-sm lg:text-xs font-medium">Settings</span>
+                  <i className="ri-settings-3-line text-sm" />
+                  <span className="text-xs font-medium">Settings</span>
                 </motion.button>
               </Tooltip>
             </div>
