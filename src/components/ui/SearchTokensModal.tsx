@@ -723,7 +723,7 @@ function TokenRow({
                 e.stopPropagation()
                 onManage?.(token)
               }}
-              className="flex h-[30px] w-[30px] items-center justify-center rounded-full text-kol-blue hover:text-kol-blue-hover transition-colors"
+              className="flex h-[30px] w-[30px] items-center justify-center rounded-full border border-kol-blue text-kol-blue hover:text-kol-blue-hover hover:border-kol-blue-hover transition-colors"
             >
               <i className="ri-settings-3-line text-base" />
             </button>
@@ -735,7 +735,7 @@ function TokenRow({
                 e.stopPropagation()
                 onClone?.(token)
               }}
-              className="flex h-[30px] w-[30px] items-center justify-center rounded-full text-kol-blue hover:text-kol-blue-hover transition-colors"
+              className="flex h-[30px] w-[30px] items-center justify-center rounded-full border border-kol-blue text-kol-blue hover:text-kol-blue-hover hover:border-kol-blue-hover transition-colors"
             >
               <i className="ri-file-copy-line text-base" />
             </button>
