@@ -892,13 +892,6 @@ export function SearchTokensModal({
     )
   })
 
-  // Detect query type for badge
-  const queryType = searchQuery.trim()
-    ? isContractAddress(searchQuery.trim())
-      ? 'CA'
-      : 'Ticker'
-    : null
-
   // Compute search highlights for tweet content
   const searchHighlights: TextHighlight[] = (() => {
     const q = searchQuery.trim()
@@ -1068,11 +1061,6 @@ export function SearchTokensModal({
                   placeholder="Search by name, ticker, or CA..."
                   className="flex-1 min-w-0 bg-transparent text-base sm:text-xl text-white placeholder:text-base sm:placeholder:text-xl placeholder:text-kol-text-muted outline-none"
                 />
-                {queryType && (
-                  <span className="flex-shrink-0 h-5 px-2 rounded bg-kol-surface-elevated border border-kol-border/50 text-[10px] font-medium text-kol-text-muted flex items-center">
-                    {queryType}
-                  </span>
-                )}
                 <button
                   onClick={onClose}
                   className="flex-shrink-0 flex h-5 items-center px-2 rounded-full border border-kol-border bg-kol-surface text-xs text-white hover:bg-kol-surface-elevated transition-colors"
