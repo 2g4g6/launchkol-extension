@@ -25,8 +25,8 @@ export interface ExpandableButtonProps {
   tooltipOnly?: boolean
   /** When true, button stays expanded with an active/toggled-on appearance */
   active?: boolean
-  /** Show a small indicator dot in the given color (e.g. "#00c46b") */
-  indicatorColor?: string
+  /** When true, shows a toggled-on background/icon style without expanding */
+  toggled?: boolean
 }
 
 const sizeConfig = {
@@ -148,7 +148,11 @@ export function ExpandableButton({
           />
         )}
 
-        <div className={`flex items-center ${size === 'large' ? 'gap-2 px-2.5' : 'gap-1.5 px-2'}`}>
+        <motion.div
+          className={`flex items-center ${size === 'large' ? 'gap-2' : 'gap-1.5'}`}
+          animate={{ paddingLeft: isExpanded ? (size === 'large' ? 10 : 8) : 0, paddingRight: isExpanded ? (size === 'large' ? 10 : 8) : 0 }}
+          transition={transition}
+        >
           {/* Icon */}
           <motion.i
             className={`${icon} ${config.iconSize} flex-shrink-0`}
@@ -177,7 +181,7 @@ export function ExpandableButton({
           >
             {label}
           </motion.span>
-        </div>
+        </motion.div>
       </motion.button>
     </Tooltip>
   )
