@@ -2,17 +2,18 @@ import { useState, useRef, useEffect } from 'react'
 import { PLATFORM_OPTIONS } from './FeedSettings/constants'
 import { ExpandableButton } from '../ui/ExpandableButton'
 import { MarketLighthousePopover } from '../ui/MarketLighthousePopover'
+import { QuickLinkPopover } from '../ui/QuickLinkPopover'
+import { FeesCardContent } from '../ui/FeesCard'
+import { ChatCardContent } from '../ui/ChatCard'
+import { SoundCardContent } from '../ui/SoundCard'
+import { LanguageCardContent } from '../ui/LanguageCard'
+import { ThemeCardContent } from '../ui/ThemeCard'
+import { SettingsCardContent } from '../ui/SettingsCard'
 
 interface FooterProps {
   solPrice: number
   bnbPrice?: number
   chatUnreadCount?: number
-  onFeesClick?: () => void
-  onChatClick?: () => void
-  onSoundClick?: () => void
-  onLanguageClick?: () => void
-  onThemeClick?: () => void
-  onSettingsClick?: () => void
 }
 
 interface Region {
@@ -182,12 +183,6 @@ export function Footer({
   solPrice,
   bnbPrice,
   chatUnreadCount = 0,
-  onFeesClick,
-  onChatClick,
-  onSoundClick,
-  onLanguageClick,
-  onThemeClick,
-  onSettingsClick,
 }: FooterProps) {
   return (
     <div className="h-[36px] flex-shrink-0 border-t border-kol-border bg-kol-bg/90 backdrop-blur-sm z-20 grid grid-cols-[1fr_auto_1fr] items-center px-2">
@@ -237,17 +232,29 @@ export function Footer({
 
       {/* Right section */}
       <div className="flex items-center gap-0.5 justify-self-end col-start-3">
-        <ExpandableButton icon="ri-percent-line" label="Fees" variant="subtle" tooltipOnly onClick={onFeesClick} />
+        <QuickLinkPopover triggerMode="click" width={300} content={<FeesCardContent />}>
+          <ExpandableButton icon="ri-percent-line" label="Fees" variant="subtle" tooltipOnly />
+        </QuickLinkPopover>
         <div className="relative">
-          <ExpandableButton icon="ri-chat-3-line" label="Chat" variant="subtle" tooltipOnly onClick={onChatClick} />
+          <QuickLinkPopover triggerMode="click" width={240} content={<ChatCardContent />}>
+            <ExpandableButton icon="ri-chat-3-line" label="Chat" variant="subtle" tooltipOnly />
+          </QuickLinkPopover>
           {chatUnreadCount > 0 && (
             <span className="w-[7px] h-[7px] rounded-full bg-kol-red absolute -top-0.5 -right-0.5 pointer-events-none" />
           )}
         </div>
-        <ExpandableButton icon="ri-volume-up-line" label="Sound" variant="subtle" tooltipOnly onClick={onSoundClick} />
-        <ExpandableButton icon="ri-translate-2" label="Language" variant="subtle" tooltipOnly onClick={onLanguageClick} />
-        <ExpandableButton icon="ri-palette-line" label="Theme" variant="subtle" tooltipOnly onClick={onThemeClick} />
-        <ExpandableButton icon="ri-settings-3-line" label="Settings" variant="subtle" tooltipOnly onClick={onSettingsClick} />
+        <QuickLinkPopover triggerMode="click" width={260} content={<SoundCardContent />}>
+          <ExpandableButton icon="ri-volume-up-line" label="Sound" variant="subtle" tooltipOnly />
+        </QuickLinkPopover>
+        <QuickLinkPopover triggerMode="click" width={240} content={<LanguageCardContent />}>
+          <ExpandableButton icon="ri-translate-2" label="Language" variant="subtle" tooltipOnly />
+        </QuickLinkPopover>
+        <QuickLinkPopover triggerMode="click" width={240} content={<ThemeCardContent />}>
+          <ExpandableButton icon="ri-palette-line" label="Theme" variant="subtle" tooltipOnly />
+        </QuickLinkPopover>
+        <QuickLinkPopover triggerMode="click" width={240} content={<SettingsCardContent />}>
+          <ExpandableButton icon="ri-settings-3-line" label="Settings" variant="subtle" tooltipOnly />
+        </QuickLinkPopover>
         <VerticalDivider />
         <ExpandableButton
           icon="ri-discord-fill"
