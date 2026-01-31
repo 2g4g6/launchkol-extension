@@ -258,6 +258,21 @@ export function Footer({
         </QuickLinkPopover>
         <VerticalDivider />
         <ExpandableButton
+          icon="ri-coin-line"
+          label="Coins"
+          variant="subtle"
+          onClick={onToggleCoins}
+          className={isCoinsVisible ? '' : 'opacity-40'}
+        />
+        <ExpandableButton
+          icon="ri-rss-line"
+          label="Feed"
+          variant="subtle"
+          onClick={onToggleFeed}
+          className={isFeedVisible ? '' : 'opacity-40'}
+        />
+        <VerticalDivider />
+        <ExpandableButton
           icon="ri-discord-fill"
           label="Discord"
           variant="subtle"
@@ -274,21 +289,6 @@ export function Footer({
           label="Docs"
           variant="subtle"
           onClick={() => window.open('https://docs.launchkol.com', '_blank')}
-        />
-        <VerticalDivider />
-        <ExpandableButton
-          icon="ri-coin-line"
-          label="Coins"
-          variant="subtle"
-          onClick={onToggleCoins}
-          className={isCoinsVisible ? '' : 'opacity-40'}
-        />
-        <ExpandableButton
-          icon="ri-rss-line"
-          label="Feed"
-          variant="subtle"
-          onClick={onToggleFeed}
-          className={isFeedVisible ? '' : 'opacity-40'}
         />
       </div>
     </div>
