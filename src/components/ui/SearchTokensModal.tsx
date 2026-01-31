@@ -7,10 +7,9 @@ import { WalletFilterDropdown, SavedWallet } from './WalletFilterDropdown'
 import { HorizontalScrollContainer } from './HorizontalScrollContainer'
 import { SourceTweetPopoverContent } from '../dashboard/popovers/SourceTweetPopover'
 import { PlatformCreatorPopoverContent } from '../dashboard/popovers/PlatformCreatorPopover'
-import { TokenInfoPopoverContent } from '../dashboard/popovers/TokenInfoPopover'
+import type { TokenSecurityInfo } from '../dashboard/popovers/TokenInfoPopover'
 import { SocialPost } from '../dashboard/SocialPost'
 import type { SocialPostData } from '../dashboard/SocialPost'
-import type { TokenSecurityInfo } from '../dashboard/popovers/TokenInfoPopover'
 import type { CreatorInfo } from '../dashboard/popovers/PlatformCreatorPopover'
 import type { Recipient } from '../dashboard/CoinCard'
 import { isContractAddress } from '../../utils/textHighlight'
@@ -646,44 +645,6 @@ function TokenRow({
             </a>
           </QuickLinkPopover>
 
-          {/* Axiom link with popover */}
-          {token.axiomUrl && (
-            <QuickLinkPopover
-              width={token.tokenSecurity ? 320 : 220}
-              triggerMode="hover"
-              content={
-                token.tokenSecurity ? (
-                  <TokenInfoPopoverContent
-                    security={token.tokenSecurity}
-                    axiomUrl={token.axiomUrl}
-                  />
-                ) : (
-                  <div className="p-3">
-                    <a
-                      href={token.axiomUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 text-sm text-white hover:text-kol-blue-hover transition-colors"
-                    >
-                      <AxiomIcon className="w-4 h-4" />
-                      <span>Trade on Axiom</span>
-                      <i className="ri-external-link-line text-[11px]" />
-                    </a>
-                  </div>
-                )
-              }
-            >
-              <a
-                href={token.axiomUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={(e) => e.stopPropagation()}
-                className="flex items-center text-white hover:opacity-80 transition-opacity"
-              >
-                <AxiomIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-              </a>
-            </QuickLinkPopover>
-          )}
         </div>
       </div>
 
@@ -739,6 +700,19 @@ function TokenRow({
             >
               <i className="ri-file-copy-line text-base" />
             </button>
+          </Tooltip>
+        )}
+        {token.axiomUrl && (
+          <Tooltip content="Trade on Axiom" position="bottom" delayShow={200}>
+            <a
+              href={token.axiomUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="flex h-[30px] w-[30px] items-center justify-center rounded-full border border-kol-blue/30 text-white hover:text-kol-blue-hover hover:border-kol-blue/60 transition-colors"
+            >
+              <AxiomIcon className="w-4 h-4" />
+            </a>
           </Tooltip>
         )}
       </div>
