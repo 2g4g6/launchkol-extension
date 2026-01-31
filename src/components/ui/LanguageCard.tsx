@@ -1,8 +1,8 @@
 import { useState } from 'react'
 
 const LANGUAGES = [
-  { id: 'en', label: 'English', native: 'English' },
-  { id: 'zh', label: 'Chinese', native: '中文' },
+  { id: 'en', label: 'English', native: 'English', flag: '🇺🇸' },
+  { id: 'zh', label: 'Chinese', native: '中文', flag: '🇨🇳' },
 ]
 
 export function LanguageCardContent() {
@@ -22,7 +22,8 @@ export function LanguageCardContent() {
                 : 'bg-kol-surface border border-kol-border hover:border-kol-blue/30'
             }`}
           >
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2.5">
+              <span className="text-base leading-none">{lang.flag}</span>
               <span className={`text-sm font-medium ${isActive ? 'text-kol-blue' : 'text-white'}`}>
                 {lang.label}
               </span>
