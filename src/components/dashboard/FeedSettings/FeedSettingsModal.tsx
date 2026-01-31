@@ -83,19 +83,19 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
   const [expandedAccountId, setExpandedAccountId] = useState<string | null>(null)
   const [isMobile, setIsMobile] = useState(false)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
-  const [collapsedSections, setCollapsedSections] = useState<Set<string>>(new Set())
+  const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set())
   const [sidebarExpanded, setSidebarExpanded] = useState(false)
   const triggerRef = useRef<HTMLButtonElement>(null)
 
   const toggleSection = (key: string) => {
-    setCollapsedSections(prev => {
+    setExpandedSections(prev => {
       const next = new Set(prev)
       if (next.has(key)) next.delete(key)
       else next.add(key)
       return next
     })
   }
-  const isSectionOpen = (key: string) => !collapsedSections.has(key)
+  const isSectionOpen = (key: string) => expandedSections.has(key)
 
   // Mobile detection
   useEffect(() => {
@@ -1077,7 +1077,7 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                                   e.stopPropagation()
                                   removeAccount(selectedGroupId, account.id)
                                 }}
-                                className="opacity-0 group-hover:opacity-100 w-6 h-6 rounded flex items-center justify-center text-kol-text-muted hover:text-kol-red hover:bg-kol-red/10 transition-all"
+                                className="w-6 h-6 rounded flex items-center justify-center text-kol-text-muted hover:text-kol-red hover:bg-kol-red/10 transition-all"
                               >
                                 <i className="ri-close-line text-sm" />
                               </button>
