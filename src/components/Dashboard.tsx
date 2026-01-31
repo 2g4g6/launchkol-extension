@@ -289,7 +289,6 @@ export function Dashboard({ user, onSignOut }: DashboardProps) {
       <Footer
         solPrice={solPrice}
         bnbPrice={bnbPrice}
-        chatUnreadCount={3}
       />
     </motion.div>
   )

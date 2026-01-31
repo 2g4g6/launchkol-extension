@@ -4,7 +4,6 @@ import { ExpandableButton } from '../ui/ExpandableButton'
 import { MarketLighthousePopover } from '../ui/MarketLighthousePopover'
 import { QuickLinkPopover } from '../ui/QuickLinkPopover'
 import { FeesCardContent } from '../ui/FeesCard'
-import { ChatCardContent } from '../ui/ChatCard'
 import { SoundCardContent } from '../ui/SoundCard'
 import { LanguageCardContent } from '../ui/LanguageCard'
 import { ThemeCardContent } from '../ui/ThemeCard'
@@ -12,7 +11,6 @@ import { ThemeCardContent } from '../ui/ThemeCard'
 interface FooterProps {
   solPrice: number
   bnbPrice?: number
-  chatUnreadCount?: number
 }
 
 interface Region {
@@ -181,7 +179,6 @@ function CryptoTicker({
 export function Footer({
   solPrice,
   bnbPrice,
-  chatUnreadCount = 0,
 }: FooterProps) {
   return (
     <div className="h-[36px] flex-shrink-0 border-t border-kol-border bg-kol-bg/90 backdrop-blur-sm z-20 grid grid-cols-[1fr_auto_1fr] items-center px-2">
@@ -234,14 +231,6 @@ export function Footer({
         <QuickLinkPopover triggerMode="click" width={300} content={<FeesCardContent />}>
           <ExpandableButton icon="ri-percent-line" label="Fees" variant="subtle" tooltipOnly />
         </QuickLinkPopover>
-        <div className="relative">
-          <QuickLinkPopover triggerMode="click" width={240} content={<ChatCardContent />}>
-            <ExpandableButton icon="ri-chat-3-line" label="Chat" variant="subtle" tooltipOnly />
-          </QuickLinkPopover>
-          {chatUnreadCount > 0 && (
-            <span className="w-[7px] h-[7px] rounded-full bg-kol-red absolute -top-0.5 -right-0.5 pointer-events-none" />
-          )}
-        </div>
         <QuickLinkPopover triggerMode="click" width={260} content={<SoundCardContent />}>
           <ExpandableButton icon="ri-volume-up-line" label="Sound" variant="subtle" tooltipOnly />
         </QuickLinkPopover>
