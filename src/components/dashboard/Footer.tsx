@@ -42,7 +42,7 @@ function getPingColor(ping: number): string {
 }
 
 function VerticalDivider() {
-  return <div className="h-[20px] w-[1px] bg-kol-border flex-shrink-0" />
+  return <div className="self-stretch my-2 w-px bg-kol-border flex-shrink-0 mx-1" />
 }
 
 function RegionDropdown() {
