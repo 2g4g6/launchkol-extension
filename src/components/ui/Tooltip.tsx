@@ -370,9 +370,10 @@ export function Tooltip({
   // Animation variants with directional awareness
   const getInitialAnimation = (pos: TooltipPosition) => ({
     opacity: 0,
-    scale: 0.97,
-    y: pos === 'top' ? 4 : pos === 'bottom' ? -4 : 0,
-    x: pos === 'left' ? 4 : pos === 'right' ? -4 : 0,
+    scale: 0.95,
+    filter: 'blur(2px)',
+    y: pos === 'top' ? 5 : pos === 'bottom' ? -5 : 0,
+    x: pos === 'left' ? 5 : pos === 'right' ? -5 : 0,
   })
 
   // Clone child with ref and event handlers
@@ -413,17 +414,21 @@ export function Tooltip({
           animate={{
             opacity: 1,
             scale: 1,
+            filter: 'blur(0px)',
             x: 0,
             y: 0,
           }}
           exit={{
             opacity: 0,
-            scale: 0.97,
-            transition: { duration: 0.1, ease: CUSTOM_EASE },
+            scale: 0.95,
+            filter: 'blur(2px)',
+            transition: { duration: 0.12, ease: CUSTOM_EASE },
           }}
           transition={{
-            duration: 0.15,
-            ease: CUSTOM_EASE,
+            type: 'spring',
+            stiffness: 600,
+            damping: 32,
+            filter: { duration: 0.15 },
           }}
           className={`
             fixed z-[10001] pointer-events-none
