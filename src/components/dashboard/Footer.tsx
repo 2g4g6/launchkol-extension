@@ -8,7 +8,6 @@ import { ChatCardContent } from '../ui/ChatCard'
 import { SoundCardContent } from '../ui/SoundCard'
 import { LanguageCardContent } from '../ui/LanguageCard'
 import { ThemeCardContent } from '../ui/ThemeCard'
-import { SettingsCardContent } from '../ui/SettingsCard'
 
 interface FooterProps {
   solPrice: number
@@ -251,9 +250,6 @@ export function Footer({
         </QuickLinkPopover>
         <QuickLinkPopover triggerMode="click" width={240} content={<ThemeCardContent />}>
           <ExpandableButton icon="ri-palette-line" label="Theme" variant="subtle" tooltipOnly />
-        </QuickLinkPopover>
-        <QuickLinkPopover triggerMode="click" width={240} content={<SettingsCardContent />}>
-          <ExpandableButton icon="ri-settings-3-line" label="Settings" variant="subtle" tooltipOnly />
         </QuickLinkPopover>
         <VerticalDivider />
         <ExpandableButton
