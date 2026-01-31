@@ -35,15 +35,27 @@ const sizeConfig = {
     height: 'h-7',
     iconSize: 'text-sm',
     labelSize: 'text-xs',
+    padding: 16,   // px-2 both sides
+    iconWidth: 14,
+    gap: 6,         // gap-1.5
+    charWidth: 6.5,
   },
   large: {
     collapsedWidth: 36,
     height: 'h-9',
     iconSize: 'text-base',
     labelSize: 'text-sm',
+    padding: 20,   // px-2.5 both sides
+    iconWidth: 18,
+    gap: 8,         // gap-2
+    charWidth: 7.5,
   },
 }
 
+const getExpandedWidth = (label: string, size: ExpandableButtonSize) => {
+  const c = sizeConfig[size]
+  return Math.ceil(c.padding + c.iconWidth + c.gap + label.length * c.charWidth + 4)
+}
 
 const variantStyles: Record<
   ExpandableButtonVariant,
@@ -97,6 +109,7 @@ export function ExpandableButton({
 
   const styles = variantStyles[variant]
   const config = sizeConfig[size]
+  const expandedWidth = getExpandedWidth(label, size)
 
   const collapsed = isSmall || tooltipOnly
   const isExpanded = active || (!collapsed && isHovered)
@@ -114,7 +127,7 @@ export function ExpandableButton({
         style={{ minWidth: config.collapsedWidth }}
         initial={false}
         animate={{
-          width: isExpanded ? 'auto' : config.collapsedWidth,
+          width: isExpanded ? expandedWidth : config.collapsedWidth,
           backgroundColor: toggled
             ? 'rgba(0, 196, 107, 0.12)'
             : isExpanded
