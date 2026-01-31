@@ -11,6 +11,10 @@ import { LanguageCardContent } from '../ui/LanguageCard'
 interface FooterProps {
   solPrice: number
   bnbPrice?: number
+  isCoinsVisible: boolean
+  isFeedVisible: boolean
+  onToggleCoins: () => void
+  onToggleFeed: () => void
 }
 
 interface Region {
@@ -190,6 +194,10 @@ function CryptoTicker({
 export function Footer({
   solPrice,
   bnbPrice,
+  isCoinsVisible,
+  isFeedVisible,
+  onToggleCoins,
+  onToggleFeed,
 }: FooterProps) {
   return (
     <div className="h-[36px] flex-shrink-0 border-t border-kol-border bg-kol-bg/90 backdrop-blur-sm z-20 grid grid-cols-[1fr_auto_1fr] items-center px-2">
@@ -266,6 +274,21 @@ export function Footer({
           label="Docs"
           variant="subtle"
           onClick={() => window.open('https://docs.launchkol.com', '_blank')}
+        />
+        <VerticalDivider />
+        <ExpandableButton
+          icon="ri-coin-line"
+          label="Coins"
+          variant="subtle"
+          onClick={onToggleCoins}
+          className={isCoinsVisible ? '' : 'opacity-40'}
+        />
+        <ExpandableButton
+          icon="ri-rss-line"
+          label="Feed"
+          variant="subtle"
+          onClick={onToggleFeed}
+          className={isFeedVisible ? '' : 'opacity-40'}
         />
       </div>
     </div>

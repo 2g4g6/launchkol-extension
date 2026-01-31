@@ -48,6 +48,7 @@ export function Dashboard({ user, onSignOut }: DashboardProps) {
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false)
   const [searchModalQuery, setSearchModalQuery] = useState('')
   const [isCoinsOpen, setIsCoinsOpen] = useState(true)
+  const [isFeedVisible, setIsFeedVisible] = useState(true)
 
   // Simulated balance & price fetch
   useEffect(() => {
@@ -268,27 +269,35 @@ export function Dashboard({ user, onSignOut }: DashboardProps) {
       {/* Main Content Area */}
       <div className="flex-1 min-h-0 overflow-hidden relative z-10 flex flex-col lg:flex-row lg:gap-3 lg:p-3">
         {/* Feed - takes most space */}
-        <div className="flex-1 min-h-0 min-w-0 overflow-hidden">
-          <TrackerFeed onDeploy={handleDeploy} onTokenClick={(query) => {
-            setSearchModalQuery(query)
-            setIsSearchModalOpen(true)
-          }} />
-        </div>
+        {isFeedVisible && (
+          <div className="flex-1 min-h-0 min-w-0 overflow-hidden">
+            <TrackerFeed onDeploy={handleDeploy} onTokenClick={(query) => {
+              setSearchModalQuery(query)
+              setIsSearchModalOpen(true)
+            }} />
+          </div>
+        )}
 
         {/* Coins Panel - sidebar on lg (resizable width), bottom on smaller (resizable height) */}
-        <div className="flex-shrink-0 lg:h-full">
-          <CoinsPanel
-            isOpen={isCoinsOpen}
-            onClose={() => setIsCoinsOpen(false)}
-            solPrice={solPrice}
-          />
-        </div>
+        {isCoinsOpen && (
+          <div className="flex-shrink-0 lg:h-full">
+            <CoinsPanel
+              isOpen={isCoinsOpen}
+              onClose={() => setIsCoinsOpen(false)}
+              solPrice={solPrice}
+            />
+          </div>
+        )}
       </div>
 
       {/* Footer Status Bar */}
       <Footer
         solPrice={solPrice}
         bnbPrice={bnbPrice}
+        isCoinsVisible={isCoinsOpen}
+        isFeedVisible={isFeedVisible}
+        onToggleCoins={() => setIsCoinsOpen(prev => !prev)}
+        onToggleFeed={() => setIsFeedVisible(prev => !prev)}
       />
     </motion.div>
   )
