@@ -498,7 +498,7 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
         </div>
 
         {/* Right Column - Tab Content */}
-        <div className="flex-1 flex flex-col p-4 pr-5 min-w-0 max-sm:min-h-0 max-sm:overflow-hidden">
+        <div className="flex-1 flex flex-col p-4 min-w-0 max-sm:min-h-0 max-sm:overflow-hidden">
           {/* Tab Bar (only show for groups, not global) */}
           {selectedGroupId !== null && (
             <div className="pb-3 mb-3 border-b border-kol-border/30">
@@ -537,7 +537,7 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
           <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
             {/* Global Settings (All Feeds selected) */}
             {selectedGroupId === null && (
-              <div className="flex-1 overflow-y-auto overflow-x-hidden scrollbar-styled space-y-5">
+              <div className="flex-1 overflow-y-auto overflow-x-hidden scrollbar-styled space-y-5 pr-3">
                 <div className="p-3 rounded-lg bg-kol-surface/30 border border-kol-border/30">
                   <p className="text-xs text-kol-text-muted">
                     <i className="ri-information-line mr-1.5" />
@@ -953,7 +953,7 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                 </div>
 
                 {/* Accounts List - Scrollable middle section */}
-                <div className="flex-1 overflow-y-auto overflow-x-hidden scrollbar-styled min-h-0">
+                <div className="flex-1 overflow-y-auto overflow-x-hidden scrollbar-styled min-h-0 pr-3">
                   <div className="space-y-1">
                     {filteredAccounts.length === 0 && !accountSearchQuery ? (
                       <motion.div
@@ -1462,7 +1462,7 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
 
             {/* Settings Tab */}
             {selectedGroupId !== null && selectedTab === 'settings' && selectedGroup && (
-              <div className="flex-1 overflow-y-auto overflow-x-hidden scrollbar-styled space-y-5">
+              <div className="flex-1 overflow-y-auto overflow-x-hidden scrollbar-styled space-y-5 pr-3">
                 {/* Use Global Settings Toggle */}
                 <div className="flex items-center justify-between p-3 rounded-lg bg-kol-surface/30 border border-kol-border/30">
                   <div className="flex-1">
