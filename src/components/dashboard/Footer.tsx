@@ -200,14 +200,14 @@ export function Footer({
   onToggleFeed,
 }: FooterProps) {
   return (
-    <div className="h-[36px] flex-shrink-0 border-t border-kol-border bg-kol-bg/90 backdrop-blur-sm z-20 grid grid-cols-[1fr_auto_1fr] items-center px-2">
+    <div className="h-[36px] flex-shrink-0 border-t border-kol-border/50 bg-kol-bg/90 backdrop-blur-sm z-20 grid grid-cols-[1fr_auto_1fr] items-center px-2">
       {/* Left section */}
       <div className="flex items-center gap-1.5 justify-self-start col-start-1">
         <div className="hidden xs:block">
           <RegionDropdown />
         </div>
 
-        <div className="flex items-center justify-center gap-1.5 p-1.5 xs:px-2 xs:py-0.5 rounded-md bg-kol-green/10 border border-kol-green/20 flex-shrink-0">
+        <div className="flex items-center justify-center gap-1.5 p-1.5 xs:px-2 xs:py-0.5 rounded-md bg-kol-green/5 border border-kol-green/10 flex-shrink-0">
           <span className="w-[6px] h-[6px] rounded-full bg-kol-green flex-shrink-0" />
           <span className="text-[11px] text-kol-green font-body whitespace-nowrap hidden xs:inline lg:hidden">
             Connected
@@ -216,6 +216,32 @@ export function Footer({
             Connection is stable
           </span>
         </div>
+
+        <VerticalDivider />
+
+        {/* Coins / Feed toggles */}
+        <button
+          onClick={onToggleCoins}
+          className={`flex items-center gap-1 px-1.5 py-0.5 rounded-md transition-colors duration-150 ${
+            isCoinsVisible
+              ? 'text-kol-text hover:bg-white/5'
+              : 'text-kol-text-muted/50 hover:bg-white/5'
+          }`}
+        >
+          <i className="ri-coin-line text-sm" />
+          <span className="text-[11px] font-body whitespace-nowrap">Coins</span>
+        </button>
+        <button
+          onClick={onToggleFeed}
+          className={`flex items-center gap-1 px-1.5 py-0.5 rounded-md transition-colors duration-150 ${
+            isFeedVisible
+              ? 'text-kol-text hover:bg-white/5'
+              : 'text-kol-text-muted/50 hover:bg-white/5'
+          }`}
+        >
+          <i className="ri-rss-line text-sm" />
+          <span className="text-[11px] font-body whitespace-nowrap">Feed</span>
+        </button>
 
         <div className="hidden sm:block">
           <VerticalDivider />
@@ -258,23 +284,6 @@ export function Footer({
         <QuickLinkPopover triggerMode="click" width={240} content={<LanguageCardContent />}>
           <ExpandableButton icon="ri-translate-2" label="Language" variant="subtle" />
         </QuickLinkPopover>
-        <VerticalDivider />
-        <ExpandableButton
-          icon="ri-coin-line"
-          label="Coins"
-          variant="subtle"
-          onClick={onToggleCoins}
-          active={isCoinsVisible}
-          className={isCoinsVisible ? '' : 'opacity-40'}
-        />
-        <ExpandableButton
-          icon="ri-rss-line"
-          label="Feed"
-          variant="subtle"
-          onClick={onToggleFeed}
-          active={isFeedVisible}
-          className={isFeedVisible ? '' : 'opacity-40'}
-        />
         <VerticalDivider />
         <ExpandableButton
           icon="ri-discord-fill"
