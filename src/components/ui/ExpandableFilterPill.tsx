@@ -47,11 +47,13 @@ export function ExpandableFilterPill({
   const expanded = !isSmall && (isHovered || active)
   const transition = didBreakpointChange ? instantTransition : springTransition
 
-  useEffect(() => {
+  const remeasure = () => {
     if (measureRef.current) {
       setExpandedWidth(measureRef.current.scrollWidth + 2)
     }
-  }, [label, children])
+  }
+
+  useEffect(remeasure, [label, children])
 
   const iconContent = iconSrc ? (
     <img src={iconSrc} alt="" className="w-[18px] h-[18px] rounded-sm" />
@@ -71,7 +73,7 @@ export function ExpandableFilterPill({
         initial={false}
         animate={{ width: expanded ? expandedWidth : COLLAPSED_SIZE }}
         transition={transition}
-        onMouseEnter={() => setIsHovered(true)}
+        onMouseEnter={() => { remeasure(); setIsHovered(true) }}
         onMouseLeave={() => setIsHovered(false)}
         onClick={onClick}
       >
