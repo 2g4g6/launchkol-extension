@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Logo } from "../Logo";
+import { Tooltip } from "../ui/Tooltip";
 
 type TabId = "feed";
 
@@ -40,19 +41,21 @@ interface HeaderProps {
 // Search input (visual placeholder)
 function SearchInput({ onClick }: { onClick?: () => void }) {
   return (
-    <button
-      onClick={onClick}
-      className="relative flex items-center gap-2 px-3 py-1.5 rounded-lg bg-kol-surface/50 border border-[#282828] hover:border-kol-blue/30 hover:bg-kol-surface/70 transition-colors cursor-pointer group sm:min-w-[120px]"
-    >
-      <i className="ri-search-line text-sm text-kol-text-muted group-hover:text-kol-text-secondary transition-colors" />
-      <span className="text-xs text-kol-text-muted group-hover:text-kol-text-secondary transition-colors font-body flex-1 hidden sm:inline">
-        Search...
-      </span>
-      {/* Keyboard shortcut badge */}
-      <span className="px-1.5 py-0.5 rounded text-[9px] font-mono bg-kol-border/40 text-kol-text-muted border border-kol-border/30 hidden sm:inline">
-        /
-      </span>
-    </button>
+    <Tooltip content="Search" position="bottom">
+      <button
+        onClick={onClick}
+        className="relative flex items-center gap-2 px-3 py-1.5 rounded-lg bg-kol-surface/50 border border-[#282828] hover:border-kol-blue/30 hover:bg-kol-surface/70 transition-colors cursor-pointer group sm:min-w-[120px]"
+      >
+        <i className="ri-search-line text-sm text-kol-text-muted group-hover:text-kol-text-secondary transition-colors" />
+        <span className="text-xs text-kol-text-muted group-hover:text-kol-text-secondary transition-colors font-body flex-1 hidden sm:inline">
+          Search...
+        </span>
+        {/* Keyboard shortcut badge */}
+        <span className="px-1.5 py-0.5 rounded text-[9px] font-mono bg-kol-border/40 text-kol-text-muted border border-kol-border/30 hidden sm:inline">
+          /
+        </span>
+      </button>
+    </Tooltip>
   );
 }
 
@@ -197,39 +200,41 @@ function WalletDropdown({
   return (
     <div className="relative" ref={dropdownRef}>
       {/* Wallet button trigger */}
-      <motion.button
-        onClick={() => setIsOpen(!isOpen)}
-        className="relative flex items-center gap-2 px-3 py-1.5 rounded-lg bg-kol-surface/50 border border-[#282828] hover:border-kol-blue/30 transition-all cursor-pointer group"
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
-      >
-        {/* Subtle glow on hover */}
-        <div className="absolute inset-0 rounded-lg bg-kol-blue/0 group-hover:bg-kol-blue/5 transition-colors" />
+      <Tooltip content="Wallet" position="bottom">
+        <motion.button
+          onClick={() => setIsOpen(!isOpen)}
+          className="relative flex items-center gap-2 px-3 py-1.5 rounded-lg bg-kol-surface/50 border border-[#282828] hover:border-kol-blue/30 transition-all cursor-pointer group"
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+        >
+          {/* Subtle glow on hover */}
+          <div className="absolute inset-0 rounded-lg bg-kol-blue/0 group-hover:bg-kol-blue/5 transition-colors" />
 
-        {/* Wallet icon */}
-        <i className="ri-wallet-3-line text-sm text-kol-text-muted relative z-10" />
+          {/* Wallet icon */}
+          <i className="ri-wallet-3-line text-sm text-kol-text-muted relative z-10" />
 
-        {/* Solana Logo + Balance - hidden on small screens */}
-        <img
-          src="/images/solanaLogoMark.svg"
-          alt="SOL"
-          width={14}
-          height={11}
-          className="relative z-10 hidden sm:block"
-        />
-        <span className="relative z-10 text-sm text-white font-bold hidden sm:inline">
-          {balance.toFixed(2)}
-        </span>
+          {/* Solana Logo + Balance - hidden on small screens */}
+          <img
+            src="/images/solanaLogoMark.svg"
+            alt="SOL"
+            width={14}
+            height={11}
+            className="relative z-10 hidden sm:block"
+          />
+          <span className="relative z-10 text-sm text-white font-bold hidden sm:inline">
+            {balance.toFixed(2)}
+          </span>
 
-        {/* Divider */}
-        <div className="relative z-10 w-px h-4 bg-kol-border/50 hidden sm:block" />
+          {/* Divider */}
+          <div className="relative z-10 w-px h-4 bg-kol-border/50 hidden sm:block" />
 
-        {/* BNB Logo + Balance - hidden on small screens */}
-        <BnbLogo className="relative z-10 w-[14px] h-[14px] hidden sm:block" />
-        <span className="relative z-10 text-sm text-white font-bold hidden sm:inline">
-          {bnbNetwork?.balance.toFixed(2) ?? "0.00"}
-        </span>
-      </motion.button>
+          {/* BNB Logo + Balance - hidden on small screens */}
+          <BnbLogo className="relative z-10 w-[14px] h-[14px] hidden sm:block" />
+          <span className="relative z-10 text-sm text-white font-bold hidden sm:inline">
+            {bnbNetwork?.balance.toFixed(2) ?? "0.00"}
+          </span>
+        </motion.button>
+      </Tooltip>
 
       {/* Dropdown panel */}
       <AnimatePresence>
@@ -339,26 +344,28 @@ function UserDropdown({
   return (
     <div className="relative" ref={dropdownRef}>
       {/* Avatar trigger */}
-      <motion.button
-        onClick={() => setIsOpen(!isOpen)}
-        className="relative w-8 h-8 rounded-full bg-gradient-to-br from-kol-blue/30 to-kol-blue/10 border border-kol-border/40 hover:border-kol-blue/40 flex items-center justify-center transition-all group"
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-      >
-        {/* Avatar glow */}
-        <div className="absolute inset-0 bg-kol-blue/0 group-hover:bg-kol-blue/10 transition-colors" />
+      <Tooltip content="Account" position="bottom">
+        <motion.button
+          onClick={() => setIsOpen(!isOpen)}
+          className="relative w-8 h-8 rounded-full bg-gradient-to-br from-kol-blue/30 to-kol-blue/10 border border-kol-border/40 hover:border-kol-blue/40 flex items-center justify-center transition-all group"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          {/* Avatar glow */}
+          <div className="absolute inset-0 bg-kol-blue/0 group-hover:bg-kol-blue/10 transition-colors" />
 
-        {/* Initials */}
-        <span className="text-[10px] font-bold text-white relative z-10">
-          {initials}
-        </span>
+          {/* Initials */}
+          <span className="text-[10px] font-bold text-white relative z-10">
+            {initials}
+          </span>
 
-        {/* Online status dot */}
-        <span
-          className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-kol-green border-2 border-kol-bg z-20"
-          style={{ boxShadow: "0 0 6px rgba(0, 196, 107, 0.6)" }}
-        />
-      </motion.button>
+          {/* Online status dot */}
+          <span
+            className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-kol-green border-2 border-kol-bg z-20"
+            style={{ boxShadow: "0 0 6px rgba(0, 196, 107, 0.6)" }}
+          />
+        </motion.button>
+      </Tooltip>
 
       {/* Dropdown menu */}
       <AnimatePresence>
