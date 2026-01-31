@@ -495,36 +495,38 @@ function QuickLinks({ coin, onSearchToken, solPrice, onTokenClick }: { coin: Coi
         </button>
       </QuickLinkPopover>
 
-      {/* Platform logo - hover popover with creator info (hidden when website exists) */}
-      {!coin.websiteUrl && <QuickLinkPopover
-        width={280}
-        triggerMode="hover"
-        content={
-          <PlatformCreatorPopoverContent
-            platformName={platformConfig.name}
-            platformLogo={platformConfig.logo}
-            platformColor={platformConfig.ringColor}
-            platformFee="1.5%"
-            creator={coin.creator}
-            progressPercent={coin.progressPercent}
-            totalVolumeUsd={coin.buyVolumeUsd !== undefined && coin.sellVolumeUsd !== undefined ? coin.buyVolumeUsd + coin.sellVolumeUsd : undefined}
-            solPrice={solPrice}
-            platformUrl={platformUrl}
-            platformType={coin.platform}
-            recipients={coin.recipients}
-          />
-        }
-      >
-        <a
-          href={platformUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={(e) => e.stopPropagation()}
-          className="flex items-center hover:opacity-80 transition-opacity"
+      {/* Platform logo - hover popover with creator info (hidden below xs when website exists) */}
+      <div className={coin.websiteUrl ? 'hidden xs:flex' : 'flex'}>
+        <QuickLinkPopover
+          width={280}
+          triggerMode="hover"
+          content={
+            <PlatformCreatorPopoverContent
+              platformName={platformConfig.name}
+              platformLogo={platformConfig.logo}
+              platformColor={platformConfig.ringColor}
+              platformFee="1.5%"
+              creator={coin.creator}
+              progressPercent={coin.progressPercent}
+              totalVolumeUsd={coin.buyVolumeUsd !== undefined && coin.sellVolumeUsd !== undefined ? coin.buyVolumeUsd + coin.sellVolumeUsd : undefined}
+              solPrice={solPrice}
+              platformUrl={platformUrl}
+              platformType={coin.platform}
+              recipients={coin.recipients}
+            />
+          }
         >
-          <img src={platformConfig.logo} alt={platformConfig.name} className="w-5 h-5 object-contain" />
-        </a>
-      </QuickLinkPopover>}
+          <a
+            href={platformUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            className="flex items-center hover:opacity-80 transition-opacity"
+          >
+            <img src={platformConfig.logo} alt={platformConfig.name} className="w-5 h-5 object-contain" />
+          </a>
+        </QuickLinkPopover>
+      </div>
 
       {/* Axiom icon - hover popover with token security stats */}
       {coin.axiomUrl && (
