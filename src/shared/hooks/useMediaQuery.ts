@@ -16,7 +16,7 @@ export function useMediaQuery(query: string): boolean {
   return matches
 }
 
-/** Returns true when viewport is below Tailwind's `sm` breakpoint (640px) */
+/** Returns true when viewport is below Tailwind's `lg` breakpoint (1024px) */
 export function useIsSmallScreen(): boolean {
-  return !useMediaQuery('(min-width: 640px)')
+  return !useMediaQuery('(min-width: 1024px)')
 }

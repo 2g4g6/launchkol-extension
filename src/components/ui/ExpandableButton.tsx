@@ -96,7 +96,7 @@ export function ExpandableButton({
   // Track breakpoint changes to snap instantly instead of spring-animating
   const prevSmallRef = useRef(isSmall)
   const didBreakpointChange = prevSmallRef.current !== isSmall
-  useEffect(() => { prevSmallRef.current = isSmall }, [isSmall])
+  useEffect(() => { prevSmallRef.current = isSmall; setIsHovered(false) }, [isSmall])
 
   const styles = variantStyles[variant]
   const config = sizeConfig[size]

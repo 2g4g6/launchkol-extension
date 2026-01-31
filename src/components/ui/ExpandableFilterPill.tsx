@@ -42,7 +42,7 @@ export function ExpandableFilterPill({
   // Track breakpoint changes to snap instantly instead of spring-animating
   const prevSmallRef = useRef(isSmall)
   const didBreakpointChange = prevSmallRef.current !== isSmall
-  useEffect(() => { prevSmallRef.current = isSmall }, [isSmall])
+  useEffect(() => { prevSmallRef.current = isSmall; setIsHovered(false) }, [isSmall])
 
   const expanded = !isSmall && (isHovered || active)
   const transition = didBreakpointChange ? instantTransition : springTransition
