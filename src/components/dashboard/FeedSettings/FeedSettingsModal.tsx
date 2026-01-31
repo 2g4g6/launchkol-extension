@@ -84,6 +84,7 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
   const [isMobile, setIsMobile] = useState(false)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [collapsedSections, setCollapsedSections] = useState<Set<string>>(new Set())
+  const [sidebarExpanded, setSidebarExpanded] = useState(false)
   const triggerRef = useRef<HTMLButtonElement>(null)
 
   const toggleSection = (key: string) => {
@@ -383,7 +384,11 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
         )}
 
         {/* Left Column - Groups Sidebar (Desktop only) */}
-        <div className="w-[200px] flex flex-col border-r border-kol-border/50 bg-kol-surface/30 max-sm:hidden">
+        <div
+          className={`${sidebarExpanded ? 'w-[200px]' : 'w-[48px]'} flex flex-col border-r border-kol-border/50 bg-kol-surface/30 max-sm:hidden transition-[width] duration-200 ease-in-out overflow-hidden flex-shrink-0`}
+          onMouseEnter={() => setSidebarExpanded(true)}
+          onMouseLeave={() => setSidebarExpanded(false)}
+        >
           {/* All Feeds (Global) */}
           <button
             onClick={() => {
@@ -398,8 +403,8 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
               }
             `}
           >
-            <i className="ri-global-line text-sm" />
-            <span className="text-xs font-medium">All Feeds</span>
+            <i className="ri-global-line text-sm flex-shrink-0" />
+            {sidebarExpanded && <span className="text-xs font-medium whitespace-nowrap">All Feeds</span>}
           </button>
 
           {/* Divider */}
@@ -413,8 +418,14 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                 className="group relative"
               >
                 <div
+                  onClick={() => {
+                    if (!sidebarExpanded) {
+                      setSelectedGroupId(group.id)
+                      setSelectedTab('accounts')
+                    }
+                  }}
                   className={`
-                    w-full flex items-center gap-2.5 px-3 py-2.5 transition-all group-hover:pr-12
+                    w-full flex items-center ${sidebarExpanded ? 'gap-2.5 px-3' : 'justify-center px-0'} py-2.5 transition-all ${sidebarExpanded ? 'group-hover:pr-12' : ''} ${!sidebarExpanded ? 'cursor-pointer' : ''}
                     ${selectedGroupId === group.id
                       ? 'bg-kol-blue/10 text-white border-l-2 border-kol-blue'
                       : 'text-kol-text-muted hover:bg-kol-surface-elevated/50 hover:text-white border-l-2 border-transparent'
@@ -426,37 +437,39 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                     onSelect={(icon) => updateGroupIcon(group.id, icon)}
                   />
 
-                  {editingGroupId === group.id ? (
-                    <input
-                      type="text"
-                      value={editingGroupName}
-                      onChange={(e) => setEditingGroupName(e.target.value)}
-                      onBlur={() => renameGroup(group.id, editingGroupName)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') renameGroup(group.id, editingGroupName)
-                        if (e.key === 'Escape') setEditingGroupId(null)
-                      }}
-                      onClick={(e) => e.stopPropagation()}
-                      autoFocus
-                      className="flex-1 bg-transparent text-xs font-medium outline-none border-b border-kol-blue min-w-0"
-                    />
-                  ) : (
-                    <button
-                      onClick={() => {
-                        setSelectedGroupId(group.id)
-                        setSelectedTab('accounts')
-                      }}
-                      className="flex-1 text-left text-xs font-medium truncate min-w-0"
-                    >
-                      {group.name}
-                    </button>
+                  {sidebarExpanded && (
+                    editingGroupId === group.id ? (
+                      <input
+                        type="text"
+                        value={editingGroupName}
+                        onChange={(e) => setEditingGroupName(e.target.value)}
+                        onBlur={() => renameGroup(group.id, editingGroupName)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') renameGroup(group.id, editingGroupName)
+                          if (e.key === 'Escape') setEditingGroupId(null)
+                        }}
+                        onClick={(e) => e.stopPropagation()}
+                        autoFocus
+                        className="flex-1 bg-transparent text-xs font-medium outline-none border-b border-kol-blue min-w-0"
+                      />
+                    ) : (
+                      <button
+                        onClick={() => {
+                          setSelectedGroupId(group.id)
+                          setSelectedTab('accounts')
+                        }}
+                        className="flex-1 text-left text-xs font-medium truncate min-w-0"
+                      >
+                        {group.name}
+                      </button>
+                    )
                   )}
 
-                  <span className="text-[10px] text-kol-text-muted group-hover:opacity-0 transition-opacity">{group.accounts.length}</span>
+                  {sidebarExpanded && <span className="text-[10px] text-kol-text-muted group-hover:opacity-0 transition-opacity">{group.accounts.length}</span>}
                 </div>
 
                 {/* Edit/Delete on hover */}
-                <div className="absolute right-1 top-1/2 -translate-y-1/2 hidden group-hover:flex items-center gap-0.5">
+                {sidebarExpanded && <div className="absolute right-1 top-1/2 -translate-y-1/2 hidden group-hover:flex items-center gap-0.5">
                   <Tooltip content="Rename group" position="top">
                     <button
                       onClick={(e) => {
@@ -480,7 +493,7 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                       <i className="ri-delete-bin-line text-[10px]" />
                     </button>
                   </Tooltip>
-                </div>
+                </div>}
               </div>
             ))}
           </div>
@@ -491,8 +504,8 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
               onClick={createGroup}
               className="flex items-center justify-center gap-2.5 px-3 py-2.5 text-kol-text-muted hover:text-white hover:bg-kol-surface-elevated/50 transition-colors border-t border-kol-border/30 w-full"
             >
-              <i className="ri-add-line text-sm" />
-              <span className="text-xs font-medium">New Group</span>
+              <i className="ri-add-line text-sm flex-shrink-0" />
+              {sidebarExpanded && <span className="text-xs font-medium whitespace-nowrap">New Group</span>}
             </button>
           </Tooltip>
         </div>
