@@ -34,7 +34,7 @@ export function OpenSidebarPrompt({ user }: OpenSidebarPromptProps) {
         <motion.div
           className="absolute w-[300px] h-[300px] rounded-full"
           style={{
-            background: 'radial-gradient(circle, color-mix(in srgb, var(--kol-blue) 15%, transparent) 0%, transparent 70%)',
+            background: 'radial-gradient(circle, rgba(0, 123, 255, 0.15) 0%, transparent 70%)',
             top: '-100px',
             right: '-100px',
           }}

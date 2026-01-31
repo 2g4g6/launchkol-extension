@@ -119,11 +119,11 @@ export function ExpandableButton({
         animate={{
           width: isExpanded ? expandedWidth : config.collapsedWidth,
           backgroundColor: isExpanded
-            ? (variant === 'primary' ? 'color-mix(in srgb, var(--kol-blue) 20%, transparent)' : 'rgba(255, 255, 255, 0.05)')
-            : (variant === 'primary' ? 'color-mix(in srgb, var(--kol-blue) 10%, transparent)' : 'transparent'),
+            ? (variant === 'primary' ? 'rgba(0, 123, 255, 0.2)' : 'rgba(255, 255, 255, 0.05)')
+            : (variant === 'primary' ? 'rgba(0, 123, 255, 0.1)' : 'transparent'),
           borderColor: isExpanded
-            ? (variant === 'primary' ? 'var(--kol-blue-glow)' : 'rgba(255, 255, 255, 0.1)')
-            : (variant === 'primary' ? 'color-mix(in srgb, var(--kol-blue) 20%, transparent)' : 'transparent'),
+            ? (variant === 'primary' ? 'rgba(0, 123, 255, 0.4)' : 'rgba(255, 255, 255, 0.1)')
+            : (variant === 'primary' ? 'rgba(0, 123, 255, 0.2)' : 'transparent'),
         }}
         transition={transition}
         onMouseEnter={() => !disabled && setIsHovered(true)}

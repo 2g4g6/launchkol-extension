@@ -180,7 +180,7 @@ export function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
         <motion.div
           className="absolute -top-20 -right-20 w-[280px] h-[280px] rounded-full opacity-40"
           style={{
-            background: 'radial-gradient(circle, var(--kol-blue-glow) 0%, color-mix(in srgb, var(--kol-blue) 5%, transparent) 40%, transparent 70%)',
+            background: 'radial-gradient(circle, rgba(0, 123, 255, 0.25) 0%, rgba(0, 123, 255, 0.05) 40%, transparent 70%)',
             filter: 'blur(40px)',
           }}
           animate={{
@@ -251,7 +251,7 @@ export function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
               style={{
                 left: `${10 + (i * 7) % 80}%`,
                 top: `${15 + (i * 11) % 70}%`,
-                background: i % 3 === 0 ? 'var(--kol-blue-glow)' : 'rgba(255, 255, 255, 0.3)',
+                background: i % 3 === 0 ? 'rgba(0, 123, 255, 0.6)' : 'rgba(255, 255, 255, 0.3)',
               }}
               animate={{
                 y: [0, -20, 0],
@@ -280,8 +280,8 @@ export function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
         <div
           className="absolute top-0 left-1/2 -translate-x-1/2 w-[200px] h-[2px]"
           style={{
-            background: `linear-gradient(90deg, transparent 0%, var(--kol-blue-glow) 50%, transparent 100%)`,
-            boxShadow: `0 0 20px 2px var(--kol-blue-glow)`,
+            background: 'linear-gradient(90deg, transparent 0%, rgba(0, 123, 255, 0.5) 50%, transparent 100%)',
+            boxShadow: '0 0 20px 2px rgba(0, 123, 255, 0.3)',
           }}
         />
 

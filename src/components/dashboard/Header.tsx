@@ -476,7 +476,7 @@ export function Header({
         className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[50%] h-[1px]"
         style={{
           background:
-            `linear-gradient(90deg, transparent 0%, color-mix(in srgb, var(--kol-blue) 25%, transparent) 50%, transparent 100%)`,
+            "linear-gradient(90deg, transparent 0%, rgba(0, 123, 255, 0.25) 50%, transparent 100%)",
         }}
       />
 
@@ -500,7 +500,7 @@ export function Header({
                   layoutId="activeTabUnderline"
                   className="absolute bottom-0 left-1 right-1 h-[2px] rounded-full bg-kol-blue"
                   style={{
-                    boxShadow: "0 0 8px var(--kol-blue-glow)",
+                    boxShadow: "0 0 8px rgba(0, 123, 255, 0.5)",
                   }}
                   transition={{ type: "spring", bounce: 0.2, duration: 0.4 }}
                 />
