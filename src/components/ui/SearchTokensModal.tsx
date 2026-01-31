@@ -1076,7 +1076,7 @@ export function SearchTokensModal({
               </AnimatePresence>
 
               {/* Search Input */}
-              <div className="flex h-16 items-center gap-2 px-4 border-b border-kol-border/50">
+              <div className="flex h-12 sm:h-16 items-center gap-2 px-3 sm:px-4 border-b border-kol-border/50">
                 <button
                   onClick={() => setShowFilters(!showFilters)}
                   className="flex-shrink-0 w-6 h-6 rounded flex items-center justify-center text-kol-text-muted hover:text-white transition-colors"
@@ -1087,14 +1087,14 @@ export function SearchTokensModal({
                     transition={{ duration: 0.2 }}
                   />
                 </button>
-                <i className="ri-search-line text-xl text-kol-text-muted" />
+                <i className="ri-search-line text-base sm:text-xl flex-shrink-0 text-kol-text-muted" />
                 <input
                   ref={inputRef}
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search by name, ticker, or CA..."
-                  className="flex-1 bg-transparent text-xl text-white placeholder:text-xl placeholder:text-kol-text-muted outline-none"
+                  className="flex-1 min-w-0 bg-transparent text-base sm:text-xl text-white placeholder:text-base sm:placeholder:text-xl placeholder:text-kol-text-muted outline-none"
                 />
                 {queryType && (
                   <span className="flex-shrink-0 h-5 px-2 rounded bg-kol-surface-elevated border border-kol-border/50 text-[10px] font-medium text-kol-text-muted flex items-center">
@@ -1103,7 +1103,7 @@ export function SearchTokensModal({
                 )}
                 <button
                   onClick={onClose}
-                  className="flex h-5 items-center px-2 rounded-full border border-kol-border bg-kol-surface text-xs text-white hover:bg-kol-surface-elevated transition-colors"
+                  className="flex-shrink-0 flex h-5 items-center px-2 rounded-full border border-kol-border bg-kol-surface text-xs text-white hover:bg-kol-surface-elevated transition-colors"
                 >
                   Esc
                 </button>
