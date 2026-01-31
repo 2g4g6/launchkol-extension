@@ -145,8 +145,12 @@ export function ExpandableButton({
         whileTap={disabled ? undefined : { scale: 0.97 }}
       >
         <motion.div
-          className={`flex items-center ${size === 'large' ? 'gap-2' : 'gap-1.5'}`}
-          animate={{ paddingLeft: isExpanded ? (size === 'large' ? 10 : 8) : 0, paddingRight: isExpanded ? (size === 'large' ? 10 : 8) : 0 }}
+          className="flex items-center"
+          animate={{
+            gap: isExpanded ? (size === 'large' ? 8 : 6) : 0,
+            paddingLeft: isExpanded ? (size === 'large' ? 10 : 8) : 0,
+            paddingRight: isExpanded ? (size === 'large' ? 10 : 8) : 0,
+          }}
           transition={transition}
         >
           {/* Icon */}
