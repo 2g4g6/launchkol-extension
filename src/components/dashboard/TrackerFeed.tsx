@@ -437,11 +437,74 @@ export function TrackerFeed({ onDeploy, onTokenClick }: TrackerFeedProps) {
       <div className="flex flex-col h-full lg:bg-kol-surface/50 lg:backdrop-blur-sm lg:border lg:border-kol-border/70 lg:rounded-xl overflow-hidden">
         {/* Search Bar + Filters */}
         <motion.div
-          className="relative px-3 pt-3 pb-2 space-y-2"
+          className="relative"
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
         >
+          {/* Search input */}
+          <div className={`flex h-12 sm:h-16 items-center gap-2 px-3 border-b transition-colors duration-300 ${
+            isSearchFocused ? 'border-kol-blue/50' : 'border-kol-border/50'
+          }`}>
+            {/* Chevron toggle for filters */}
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className="w-6 h-6 lg:w-5 lg:h-5 rounded flex items-center justify-center text-kol-text-muted hover:text-white transition-colors flex-shrink-0"
+            >
+              <motion.i
+                className="ri-arrow-down-s-line text-base lg:text-sm"
+                animate={{ rotate: showFilters ? 180 : 0 }}
+                transition={{ duration: 0.2 }}
+              />
+            </button>
+            <i className={`ri-search-line text-base lg:text-sm transition-colors duration-200 flex-shrink-0 ${
+              isSearchFocused ? 'text-kol-blue' : 'text-kol-text-tertiary'
+            }`} />
+            <input
+              type="text"
+              placeholder="Search feed..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onFocus={() => setIsSearchFocused(true)}
+              onBlur={() => setIsSearchFocused(false)}
+              className="flex-1 min-w-0 bg-transparent text-base sm:text-xl text-white placeholder:text-kol-text-tertiary font-body focus:outline-none transition-all duration-300"
+            />
+
+            {/* Action Buttons */}
+            <div className="flex items-center gap-1 lg:gap-0.5 flex-shrink-0">
+              {/* Clear search */}
+              <AnimatePresence>
+                {searchQuery && (
+                  <motion.button
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    onClick={() => setSearchQuery('')}
+                    className="w-9 h-9 lg:w-7 lg:h-7 rounded-lg flex items-center justify-center text-kol-text-muted hover:text-white hover:bg-white/5 transition-colors"
+                  >
+                    <i className="ri-close-line text-base lg:text-sm" />
+                  </motion.button>
+                )}
+              </AnimatePresence>
+
+              {/* Divider */}
+              <div className="w-px h-5 lg:h-4 bg-kol-border/40 mx-1" />
+
+              {/* Settings Button */}
+              <Tooltip content="Feed settings">
+                <motion.button
+                  onClick={() => setIsSettingsModalOpen(true)}
+                  className="flex items-center gap-2 lg:gap-1.5 px-3 lg:px-2.5 py-2 lg:py-1.5 rounded-lg text-kol-text-tertiary hover:text-white hover:bg-white/5 transition-colors"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <i className="ri-settings-3-line text-base lg:text-sm" />
+                  <span className="text-sm lg:text-xs font-medium">Settings</span>
+                </motion.button>
+              </Tooltip>
+            </div>
+          </div>
+
           {/* Tweet type filters & controls */}
           <AnimatePresence>
             {showFilters && (
@@ -450,87 +513,12 @@ export function TrackerFeed({ onDeploy, onTokenClick }: TrackerFeedProps) {
                 animate={{ height: 'auto', opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
                 transition={{ duration: 0.2 }}
-                className="overflow-hidden"
+                className="overflow-hidden px-3 py-2"
               >
                 {renderFeedFilterRow()}
               </motion.div>
             )}
           </AnimatePresence>
-
-          {/* Search input */}
-          <div className="relative">
-            {/* Focus glow effect */}
-            <div
-              className={`absolute inset-0 rounded-xl transition-opacity duration-500 blur-xl -z-10 ${
-                isSearchFocused ? 'opacity-100' : 'opacity-0'
-              }`}
-              style={{
-                background: 'radial-gradient(circle at 50% 50%, rgba(0, 123, 255, 0.15) 0%, transparent 70%)',
-              }}
-            />
-
-            <div className={`relative flex items-center bg-kol-surface/50 border rounded-xl transition-all duration-300 ${
-              isSearchFocused ? 'border-kol-blue/50' : 'border-kol-border/70'
-            }`}>
-              {/* Chevron toggle for filters */}
-              <button
-                onClick={() => setShowFilters(!showFilters)}
-                className="absolute left-2 lg:left-2 top-1/2 -translate-y-1/2 w-6 h-6 lg:w-5 lg:h-5 rounded flex items-center justify-center text-kol-text-muted hover:text-white transition-colors z-10"
-              >
-                <motion.i
-                  className="ri-arrow-down-s-line text-base lg:text-sm"
-                  animate={{ rotate: showFilters ? 180 : 0 }}
-                  transition={{ duration: 0.2 }}
-                />
-              </button>
-              <i className={`ri-search-line absolute left-9 lg:left-8 top-1/2 -translate-y-1/2 text-base lg:text-sm transition-colors duration-200 ${
-                isSearchFocused ? 'text-kol-blue' : 'text-kol-text-tertiary'
-              }`} />
-              <input
-                type="text"
-                placeholder="Search feed..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onFocus={() => setIsSearchFocused(true)}
-                onBlur={() => setIsSearchFocused(false)}
-                className="flex-1 h-11 lg:h-9 pl-16 lg:pl-14 pr-2 bg-transparent border-0 rounded-xl text-base lg:text-sm text-white placeholder:text-kol-text-tertiary font-body focus:outline-none transition-all duration-300"
-              />
-
-              {/* Action Buttons */}
-              <div className="flex items-center gap-1 lg:gap-0.5 pr-2">
-                {/* Clear search */}
-                <AnimatePresence>
-                  {searchQuery && (
-                    <motion.button
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.8 }}
-                      onClick={() => setSearchQuery('')}
-                      className="w-9 h-9 lg:w-7 lg:h-7 rounded-lg flex items-center justify-center text-kol-text-muted hover:text-white hover:bg-white/5 transition-colors"
-                    >
-                      <i className="ri-close-line text-base lg:text-sm" />
-                    </motion.button>
-                  )}
-                </AnimatePresence>
-
-                {/* Divider */}
-                <div className="w-px h-5 lg:h-4 bg-kol-border/40 mx-1" />
-
-                {/* Settings Button */}
-                <Tooltip content="Feed settings">
-                  <motion.button
-                    onClick={() => setIsSettingsModalOpen(true)}
-                    className="flex items-center gap-2 lg:gap-1.5 px-3 lg:px-2.5 py-2 lg:py-1.5 rounded-lg text-kol-text-tertiary hover:text-white hover:bg-white/5 transition-colors"
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    <i className="ri-settings-3-line text-base lg:text-sm" />
-                    <span className="text-sm lg:text-xs font-medium">Settings</span>
-                  </motion.button>
-                </Tooltip>
-              </div>
-            </div>
-          </div>
         </motion.div>
 
       {/* Feed Content */}

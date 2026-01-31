@@ -971,8 +971,75 @@ export function CoinsPanel({ solPrice }: CoinsPanelProps) {
         className="hidden lg:flex lg:flex-col h-full bg-kol-surface/50 backdrop-blur-sm border border-kol-border/70 rounded-xl overflow-hidden relative"
         style={{ width: DESKTOP_WIDTH }}
       >
-        {/* Header: filters + search container */}
-        <div className="px-3 pt-3 pb-2 border-b border-kol-border/30 space-y-2">
+        {/* Header: search + filters container */}
+        <div>
+          {/* Search bar */}
+          <div className={`flex h-12 items-center gap-2 px-3 border-b transition-colors duration-300 ${
+            isSearchFocused ? "border-kol-blue/50" : "border-kol-border/50"
+          }`}>
+            {/* Chevron toggle for filters */}
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className="w-5 h-5 rounded flex items-center justify-center text-kol-text-muted hover:text-white transition-colors flex-shrink-0"
+            >
+              <motion.i
+                className="ri-arrow-down-s-line text-sm"
+                animate={{ rotate: showFilters ? 180 : 0 }}
+                transition={{ duration: 0.2 }}
+              />
+            </button>
+            <i
+              className={`ri-search-line text-sm transition-colors duration-200 flex-shrink-0 ${
+                isSearchFocused ? "text-kol-blue" : "text-kol-text-tertiary"
+              }`}
+            />
+            <input
+              type="text"
+              placeholder="Search coins..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onFocus={() => setIsSearchFocused(true)}
+              onBlur={() => setIsSearchFocused(false)}
+              className="flex-1 min-w-0 bg-transparent text-base text-white placeholder:text-kol-text-tertiary font-body focus:outline-none transition-all duration-300"
+            />
+
+            {/* Action Buttons */}
+            <div className="flex items-center gap-0.5 flex-shrink-0">
+              {/* Clear search */}
+              <AnimatePresence>
+                {searchQuery && (
+                  <motion.button
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    onClick={() => setSearchQuery("")}
+                    className="w-7 h-7 rounded-lg flex items-center justify-center text-kol-text-muted hover:text-white hover:bg-white/5 transition-colors"
+                  >
+                    <i className="ri-close-line text-sm" />
+                  </motion.button>
+                )}
+              </AnimatePresence>
+
+              {/* Divider */}
+              <div className="w-px h-4 bg-kol-border/40 mx-1" />
+
+              {/* Action buttons */}
+              <button className="h-7 px-2 rounded-lg flex items-center gap-1.5 text-kol-text-muted hover:text-white hover:bg-white/5 transition-colors">
+                <i className="ri-file-copy-line text-sm" />
+                <span className="text-xs font-medium whitespace-nowrap">
+                  Clone
+                </span>
+              </button>
+
+              <button className="h-7 px-2 rounded-lg flex items-center gap-1.5 text-kol-text-muted hover:text-white hover:bg-white/5 transition-colors">
+                <i className="ri-sparkling-line text-sm" />
+                <span className="text-xs font-medium whitespace-nowrap">
+                  Create
+                </span>
+              </button>
+            </div>
+          </div>
+
           {/* Platform filters & sort */}
           <AnimatePresence>
             {showFilters && (
@@ -981,94 +1048,12 @@ export function CoinsPanel({ solPrice }: CoinsPanelProps) {
                 animate={{ height: "auto", opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
                 transition={{ duration: 0.2 }}
-                className="overflow-hidden"
+                className="overflow-hidden px-3 py-2"
               >
                 {renderFilterRow()}
               </motion.div>
             )}
           </AnimatePresence>
-
-          {/* Search bar */}
-          <div className="relative">
-            {/* Focus glow effect */}
-            <div
-              className={`absolute inset-0 rounded-xl transition-opacity duration-500 blur-xl -z-10 ${
-                isSearchFocused ? "opacity-100" : "opacity-0"
-              }`}
-              style={{
-                background:
-                  "radial-gradient(circle at 50% 50%, rgba(0, 123, 255, 0.15) 0%, transparent 70%)",
-              }}
-            />
-
-            <div
-              className={`relative flex items-center bg-kol-surface/50 border rounded-xl transition-all duration-300 ${
-                isSearchFocused ? "border-kol-blue/50" : "border-kol-border/70"
-              }`}
-            >
-              {/* Chevron toggle for filters */}
-              <button
-                onClick={() => setShowFilters(!showFilters)}
-                className="absolute left-2 top-1/2 -translate-y-1/2 w-5 h-5 rounded flex items-center justify-center text-kol-text-muted hover:text-white transition-colors z-10"
-              >
-                <motion.i
-                  className="ri-arrow-down-s-line text-sm"
-                  animate={{ rotate: showFilters ? 180 : 0 }}
-                  transition={{ duration: 0.2 }}
-                />
-              </button>
-              <i
-                className={`ri-search-line absolute left-8 top-1/2 -translate-y-1/2 text-sm transition-colors duration-200 ${
-                  isSearchFocused ? "text-kol-blue" : "text-kol-text-tertiary"
-                }`}
-              />
-              <input
-                type="text"
-                placeholder="Search coins..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onFocus={() => setIsSearchFocused(true)}
-                onBlur={() => setIsSearchFocused(false)}
-                className="flex-1 h-9 pl-14 pr-2 bg-transparent border-0 rounded-xl text-sm text-white placeholder:text-kol-text-tertiary font-body focus:outline-none transition-all duration-300"
-              />
-
-              {/* Action Buttons */}
-              <div className="flex items-center gap-0.5 pr-2">
-                {/* Clear search */}
-                <AnimatePresence>
-                  {searchQuery && (
-                    <motion.button
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.8 }}
-                      onClick={() => setSearchQuery("")}
-                      className="w-7 h-7 rounded-lg flex items-center justify-center text-kol-text-muted hover:text-white hover:bg-white/5 transition-colors"
-                    >
-                      <i className="ri-close-line text-sm" />
-                    </motion.button>
-                  )}
-                </AnimatePresence>
-
-                {/* Divider */}
-                <div className="w-px h-4 bg-kol-border/40 mx-1" />
-
-                {/* Action buttons */}
-                <button className="h-7 px-2 rounded-lg flex items-center gap-1.5 text-kol-text-muted hover:text-white hover:bg-white/5 transition-colors">
-                  <i className="ri-file-copy-line text-sm" />
-                  <span className="text-xs font-medium whitespace-nowrap">
-                    Clone
-                  </span>
-                </button>
-
-                <button className="h-7 px-2 rounded-lg flex items-center gap-1.5 text-kol-text-muted hover:text-white hover:bg-white/5 transition-colors">
-                  <i className="ri-sparkling-line text-sm" />
-                  <span className="text-xs font-medium whitespace-nowrap">
-                    Create
-                  </span>
-                </button>
-              </div>
-            </div>
-          </div>
         </div>
 
         {/* Coins List */}
@@ -1091,8 +1076,75 @@ export function CoinsPanel({ solPrice }: CoinsPanelProps) {
           className="bg-kol-bg/80 backdrop-blur-sm flex flex-col overflow-hidden"
           style={{ height: panelHeight }}
         >
-          {/* Header: filters + search container - larger on mobile for better touch targets */}
-          <div className="px-3 pt-3 pb-2 flex-shrink-0 border-b border-kol-border/30 space-y-2">
+          {/* Header: search + filters container - larger on mobile for better touch targets */}
+          <div className="flex-shrink-0">
+            {/* Search bar */}
+            <div className={`flex h-12 sm:h-16 items-center gap-2 px-3 border-b transition-colors duration-300 ${
+              isSearchFocused ? "border-kol-blue/50" : "border-kol-border/50"
+            }`}>
+              {/* Chevron toggle for filters */}
+              <button
+                onClick={() => setShowFilters(!showFilters)}
+                className="w-6 h-6 rounded flex items-center justify-center text-kol-text-muted hover:text-white transition-colors flex-shrink-0"
+              >
+                <motion.i
+                  className="ri-arrow-down-s-line text-base"
+                  animate={{ rotate: showFilters ? 180 : 0 }}
+                  transition={{ duration: 0.2 }}
+                />
+              </button>
+              <i
+                className={`ri-search-line text-base transition-colors duration-200 flex-shrink-0 ${
+                  isSearchFocused ? "text-kol-blue" : "text-kol-text-tertiary"
+                }`}
+              />
+              <input
+                type="text"
+                placeholder="Search coins..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onFocus={() => setIsSearchFocused(true)}
+                onBlur={() => setIsSearchFocused(false)}
+                className="flex-1 min-w-0 bg-transparent text-base sm:text-xl text-white placeholder:text-kol-text-tertiary font-body focus:outline-none transition-all duration-300"
+              />
+
+              {/* Action Buttons */}
+              <div className="flex items-center gap-1 flex-shrink-0">
+                {/* Clear search */}
+                <AnimatePresence>
+                  {searchQuery && (
+                    <motion.button
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.8 }}
+                      onClick={() => setSearchQuery("")}
+                      className="w-9 h-9 rounded-lg flex items-center justify-center text-kol-text-muted hover:text-white hover:bg-white/5 transition-colors"
+                    >
+                      <i className="ri-close-line text-base" />
+                    </motion.button>
+                  )}
+                </AnimatePresence>
+
+                {/* Divider */}
+                <div className="w-px h-5 bg-kol-border/40 mx-1" />
+
+                {/* Action buttons */}
+                <button className="h-9 px-2.5 rounded-lg flex items-center gap-2 text-kol-text-muted hover:text-white hover:bg-white/5 transition-colors">
+                  <i className="ri-file-copy-line text-base" />
+                  <span className="text-sm font-medium whitespace-nowrap">
+                    Clone
+                  </span>
+                </button>
+
+                <button className="h-9 px-2.5 rounded-lg flex items-center gap-2 text-kol-text-muted hover:text-white hover:bg-white/5 transition-colors">
+                  <i className="ri-sparkling-line text-base" />
+                  <span className="text-sm font-medium whitespace-nowrap">
+                    Create
+                  </span>
+                </button>
+              </div>
+            </div>
+
             {/* Platform filters & sort */}
             <AnimatePresence>
               {showFilters && (
@@ -1101,94 +1153,12 @@ export function CoinsPanel({ solPrice }: CoinsPanelProps) {
                   animate={{ height: "auto", opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
                   transition={{ duration: 0.2 }}
-                  className="overflow-hidden"
+                  className="overflow-hidden px-3 py-2"
                 >
                   {renderFilterRow()}
                 </motion.div>
               )}
             </AnimatePresence>
-
-            {/* Search bar */}
-            <div className="relative">
-              {/* Focus glow effect */}
-              <div
-                className={`absolute inset-0 rounded-xl transition-opacity duration-500 blur-xl -z-10 ${
-                  isSearchFocused ? "opacity-100" : "opacity-0"
-                }`}
-                style={{
-                  background:
-                    "radial-gradient(circle at 50% 50%, rgba(0, 123, 255, 0.15) 0%, transparent 70%)",
-                }}
-              />
-
-              <div
-                className={`relative flex items-center bg-kol-surface/50 border rounded-xl transition-all duration-300 ${
-                  isSearchFocused ? "border-kol-blue/50" : "border-kol-border"
-                }`}
-              >
-                {/* Chevron toggle for filters */}
-                <button
-                  onClick={() => setShowFilters(!showFilters)}
-                  className="absolute left-2.5 top-1/2 -translate-y-1/2 w-6 h-6 rounded flex items-center justify-center text-kol-text-muted hover:text-white transition-colors z-10"
-                >
-                  <motion.i
-                    className="ri-arrow-down-s-line text-base"
-                    animate={{ rotate: showFilters ? 180 : 0 }}
-                    transition={{ duration: 0.2 }}
-                  />
-                </button>
-                <i
-                  className={`ri-search-line absolute left-9 top-1/2 -translate-y-1/2 text-base transition-colors duration-200 ${
-                    isSearchFocused ? "text-kol-blue" : "text-kol-text-tertiary"
-                  }`}
-                />
-                <input
-                  type="text"
-                  placeholder="Search coins..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onFocus={() => setIsSearchFocused(true)}
-                  onBlur={() => setIsSearchFocused(false)}
-                  className="flex-1 min-w-0 h-11 pl-16 pr-2 bg-transparent border-0 rounded-xl text-base text-white placeholder:text-kol-text-tertiary font-body focus:outline-none transition-all duration-300"
-                />
-
-                {/* Action Buttons */}
-                <div className="flex items-center gap-1 pr-2 flex-shrink-0">
-                  {/* Clear search */}
-                  <AnimatePresence>
-                    {searchQuery && (
-                      <motion.button
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.8 }}
-                        onClick={() => setSearchQuery("")}
-                        className="w-9 h-9 rounded-lg flex items-center justify-center text-kol-text-muted hover:text-white hover:bg-white/5 transition-colors"
-                      >
-                        <i className="ri-close-line text-base" />
-                      </motion.button>
-                    )}
-                  </AnimatePresence>
-
-                  {/* Divider */}
-                  <div className="w-px h-5 bg-kol-border/40 mx-1" />
-
-                  {/* Action buttons */}
-                  <button className="h-9 px-2.5 rounded-lg flex items-center gap-2 text-kol-text-muted hover:text-white hover:bg-white/5 transition-colors">
-                    <i className="ri-file-copy-line text-base" />
-                    <span className="text-sm font-medium whitespace-nowrap">
-                      Clone
-                    </span>
-                  </button>
-
-                  <button className="h-9 px-2.5 rounded-lg flex items-center gap-2 text-kol-text-muted hover:text-white hover:bg-white/5 transition-colors">
-                    <i className="ri-sparkling-line text-base" />
-                    <span className="text-sm font-medium whitespace-nowrap">
-                      Create
-                    </span>
-                  </button>
-                </div>
-              </div>
-            </div>
           </div>
 
           {/* Coins List - vertical scroll */}
