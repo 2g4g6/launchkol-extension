@@ -130,6 +130,11 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
   // Get selected group
   const selectedGroup = groups.find(g => g.id === selectedGroupId)
 
+  // Display settings: shows global values when useGlobalSettings is on, otherwise group's own values
+  const displaySettings = selectedGroup
+    ? (selectedGroup.settings.useGlobalSettings ? globalSettings : selectedGroup.settings)
+    : null
+
   // Group CRUD operations
   const createGroup = () => {
     const newGroup: FeedGroup = {
@@ -1194,7 +1199,7 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                           <p className="text-xs max-sm:text-sm text-kol-text-muted mt-0.5">Translate tweets to your preferred language</p>
                         </div>
                         <ToggleSwitch
-                          enabled={selectedGroup.settings.autoTranslate}
+                          enabled={displaySettings?.autoTranslate ?? false}
                           onChange={(v) => updateGroupSettings(selectedGroupId, { autoTranslate: v })}
                           disabled={selectedGroup.settings.useGlobalSettings}
                         />
@@ -1202,7 +1207,7 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
 
                       {/* Language Selection - shown when auto-translate is enabled */}
                       <AnimatePresence>
-                        {selectedGroup.settings.autoTranslate && !selectedGroup.settings.useGlobalSettings && (
+                        {displaySettings?.autoTranslate && !selectedGroup.settings.useGlobalSettings && (
                           <motion.div
                             initial={{ opacity: 0, height: 0 }}
                             animate={{ opacity: 1, height: 'auto' }}
@@ -1214,7 +1219,7 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                               <div className="flex-1">
                                 <label className="text-[10px] text-kol-text-muted uppercase tracking-wide font-medium mb-1.5 block">From</label>
                                 <LanguageSelect
-                                  value={selectedGroup.settings.translateFrom}
+                                  value={displaySettings?.translateFrom ?? 'auto'}
                                   onChange={(v) => updateGroupSettings(selectedGroupId, { translateFrom: v })}
                                   options={LANGUAGES}
                                   disabled={selectedGroup.settings.useGlobalSettings}
@@ -1223,7 +1228,7 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                               <div className="flex-1">
                                 <label className="text-[10px] text-kol-text-muted uppercase tracking-wide font-medium mb-1.5 block">To</label>
                                 <LanguageSelect
-                                  value={selectedGroup.settings.translateTo}
+                                  value={displaySettings?.translateTo ?? 'en'}
                                   onChange={(v) => updateGroupSettings(selectedGroupId, { translateTo: v })}
                                   options={TARGET_LANGUAGES}
                                   disabled={selectedGroup.settings.useGlobalSettings}
@@ -1243,7 +1248,7 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                           <p className="text-xs max-sm:text-sm text-kol-text-muted mt-0.5">Stop auto-scrolling when hovering</p>
                         </div>
                         <ToggleSwitch
-                          enabled={selectedGroup.settings.pauseOnHover}
+                          enabled={displaySettings?.pauseOnHover ?? false}
                           onChange={(v) => updateGroupSettings(selectedGroupId, { pauseOnHover: v })}
                           disabled={selectedGroup.settings.useGlobalSettings}
                         />
@@ -1258,7 +1263,7 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                           <p className="text-xs max-sm:text-sm text-kol-text-muted mt-0.5">Platform to open coins on</p>
                         </div>
                         <PlatformSelect
-                          value={selectedGroup.settings.defaultLaunchPlatform}
+                          value={displaySettings?.defaultLaunchPlatform ?? 'pump'}
                           onChange={(v) => updateGroupSettings(selectedGroupId, { defaultLaunchPlatform: v })}
                           disabled={selectedGroup.settings.useGlobalSettings}
                         />
@@ -1273,7 +1278,7 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                           <p className="text-xs max-sm:text-sm text-kol-text-muted mt-0.5">Volume for notification sounds</p>
                         </div>
                         <VolumeSlider
-                          value={selectedGroup.settings.soundVolume}
+                          value={displaySettings?.soundVolume ?? 50}
                           onChange={(v) => updateGroupSettings(selectedGroupId, { soundVolume: v })}
                         />
                       </div>
@@ -1299,9 +1304,9 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                           <p className="text-xs max-sm:text-sm text-kol-text-muted mt-0.5">Highlight tweets with $TOKEN mentions</p>
                         </div>
                         <div className="flex items-center gap-2">
-                          {(selectedGroup.settings.filters?.filterTokenSymbols ?? false) && !selectedGroup.settings.useGlobalSettings && (
+                          {(displaySettings?.filters?.filterTokenSymbols ?? false) && !selectedGroup.settings.useGlobalSettings && (
                             <ColorPicker
-                              currentColor={selectedGroup.settings.filters?.tokenSymbolsColor ?? DEFAULT_TOKEN_SYMBOLS_COLOR}
+                              currentColor={displaySettings?.filters?.tokenSymbolsColor ?? DEFAULT_TOKEN_SYMBOLS_COLOR}
                               onSelect={(color) => updateGroupFilters(selectedGroupId, {
                                 ...selectedGroup.settings.filters,
                                 filterTokenSymbols: selectedGroup.settings.filters?.filterTokenSymbols ?? false,
@@ -1313,7 +1318,7 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                             />
                           )}
                           <ToggleSwitch
-                            enabled={selectedGroup.settings.filters?.filterTokenSymbols ?? false}
+                            enabled={displaySettings?.filters?.filterTokenSymbols ?? false}
                             onChange={(v) => updateGroupFilters(selectedGroupId, {
                               ...selectedGroup.settings.filters,
                               filterTokenSymbols: v,
@@ -1335,9 +1340,9 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                           <p className="text-xs max-sm:text-sm text-kol-text-muted mt-0.5">Highlight tweets with contract addresses</p>
                         </div>
                         <div className="flex items-center gap-2">
-                          {(selectedGroup.settings.filters?.filterMintAddresses ?? false) && !selectedGroup.settings.useGlobalSettings && (
+                          {(displaySettings?.filters?.filterMintAddresses ?? false) && !selectedGroup.settings.useGlobalSettings && (
                             <ColorPicker
-                              currentColor={selectedGroup.settings.filters?.mintAddressesColor ?? DEFAULT_MINT_ADDRESSES_COLOR}
+                              currentColor={displaySettings?.filters?.mintAddressesColor ?? DEFAULT_MINT_ADDRESSES_COLOR}
                               onSelect={(color) => updateGroupFilters(selectedGroupId, {
                                 ...selectedGroup.settings.filters,
                                 filterTokenSymbols: selectedGroup.settings.filters?.filterTokenSymbols ?? false,
@@ -1349,7 +1354,7 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                             />
                           )}
                           <ToggleSwitch
-                            enabled={selectedGroup.settings.filters?.filterMintAddresses ?? false}
+                            enabled={displaySettings?.filters?.filterMintAddresses ?? false}
                             onChange={(v) => updateGroupFilters(selectedGroupId, {
                               ...selectedGroup.settings.filters,
                               filterTokenSymbols: selectedGroup.settings.filters?.filterTokenSymbols ?? false,
@@ -1363,7 +1368,7 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                         </div>
                       </div>
                       <KeywordInput
-                        keywords={selectedGroup.settings.filters?.keywords ?? []}
+                        keywords={displaySettings?.filters?.keywords ?? []}
                         onChange={(v) => updateGroupFilters(selectedGroupId, {
                           ...selectedGroup.settings.filters,
                           filterTokenSymbols: selectedGroup.settings.filters?.filterTokenSymbols ?? false,
@@ -1391,10 +1396,10 @@ export function FeedSettingsModal({ isOpen, onClose }: FeedSettingsModalProps) {
                           key={typeKey}
                           typeKey={typeKey}
                           label={TWEET_TYPE_LABELS[typeKey]}
-                          settings={selectedGroup.settings.tweetTypes[typeKey]}
+                          settings={(displaySettings?.tweetTypes ?? selectedGroup.settings.tweetTypes)[typeKey]}
                           groupDefaults={globalSettings.tweetTypes[typeKey]}
                           onChange={(updates) => updateGroupTweetType(selectedGroupId, typeKey, updates)}
-                          accountDefaultPlatform={PLATFORM_OPTIONS.find(p => p.id === selectedGroup.settings.defaultLaunchPlatform)?.label}
+                          accountDefaultPlatform={PLATFORM_OPTIONS.find(p => p.id === (displaySettings?.defaultLaunchPlatform ?? selectedGroup.settings.defaultLaunchPlatform))?.label}
                         />
                       ))}
                     </div>
