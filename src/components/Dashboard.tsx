@@ -8,6 +8,12 @@ import { SocialPostData } from './dashboard/SocialPost'
 import { DepositModal, NetworkConfig } from './ui/DepositModal'
 import { WithdrawModal } from './ui/WithdrawModal'
 import { SearchTokensModal, TokenResult } from './ui/SearchTokensModal'
+import { FeesModal } from './ui/FeesModal'
+import { ChatModal } from './ui/ChatModal'
+import { SoundModal } from './ui/SoundModal'
+import { LanguageModal } from './ui/LanguageModal'
+import { ThemeModal } from './ui/ThemeModal'
+import { SettingsModal } from './ui/SettingsModal'
 
 type TabId = 'feed'
 
@@ -48,6 +54,12 @@ export function Dashboard({ user, onSignOut }: DashboardProps) {
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false)
   const [searchModalQuery, setSearchModalQuery] = useState('')
   const [isCoinsOpen, setIsCoinsOpen] = useState(true)
+  const [isFeesModalOpen, setIsFeesModalOpen] = useState(false)
+  const [isChatModalOpen, setIsChatModalOpen] = useState(false)
+  const [isSoundModalOpen, setIsSoundModalOpen] = useState(false)
+  const [isLanguageModalOpen, setIsLanguageModalOpen] = useState(false)
+  const [isThemeModalOpen, setIsThemeModalOpen] = useState(false)
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
 
   // Simulated balance & price fetch
   useEffect(() => {
@@ -286,10 +298,24 @@ export function Dashboard({ user, onSignOut }: DashboardProps) {
       </div>
 
       {/* Footer Status Bar */}
+      {/* Footer Modals */}
+      <FeesModal isOpen={isFeesModalOpen} onClose={() => setIsFeesModalOpen(false)} />
+      <ChatModal isOpen={isChatModalOpen} onClose={() => setIsChatModalOpen(false)} />
+      <SoundModal isOpen={isSoundModalOpen} onClose={() => setIsSoundModalOpen(false)} />
+      <LanguageModal isOpen={isLanguageModalOpen} onClose={() => setIsLanguageModalOpen(false)} />
+      <ThemeModal isOpen={isThemeModalOpen} onClose={() => setIsThemeModalOpen(false)} />
+      <SettingsModal isOpen={isSettingsModalOpen} onClose={() => setIsSettingsModalOpen(false)} />
+
       <Footer
         solPrice={solPrice}
         bnbPrice={bnbPrice}
         chatUnreadCount={3}
+        onFeesClick={() => setIsFeesModalOpen(true)}
+        onChatClick={() => setIsChatModalOpen(true)}
+        onSoundClick={() => setIsSoundModalOpen(true)}
+        onLanguageClick={() => setIsLanguageModalOpen(true)}
+        onThemeClick={() => setIsThemeModalOpen(true)}
+        onSettingsClick={() => setIsSettingsModalOpen(true)}
       />
     </motion.div>
   )

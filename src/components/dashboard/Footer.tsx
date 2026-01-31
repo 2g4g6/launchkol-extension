@@ -9,6 +9,10 @@ interface FooterProps {
   chatUnreadCount?: number
   onFeesClick?: () => void
   onChatClick?: () => void
+  onSoundClick?: () => void
+  onLanguageClick?: () => void
+  onThemeClick?: () => void
+  onSettingsClick?: () => void
 }
 
 interface Region {
@@ -180,6 +184,10 @@ export function Footer({
   chatUnreadCount = 0,
   onFeesClick,
   onChatClick,
+  onSoundClick,
+  onLanguageClick,
+  onThemeClick,
+  onSettingsClick,
 }: FooterProps) {
   return (
     <div className="h-[36px] flex-shrink-0 border-t border-kol-border bg-kol-bg/90 backdrop-blur-sm z-20 grid grid-cols-[1fr_auto_1fr] items-center px-2">
@@ -236,10 +244,10 @@ export function Footer({
             <span className="w-[7px] h-[7px] rounded-full bg-kol-red absolute -top-0.5 -right-0.5 pointer-events-none" />
           )}
         </div>
-        <ExpandableButton icon="ri-volume-up-line" label="Sound" variant="subtle" tooltipOnly />
-        <ExpandableButton icon="ri-translate-2" label="Language" variant="subtle" tooltipOnly />
-        <ExpandableButton icon="ri-palette-line" label="Theme" variant="subtle" tooltipOnly />
-        <ExpandableButton icon="ri-settings-3-line" label="Settings" variant="subtle" tooltipOnly />
+        <ExpandableButton icon="ri-volume-up-line" label="Sound" variant="subtle" tooltipOnly onClick={onSoundClick} />
+        <ExpandableButton icon="ri-translate-2" label="Language" variant="subtle" tooltipOnly onClick={onLanguageClick} />
+        <ExpandableButton icon="ri-palette-line" label="Theme" variant="subtle" tooltipOnly onClick={onThemeClick} />
+        <ExpandableButton icon="ri-settings-3-line" label="Settings" variant="subtle" tooltipOnly onClick={onSettingsClick} />
         <VerticalDivider />
         <ExpandableButton
           icon="ri-discord-fill"
