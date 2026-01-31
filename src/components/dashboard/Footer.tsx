@@ -203,9 +203,11 @@ export function Footer({
     <div className="h-[36px] flex-shrink-0 border-t border-kol-border bg-kol-bg/90 backdrop-blur-sm z-20 grid grid-cols-[1fr_auto_1fr] items-center px-2">
       {/* Left section */}
       <div className="flex items-center gap-1.5 justify-self-start col-start-1">
-        <RegionDropdown />
+        <div className="hidden xs:block">
+          <RegionDropdown />
+        </div>
 
-        <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-kol-green/10 border border-kol-green/20 flex-shrink-0">
+        <div className="flex items-center justify-center gap-1.5 p-1.5 xs:px-2 xs:py-0.5 rounded-md bg-kol-green/10 border border-kol-green/20 flex-shrink-0">
           <span className="w-[6px] h-[6px] rounded-full bg-kol-green flex-shrink-0" />
           <span className="text-[11px] text-kol-green font-body whitespace-nowrap hidden xs:inline lg:hidden">
             Connected
