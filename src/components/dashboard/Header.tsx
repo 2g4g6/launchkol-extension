@@ -375,17 +375,10 @@ function UserDropdown({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 4, scale: 0.95 }}
             transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
-            className="absolute right-0 top-full mt-2 w-48 bg-kol-surface-elevated/95 backdrop-blur-xl border border-kol-border/50 rounded-xl overflow-hidden z-50"
-            style={{
-              boxShadow:
-                "0 4px 24px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.03) inset",
-            }}
+            className="absolute right-0 top-full mt-2 w-48 bg-kol-bg border border-kol-border rounded-xl overflow-hidden overflow-y-auto z-50 shadow-[0_4px_4px_0_rgba(0,0,0,0.30),0_8px_8px_0_rgba(0,0,0,0.45)]"
           >
-            {/* Subtle glow */}
-            <div className="absolute -top-8 -right-8 w-24 h-24 rounded-full bg-kol-blue/10 blur-2xl pointer-events-none" />
-
             {/* User info */}
-            <div className="relative px-3 py-2.5 border-b border-kol-border/30">
+            <div className="px-3 py-2.5 border-b border-kol-border">
               <p className="text-[10px] text-kol-text-muted uppercase tracking-wider mb-0.5 font-medium">
                 Signed in as
               </p>
@@ -393,24 +386,24 @@ function UserDropdown({
             </div>
 
             {/* Menu items */}
-            <div className="relative py-1">
+            <div className="py-1">
               <DropdownItem
-                icon="ri-user-3-line"
-                label="Profile"
+                icon="ri-share-line"
+                label="Referrals"
                 onClick={() => setIsOpen(false)}
               />
               <DropdownItem
-                icon="ri-settings-3-line"
-                label="Settings"
+                icon="ri-notification-3-line"
+                label="Updates"
                 onClick={() => setIsOpen(false)}
               />
             </div>
 
             {/* Divider */}
-            <div className="h-px bg-kol-border/30 mx-2" />
+            <div className="h-px bg-kol-border mx-2" />
 
             {/* Sign out */}
-            <div className="relative py-1">
+            <div className="py-1">
               <DropdownItem
                 icon="ri-logout-box-line"
                 label="Sign Out"
